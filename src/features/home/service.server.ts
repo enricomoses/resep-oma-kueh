@@ -1,6 +1,9 @@
 import 'server-only';
-import { HOME_CMS_DEFAULTS } from '@/constants/home.constant';
+import { HOME_CMS_DEFAULTS, HOME_LIMITS } from '@/constants/home.constant';
 import { FOUNDATION_COPY } from '@/constants/ui.constant';
+import { computeVariantEffectivePrice } from '@/features/catalog/pricing';
+import type { PricingPromotionInput } from '@/features/catalog/pricing';
+import { getCategories } from '@/features/catalog/service.server';
 import {
   cmsEditorialPayloadSchema,
   cmsHeroPayloadSchema,
@@ -17,7 +20,6 @@ import type { HomePageData, HomeSectionResult } from '@/types/home';
 import {
   readActivePromotions,
   readFeaturedProducts,
-  readPublishedCategories,
   readPublishedHomeContent,
   readPublishedTestimonials,
   readUpcomingClassSessions,
@@ -41,7 +43,9 @@ export async function getHomeData(
   options: GetHomeDataOptions = {},
   signal?: AbortSignal,
 ): Promise<HomePageData> {
-  const nowMs = (options.now ?? new Date()).getTime();
+  const nowDate = options.now ?? new Date();
+  const nowMs = nowDate.getTime();
+  const rawPromotionsPromise = readActivePromotions(signal).catch(() => null);
 
   const [
     content,
@@ -122,21 +126,84 @@ export async function getHomeData(
       });
     }),
     resolveSection(async () => {
-      const rows = await readPublishedCategories(signal);
-      return rows
-        .filter((row) => row.status === 'published')
-        .map((row) =>
-          homeCategorySchema.parse({
-            id: row.id,
-            name: row.name,
-            slug: row.slug,
-            description: row.description,
-            sortOrder: row.sort_order,
-          }),
-        );
+      const directory = await getCategories(signal);
+      return directory.items.slice(0, HOME_LIMITS.SERIES).map((row) =>
+        homeCategorySchema.parse({
+          id: row.id,
+          name: row.name,
+          slug: row.slug,
+          description: row.description,
+          sortOrder: row.sortOrder,
+        }),
+      );
     }),
     resolveSection(async () => {
-      const rows = await readFeaturedProducts(signal);
+      const [rows, promoRows] = await Promise.all([
+        readFeaturedProducts(signal),
+        rawPromotionsPromise,
+      ]);
+      const pricingPromotions: PricingPromotionInput[] = Array.isArray(
+        promoRows,
+      )
+        ? promoRows
+            .filter(
+              (p) =>
+                (p.discount_type === 'percentage' ||
+                  p.discount_type === 'fixed') &&
+                (p.scope === 'all' ||
+                  p.scope === 'category' ||
+                  p.scope === 'product' ||
+                  p.scope === 'variant') &&
+                (p.status === 'draft' ||
+                  p.status === 'published' ||
+                  p.status === 'archived'),
+            )
+            .map((p) => ({
+              id: p.id,
+              title: p.title,
+              slug: p.slug,
+              discountType: p.discount_type as 'percentage' | 'fixed',
+              discountValue: Number(p.discount_value),
+              minSpendIdr: p.min_spend_idr,
+              maxDiscountIdr: p.max_discount_idr,
+              scope: p.scope as 'all' | 'category' | 'product' | 'variant',
+              startsAt: p.starts_at,
+              endsAt: p.ends_at,
+              status: p.status as 'draft' | 'published' | 'archived',
+              isEnabled: p.is_enabled,
+              isStackable: Boolean(
+                (p as { is_stackable?: boolean }).is_stackable,
+              ),
+              priority: p.priority,
+              branchIds: Array.isArray(p.promotion_branches)
+                ? p.promotion_branches.map((item) => item.branch_id)
+                : [],
+              categoryIds: Array.isArray(
+                (p as { promotion_categories?: { category_id: string }[] })
+                  .promotion_categories,
+              )
+                ? (
+                    p as { promotion_categories: { category_id: string }[] }
+                  ).promotion_categories.map((item) => item.category_id)
+                : [],
+              productIds: Array.isArray(
+                (p as { promotion_products?: { product_id: string }[] })
+                  .promotion_products,
+              )
+                ? (
+                    p as { promotion_products: { product_id: string }[] }
+                  ).promotion_products.map((item) => item.product_id)
+                : [],
+              variantIds: Array.isArray(
+                (p as { promotion_variants?: { variant_id: string }[] })
+                  .promotion_variants,
+              )
+                ? (
+                    p as { promotion_variants: { variant_id: string }[] }
+                  ).promotion_variants.map((item) => item.variant_id)
+                : [],
+            }))
+        : [];
       return rows
         .filter((row) => row.status === 'published' && row.is_featured)
         .map((row) => {
@@ -157,12 +224,69 @@ export async function getHomeData(
                 slug: primaryLink.categories.slug,
               }
             : null;
+          const categoryIds = categoryLinks
+            .filter((link) => link.categories?.status === 'published')
+            .map(
+              (link) =>
+                link.category_id ??
+                (link.categories as { id?: string } | null)?.id ??
+                '',
+            )
+            .filter(Boolean);
           const images = Array.isArray(row.product_images)
             ? row.product_images
             : [];
           const primaryImage =
             images.find((img) => img.is_primary && img.alt_text) ??
             images.find((img) => Boolean(img.alt_text));
+
+          const branchFromPriceIdr: Record<string, number> = {};
+          const variants = Array.isArray(row.product_variants)
+            ? row.product_variants.filter((v) => v.status === 'active')
+            : [];
+          for (const variant of variants) {
+            const offers = Array.isArray(variant.branch_variant_offers)
+              ? variant.branch_variant_offers.filter((o) => o.is_listed)
+              : [];
+            const optionGroups = Array.isArray(variant.option_groups)
+              ? variant.option_groups.map((g) => ({
+                  id: g.id,
+                  minSelect: g.min_select,
+                  maxSelect: g.max_select,
+                  isRequired: g.is_required,
+                  choices: Array.isArray(g.option_choices)
+                    ? g.option_choices.map((c) => ({
+                        id: c.id,
+                        priceDeltaIdr: c.price_delta_idr,
+                        isActive: c.is_active,
+                      }))
+                    : [],
+                }))
+              : [];
+            for (const offer of offers) {
+              const evaluated = computeVariantEffectivePrice(
+                {
+                  basePriceIdr: variant.base_price_idr,
+                  priceOverrideIdr: offer.price_override_idr,
+                  optionGroups,
+                },
+                {
+                  branchId: offer.branch_id,
+                  productId: row.id,
+                  variantId: variant.id,
+                  categoryIds,
+                },
+                pricingPromotions,
+                nowDate,
+              );
+              if (!evaluated) continue;
+              const prev = branchFromPriceIdr[offer.branch_id];
+              if (prev === undefined || evaluated.effectivePriceIdr < prev) {
+                branchFromPriceIdr[offer.branch_id] =
+                  evaluated.effectivePriceIdr;
+              }
+            }
+          }
 
           return homeFeaturedProductSchema.parse({
             id: row.id,
@@ -175,11 +299,15 @@ export async function getHomeData(
             isNew: row.is_new,
             primaryCategory,
             imageAlt: primaryImage?.alt_text ?? FOUNDATION_COPY.MEDIA_CAPTION,
+            ...(Object.keys(branchFromPriceIdr).length > 0
+              ? { branchFromPriceIdr }
+              : {}),
           });
         });
     }),
     resolveSection(async () => {
-      const rows = await readActivePromotions(signal);
+      const rows = await rawPromotionsPromise;
+      if (!rows) throw new Error('Promotions read unavailable');
       return rows
         .filter((row) => {
           if (row.status !== 'published' || !row.is_enabled) return false;

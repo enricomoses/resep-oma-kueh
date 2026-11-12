@@ -63,7 +63,8 @@ export const HOME_COPY = {
   FEATURED_SUBTITLE:
     'Pilihan kreasi unggulan dari dapur Resep Oma Kueh untuk momen hangat di rumah.',
   FEATURED_PRICE_NOTE:
-    'Harga cabang final akan ditampilkan bersama kalkulator katalog pada tahap F09.',
+    'Pilih cabang untuk melihat harga cabang final dan ketersediaan.',
+  FEATURED_PRICE_FROM_PREFIX: 'Mulai dari',
   FEATURED_CTA: 'Lihat di Menu',
   FEATURED_ALL_CTA: 'Telusuri katalog Menu',
   FEATURED_EMPTY: 'Belum ada produk unggulan yang dipublikasikan saat ini.',

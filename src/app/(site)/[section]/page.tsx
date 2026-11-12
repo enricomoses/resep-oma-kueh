@@ -3,7 +3,7 @@ import { ROUTES } from '@/constants/routes.constant';
 import { SITE_NAV } from '@/constants/site.constant';
 import { PreparingView } from '@/components/site/preparing-view';
 
-const PENDING_SECTIONS = new Set<string>([ROUTES.MENU, ROUTES.CLASSES]);
+const PENDING_SECTIONS = new Set<string>([ROUTES.CLASSES]);
 
 export default async function PreparingPage({
   params,

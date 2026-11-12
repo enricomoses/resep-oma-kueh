@@ -113,6 +113,9 @@ export const homeFeaturedProductSchema = z
       .strict()
       .nullable(),
     imageAlt: plainTextLabelSchema,
+    branchFromPriceIdr: z
+      .record(z.string(), z.number().int().nonnegative())
+      .optional(),
   })
   .strict();
 

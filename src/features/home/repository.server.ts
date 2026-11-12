@@ -29,25 +29,11 @@ export async function readPublishedHomeContent(signal?: AbortSignal) {
   return data;
 }
 
-export async function readPublishedCategories(signal?: AbortSignal) {
-  const { data, error } = await createPublicReadClient()
-    .from('categories')
-    .select('id,name,slug,description,sort_order,status')
-    .eq('status', 'published')
-    .retry(false)
-    .order('sort_order')
-    .order('id')
-    .limit(HOME_LIMITS.SERIES)
-    .abortSignal(withDeadline(signal));
-  if (error) throw new Error('Categories read unavailable');
-  return data;
-}
-
 export async function readFeaturedProducts(signal?: AbortSignal) {
   const { data, error } = await createPublicReadClient()
     .from('products')
     .select(
-      'id,name,slug,short_description,description,product_type,is_best_seller,is_new,is_featured,status,sort_order,product_categories(is_primary,categories(name,slug,status)),product_images(alt_text,is_primary,sort_order)',
+      'id,name,slug,short_description,description,product_type,is_best_seller,is_new,is_featured,status,sort_order,product_categories(category_id,is_primary,categories(id,name,slug,status)),product_images(alt_text,is_primary,sort_order),product_variants(id,base_price_idr,status,sort_order,branch_variant_offers(branch_id,is_listed,availability_status,stock_quantity,price_override_idr),option_groups(id,min_select,max_select,is_required,option_choices(id,price_delta_idr,is_active)))',
     )
     .eq('status', 'published')
     .eq('is_featured', true)
@@ -64,7 +50,7 @@ export async function readActivePromotions(signal?: AbortSignal) {
   const { data, error } = await createPublicReadClient()
     .from('promotions')
     .select(
-      'id,title,slug,description,discount_type,discount_value,min_spend_idr,max_discount_idr,scope,starts_at,ends_at,status,is_enabled,priority,promotion_branches(branch_id)',
+      'id,title,slug,description,discount_type,discount_value,min_spend_idr,max_discount_idr,scope,starts_at,ends_at,status,is_enabled,is_stackable,priority,promotion_branches(branch_id),promotion_categories(category_id),promotion_products(product_id),promotion_variants(variant_id)',
     )
     .eq('status', 'published')
     .eq('is_enabled', true)

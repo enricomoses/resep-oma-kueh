@@ -6,17 +6,20 @@ import { Card } from '@/components/ui/card';
 import { Feedback } from '@/components/ui/feedback';
 import { ROUTES } from '@/constants';
 import { HOME_COPY, HOME_SECTION_IDS } from '@/constants/home.constant';
+import { formatIdr } from '@/features/catalog/pricing';
 import { withBranch } from '@/utils/branch-url';
 import { cn } from '@/utils';
 import type { HomeFeaturedProduct, HomeSectionResult } from '@/types/home';
 
 interface FeaturedBakesSectionProps {
   featuredProducts: HomeSectionResult<HomeFeaturedProduct[]>;
+  selectedBranchId: string | null;
   branchCode: string | null;
   className?: string;
 }
 export function FeaturedBakesSection({
   featuredProducts,
+  selectedBranchId,
   branchCode,
   className,
 }: FeaturedBakesSectionProps) {
@@ -51,6 +54,10 @@ export function FeaturedBakesSection({
             const targetHref = product.primaryCategory
               ? `${ROUTES.MENU}?category=${encodeURIComponent(product.primaryCategory.slug)}`
               : ROUTES.MENU;
+            const branchPrice =
+              selectedBranchId && product.branchFromPriceIdr
+                ? product.branchFromPriceIdr[selectedBranchId]
+                : undefined;
             return (
               <Card key={product.id} className="home-featured-card">
                 <MediaPlaceholder
@@ -80,7 +87,9 @@ export function FeaturedBakesSection({
                     <p>{product.shortDescription ?? product.description}</p>
                   ) : null}
                   <p className="home-price-note">
-                    {HOME_COPY.FEATURED_PRICE_NOTE}
+                    {branchPrice !== undefined
+                      ? `${HOME_COPY.FEATURED_PRICE_FROM_PREFIX} ${formatIdr(branchPrice)}`
+                      : HOME_COPY.FEATURED_PRICE_NOTE}
                   </p>
                 </div>
                 <ActionLink

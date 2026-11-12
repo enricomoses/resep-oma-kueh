@@ -2,6 +2,8 @@
 export const API_ENDPOINTS = {
   BASE: '/api',
   BRANCHES: '/branches',
+  CATEGORIES: '/categories',
+  CATALOG: '/catalog',
   CONTENT: '/content',
   FAQS: '/faqs',
 } as const;

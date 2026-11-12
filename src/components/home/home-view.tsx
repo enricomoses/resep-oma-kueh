@@ -63,6 +63,7 @@ export function HomeView({ data, contacts, className }: HomeViewProps) {
       />
       <FeaturedBakesSection
         featuredProducts={data.featuredProducts}
+        selectedBranchId={selected?.id ?? null}
         branchCode={branchCode}
       />
       <OurStorySection
