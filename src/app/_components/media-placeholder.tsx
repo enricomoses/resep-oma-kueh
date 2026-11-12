@@ -2,20 +2,21 @@ import { FOUNDATION_COPY } from '@/constants/ui.constant';
 import { cn } from '@/utils';
 
 interface MediaPlaceholderProps {
+  caption?: string;
+  mark?: string;
   className?: string;
 }
-export function MediaPlaceholder({ className }: MediaPlaceholderProps) {
+export function MediaPlaceholder({
+  caption = FOUNDATION_COPY.MEDIA_CAPTION,
+  mark = FOUNDATION_COPY.MEDIA_MARK,
+  className,
+}: MediaPlaceholderProps) {
   return (
-    <figure
-      className={cn('media-placeholder', className)}
-      aria-label={FOUNDATION_COPY.MEDIA_CAPTION}
-    >
+    <figure className={cn('media-placeholder', className)} aria-label={caption}>
       <span className="media-placeholder-mark" aria-hidden="true">
-        {FOUNDATION_COPY.MEDIA_MARK}
+        {mark}
       </span>
-      <figcaption className="media-placeholder-caption">
-        {FOUNDATION_COPY.MEDIA_CAPTION}
-      </figcaption>
+      <figcaption className="media-placeholder-caption">{caption}</figcaption>
     </figure>
   );
 }

@@ -70,7 +70,7 @@ for (const width of [375, 768, 1280, 1440])
     expect(fonts[0]).toContain('Plus Jakarta Sans');
     expect(fonts[1]).toContain('Fraunces');
     expect(fonts[2]).toContain('Barlow Condensed');
-    const link = page.getByRole('link', { name: 'Catatan pratinjau' });
+    const link = page.getByRole('link', { name: 'Explore Menu' });
     for (let index = 0; index < 16; index++) {
       await page.keyboard.press('Tab');
       if (await link.evaluate((el) => el === document.activeElement)) break;
@@ -104,7 +104,7 @@ test('200% CSS zoom reflows and reduced motion removes transitions', async ({
         document.documentElement.clientWidth,
     ),
   ).toBe(true);
-  const link = page.getByRole('link', { name: 'Catatan pratinjau' });
+  const link = page.getByRole('link', { name: 'Explore Menu' });
   await expect(link).toBeVisible();
   expect(
     await link.evaluate((el) => getComputedStyle(el).transitionDuration),

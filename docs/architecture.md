@@ -48,7 +48,7 @@ Schema/constraints F02 dan data/tooling F04 ada di [database.md](database.md). `
 
 ## Tooling
 
-F06 menambah `(site)` server layout dan directory branches saja. Public shell, Zustand preference, query/service/BFF/domain/repository dan kontrak fallback/guard F12 dijelaskan pada [branches.md](branches.md). RSC tidak self-fetch; browser tidak mengakses Supabase bisnis. Chat hanya satu slot informatif. Halaman tujuan yang belum diimplementasikan memakai bounded preparation view, bukan fitur domain.
+F06 menambah `(site)` server layout dan directory branches; F07 melengkapi halaman `/` (`HomeView`) dengan 9 section berurutan yang membaca `src/features/home/service.server.ts` langsung di RSC dan menyaring promo/kelas menurut cabang aktif dari `useBranches()`. Public shell, Zustand preference, query/service/BFF/domain/repository dan kontrak fallback/guard F12 dijelaskan pada [branches.md](branches.md). RSC tidak self-fetch; browser tidak mengakses Supabase bisnis. Chat hanya satu slot informatif. Halaman tujuan yang belum diimplementasikan memakai bounded preparation view, bukan fitur domain.
 
 Vitest memisahkan project unit/DOM/server dengan inheritance eksplisit, pool threads, satu worker, serial file scheduling dan isolation tetap aktif. Ini membatasi beban startup Windows, tanpa mengurangi assertion atau mengubah timeout produk. Hanya project server menunjuk entry kosong asli server-only; alias itu tidak berlaku pada browser/build. `test:boundaries` memakai compiler Next asli (webpack) dan modul environment server proyek: import harus berhasil di RSC dan ditolak di Client Component. Production build aplikasi memakai Turbopack. Fixture memakai env bersih; cleanup hanya pada temp path terverifikasi.
 

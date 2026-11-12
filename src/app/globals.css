@@ -476,7 +476,8 @@ svg {
   }
 }
 @container (min-width: 42rem) {
-  .foundation-hero {
+  .foundation-hero,
+  .home-story-grid {
     grid-template-columns: 1.05fr 1fr;
     gap: clamp(2.5rem, 6vw, 6rem);
   }
@@ -493,7 +494,7 @@ svg {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
-@media (max-width: 22rem) {
+@media (max-width: 28rem) {
   .product-grid {
     grid-template-columns: 1fr;
   }
@@ -669,6 +670,240 @@ svg {
   .preparing-view p {
     margin-top: 1.5rem;
     max-width: 65ch;
+  }
+  .home-main {
+    display: grid;
+    gap: 0;
+  }
+  .home-hero .ui-badge {
+    margin-bottom: 1.25rem;
+  }
+  .home-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .home-section {
+    display: grid;
+    gap: 2rem;
+    padding-block: var(--space-section);
+    border-top: 1px solid var(--border-sand);
+  }
+  .home-section-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.25rem;
+  }
+  .home-section-subtitle {
+    margin-top: 0.75rem;
+    max-width: 62ch;
+    color: var(--text-cocoa);
+  }
+  .home-series-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+    gap: 1.25rem;
+  }
+  .home-series-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.25rem;
+  }
+  .home-series-card-body {
+    display: grid;
+    gap: 0.5rem;
+  }
+  .home-series-card h3,
+  .home-featured-card h3,
+  .home-treat-card h3,
+  .home-class-card h3,
+  .home-class-empty-card h3,
+  .home-branch-card h3,
+  .home-community-card h3,
+  .home-custom-business-card h3 {
+    font-size: 1.1875rem;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+  .home-series-card p,
+  .home-featured-card-body p,
+  .home-treat-card p,
+  .home-class-card-body p,
+  .home-class-empty-card p,
+  .home-community-card p,
+  .home-custom-business-card p {
+    color: var(--text-cocoa);
+    font-size: 0.9375rem;
+  }
+  .home-featured-card,
+  .home-class-card,
+  .home-community-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .home-card-media {
+    min-height: 12rem;
+    aspect-ratio: 4/3;
+    padding: 1.25rem;
+  }
+  .home-card-media .media-placeholder-mark {
+    font-size: clamp(2.5rem, 5vw, 3.75rem);
+  }
+  .home-badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .home-featured-card-body,
+  .home-class-card-body {
+    display: grid;
+    gap: 0.5rem;
+    flex: 1;
+    align-content: start;
+  }
+  .home-card-eyebrow {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--brand-burgundy);
+  }
+  .home-price-note {
+    font-size: 0.875rem;
+    color: var(--text-cocoa);
+  }
+  .home-story-grid {
+    display: grid;
+    align-items: center;
+    gap: 2.5rem;
+  }
+  .home-story-content {
+    display: grid;
+    justify-items: start;
+    gap: 1.5rem;
+  }
+  .home-story-body {
+    max-width: 62ch;
+    color: var(--text-cocoa);
+    font-size: 1.0625rem;
+  }
+  .home-values-group {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .home-custom-business-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+  .home-custom-business-copy {
+    display: grid;
+    justify-items: start;
+    gap: 0.625rem;
+    max-width: 58ch;
+  }
+  .home-treats-grid,
+  .home-classes-grid,
+  .home-testimonials-grid,
+  .home-find-us-grid,
+  .home-community-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+    gap: 1.5rem;
+  }
+  .home-treat-card {
+    display: grid;
+    align-content: start;
+    gap: 0.875rem;
+    background: var(--accent-rose);
+  }
+  .home-treat-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  .home-campaign-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    background: var(--brand-burgundy);
+    color: var(--surface-white);
+    font-family: var(--font-barlow), sans-serif;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .home-campaign-value {
+    font-family: var(--font-barlow), sans-serif;
+    font-size: 1.375rem;
+    font-weight: 600;
+    color: var(--brand-deep);
+  }
+  .home-class-empty-card {
+    display: grid;
+    justify-items: start;
+    gap: 1rem;
+  }
+  .home-class-schedule,
+  .home-branch-detail {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    color: var(--brand-deep);
+    font-size: 0.9375rem;
+  }
+  .home-inline-actions,
+  .home-branch-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.875rem;
+    margin-top: 0.5rem;
+  }
+  .home-testimonial-card {
+    display: grid;
+    align-content: space-between;
+    gap: 1rem;
+  }
+  .home-testimonial-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    color: var(--brand-burgundy);
+  }
+  .home-testimonial-quote {
+    font-family: var(--font-fraunces), serif;
+    font-size: 1.125rem;
+    line-height: 1.5;
+    color: var(--brand-deep);
+  }
+  .home-testimonial-author {
+    font-size: 0.875rem;
+    color: var(--text-cocoa);
+  }
+  .home-branch-card {
+    display: grid;
+    align-content: space-between;
+    gap: 1rem;
+  }
+  .home-branch-card-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
   }
 }
 @media (min-width: 48rem) {
