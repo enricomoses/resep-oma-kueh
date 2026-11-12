@@ -1,5 +1,7 @@
 # Database — F02
 
+Bagian F02 berikut adalah snapshot schema awal. Izin runtime terbaru diterapkan F03 melalui `20261112000300_bakery_permissions.sql`; matriks grants/RLS/RPC/Storage dan bukti JWT nyata ada di [security.md](security.md). Tidak menganggap deny-all F02 masih menjadi konfigurasi terkini.
+
 Sumber schema tunggal: `supabase/migrations/20261112000100_bakery_schema.sql` dan `20261112000200_bakery_integrity.sql`. PostgreSQL lokal 17; schema `public` berisi 26 tabel MVP. Tidak ada seed bisnis, tabel fase 2, RPC aplikasi, atau policy runtime. Seluruh tabel public mengaktifkan RLS dalam transaksi pembuatan dan grants anon/authenticated dicabut. Ini belum membuktikan isolasi owner/staff/anon: F03 wajib menguji JWT/direct REST, column grants, dan Storage.
 
 ```mermaid

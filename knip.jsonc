@@ -9,7 +9,7 @@
     "src/**/*.{ts,tsx,css}",
     "tests/**/*.{ts,tsx,mjs}",
     "tooling/**/*.mjs",
-    "scripts/*.mjs",
+    "scripts/**/*.mjs",
     "*.config.{ts,mts,mjs}",
   ],
   // Owner's M03 packages reserved for later explicitly-scoped features, not removed by F01.

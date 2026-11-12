@@ -13,7 +13,8 @@
     "test": "vitest run",
     "test:boundaries": "node scripts/test-eslint-boundaries.mjs && node scripts/test-server-boundary.mjs",
     "test:e2e": "playwright test",
-    "test:db": "supabase test db && node scripts/test-db-concurrency.mjs",
+    "test:db": "supabase test db && node scripts/test-db-concurrency.mjs && npm run test:db:permissions",
+    "test:db:permissions": "node --conditions=react-server --import tsx scripts/test-db-permissions.mjs",
     "lint:unused": "knip --no-progress",
     "check": "npm run lint && npm run typecheck && npm test && npm run test:boundaries && npm run lint:unused && npm run format:check && npm run build"
   },

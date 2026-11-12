@@ -986,6 +986,8 @@ Do **not** rely on “published” check in frontend alone; server DB policies o
 
 ### 14.3 Authorisation helpers
 
+Kontrak aktual F03 ada di [security.md](security.md): column grants tanpa public view, owner-only fixed read RPC untuk private evidence, satu public read RPC invoker untuk cabang aktif, staff sessions tanpa price override/hard delete, serta managed Storage grants yang diamankan oleh RLS owner-only. Config lokal menutup signup dan expose schema public saja; penerapan hosted tetap proses rilis terpisah. Ini bukan halaman login/CRUD atau persetujuan publikasi aset bisnis.
+
 - Implement audited `is_owner()` and `can_manage_branch(branch_uuid)` SQL functions or equivalent RLS conditions. Use `auth.uid()` and `admin_profiles` DB record, **never** JWT client-editable user metadata or role in request body.
 - Helpers may use carefully reviewed `SECURITY DEFINER`, fixed `search_path=''`, schema-qualified references, no dynamic SQL; restrict EXECUTE, prevent RLS recursion; ensure helper cannot return other users' data.
 - `branch_admin` must not change `branch_id`, `role`, `is_active` for own profile. Policy and server both enforce.

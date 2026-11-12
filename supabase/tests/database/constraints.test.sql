@@ -17,9 +17,10 @@ select is((select count(*)::integer from pg_class c join pg_namespace n on n.oid
   where n.nspname = 'public' and c.relkind = 'r'),26,'exactly 26 MVP tables, no phase-2 tables');
 select is((select count(*)::integer from pg_class c join pg_namespace n on n.oid = c.relnamespace
   where n.nspname = 'public' and c.relkind = 'r' and c.relrowsecurity),26,'all MVP tables have RLS enabled');
-select ok(not exists(select 1 from pg_policies where schemaname = 'public'),'no runtime policies before F03');
 select ok(not exists(select 1 from information_schema.role_table_grants where table_schema = 'public'
-  and grantee in ('anon','authenticated')),'no inherited Supabase table grants before F03');
+  and grantee = 'anon' and privilege_type <> 'SELECT'),'anon has no business write grants');
+select ok(not exists(select 1 from information_schema.role_table_grants where table_schema = 'public'
+  and grantee in ('anon','authenticated') and privilege_type in ('TRUNCATE','TRIGGER','REFERENCES')),'no inherited dangerous runtime table grants');
 select has_column('public','option_groups','quantity_per_selection','quantity per selection is a real column');
 select has_column('public','class_sessions','seats_left','seats are real admin-managed data');
 
