@@ -13,7 +13,7 @@
     "test": "vitest run",
     "test:boundaries": "node scripts/test-eslint-boundaries.mjs && node scripts/test-server-boundary.mjs",
     "test:e2e": "playwright test",
-    "test:db": "supabase test db",
+    "test:db": "supabase test db && node scripts/test-db-concurrency.mjs",
     "lint:unused": "knip --no-progress",
     "check": "npm run lint && npm run typecheck && npm test && npm run test:boundaries && npm run lint:unused && npm run format:check && npm run build"
   },

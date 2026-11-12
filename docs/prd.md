@@ -893,23 +893,23 @@ Unique key `(branch_id, variant_id)`. No row means **not offered in branch**; do
 
 **`promotions`**:
 
-| Column                 | Type / validation                                 | Business meaning                                                   |
-| ---------------------- | ------------------------------------------------- | ------------------------------------------------------------------ |
-| `id`                   | uuid PK                                           | Promotion ID                                                       |
-| `title`, `slug`        | text / slug UNIQUE                                | Public campaign                                                    |
-| `description`          | text NULL                                         | Conditions                                                         |
-| `discount_type`        | text CHECK `percentage/fixed`                     | No free shipping calculation MVP                                   |
-| `discount_value`       | numeric(10,2) >0                                  | Percentage <=100 (DB CHECK), fixed IDR integer enforced DB/service |
-| `max_discount_idr`     | bigint NULL CHECK >=0                             | Cap per line untuk percentage maupun fixed                         |
-| `min_spend_idr`        | bigint NOT NULL default 0                         | Min subtotal eligible                                              |
-| `scope`                | text CHECK `all/category/product/variant`         | Determines pivot table                                             |
-| `starts_at`, `ends_at` | timestamptz NOT NULL                              | Start inclusive, end exclusive                                     |
-| `priority`             | integer default 0                                 | Tie-break business rule                                            |
-| `status`               | text CHECK draft/published/archived default draft | Lifecycle; publikasi dan archive aman                              |
-| `is_enabled`           | boolean default false                             | Admin toggle; eligible hanya status published + enabled            |
-| `is_stackable`         | boolean default false                             | MVP must reject true or treat false                                |
-| `banner_image_path`    | text NULL                                         | Marketing                                                          |
-| timestamps             | timestamptz                                       | Maintenance                                                        |
+| Column                 | Type / validation                                 | Business meaning                                                                               |
+| ---------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `id`                   | uuid PK                                           | Promotion ID                                                                                   |
+| `title`, `slug`        | text / slug UNIQUE                                | Public campaign                                                                                |
+| `description`          | text NULL                                         | Conditions                                                                                     |
+| `discount_type`        | text CHECK `percentage/fixed`                     | No free shipping calculation MVP                                                               |
+| `discount_value`       | numeric(12,2) >0                                  | Percentage <=100 (DB CHECK), fixed IDR integer enforced DB/service; sampai batas unit 1 miliar |
+| `max_discount_idr`     | bigint NULL CHECK >=0                             | Cap per line untuk percentage maupun fixed                                                     |
+| `min_spend_idr`        | bigint NOT NULL default 0                         | Min subtotal eligible                                                                          |
+| `scope`                | text CHECK `all/category/product/variant`         | Determines pivot table                                                                         |
+| `starts_at`, `ends_at` | timestamptz NOT NULL                              | Start inclusive, end exclusive                                                                 |
+| `priority`             | integer default 0                                 | Tie-break business rule                                                                        |
+| `status`               | text CHECK draft/published/archived default draft | Lifecycle; publikasi dan archive aman                                                          |
+| `is_enabled`           | boolean default false                             | Admin toggle; eligible hanya status published + enabled                                        |
+| `is_stackable`         | boolean default false                             | MVP must reject true or treat false                                                            |
+| `banner_image_path`    | text NULL                                         | Marketing                                                                                      |
+| timestamps             | timestamptz                                       | Maintenance                                                                                    |
 
 Constraints `ends_at > starts_at`; promo fixed dihitung per unit (jumlah × discount_value), percentage dibulatkan half-up ke Rupiah pada gross line, cap `max_discount_idr` per line; selalu clamp ≤ gross line. Gunakan integer/basis points dan BigInt intermediate sesuai §27.2, bukan floating-point uang. Ambang min_spend dihitung dari seluruh eligible gross lines untuk promo tersebut sebelum diskon. Pilih best matching promo per line; tie-break savings terbesar, priority desc, UUID asc.
 
@@ -942,6 +942,8 @@ Pivot tables (all composite PK + FK + indexed target): `promotion_categories(pro
 - Privacy/retention/roles must be defined before collecting customer names or addresses in persistent DB.
 
 ### 13.11 Index and performance contract
+
+Kontrak schema aktual F02 dijabarkan di [database.md](database.md): metadata approval bucket/alt untuk publish media, `bundle_recipe='chiffon_mix'`/`bundle_rules_verified`, fixed component slot `cheese/choco`, validasi aggregate deferred dan serialisasi penulis. Product ID adalah identitas rasa, sehingga quote tetap wajib menolak dua selections yang merujuk rasa sama meskipun pools tumpang tindih. Slug/SKU/code immutable pada runtime; rename display tidak mengubahnya. CMS memakai payload per-key plain text yang didokumentasikan di sana; Zod boundary diterapkan saat F20. Tambahan kolom ini tidak menganggap aset/komposisi sudah disetujui atau membuat seed produksi.
 
 - UNIQUE `branches.code`, `categories.slug`, `products.slug`, `product_variants.sku`, `class_programs.slug`, `promotions.slug`.
 - Index `(product_id,status,sort_order,id)` on variants; `(status,is_featured,sort_order,id)` products; `(branch_id,is_listed,availability_status)` branch offers; `(category_id,product_id)` pivot; `(starts_at,branch_id,status)` sessions.

@@ -61,3 +61,12 @@
 - **Diff dependency:** dari snapshot awal F01 hanya versi paket lama @types/node dan undici-types yang berubah; paket baru mengikuti peer DOM/Vite. Pilihan M03 lain tidak hilang. Env lokal dan konfigurasi Supabase pengguna tetap sama secara hash.
 
 - **Hasil final D008:** thread saja belum menghilangkan timeout loader ESLint. Semua 18 kasus config dipindahkan utuh ke script Node dengan assert, terpisah dari 28 tes runtime Vitest; check menjalankan keduanya, tanpa skipped/assertion dihapus. Final check exit 0.
+
+## D009 — Integritas schema F02 tanpa seed bisnis
+
+- **Tanggal:** 12 November 2026 (Asia/Jakarta).
+- **Keputusan:** dua migration merupakan sumber tunggal 26 tabel MVP. RLS enable dalam transaksi pembuatan, revoke runtime grants; policy/field isolation/Storage tetap F03. Private helper tidak menjadi RPC publik. Tidak ada tabel fase 2 atau generated Database type buatan.
+- **Aggregate:** constraint lokal immediate dan validator lintas tabel deferred memungkinkan save aggregate atomik. BEFORE STATEMENT meng-update satu private guard row untuk serialisasi penulis dan mencegah write skew pada kategori/publication, termasuk snapshot repeatable read. Biaya validator global diterima untuk MVP; optimisasi perlu measurement, bukan menonaktifkan invariant.
+- **Kontrak nyata:** metadata approval media/class review, recipe/verification serta slots fixed Cheese/Choco ditambahkan karena publish prerequisites perlu data eksplisit. Product ID mewakili rasa; SKU ukuran/formulasi. Pools boleh overlap tetapi quote F11 wajib memvalidasi selections berbeda; schema hanya menjamin konfigurasi menyediakan pasangan yang valid. GF bundle memerlukan setiap component verified. Detail/ERD/payload CMS aktual pada database.md; PRD diselaraskan.
+- **Nominal/identity:** numeric(12,2) untuk discount_value agar batas fixed IDR 1 miliar tidak terpotong numeric(10,2). Unit beserta opsi/override ≤1 miliar, cap/min-spend ≤1 triliun. Slug/SKU/code dan PK immutable runtime; perubahan permalink perlu maintenance migration eksplisit.
+- **Batas bukti:** metadata approved bukan verifikasi file/consent nyata, dan schema bukan bukti role isolation. Test fixture DEMO rollback, bukan izin katalog produksi. Config Supabase setup owner dipertahankan tanpa mengubah isinya; disertakan sebagai kebutuhan reproduksi local harness, bukan konfigurasi produksi. Missing seed tidak diganti seed kosong; reset F02 selalu --no-seed.

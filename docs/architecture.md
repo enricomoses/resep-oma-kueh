@@ -44,12 +44,12 @@ Boolean hanya string true/false. Provider disabled tidak memerlukan key/model; a
 
 Bridge mengikuti [Supabase SSR](https://supabase.com/docs/guides/auth/server-side/creating-a-client) dan signature SDK terpasang 0.12.7. Client SSR tidak disimpan global. Dengan Cache Components, ikuti docs Next terpasang, bukan konfigurasi route/cache lama. Semua public DB fetch baseline uncached.
 
-Generated Database type baru dibuat setelah schema pada F02/F04; tidak ada placeholder types manual. Helper anon tidak menjamin SELECT-only: actual grants/RLS/RPC/Storage negatif wajib diuji F03 dan regression F22. Tes fetch/cookie yang dimock hanya menguji kontrak adapter.
+Schema/constraints F02 aktual ada di [database.md](database.md). Generated Database type belum diperlukan source F02 dan dilanjutkan F04; tidak ada placeholder types manual. Helper anon tidak menjamin SELECT-only: actual grants/RLS/RPC/Storage negatif wajib diuji F03 dan regression F22. Tes fetch/cookie yang dimock hanya menguji kontrak adapter.
 
 ## Tooling
 
 Vitest memisahkan project unit/DOM/server dengan inheritance eksplisit, pool threads, satu worker, serial file scheduling dan isolation tetap aktif. Ini membatasi beban startup Windows, tanpa mengurangi assertion atau mengubah timeout produk. Hanya project server menunjuk entry kosong asli server-only; alias itu tidak berlaku pada browser/build. `test:boundaries` memakai compiler Next asli (webpack) dan modul environment server proyek: import harus berhasil di RSC dan ditolak di Client Component. Production build aplikasi memakai Turbopack. Fixture memakai env bersih; cleanup hanya pada temp path terverifikasi.
 
-Playwright smoke memakai next start dari production build lokal port 3100 dan memverifikasi scaffold/provider, bukan storefront/DB. `test:db` adalah pgTAP CLI lokal; suite/schema belum tersedia pada F01. Tidak ada passWithNoTests atau tes dummy.
+Playwright smoke memakai next start dari production build lokal port 3100 dan memverifikasi scaffold/provider, bukan storefront/DB. Sejak F02 `test:db` menjalankan pgTAP constraints pada fixture rollback dan dua sesi PostgreSQL nyata untuk serialization/write-skew. Tidak ada passWithNoTests atau tes dummy.
 
-CI dasar memakai npm ci/check tanpa secret/DB produksi; DB/E2E masuk CI ketika harness terkait ada. Knip mengecualikan paket M03 tertentu yang sudah disiapkan owner untuk fitur berikutnya, bukan semua source/export. Hasil aktual dan NOT RUN ada di [implementation-status.md](implementation-status.md).
+CI dasar memakai npm ci/check tanpa secret/DB produksi. Job SQL F02 memakai isolated local start/reset tanpa seed; hasil remote CI belum diverifikasi. Domain E2E masuk CI ketika harness terkait ada. Knip mengecualikan paket M03 tertentu yang sudah disiapkan owner untuk fitur berikutnya, bukan semua source/export. Hasil aktual dan NOT RUN ada di [implementation-status.md](implementation-status.md).

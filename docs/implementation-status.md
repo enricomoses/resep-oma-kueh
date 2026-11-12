@@ -2,6 +2,30 @@
 
 Tanggal audit: **12 November 2026, Asia/Jakarta**. Kontrak: [PRD revisi 1.1](prd.md), terutama §2,12,16,17,25–27, dan [execution guide](execution-guide.md) §3/F00. Status ini mencatat bukti aktual, bukan menandai spesifikasi sebagai implementasi.
 
+## F02 — Schema relasional dan constraints
+
+**Status: PASS untuk F02 / R02 schema dan constraints.** Ini bukan bukti keamanan role F03 atau fitur publik. Bagian F00/F01 berikut adalah snapshot historis.
+
+- **File:** dua migration `supabase/migrations/20261112000100_bakery_schema.sql` dan `20261112000200_bakery_integrity.sql`; suite `supabase/tests/database/constraints.test.sql`; dua-session harness `scripts/test-db-concurrency.mjs`; `docs/database.md` berisi ERD/kontrak aktual. `package.json` menghubungkan harness ke test:db; `.github/workflows/ci.yml` menambah job SQL isolated local. Config/.gitignore Supabase setup owner dilacak untuk reproduksi tanpa perubahan isi. Lockfile dan source aplikasi tidak berubah.
+- **Perilaku:** 26 tabel MVP, typed bounded fields, PK/FK/RESTRICT/index/unique/check, timestamps/identity stability, category cycle guard, aggregate publish validation, recipe 12 slices/4 rasa/verified GF, opsi dengan quantity_per_selection nyata, offers/price bounds, promotion scopes/caps/time, class seats/time, consent dan CMS allowlist. Tidak ada order/history/registrations/embedding, seed bisnis atau route publik baru.
+- **Boundary:** RLS enable saat creation dan runtime grants tertutup; private validator/lock tidak menjadi public RPC. Actual role/JWT/direct REST/column privacy/Storage isolation **NOT RUN, dependency F03**. Approval metadata bukan bukti izin file bisnis. Selections pelanggan berbeda pada pools overlap dan gross-cart calculator tetap F11.
+- **Data pending:** seluruh harga/stok/fulfillment/hours/Maps, pilihan C/D dan owner recipe verification, GF/allergen per SKU, media/consent, promo/jadwal/kelas mengikuti PRD §23. Gmail dan alamat Surabaya yang telah final tidak dibuka ulang. Tidak ada fakta bisnis yang diinsert F02.
+
+| Bukti  | Command/kasus                                                           | Hasil aktual                                                                                                                                                                                          |
+| ------ | ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| F02-01 | Root/status awal                                                        | Bakery terverifikasi; awal hanya supabase/config.toml dan .gitignore untracked milik setup owner; dipertahankan                                                                                       |
+| F02-02 | Local start pertama / reset pertama                                     | FAIL exit 1: migration up dijalankan saat start belum selesai, lalu bootstrap mencoba apply ganda dan membersihkan container; reset pertama mendapati stack tidak berjalan. Tidak ada remote mutation |
+| F02-03 | Startup ulang, `npx supabase db reset --no-seed`                        | 0; target CLI 127.0.0.1:54322, auth/products/branches kosong sebelum reset; kedua migration diterapkan dari nol tanpa seed/manual data                                                                |
+| F02-04 | `npm run test:db`                                                       | 0 final: 93 pgTAP + dua koneksi PostgreSQL nyata; stale-snapshot category-cycle writer ditolak 40001. Semua fixture rollback/cleanup                                                                  |
+| F02-05 | `npx supabase db lint --schema public,bakery_private --fail-on warning` | 0; no schema errors/warnings                                                                                                                                                                          |
+| F02-06 | `npm run format`; `npm run lint`; `npm run typecheck`; `npm test`       | 0 masing-masing; 6 file/28 Vitest PASS; typecheck final sesudah lint selesai                                                                                                                          |
+| F02-07 | `npm run lint:unused`; `npm run build`                                  | 0 masing-masing; build tetap hanya scaffold `/`, `/_not-found` dan Proxy, tidak ada fitur UI/domain publik baru                                                                                       |
+| F02-08 | UI/E2E, role/JWT/REST/Storage integration, remote CI                    | NOT RUN pada F02: tidak ada perubahan UI, role suite F03, job CI belum dijalankan remote                                                                                                              |
+
+Final `npm run format:check` dan `git diff --check` exit 0. Sesudah suite, hitungan categories/auth users/products/branches masing-masing 0; tidak ada fixture bisnis tertinggal. Generated DB types belum dibutuhkan source F02; generator aktual mengikuti F04, tidak membuat tipe schema tebakan.
+
+Schema dari nol dan test SQL membuktikan integritas yang disebutkan, bukan PRD selesai. Tidak perlu secret atau langkah manual baru untuk menuntaskan F02; app env belum diubah. Stack lokal disisakan hidup untuk F03. Owner tetap meninjau data bisnis/izin sebelum seed/publikasi dan mengisi app env lokal sendiri ketika fitur DB mulai dipakai. Tidak perlu mengirim secret ke chat. F03 siap sebagai dependency setelah prompt owner berikutnya; tidak diimplementasikan otomatis.
+
 ## F01 — Fondasi arsitektur dan tooling
 
 **Status: PASS untuk F01. Requirement R01 terlayani sebagian melalui fondasi; integrasi akhir/CI DB tetap F24.** Tidak ada fitur F02+ yang dikerjakan. Tidak ada migration/schema/seed, CRUD, atau endpoint domain.
@@ -152,7 +176,7 @@ Untuk setiap baris TODO: belum ada file/route implementasi fitur, migration, tes
 | ----- | ----------------------- | --------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | F00   | PASS (audit setup)      | R01 parsial           | Setup manual sejauh tersedia       | Dokumen ini, decisions, AGENTS, PRD/guide terlacak; F00-01–19; G01–G07 tetap terbuka                   |
 | F01   | PASS                    | R01 parsial           | F00                                | Env/transport/provider/Supabase helpers/tooling/CI; bukti F01 di atas; SQL/RLS belum diimplementasikan |
-| F02   | TODO                    | R02                   | F01                                | Schema/constraints/indexes; G03 harus selesai untuk bukti DB                                           |
+| F02   | PASS                    | R02                   | F01                                | 26 tabel, clean local replay tanpa seed, 93 pgTAP + concurrency, SQL lint dan app gates lulus          |
 | F03   | TODO                    | R03                   | F02                                | Grants/RLS/field restrictions/Storage; actual JWT/REST/SQL belum diuji                                 |
 | F04   | TODO                    | R04                   | F03                                | Seed DEMO/reference/types/scripts; dua kali seed belum diuji                                           |
 | F05   | TODO                    | R05                   | F01; F04 bila integrasi            | Design system/primitives/form; G06                                                                     |
@@ -182,34 +206,34 @@ Untuk setiap baris TODO: belum ada file/route implementasi fitur, migration, tes
 
 Seluruh hasil produk berikut belum diimplementasikan. R01 hanya memiliki bukti setup F00; tidak ditandai PASS penuh. Semua baris TODO memiliki migration/test/UI/SQL **belum tersedia / NOT RUN** kecuali bukti parsial yang disebutkan eksplisit.
 
-| Requirement | Status                     | Fitur penanggung jawab | File/route/bukti aktual dan penerimaan yang belum terpenuhi                                                     |
-| ----------- | -------------------------- | ---------------------- | --------------------------------------------------------------------------------------------------------------- |
-| R01         | IN PROGRESS (F00/F01 PASS) | F00,F01,F24            | Fondasi src/config, lib, providers, constants/types/schema dan CI dasar teruji; integrasi/CI DB final tetap F24 |
-| R02         | TODO                       | F02                    | Schema, migration, constraints/indexes dan pgTAP belum ada                                                      |
-| R03         | TODO                       | F03                    | Grants/RLS/field permissions/chat read identity belum diuji; A01/A02/A05/A06/A12/A13                            |
-| R04         | TODO                       | F04                    | DEMO/reference seed, typegen aman dan A10/A11 belum ada                                                         |
-| R05         | TODO                       | F05,F06                | Tokens/font/aset/primitives/shell belum ada; U01/keyboard/reduced motion                                        |
-| R06         | TODO                       | F06,F12,F18            | Cabang/kontak/fulfillment belum diimplementasikan; U03/U10/U13/U14                                              |
-| R07         | TODO                       | F07,F08,F21,F24        | Home/About data publik belum ada; U18                                                                           |
-| R08         | TODO                       | F08,F20                | Contact/FAQ/privacy/policy/CMS belum ada                                                                        |
-| R09         | TODO                       | F09                    | Catalog search/filter/sort/pagination belum ada; U02–U05                                                        |
-| R10         | TODO                       | F10                    | Detail/gallery/SKU/diet/allergen belum ada                                                                      |
-| R11         | TODO                       | F11                    | Bundle rules/12 slices/GF belum ada; U06/A09                                                                    |
-| R12         | TODO                       | F12                    | Persist cart/hydration/branch conflict belum ada; U07–U10/U15                                                   |
-| R13         | TODO                       | F09,F13,F19            | Shared integer pricing/promo/time belum ada; A04/A07                                                            |
-| R14         | TODO                       | F13,F14                | Quote/review/fingerprint/WA/copy belum ada; U11–U15/no DB writes                                                |
-| R15         | TODO                       | F15                    | Admin login/logout/recovery/401/403/session belum ada                                                           |
-| R16         | TODO                       | F16,F17                | Admin CRUD dan rollback aggregate belum ada; A03/A04/A09                                                        |
-| R17         | TODO                       | F17                    | Safe private/public media workflow belum ada                                                                    |
-| R18         | TODO                       | F18                    | Owner branch/hours/prices dan staff field scope belum ada; A05/A06                                              |
-| R19         | TODO                       | F19                    | Promo CRUD/target/date/invalidation belum ada; A07                                                              |
-| R20         | TODO                       | F20                    | Typed CMS/FAQ/consent/B2B belum ada; U18                                                                        |
-| R21         | TODO                       | F21                    | Class/session/admin/public/WA belum ada; U16/U17/A08                                                            |
-| R22         | TODO                       | F22                    | Deterministic assistant/semua read ops/actual grant denial belum ada; U19–U21/A12/A13                           |
-| R23         | NOT SELECTED (opsional)    | F23                    | Provider generatif nonaktif; model/budget/limiter belum dipilih                                                 |
-| R24         | TODO                       | F24                    | SEO/a11y/performance/resilience/privacy belum diukur; A14                                                       |
-| R25         | TODO                       | F25                    | Owner UAT dan audit seluruh R/U/A belum dijalankan                                                              |
-| R26         | TODO                       | F26                    | Staging/runtime/backup-restore/handover belum dijalankan                                                        |
+| Requirement | Status                     | Fitur penanggung jawab | File/route/bukti aktual dan penerimaan yang belum terpenuhi                                                      |
+| ----------- | -------------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| R01         | IN PROGRESS (F00/F01 PASS) | F00,F01,F24            | Fondasi src/config, lib, providers, constants/types/schema dan CI dasar teruji; integrasi/CI DB final tetap F24  |
+| R02         | PASS                       | F02                    | Dua migration, 26 tabel, constraints/indexes/publish validation; 93 pgTAP + real concurrency; role isolation F03 |
+| R03         | TODO                       | F03                    | Grants/RLS/field permissions/chat read identity belum diuji; A01/A02/A05/A06/A12/A13                             |
+| R04         | TODO                       | F04                    | DEMO/reference seed, typegen aman dan A10/A11 belum ada                                                          |
+| R05         | TODO                       | F05,F06                | Tokens/font/aset/primitives/shell belum ada; U01/keyboard/reduced motion                                         |
+| R06         | TODO                       | F06,F12,F18            | Cabang/kontak/fulfillment belum diimplementasikan; U03/U10/U13/U14                                               |
+| R07         | TODO                       | F07,F08,F21,F24        | Home/About data publik belum ada; U18                                                                            |
+| R08         | TODO                       | F08,F20                | Contact/FAQ/privacy/policy/CMS belum ada                                                                         |
+| R09         | TODO                       | F09                    | Catalog search/filter/sort/pagination belum ada; U02–U05                                                         |
+| R10         | TODO                       | F10                    | Detail/gallery/SKU/diet/allergen belum ada                                                                       |
+| R11         | TODO                       | F11                    | Bundle rules/12 slices/GF belum ada; U06/A09                                                                     |
+| R12         | TODO                       | F12                    | Persist cart/hydration/branch conflict belum ada; U07–U10/U15                                                    |
+| R13         | TODO                       | F09,F13,F19            | Shared integer pricing/promo/time belum ada; A04/A07                                                             |
+| R14         | TODO                       | F13,F14                | Quote/review/fingerprint/WA/copy belum ada; U11–U15/no DB writes                                                 |
+| R15         | TODO                       | F15                    | Admin login/logout/recovery/401/403/session belum ada                                                            |
+| R16         | TODO                       | F16,F17                | Admin CRUD dan rollback aggregate belum ada; A03/A04/A09                                                         |
+| R17         | TODO                       | F17                    | Safe private/public media workflow belum ada                                                                     |
+| R18         | TODO                       | F18                    | Owner branch/hours/prices dan staff field scope belum ada; A05/A06                                               |
+| R19         | TODO                       | F19                    | Promo CRUD/target/date/invalidation belum ada; A07                                                               |
+| R20         | TODO                       | F20                    | Typed CMS/FAQ/consent/B2B belum ada; U18                                                                         |
+| R21         | TODO                       | F21                    | Class/session/admin/public/WA belum ada; U16/U17/A08                                                             |
+| R22         | TODO                       | F22                    | Deterministic assistant/semua read ops/actual grant denial belum ada; U19–U21/A12/A13                            |
+| R23         | NOT SELECTED (opsional)    | F23                    | Provider generatif nonaktif; model/budget/limiter belum dipilih                                                  |
+| R24         | TODO                       | F24                    | SEO/a11y/performance/resilience/privacy belum diukur; A14                                                        |
+| R25         | TODO                       | F25                    | Owner UAT dan audit seluruh R/U/A belum dijalankan                                                               |
+| R26         | TODO                       | F26                    | Staging/runtime/backup-restore/handover belum dijalankan                                                         |
 
 ## Aset dan data bisnis
 

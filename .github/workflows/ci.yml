@@ -19,4 +19,19 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
-      # DB/SQL and production-build E2E gates join CI with the local-stack harness.
+      # Full domain E2E joins CI when its fixture harness is available.
+  database:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - name: Start isolated local stack without printing local credentials
+        run: npx supabase start --exclude realtime,storage-api,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor > "$RUNNER_TEMP/supabase-start.log" 2>&1
+      - run: npx supabase db reset --no-seed
+      - run: npm run test:db
+      - if: always()
+        run: npx supabase stop

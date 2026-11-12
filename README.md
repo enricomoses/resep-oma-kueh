@@ -1,6 +1,6 @@
 # Resep Oma Kueh
 
-Next App Router fullstack. Saat ini hanya fondasi F01; storefront/schema/RLS/admin/checkout/Ask Oma belum diimplementasikan.
+Next App Router fullstack. Fondasi F01 dan schema/constraints F02 tersedia; storefront, policy role F03, admin, checkout dan Ask Oma belum diimplementasikan.
 
 ## Development lokal
 
@@ -25,9 +25,9 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-`check` menjalankan lint → typegen/typecheck → Vitest → compiler boundary → unused → format check → build. Playwright menyalakan production server sendiri dan memerlukan build yang baru lulus. Boundary fixture tidak memakai env produksi. `test:db` adalah pgTAP CLI lokal; belum ada schema/suite F01 dan tidak dihitung PASS. Jangan menambahkan argumen remote.
+`check` menjalankan lint → typegen/typecheck → Vitest → compiler boundary → unused → format check → build. Playwright menyalakan production server sendiri dan memerlukan build yang baru lulus. Boundary fixture tidak memakai env produksi. `npm run test:db` menjalankan pgTAP dan concurrency harness terhadap stack bakery lokal yang sudah selesai start. Jangan menambahkan argumen remote. Schema, ERD, publish prerequisites dan prosedur replay lokal ada di [database.md](docs/database.md).
 
-DB lokal memerlukan Docker/Supabase bakery. Inisialisasi konfigurasi/schema dan workflow DB dilanjutkan sesuai F02–F04; tidak ada reset/migration/deployment otomatis dari check/CI.
+DB lokal memerlukan Docker/Supabase bakery. `check` tidak me-reset DB. CI SQL terpisah membuat stack lokal isolated dan replay migrations dengan `--no-seed` sebelum tes; tidak memakai DB produksi. Reset manual lokal menghapus data lokal dan wajib memverifikasi target loopback terlebih dahulu. Seed/generated types F04 serta policy F03 belum selesai.
 
 ## Kontrak dan status
 
