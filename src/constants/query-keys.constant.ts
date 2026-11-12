@@ -10,6 +10,8 @@ export const QUERY_KEYS = {
   CONTENT: (keys: readonly string[]) =>
     ['resep-oma-kueh', 'content', ...keys] as const,
   FAQS: ['resep-oma-kueh', 'faqs'] as const,
+  CART_VALIDATE: (branchId: string | null, signature: string) =>
+    ['resep-oma-kueh', 'cart-validate', branchId, signature] as const,
 } as const;
 
 export const STALE_TIME = { PUBLIC: 60_000 } as const;

@@ -7,4 +7,5 @@ export const API_ENDPOINTS = {
   PRODUCTS: '/products',
   CONTENT: '/content',
   FAQS: '/faqs',
+  CART_VALIDATE: '/cart/validate',
 } as const;

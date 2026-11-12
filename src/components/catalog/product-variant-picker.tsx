@@ -1,16 +1,20 @@
 import { Info } from 'lucide-react';
+import { ActionLink } from '@/components/ui/action-link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Feedback } from '@/components/ui/feedback';
 import { Quantity } from '@/components/ui/quantity';
+import { CART_COPY } from '@/constants/cart.constant';
 import {
   CATALOG_AVAILABILITY_LABELS,
   CATALOG_COPY,
   PRODUCT_DETAIL_COPY,
 } from '@/constants/catalog.constant';
+import { ROUTES } from '@/constants/routes.constant';
 import { formatIdr } from '@/features/catalog/pricing';
 import { useProductConfigurator } from '@/hooks/use-product-configurator';
+import { withBranch } from '@/utils/branch-url';
 import { cn } from '@/utils';
 import type {
   BundleBreakdownItem,
@@ -353,6 +357,19 @@ export function ProductVariantPicker({
                         </ul>
                       </div>
                     ) : null}
+                    <div className="mt-3">
+                      <ActionLink
+                        href={withBranch(
+                          ROUTES.CART,
+                          preparedPayload.branchCode,
+                        )}
+                        variant="secondary"
+                        prefetch={false}
+                        className="w-full text-center text-xs"
+                      >
+                        {CART_COPY.VIEW_CART}
+                      </ActionLink>
+                    </div>
                   </div>
                 </div>
               </Feedback>

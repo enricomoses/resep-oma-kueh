@@ -7,4 +7,6 @@ export const ROUTES = {
   FAQ: '/faq',
   PRIVACY: '/privacy',
   ORDERING_POLICY: '/ordering-policy',
+  CART: '/cart',
+  CHECKOUT: '/checkout',
 } as const;

@@ -17,6 +17,7 @@ import {
 import { useBranches } from '@/hooks/use-branches';
 import { useProductDetail } from '@/hooks/use-catalog';
 import type { InitialCatalogSection } from '@/hooks/use-catalog';
+import { useCartStore } from '@/stores/cart.store';
 import { preparedCartLinePayloadSchema } from '@/validations/catalog.schema';
 import { withBranch } from '@/utils/branch-url';
 import { cn } from '@/utils';
@@ -139,6 +140,13 @@ export function ProductDetailView({
     const parsed = preparedCartLinePayloadSchema.safeParse(rawPayload);
     if (parsed.success) {
       setPreparedPayload(parsed.data);
+      useCartStore.getState().addLine({
+        branchId: activeBranchId,
+        branchCode: activeBranchCode,
+        variantId: activeVariant.id,
+        choiceIds: bundleData?.choiceIds ?? [],
+        quantity,
+      });
     }
   };
 

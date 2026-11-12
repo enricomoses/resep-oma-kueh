@@ -196,3 +196,31 @@
 - **Komponen UI `BundleCustomizer` dan Integrasi `ProductVariantPicker`:**
   - UI merender daftar komponen tetap lengkap dengan badge rasa dan jumlah potong, radiogroup pilihan rasa tambahan per kelompok dengan indikator delta harga, penghitung visual progres potong kue (6/12 -> 9/12 -> 12/12), peringatan pilihan yang belum lengkap, serta banner peringatan kegagalan validasi bila terjadi konflik rasa atau stok.
   - Tombol aksi `Siapkan untuk Keranjang` di `<ProductVariantPicker />` terkunci (disabled) selama konfigurasi belum lengkap 12 potong, dan hanya aktif ketika konfigurasi valid 100%. Payload terstruktur yang disiapkan memuat rincian komposisi 12 potong (`bundleBreakdown`) dan signature kanonik untuk dihubungkan ke persistensi keranjang pada F12.
+
+## D019 — Keranjang belanja guest terpersisten dan revalidasi konflik pergantian cabang (F12, 13 November 2026)
+
+- **Zustand Cart Store Terpersisten Berskema Versi (PRD §4.2, §8.1, §12.3, §27.3):**
+  - Menggunakan storage key `rok_guest_cart_v1` dengan `version: 1` pada `localStorage`.
+  - Persistensi hanya menyimpan identitas non-sensitif: `branchId`, `branchCode`, dan baris keranjang `[{ id, branchId, variantId, choiceIds, quantity, addedAt, updatedAt }]`.
+  - Tidak menyimpan nama pelanggan, nomor telepon/WhatsApp, alamat pengiriman, token otentikasi, maupun harga otoritatif di dalam `localStorage`. Seluruh harga dihitung ulang secara otoritatif di server.
+  - Hidrasi aman SSR (`hasHydrated`) untuk mencegah hydration mismatch antara RSC dan browser client.
+  - Penanganan payload `localStorage` yang korup atau versi yang tidak cocok ditangani secara transparan melalui fungsi migrasi/fallback yang mereset keranjang ke state awal bersih tanpa melempar exception atau memutus rendering UI.
+- **Batas Integritas & Signature Kanonik Baris Keranjang:**
+  - Membatasi keranjang maksimal 15 baris unik (`MAX_DISTINCT_LINES = 15`), kuantitas maksimal 99 unit per baris (`MAX_QTY_PER_LINE = 99`), dan maksimal 12 pilihan opsi unik per baris (`MAX_OPTIONS_PER_LINE = 12`).
+  - Signature kanonik deterministik: `${branchId}:${variantId}:${[...choiceIds].sort().join(',')}`. Baris baru hanya digabungkan kuantitasnya jika cabang, ID varian, dan daftar ID opsi persis sama setelah diurutkan secara leksikografis; jika berbeda, baris baru ditambahkan sebagai baris terpisah.
+- **Validasi Sisi Server Otoritatif (`POST /api/cart/validate`):**
+  - Endpoint `POST /api/cart/validate` menerima daftar baris keranjang dan ID cabang target, memvalidasi boundary input dengan Zod `cartValidationRequestSchema`.
+  - Repository server (`readCartVariantsByIds`) membaca data varian, harga dasar, override cabang, status promosi, dan komponen bundle langsung dari Supabase tanpa self-fetch.
+  - Mengidentifikasi 6 kondisi konflik: `none` (aman), `sold_out` (stok habis di cabang), `not_offered` (tidak ditawarkan di cabang), `archived` (varian dinonaktifkan/dihapus), `component_unavailable` (komponen bundle habis/tidak ditawarkan), dan `price_changed` (harga satuan berubah).
+  - Mengembalikan DTO bertipe `CartValidationResponse` yang memuat nama produk/varian, foto, rincian bundle, breakdown harga per unit, subtotal, total diskon, serta flag `hasBlockingConflicts`.
+- **Alur Konfirmasi Pergantian Cabang (Branch Switch Guard & Conflict Flow):**
+  - Jika keranjang tidak kosong saat pengguna mencoba mengganti cabang (baik via `BranchSelector` maupun perubahan query URL):
+    - Dialog konfirmasi (`SITE_COPY.SWITCH_TITLE`, `SITE_COPY.SWITCH_BODY`) ditampilkan dan pergantian cabang ditahan sementara.
+    - **Batal (Cancel):** Branch selector dikembalikan ke cabang awal, modal ditutup, dan seluruh isi keranjang dipertahankan tanpa perubahan.
+    - **Lanjutkan (Confirm):** Cabang resmi dialihkan, keranjang disinkronkan ke cabang baru, dan seluruh item divalidasi ulang terhadap cabang baru melalui `useCart().revalidateCart()`.
+    - **Tanpa Penghapusan Diam-diam (Never Silently Delete):** Item yang bermasalah di cabang baru (misal stok habis atau tidak ditawarkan) **tidak pernah dihapus otomatis dari keranjang**. Antarmuka keranjang menampilkan penanda peringatan (badge & border merah) dan pesan penjelasan pada baris terkait, serta menonaktifkan tombol checkout sampai pengguna sendiri yang memutuskan untuk menghapus atau mengganti item tersebut.
+- **Antarmuka Keranjang (`/cart`) dan Integrasi Storefront:**
+  - Navbar `CartBadge` terhubung ke state live Zustand dan menampilkan badge jumlah item riil dengan tautan yang dapat diakses ke `/cart`.
+  - Tombol aksi pada halaman detail varian dan bundle customizer terhubung langsung ke aksi `addLine` pada store keranjang.
+  - Halaman `/cart` membedakan dengan jelas antara status pemuatan revalidasi awal (skeleton loading), status keranjang kosong (dengan tombol kembali belanja ke menu cabang), status gagal validasi server (dengan tombol retry), dan status keranjang terisi.
+  - Rincian keranjang menyajikan foto produk, nama produk yang dapat diklik ke detail, label varian, breakdown komposisi 12 potong bundle, kontrol kuantitas (+/-), tombol hapus item, rincian estimasi subtotal dan diskon, catatan bahwa konfirmasi akhir stok dan ongkir dilakukan via WhatsApp, serta tautan menuju `/checkout`.

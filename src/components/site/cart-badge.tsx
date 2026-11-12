@@ -1,29 +1,46 @@
 'use client';
+
+import Link from 'next/link';
 import { ShoppingBag } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { ROUTES } from '@/constants/routes.constant';
+import { BRANCH } from '@/constants/site.constant';
 import { useBranchContext } from '@/providers/branch-provider';
-import { SITE_COPY } from '@/constants/site.constant';
-import { Button } from '@/components/ui/button';
+import { withBranch } from '@/utils/branch-url';
 import { cn } from '@/utils';
 
 interface CartBadgeProps {
   className?: string;
 }
+
 export function CartBadge({ className }: CartBadgeProps) {
   const { cartItemCount } = useBranchContext();
+  const searchParams = useSearchParams();
+  const branchParam = searchParams.get(BRANCH.PARAM);
+  const cartHref = withBranch(ROUTES.CART, branchParam);
+
   return (
-    <Button
-      variant="ghost"
-      disabled
-      className={cn('cart-badge', className)}
+    <Link
+      href={cartHref}
+      className={cn(
+        'ui-btn ui-btn-ghost cart-badge relative inline-flex items-center justify-center font-medium transition-colors',
+        className,
+      )}
       aria-label={
         cartItemCount === 0
-          ? SITE_COPY.CART_EMPTY
-          : `Keranjang · ${cartItemCount} item`
+          ? 'Keranjang belanja kosong · 0 item'
+          : `Keranjang belanja · ${cartItemCount} item`
       }
-      title={SITE_COPY.CART_PENDING}
     >
       <ShoppingBag size={20} aria-hidden="true" />
-      <span aria-hidden="true">{cartItemCount}</span>
-    </Button>
+      <span aria-hidden="true" className="font-semibold">
+        {cartItemCount}
+      </span>
+      <span className="sr-only">
+        {cartItemCount === 0
+          ? 'Keranjang kosong'
+          : `${cartItemCount} item dalam keranjang`}
+      </span>
+    </Link>
   );
 }

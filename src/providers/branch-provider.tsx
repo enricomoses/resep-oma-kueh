@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useStore } from 'zustand';
 import { createBranchStore } from '@/stores/branch.store';
+import { useCartStore } from '@/stores/cart.store';
 import type { BranchInitial, BranchSwitchGuard } from '@/types/branch';
 
 interface BranchContextValue {
@@ -23,12 +24,36 @@ interface BranchProviderProps {
 export function BranchProvider({
   initial,
   children,
-  cartItemCount = 0,
+  cartItemCount,
   beforeBranchChange,
 }: BranchProviderProps) {
   const [store] = useState(createBranchStore);
   const [hydrated, setHydrated] = useState(false);
   const [storageAvailable, setStorageAvailable] = useState(true);
+
+  const liveCartCount = useCartStore((state) =>
+    state.lines.reduce((sum, item) => sum + item.quantity, 0),
+  );
+  const effectiveCartItemCount =
+    cartItemCount !== undefined ? cartItemCount : liveCartCount;
+
+  const defaultGuard: BranchSwitchGuard = (request) => {
+    useCartStore.getState().setBranch(request.nextBranchId);
+    return true;
+  };
+  const effectiveGuard =
+    beforeBranchChange !== undefined
+      ? beforeBranchChange
+      : cartItemCount === undefined
+        ? defaultGuard
+        : undefined;
+
+  useEffect(() => {
+    if (!useCartStore.persist.hasHydrated()) {
+      void useCartStore.persist.rehydrate();
+    }
+  }, []);
+
   useEffect(() => {
     let mounted = true;
     void Promise.resolve(store.persist.rehydrate())
@@ -55,8 +80,8 @@ export function BranchProvider({
         store,
         hydrated,
         storageAvailable,
-        cartItemCount,
-        beforeBranchChange,
+        cartItemCount: effectiveCartItemCount,
+        beforeBranchChange: effectiveGuard,
       }}
     >
       {children}

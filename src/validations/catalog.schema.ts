@@ -6,14 +6,14 @@ import {
 } from '@/constants/catalog.constant';
 import { BRANCH } from '@/constants/site.constant';
 
-const slugSchema = z
+export const slugSchema = z
   .string()
   .trim()
   .min(1)
   .max(120)
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
 
-const plainTextLabelSchema = z.string().trim().min(1).max(200);
+export const plainTextLabelSchema = z.string().trim().min(1).max(200);
 
 const optionalPositiveIntString = z
   .union([
