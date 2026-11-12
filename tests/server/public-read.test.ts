@@ -28,7 +28,7 @@ it('uses a new anonymous SDK context with no browser cookie/admin credentials on
   const second = createPublicReadClient();
   expect(first).not.toBe(second);
   expect((await first.auth.getSession()).data.session).toBeNull();
-  const { data, error } = await first.from('transport_fixture').select('id');
+  const { data, error } = await first.from('products').select('id');
   expect(error).toBeNull();
   expect(data).toEqual([{ id: 'synthetic' }]);
   expect(requests).toHaveLength(1);

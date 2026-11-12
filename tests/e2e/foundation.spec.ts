@@ -8,6 +8,9 @@ test('server-rendered scaffold hydrates with the query provider and no page erro
   await page.goto('/');
   await expect(page).toHaveTitle('Resep Oma Kueh');
   await expect(page.getByRole('main')).toBeVisible();
+  await expect(page.getByLabel('Mode demo lokal')).toContainText(
+    'Data demo — bukan katalog pemesanan aktif',
+  );
   await expect(page.getByRole('heading', { level: 1 })).toContainText(
     'To get started',
   );

@@ -35,3 +35,8 @@ export const ERROR_COPY = {
 } as const satisfies Record<(typeof API_ERROR_CODES)[number], string>;
 
 export const CONFIGURATION_COPY = 'Konfigurasi environment tidak valid';
+
+export const DEMO_COPY = {
+  LABEL: 'Mode demo lokal',
+  MESSAGE: 'Data demo — bukan katalog pemesanan aktif',
+} as const;

@@ -4,7 +4,13 @@ import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
-const container = 'supabase_db_resep-oma-kueh';
+const isolated = process.env.BAKERY_DB_POLICY_TEST === '1';
+if (process.env.BAKERY_DB_POLICY_TEST && !isolated)
+  throw new Error('Invalid isolated-test selector.');
+const projectId = isolated ? 'resep-oma-kueh-policy-test' : 'resep-oma-kueh';
+const container = 'supabase_db_' + projectId;
+const apiPort = isolated ? '55321' : '54321';
+const dbPort = isolated ? '55322' : '54322';
 export const businessTables = [
   'branches',
   'business_hours',
@@ -35,9 +41,15 @@ export const businessTables = [
 ];
 export async function getLocalHarness() {
   const root = new URL('../../', import.meta.url);
-  const config = await readFile(new URL('supabase/config.toml', root), 'utf8');
+  const workdir = isolated
+    ? new URL('test-results/f04-policy-stack/', root)
+    : root;
+  const config = await readFile(
+    new URL('supabase/config.toml', workdir),
+    'utf8',
+  );
   assert.ok(
-    /^project_id = "resep-oma-kueh"$/m.test(config),
+    config.split(/\r?\n/).includes('project_id = "' + projectId + '"'),
     'only the bakery project is allowed',
   );
   let inspected;
@@ -56,6 +68,8 @@ export async function getLocalHarness() {
           fileURLToPath(
             new URL('node_modules/supabase/dist/supabase.js', root),
           ),
+          '--workdir',
+          fileURLToPath(workdir),
           'status',
           '--output',
           'json',
@@ -77,8 +91,8 @@ export async function getLocalHarness() {
     'verified local container required',
   );
   for (const [value, port] of [
-    [status.API_URL, '54321'],
-    [status.DB_URL, '54322'],
+    [status.API_URL, apiPort],
+    [status.DB_URL, dbPort],
   ]) {
     let url;
     try {
@@ -96,7 +110,14 @@ export async function getLocalHarness() {
     status.ANON_KEY && status.SERVICE_ROLE_KEY,
     'local test credentials unavailable',
   );
+  assert.ok(
+    inspected[0].HostConfig.PortBindings['5432/tcp'].some(
+      (binding) => binding.HostPort === dbPort,
+    ),
+    'verified bakery DB port required',
+  );
   return {
+    container,
     url: status.API_URL,
     anonKey: status.ANON_KEY,
     serviceKey: status.SERVICE_ROLE_KEY,

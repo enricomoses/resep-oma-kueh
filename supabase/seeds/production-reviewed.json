@@ -1,0 +1,23 @@
+{
+  "reviewedAt": "2026-11-11",
+  "projectName": "resep-oma-kueh",
+  "branches": [
+    {
+      "code": "surabaya",
+      "name": "Surabaya",
+      "city": "Surabaya",
+      "whatsapp_number": "6281703384308",
+      "address": "Rungkut Asri Tengah V No. 22, Surabaya"
+    },
+    {
+      "code": "bintaro",
+      "name": "Bintaro",
+      "city": "Bintaro",
+      "whatsapp_number": "6285119785194"
+    }
+  ],
+  "contacts": {
+    "email": "resepoma.kueh2@gmail.com",
+    "instagram_url": "https://www.instagram.com/resepoma.kueh/"
+  }
+}

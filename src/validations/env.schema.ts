@@ -37,6 +37,10 @@ const publishableKeySchema = z.string().refine((value) => {
 });
 
 export const publicEnvironmentSchema = z.strictObject({
+  NEXT_PUBLIC_DEMO_MODE: z.preprocess(
+    emptyToUndefined,
+    booleanEnvironmentSchema.default(true),
+  ),
   NEXT_PUBLIC_SITE_URL: z.preprocess(
     emptyToUndefined,
     httpUrlSchema.default(APP.LOCAL_SITE_URL),

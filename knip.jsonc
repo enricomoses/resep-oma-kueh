@@ -1,5 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
+  // Generated CLI output must retain all schema helper exports without hand edits.
+  "ignore": ["src/types/database.ts"],
   "entry": [
     "src/app/**/*.{ts,tsx}",
     "tests/**/*.{test,spec}.{ts,tsx,mjs}",

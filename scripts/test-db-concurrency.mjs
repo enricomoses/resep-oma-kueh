@@ -1,25 +1,8 @@
 import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
-import { readFile } from 'node:fs/promises';
+import { getLocalHarness } from './db/local-harness.mjs';
 
-const container = 'supabase_db_resep-oma-kueh';
-const config = await readFile(
-  new URL('../supabase/config.toml', import.meta.url),
-  'utf8',
-);
-assert.match(config, /^project_id = "resep-oma-kueh"$/m);
-const inspected = spawnSync('docker', ['inspect', container], {
-  encoding: 'utf8',
-});
-assert.equal(inspected.status, 0, 'bakery local container must be available');
-const [local] = JSON.parse(inspected.stdout);
-assert.equal(local.Name, `/${container}`);
-assert.equal(local.State.Running, true);
-assert.ok(
-  local.HostConfig.PortBindings['5432/tcp'].some(
-    (binding) => binding.HostPort === '54322',
-  ),
-);
+const { container } = await getLocalHarness();
 
 // Docker exec addresses only this verified local container; no URI, env key or hosted target.
 const args = [

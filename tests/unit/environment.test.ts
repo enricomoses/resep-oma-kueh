@@ -11,6 +11,16 @@ import {
 } from '@/validations/env.schema';
 
 describe('public environment boundary', () => {
+  it('defaults to a visible demo and parses explicit false', () => {
+    expect(
+      parseEnvironment(publicEnvironmentSchema, {}).NEXT_PUBLIC_DEMO_MODE,
+    ).toBe(true);
+    expect(
+      parseEnvironment(publicEnvironmentSchema, {
+        NEXT_PUBLIC_DEMO_MODE: 'false',
+      }).NEXT_PUBLIC_DEMO_MODE,
+    ).toBe(false);
+  });
   it('redacts unexpected exceptions thrown by custom validation', () => {
     const schema = z.string().transform(() => {
       throw new Error('synthetic-private');

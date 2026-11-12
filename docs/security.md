@@ -51,6 +51,8 @@ Referensi: [Supabase public/private buckets](https://supabase.com/docs/guides/st
 
 ## Harness dan bukti
 
+Sejak F04, `test:db`/`db:test:policies` mengorkestrasi stack disposable `resep-oma-kueh-policy-test`, API/DB 55321/55322, di workspace ignored `test-results/f04-policy-stack`. Hanya migrations/tests yang disalin, seed disabled; reset/stop --no-backup menarget project test itu saja. Dataset normal 54321/54322 tidak di-reset. `BAKERY_DB_POLICY_TEST=1` hanya dipasang pada child harness dengan target whitelist tetap. Raw fixture F03 berikut tetap memerlukan database kosong miliknya sendiri; tidak memaksa pengosongan dataset DEMO normal.
+
 `npm run test:db` menjalankan pgTAP constraints/grant audit, dua-session concurrency F02, lalu `test:db:permissions`. Script permission memakai GoTrue admin createUser untuk empat identitas sintetis (owner, staff dua cabang, Auth tanpa profil), login password nyata dan validasi user JWT melalui GoTrue. Credential acak dan local CLI status disimpan hanya dalam memori; tidak mencetak token/password/response pribadi dan tidak menulis env aplikasi. Host/port/project/container diverifikasi lokal. Test menolak business dataset nonkosong; tidak melakukan reset otomatis.
 
 Fixture `scripts/db/permissions-fixture.sql` adalah synthetic DEMO, bukan seed produksi. Dynamic promo/session dates relatif waktu transaksi hanya untuk menguji policy window saat itu; bukan jadwal bisnis atau fixed seed clock F04. Snapshot seluruh 26 tabel bisnis + Storage buckets/objects dibandingkan sebelum/sesudah read RPC dan seluruh expected-deny batch. Fixture cleanup menghapus hanya ID dataset test, file yang baru dibuat, dan Auth users yang baru dibuat; snapshot bisnis awal harus pulih.

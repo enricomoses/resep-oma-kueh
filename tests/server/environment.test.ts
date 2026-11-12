@@ -14,6 +14,13 @@ import {
 afterEach(() => vi.unstubAllEnvs());
 
 describe('server configuration', () => {
+  it('requires production to explicitly disable demo mode', () => {
+    vi.stubEnv('APP_ENV', 'production');
+    vi.stubEnv('NEXT_PUBLIC_DEMO_MODE', 'true');
+    expect(() => getServerEnvironment()).toThrow('NEXT_PUBLIC_DEMO_MODE');
+    vi.stubEnv('NEXT_PUBLIC_DEMO_MODE', 'false');
+    expect(getServerEnvironment().APP_ENV).toBe('production');
+  });
   it('works with provider disabled and no provider key/model', () => {
     vi.stubEnv('APP_ENV', 'test');
     vi.stubEnv('CHAT_PROVIDER_ENABLED', 'false');

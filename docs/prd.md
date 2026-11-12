@@ -1613,15 +1613,15 @@ Developer/AI agent must be able to clone repository, prepare env, run `supabase 
 
 ### 18.4 Suggested scripts
 
-| Script              | Intended command                                                                | Safety                                                 |
-| ------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| `db:start`          | `supabase start`                                                                | Local stack, Docker required                           |
-| `db:reset:local`    | `supabase db reset --local`                                                     | **Destructive LOCAL only**; warning in docs            |
-| `db:migration:new`  | `supabase migration new <name>`                                                 | Create source-controlled migration                     |
-| `db:types:local`    | `supabase gen types typescript --local --schema public > src/types/database.ts` | Rebuild generated types; PowerShell UTF-8 caveat       |
-| `db:seed:verify`    | `tsx scripts/verify-seed.ts`                                                    | Read counts/check FK/prices/test invariants            |
-| `db:seed:reference` | `tsx scripts/seed-reference.ts --dry-run` default                               | Remote/staging explicit guarded upsert; never reset DB |
-| `db:test:policies`  | local RLS/permission integration suite                                          | Test with anon and two admins                          |
+| Script              | Intended command                                            | Safety                                                 |
+| ------------------- | ----------------------------------------------------------- | ------------------------------------------------------ |
+| `db:start`          | `supabase start`                                            | Local stack, Docker required                           |
+| `db:reset:local`    | `node scripts/db-local.mjs reset`                           | **Destructive LOCAL only**; warning in docs            |
+| `db:migration:new`  | `supabase migration new <name>`                             | Create source-controlled migration                     |
+| `db:types:local`    | `node scripts/db-types-local.mjs`                           | Rebuild generated types; PowerShell UTF-8 caveat       |
+| `db:seed:verify`    | `node scripts/verify-seed.mjs`                              | Read counts/check FK/prices/test invariants            |
+| `db:seed:reference` | `node scripts/seed-reference.mjs` (offline dry-run default) | Remote/staging explicit guarded upsert; never reset DB |
+| `db:test:policies`  | local RLS/permission integration suite                      | Test with anon and two admins                          |
 
 Scripts shown are intended design; implement and verify actual commands, package versions, CLI flags, and Windows PowerShell compatibility. A remote bootstrap script must require explicit target (`--project-ref`) plus confirmation/`--apply`, stop on mismatched environment, prohibit overwriting customer/admin edits silently, and print a dry-run diff first. Do not run remote seeding automatically in CI/deployment.
 
@@ -1639,20 +1639,22 @@ on conflict (code) do update
 
 **Implementation detail:** because `id` can differ on an existing DB, pivot fixtures should look up current IDs by `code/slug` or seed into guaranteed fresh local DB; do not assume hardcoded ID equality after `ON CONFLICT` on an existing row. Repeated seeding must not create duplicate records. In production, business phone updates require owner approval and auditable change rather than general seed overwrites.
 
+CLI 3.1.0 tidak menyediakan --local pada reset/typegen; default local diverifikasi wrapper host/port/project. F04 menyediakan before/after diff private + approved digest + field allowlist untuk reference apply; remote belum dijalankan. Script migration:new di atas tetap contoh CLI opsional, bukan klaim script npm tersedia. Kontrak aktual/counts/clock pada [database.md](database.md).
+
 ### 18.6 Local developer workflow (Windows PowerShell example)
 
 ```powershell
 npm ci
-Copy-Item .env.example .env.local
+if (-not (Test-Path -LiteralPath .env.local)) { Copy-Item -LiteralPath .env.example -Destination .env.local }
 # Set local credentials from `supabase status`; never commit .env.local
-npx supabase start
-npx supabase db reset --local
-npx supabase gen types typescript --local --schema public > src/types/database.ts
+npm run db:start
+npm run db:reset:local
+npm run db:types:local
 npm run db:seed:verify
 npm run dev
 ```
 
-On PowerShell versions with UTF-16 redirection behavior, explicitly write types UTF-8 (PowerShell 7 or appropriate output encoding). CLI local stack requires Docker or compatible runtime. `db reset --local` destroys local data and is not appropriate for production/linked DB. Use remote `db push` migrations only after review, staging tests, backup, and explicit authorization; no automatic remote reset.
+On PowerShell versions with UTF-16 redirection behavior, explicitly write types UTF-8 (PowerShell 7 or appropriate output encoding). CLI local stack requires Docker or compatible runtime. `npm run db:reset:local` destroys local data and is not appropriate for production/linked DB. Use remote `db push` migrations only after review, staging tests, backup, and explicit authorization; no automatic remote reset.
 
 ### 18.7 Seed acceptance
 

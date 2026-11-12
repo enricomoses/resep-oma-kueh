@@ -8,6 +8,7 @@ import { ReactQueryProvider } from '@/providers';
 import { cn } from '@/utils';
 
 import './globals.css';
+import { DemoBanner } from '@/app/_components/demo-banner';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -38,6 +39,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
       )}
     >
       <body className="flex min-h-full flex-col">
+        {getPublicEnvironment().NEXT_PUBLIC_DEMO_MODE ? <DemoBanner /> : null}
         <ReactQueryProvider>{children}</ReactQueryProvider>
       </body>
     </html>

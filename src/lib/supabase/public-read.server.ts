@@ -3,10 +3,11 @@ import 'server-only';
 import { createClient } from '@supabase/supabase-js';
 
 import { getSupabaseEnvironment } from '@/config/environment.client';
+import type { Database } from '@/types/database';
 
 export function createPublicReadClient() {
   const { url, publishableKey } = getSupabaseEnvironment();
-  return createClient(url, publishableKey, {
+  return createClient<Database>(url, publishableKey, {
     auth: {
       persistSession: false,
       autoRefreshToken: false,

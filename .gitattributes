@@ -1,0 +1,2 @@
+# Keep generated UTF-8 schema output stable across Windows/Linux checkouts.
+src/types/database.ts text eol=lf

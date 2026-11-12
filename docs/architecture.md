@@ -44,7 +44,7 @@ Boolean hanya string true/false. Provider disabled tidak memerlukan key/model; a
 
 Bridge mengikuti [Supabase SSR](https://supabase.com/docs/guides/auth/server-side/creating-a-client) dan signature SDK terpasang 0.12.7. Client SSR tidak disimpan global. Dengan Cache Components, ikuti docs Next terpasang, bukan konfigurasi route/cache lama. Semua public DB fetch baseline uncached.
 
-Schema/constraints F02 aktual ada di [database.md](database.md). Generated Database type dilanjutkan F04; tidak ada placeholder types manual. Grants/RLS/RPC/Storage F03 dan tes JWT/REST/SDK nyata dijabarkan di [security.md](security.md). Actual public read adapter diuji tetap anonymous meski diberi session owner; bukti mock F01 hanya kontrak adapter. Endpoint chat/admin belum ada; regression dan audit handler berikutnya tetap wajib.
+Schema/constraints F02 dan data/tooling F04 ada di [database.md](database.md). `src/types/database.ts` dihasilkan CLI schema aktual dan digunakan sebagai generic semua helper Supabase; tidak ada placeholder types manual. Grants/RLS/RPC/Storage F03 dan tes JWT/REST/SDK nyata dijabarkan di [security.md](security.md). Actual public read adapter diuji tetap anonymous meski diberi session owner; bukti mock F01 hanya kontrak adapter. Endpoint chat/admin belum ada; regression dan audit handler berikutnya tetap wajib.
 
 ## Tooling
 
@@ -52,4 +52,4 @@ Vitest memisahkan project unit/DOM/server dengan inheritance eksplisit, pool thr
 
 Playwright smoke memakai next start dari production build lokal port 3100 dan memverifikasi scaffold/provider, bukan storefront/DB. Sejak F02 `test:db` menjalankan pgTAP constraints pada fixture rollback dan dua sesi PostgreSQL nyata untuk serialization/write-skew. Tidak ada passWithNoTests atau tes dummy.
 
-CI dasar memakai npm ci/check tanpa secret/DB produksi. Job SQL memakai isolated local Auth/REST/Storage start/reset tanpa seed, pgTAP/concurrency dan JWT permission harness; hasil remote CI belum diverifikasi. Domain E2E masuk CI ketika harness terkait ada. Knip mengecualikan paket M03 tertentu yang sudah disiapkan owner untuk fitur berikutnya, bukan semua source/export. Hasil aktual dan NOT RUN ada di [implementation-status.md](implementation-status.md).
+CI dasar memakai npm ci/check tanpa secret/DB produksi. Job SQL menjalankan disposable policy stack tanpa seed lalu normal local reset/seed/verify/idempotency/types drift/tooling guards. `db:types:local` buffer UTF-8, format dan temporary rename hanya setelah generator exit 0; tidak menulis partial types. Knip mengecualikan generated types dari unused export pruning karena CLI harus tetap authoritative; source/helper lain tetap diperiksa. Hasil remote CI belum diverifikasi. Domain E2E masuk CI ketika harness terkait ada. Hasil aktual dan NOT RUN ada di [implementation-status.md](implementation-status.md).

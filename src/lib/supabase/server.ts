@@ -5,6 +5,7 @@ import { cookies } from 'next/headers';
 import type { NextResponse } from 'next/server';
 
 import { getSupabaseEnvironment } from '@/config/environment.client';
+import type { Database } from '@/types/database';
 
 import { noStoreFetch } from './no-store-fetch';
 
@@ -12,7 +13,7 @@ export async function createServerAuthClient(response?: NextResponse) {
   const { url, publishableKey } = getSupabaseEnvironment();
   response?.headers.set('Cache-Control', 'private, no-store');
   const cookieStore = await cookies();
-  return createServerClient(url, publishableKey, {
+  return createServerClient<Database>(url, publishableKey, {
     global: { fetch: noStoreFetch },
     cookies: {
       getAll: () => cookieStore.getAll(),

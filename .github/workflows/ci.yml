@@ -29,9 +29,12 @@ jobs:
           node-version-file: .node-version
           cache: npm
       - run: npm ci
-      - name: Start isolated local stack without printing local credentials
-        run: npx supabase start --exclude realtime,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor > "$RUNNER_TEMP/supabase-start.log" 2>&1
-      - run: npx supabase db reset --no-seed
       - run: npm run test:db
+      - run: npm run db:start
+      - run: npm run db:reset:local
+      - run: npm run db:seed:verify
+      - run: npm run test:db:seed
+      - run: npm run db:types:local -- --check
+      - run: npm run test:db:tooling
       - if: always()
         run: npx supabase stop
