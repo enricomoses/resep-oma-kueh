@@ -5,6 +5,8 @@ export const QUERY_KEYS = {
   CATEGORIES: ['resep-oma-kueh', 'categories'] as const,
   CATALOG: (params: Record<string, string | number | null | undefined>) =>
     ['resep-oma-kueh', 'catalog', params] as const,
+  PRODUCT_DETAIL: (slug: string, branch: string | null) =>
+    ['resep-oma-kueh', 'product-detail', slug, branch] as const,
   CONTENT: (keys: readonly string[]) =>
     ['resep-oma-kueh', 'content', ...keys] as const,
   FAQS: ['resep-oma-kueh', 'faqs'] as const,

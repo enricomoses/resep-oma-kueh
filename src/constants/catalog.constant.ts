@@ -23,6 +23,8 @@ export const CATALOG_LIMITS = {
   MAX_CATEGORIES_READ: 64,
   MAX_PRODUCTS_READ: 200,
   MAX_PROMOTIONS_READ: 32,
+  MAX_RELATED_PRODUCTS: 4,
+  MAX_QUANTITY_PER_LINE: 99,
   READ_TIMEOUT_MS: 5000,
   MAX_UNIT_IDR: 1_000_000_000,
   MAX_CART_GROSS_IDR: 1_000_000_000_000,
@@ -125,6 +127,81 @@ export const CATALOG_COPY = {
   PAGINATION_NEXT: 'Berikutnya',
   PAGINATION_INDICATOR: (page: number, totalPages: number) =>
     `Halaman ${page} dari ${totalPages}`,
+} as const;
+
+export const PRODUCT_ALLERGEN_PRESENCE_LABELS = {
+  contains: 'Mengandung',
+  may_contain: 'Dapat mengandung jejak (kontaminasi silang)',
+  not_declared: 'Belum dideklarasikan',
+} as const;
+
+export const PRODUCT_DETAIL_COPY = {
+  BACK_TO_MENU: 'Kembali ke Menu',
+  METADATA_DEFAULT_TITLE: 'Detail Produk | Resep Oma Kueh',
+  METADATA_DEFAULT_DESCRIPTION:
+    'Informasi ukuran, ketersediaan cabang, klaim diet terverifikasi, dan alergen produk Resep Oma Kueh.',
+  GALLERY_REGION_LABEL: 'Galeri foto produk',
+  GALLERY_THUMBNAILS_LABEL: 'Pilih tampilan foto produk',
+  GALLERY_THUMBNAIL_ITEM: (index: number, alt: string) =>
+    `Foto ${index}: ${alt}`,
+  GALLERY_VARIANT_BADGE: 'Foto varian terpilih',
+  VARIANT_SECTION_TITLE: 'Pilih Ukuran / Varian',
+  VARIANT_PICKER_LABEL: 'Pilihan ukuran atau varian produk',
+  VARIANT_SINGLE_NOTE: 'Tersedia dalam 1 ukuran standar untuk produk ini.',
+  VARIANT_BRANCH_REQUIRED_TITLE:
+    'Pilih cabang terlebih dahulu untuk melihat ukuran & harga cabang',
+  VARIANT_BRANCH_REQUIRED_BODY:
+    'Ketersediaan SKU, harga cabang final, dan batas pemesanan mengikuti cabang Surabaya atau Bintaro yang Anda pilih pada bilah atas.',
+  VARIANT_NONE_OFFERED_TITLE: 'Belum ditawarkan di cabang terpilih',
+  VARIANT_NONE_OFFERED_BODY:
+    'Produk ini belum memiliki ukuran yang ditawarkan pada cabang terpilih. Silakan ganti cabang atau hubungi admin WhatsApp.',
+  PRICE_UNIT_LABEL: 'Harga per unit',
+  PRICE_ORIGINAL_LABEL: 'Harga normal',
+  PRICE_SUBTOTAL_LABEL: 'Estimasi subtotal baris',
+  QUANTITY_LABEL: 'Jumlah pesanan',
+  STOCK_CAVEAT_NOTE:
+    'Ketersediaan stok, ongkos kirim, dan total akhir akan dikonfirmasi kembali oleh admin cabang melalui WhatsApp.',
+  UNCONFIRMED_STOCK_WARNING:
+    'Stok varian ini berstatus konfirmasi manual. Admin cabang akan memastikan ketersediaan melalui WhatsApp.',
+  SOLD_OUT_WARNING:
+    'Varian ini sedang habis di cabang terpilih dan tidak dapat dipilih untuk keranjang.',
+  CTA_PREPARE_CART: 'Siapkan untuk Keranjang',
+  CTA_SOLD_OUT: 'Varian Sedang Habis',
+  CTA_BRANCH_REQUIRED: 'Pilih Cabang Terlebih Dahulu',
+  CTA_BUNDLE_NOTICE_TITLE: 'Konfigurasi Paket Mix 12 Potong (Segera di F11)',
+  CTA_BUNDLE_NOTICE_BODY:
+    'Pemilihan 4 rasa terstruktur (2 rasa tetap + 2 pilihan grup) untuk Chiffon Slice Mix diaktifkan pada tahap F11.',
+  CTA_PREPARED_TITLE: 'Pilihan varian siap untuk keranjang (Menunggu F12)',
+  CTA_PREPARED_BODY:
+    'Payload varian dan jumlah telah tervalidasi. Penyimpanan keranjang lokal (localStorage) dan penggabungan baris keranjang diaktifkan pada tahap F12.',
+  FOOD_INFO_TITLE: 'Informasi Makanan, Diet & Alergen SKU',
+  DIETARY_TITLE: 'Klaim Diet Terverifikasi (Per SKU)',
+  DIETARY_EMPTY:
+    'Belum ada klaim diet terverifikasi untuk ukuran/varian ini. Klaim tidak diturunkan otomatis antar-varian.',
+  ALLERGEN_TITLE: 'Informasi Alergen Terverifikasi (Per SKU)',
+  ALLERGEN_EMPTY:
+    'Belum ada deklarasi alergen terverifikasi pada varian ini. Ketiadaan daftar alergen bukan jaminan bebas alergen (free-from).',
+  ALLERGEN_CAVEAT:
+    'Perhatian: Ketiadaan deklarasi alergen bukan jaminan bebas alergen (absence ≠ free-from). Produksi dilakukan di dapur yang juga mengolah susu, telur, gandum/gluten, kacang-kacangan, dan kedelai. Tidak ada klaim bebas alergen universal, medis, atau sertifikasi halal/vegan tanpa verifikasi per SKU.',
+  INGREDIENTS_TITLE: 'Komposisi & Bahan',
+  INGREDIENTS_PENDING:
+    'Rincian komposisi lengkap menunggu konfirmasi owner. Hubungi admin cabang jika Anda memiliki kebutuhan khusus.',
+  STORAGE_TITLE: 'Petunjuk Penyimpanan',
+  STORAGE_PENDING:
+    'Petunjuk penyimpanan spesifik produk ini dapat ditanyakan langsung kepada admin cabang saat konfirmasi pesanan.',
+  BUNDLE_OVERVIEW_TITLE: 'Komposisi Paket Mix pada Varian Ini',
+  BUNDLE_FIXED_LABEL: 'Komponen tetap:',
+  BUNDLE_GROUP_LABEL: 'Grup pilihan rasa:',
+  RELATED_TITLE: 'Rekomendasi dari Seri yang Sama',
+  RELATED_SUBTITLE:
+    'Pilihan lain yang mungkin cocok untuk melengkapi pesanan Anda.',
+  FAQ_HELP_TEXT:
+    'Punya pertanyaan tentang ukuran, penyimpanan, atau konfirmasi WhatsApp?',
+  FAQ_HELP_CTA: 'Baca FAQ & Panduan Pemesanan',
+  ERROR_TITLE: 'Detail produk belum dapat dimuat saat ini',
+  ERROR_BODY:
+    'Terjadi kendala saat menghubungi server katalog. Silakan coba muat ulang halaman atau hubungi admin cabang melalui WhatsApp.',
+  RETRY_CTA: 'Coba muat ulang',
 } as const;
 
 export function serializeCatalogQueryKey(params: CatalogQueryInput) {

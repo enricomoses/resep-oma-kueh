@@ -28,7 +28,7 @@ function build() {
     cwd: fixture,
     env,
     encoding: 'utf8',
-    timeout: 90_000,
+    timeout: 150_000,
   });
   return {
     exit: result.status,

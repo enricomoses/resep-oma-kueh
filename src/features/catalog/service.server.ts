@@ -1,9 +1,12 @@
 import 'server-only';
+import { CATALOG_LIMITS } from '@/constants/catalog.constant';
 import { FOUNDATION_COPY } from '@/constants/ui.constant';
 import { readActiveBranches } from '@/features/branches/repository.server';
 import {
   catalogDirectorySchema,
   catalogQuerySchema,
+  productDetailQuerySchema,
+  productDetailSchema,
   publicCategoryDirectorySchema,
   publicCategorySchema,
 } from '@/validations/catalog.schema';
@@ -11,6 +14,10 @@ import type {
   CatalogDietaryTag,
   CatalogDirectory,
   CatalogProductItem,
+  ProductDetail,
+  ProductDetailAllergen,
+  ProductDetailImage,
+  ProductDetailVariant,
   PublicCategory,
   PublicCategoryDirectory,
 } from '@/types/catalog';
@@ -23,6 +30,8 @@ import {
   readActiveCatalogPromotions,
   readPublishedCatalogProducts,
   readPublishedCategories,
+  readPublishedProductBySlug,
+  resolvePublicProductImageUrl,
 } from './repository.server';
 
 export interface GetCatalogOptions {
@@ -564,5 +573,361 @@ export async function getCatalog(
     totalPages,
     resolvedBranchId,
     appliedFilters,
+  });
+}
+
+export async function getProductDetail(
+  input: unknown,
+  options: GetCatalogOptions = {},
+  signal?: AbortSignal,
+): Promise<ProductDetail | null> {
+  const query = productDetailQuerySchema.parse(input);
+  const now = options.now ?? new Date();
+
+  const [branches, productRow, promotionRows] = await Promise.all([
+    readActiveBranches(signal),
+    readPublishedProductBySlug(query.slug, signal),
+    readActiveCatalogPromotions(signal),
+  ]);
+
+  if (!productRow) return null;
+  if (productRow.status !== 'published' || productRow.needs_owner_review) {
+    return null;
+  }
+  if (
+    productRow.product_type !== 'simple' &&
+    productRow.product_type !== 'variants' &&
+    productRow.product_type !== 'bundle'
+  ) {
+    return null;
+  }
+
+  const categoryLinks = Array.isArray(productRow.product_categories)
+    ? productRow.product_categories
+    : [];
+  const publishedCategories = categoryLinks
+    .filter((link) => link.categories?.status === 'published')
+    .map((link) => ({
+      id: link.categories!.id,
+      name: link.categories!.name,
+      slug: link.categories!.slug,
+      isPrimary: link.is_primary,
+    }))
+    .sort((a, b) => {
+      if (a.isPrimary !== b.isPrimary) return a.isPrimary ? -1 : 1;
+      const nameCmp = a.name.localeCompare(b.name);
+      if (nameCmp !== 0) return nameCmp;
+      return a.id.localeCompare(b.id);
+    });
+
+  if (publishedCategories.length === 0) return null;
+
+  const primaryCategory = publishedCategories[0];
+  const categoryIds = publishedCategories.map((c) => c.id);
+
+  const activeVariants = Array.isArray(productRow.product_variants)
+    ? productRow.product_variants
+        .filter((v) => v.status === 'active')
+        .sort((a, b) => {
+          if (a.sort_order !== b.sort_order) return a.sort_order - b.sort_order;
+          if (a.is_default !== b.is_default) return a.is_default ? -1 : 1;
+          return a.id.localeCompare(b.id);
+        })
+    : [];
+
+  if (activeVariants.length === 0) return null;
+
+  const activeVariantIdSet = new Set(activeVariants.map((v) => v.id));
+
+  const resolvedBranch = query.branch
+    ? (branches.find((b) => b.code === query.branch) ?? null)
+    : null;
+  const resolvedBranchId = resolvedBranch?.id ?? null;
+  const resolvedBranchCode = resolvedBranch?.code ?? null;
+
+  const promotions: PricingPromotionInput[] = promotionRows
+    .filter(
+      (row) =>
+        (row.discount_type === 'percentage' || row.discount_type === 'fixed') &&
+        (row.scope === 'all' ||
+          row.scope === 'category' ||
+          row.scope === 'product' ||
+          row.scope === 'variant') &&
+        (row.status === 'draft' ||
+          row.status === 'published' ||
+          row.status === 'archived'),
+    )
+    .map((row) => ({
+      id: row.id,
+      title: row.title,
+      slug: row.slug,
+      discountType: row.discount_type as 'percentage' | 'fixed',
+      discountValue: Number(row.discount_value),
+      minSpendIdr: row.min_spend_idr,
+      maxDiscountIdr: row.max_discount_idr,
+      scope: row.scope as 'all' | 'category' | 'product' | 'variant',
+      startsAt: row.starts_at,
+      endsAt: row.ends_at,
+      status: row.status as 'draft' | 'published' | 'archived',
+      isEnabled: row.is_enabled,
+      isStackable: row.is_stackable,
+      priority: row.priority,
+      branchIds: Array.isArray(row.promotion_branches)
+        ? row.promotion_branches.map((item) => item.branch_id)
+        : [],
+      categoryIds: Array.isArray(row.promotion_categories)
+        ? row.promotion_categories.map((item) => item.category_id)
+        : [],
+      productIds: Array.isArray(row.promotion_products)
+        ? row.promotion_products.map((item) => item.product_id)
+        : [],
+      variantIds: Array.isArray(row.promotion_variants)
+        ? row.promotion_variants.map((item) => item.variant_id)
+        : [],
+    }));
+
+  const rawImages = Array.isArray(productRow.product_images)
+    ? productRow.product_images
+    : [];
+  const images: ProductDetailImage[] = rawImages
+    .filter(
+      (img) =>
+        img.is_approved &&
+        img.storage_bucket === 'product-images' &&
+        Boolean(img.alt_text?.trim()) &&
+        (img.variant_id === null || activeVariantIdSet.has(img.variant_id)),
+    )
+    .sort((a, b) => {
+      if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
+      if (a.sort_order !== b.sort_order) return a.sort_order - b.sort_order;
+      return a.id.localeCompare(b.id);
+    })
+    .map((img) => ({
+      id: img.id,
+      variantId: img.variant_id,
+      altText: img.alt_text!.trim(),
+      isPrimary: img.is_primary,
+      sortOrder: img.sort_order,
+      publicUrl: resolvePublicProductImageUrl(
+        img.storage_bucket,
+        img.storage_path,
+      ),
+    }));
+
+  const offeredVariants: ProductDetailVariant[] = [];
+
+  if (resolvedBranchId !== null) {
+    for (const variant of activeVariants) {
+      const offerRows = Array.isArray(variant.branch_variant_offers)
+        ? variant.branch_variant_offers
+        : [];
+      const branchOffer = offerRows.find(
+        (o) => o.branch_id === resolvedBranchId && o.is_listed,
+      );
+      if (!branchOffer) continue;
+
+      const rawGroups = Array.isArray(variant.option_groups)
+        ? variant.option_groups
+        : [];
+      const optionGroupsForPricing = rawGroups.map((group) => ({
+        id: group.id,
+        minSelect: group.min_select,
+        maxSelect: group.max_select,
+        isRequired: group.is_required,
+        choices: Array.isArray(group.option_choices)
+          ? group.option_choices.map((choice) => ({
+              id: choice.id,
+              priceDeltaIdr: choice.price_delta_idr,
+              isActive: choice.is_active,
+            }))
+          : [],
+      }));
+
+      const pricing = computeVariantEffectivePrice(
+        {
+          basePriceIdr: variant.base_price_idr,
+          priceOverrideIdr: branchOffer.price_override_idr,
+          optionGroups: optionGroupsForPricing,
+        },
+        {
+          branchId: resolvedBranchId,
+          productId: productRow.id,
+          variantId: variant.id,
+          categoryIds,
+        },
+        promotions,
+        now,
+      );
+
+      if (!pricing) continue;
+
+      const availabilityStatus = normalizeOfferAvailability(
+        branchOffer.availability_status,
+        branchOffer.stock_quantity,
+      );
+
+      const tagRows = Array.isArray(variant.variant_dietary_tags)
+        ? variant.variant_dietary_tags
+        : [];
+      const verifiedDietaryTags: CatalogDietaryTag[] = tagRows
+        .filter(
+          (t) =>
+            t.verification_status === 'verified' &&
+            Boolean(t.verified_at) &&
+            Boolean(t.dietary_tags),
+        )
+        .map((t) => ({
+          slug: t.dietary_tags!.slug,
+          name: t.dietary_tags!.name,
+        }))
+        .sort((a, b) => a.slug.localeCompare(b.slug));
+
+      const allergenRows = Array.isArray(variant.variant_allergens)
+        ? variant.variant_allergens
+        : [];
+      const verifiedAllergens: ProductDetailAllergen[] = allergenRows
+        .filter(
+          (a) =>
+            Boolean(a.verified_at) &&
+            Boolean(a.allergens) &&
+            (a.presence === 'contains' ||
+              a.presence === 'may_contain' ||
+              a.presence === 'not_declared'),
+        )
+        .map((a) => ({
+          slug: a.allergens!.slug,
+          name: a.allergens!.name,
+          presence: a.presence as 'contains' | 'may_contain' | 'not_declared',
+        }))
+        .sort((a, b) => a.slug.localeCompare(b.slug));
+
+      const optionGroups = rawGroups
+        .slice()
+        .sort((a, b) => {
+          if (a.sort_order !== b.sort_order) return a.sort_order - b.sort_order;
+          return a.id.localeCompare(b.id);
+        })
+        .map((group) => ({
+          id: group.id,
+          name: group.name,
+          minSelect: group.min_select,
+          maxSelect: group.max_select,
+          quantityPerSelection: group.quantity_per_selection,
+          isRequired: group.is_required,
+          sortOrder: group.sort_order,
+          choices: (Array.isArray(group.option_choices)
+            ? group.option_choices
+            : []
+          )
+            .filter((choice) => choice.is_active)
+            .sort((a, b) => {
+              if (a.sort_order !== b.sort_order) {
+                return a.sort_order - b.sort_order;
+              }
+              return a.id.localeCompare(b.id);
+            })
+            .map((choice) => ({
+              id: choice.id,
+              label: choice.label,
+              priceDeltaIdr: choice.price_delta_idr,
+              componentVariantId: choice.component_variant_id,
+              sortOrder: choice.sort_order,
+            })),
+        }));
+
+      const rawFixed = Array.isArray(variant.bundle_fixed_components)
+        ? variant.bundle_fixed_components
+        : [];
+      const fixedComponents = rawFixed
+        .slice()
+        .sort((a, b) => {
+          if (a.sort_order !== b.sort_order) return a.sort_order - b.sort_order;
+          return a.id.localeCompare(b.id);
+        })
+        .map((fixed) => ({
+          id: fixed.id,
+          componentSlot: fixed.component_slot,
+          componentVariantId: fixed.component_variant_id,
+          quantity: fixed.quantity,
+          sortOrder: fixed.sort_order,
+        }));
+
+      const clampedMaxQty = Math.max(
+        1,
+        Math.min(
+          variant.max_quantity_per_order,
+          CATALOG_LIMITS.MAX_QUANTITY_PER_LINE,
+        ),
+      );
+
+      offeredVariants.push({
+        id: variant.id,
+        sku: variant.sku,
+        name: variant.name,
+        sizeLabel: variant.size_label,
+        isDefault: variant.is_default,
+        sortOrder: variant.sort_order,
+        maxQuantityPerOrder: clampedMaxQty,
+        bundleRecipe: variant.bundle_recipe,
+        bundleUnitsTotal: variant.bundle_units_total,
+        bundleRulesVerified: variant.bundle_rules_verified,
+        availabilityStatus,
+        stockQuantity: branchOffer.stock_quantity,
+        baseOrOverrideIdr: pricing.baseOrOverrideIdr,
+        minOptionDeltaIdr: pricing.minOptionDeltaIdr,
+        unitGrossIdr: pricing.unitGrossIdr,
+        unconditionalDiscountIdr: pricing.unconditionalDiscountIdr,
+        effectivePriceIdr: pricing.effectivePriceIdr,
+        appliedPromotion: pricing.appliedPromotion,
+        conditionalPromotion: pricing.conditionalPromotion,
+        verifiedDietaryTags,
+        verifiedAllergens,
+        optionGroups,
+        fixedComponents,
+      });
+    }
+  }
+
+  // Fetch related products from the same primary category (excluding current product)
+  const relatedCatalog = await getCatalog(
+    {
+      branch: resolvedBranchCode ?? undefined,
+      category: primaryCategory.slug,
+      sort: 'featured',
+      page: 1,
+      limit: CATALOG_LIMITS.MAX_RELATED_PRODUCTS + 2,
+    },
+    options,
+    signal,
+  );
+
+  const relatedProducts = relatedCatalog.items
+    .filter((item) => item.id !== productRow.id)
+    .slice(0, CATALOG_LIMITS.MAX_RELATED_PRODUCTS);
+
+  return productDetailSchema.parse({
+    id: productRow.id,
+    name: productRow.name,
+    slug: productRow.slug,
+    shortDescription: productRow.short_description,
+    description: productRow.description,
+    ingredientsInfo: productRow.ingredients_info,
+    storageInstructions: productRow.storage_instructions,
+    productType: productRow.product_type,
+    isFeatured: productRow.is_featured,
+    isBestSeller: productRow.is_best_seller,
+    isNew: productRow.is_new,
+    primaryCategory: {
+      id: primaryCategory.id,
+      name: primaryCategory.name,
+      slug: primaryCategory.slug,
+    },
+    categories: publishedCategories,
+    images,
+    resolvedBranchId,
+    resolvedBranchCode,
+    activeVariantCount: activeVariants.length,
+    offeredVariants,
+    relatedProducts,
   });
 }

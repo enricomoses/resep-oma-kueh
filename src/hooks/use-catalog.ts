@@ -2,10 +2,15 @@
 import { useQuery } from '@tanstack/react-query';
 import { serializeCatalogQueryKey } from '@/constants/catalog.constant';
 import { QUERY_KEYS, STALE_TIME } from '@/constants/query-keys.constant';
-import { readCatalog, readCategories } from '@/services/catalog.service';
+import {
+  readCatalog,
+  readCategories,
+  readProductDetail,
+} from '@/services/catalog.service';
 import type {
   CatalogDirectory,
   CatalogQueryInput,
+  ProductDetail,
   PublicCategoryDirectory,
 } from '@/types/catalog';
 
@@ -54,5 +59,28 @@ export function useCatalog(
             requestId: 'server-initial-catalog',
           }
         : undefined,
+  });
+}
+
+export function useProductDetail(
+  slug: string,
+  branch: string | null,
+  initial?: InitialCatalogSection<ProductDetail>,
+) {
+  const isInitialMatch =
+    initial?.status === 'success' &&
+    (initial.data.resolvedBranchCode ?? null) === (branch ?? null);
+
+  return useQuery({
+    queryKey: QUERY_KEYS.PRODUCT_DETAIL(slug, branch),
+    queryFn: ({ signal }) => readProductDetail(slug, branch, signal),
+    staleTime: STALE_TIME.PUBLIC,
+    initialData: isInitialMatch
+      ? {
+          ok: true as const,
+          data: initial.data,
+          requestId: `server-initial-product-${slug}`,
+        }
+      : undefined,
   });
 }

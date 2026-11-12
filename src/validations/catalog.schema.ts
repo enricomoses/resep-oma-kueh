@@ -179,3 +179,162 @@ export const catalogDirectorySchema = z
     appliedFilters: catalogAppliedFiltersSchema,
   })
   .strict();
+
+export const productDetailQuerySchema = z
+  .object({
+    slug: slugSchema,
+    branch: z
+      .string()
+      .trim()
+      .min(1)
+      .max(BRANCH.MAX_CODE_LENGTH)
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+      .optional(),
+  })
+  .strict();
+
+export const productDetailImageSchema = z
+  .object({
+    id: z.uuid(),
+    variantId: z.uuid().nullable(),
+    altText: plainTextLabelSchema,
+    isPrimary: z.boolean(),
+    sortOrder: z.number().int(),
+    publicUrl: z.string().url().nullable(),
+  })
+  .strict();
+
+export const productDetailAllergenSchema = z
+  .object({
+    slug: slugSchema,
+    name: plainTextLabelSchema,
+    presence: z.enum(['contains', 'may_contain', 'not_declared']),
+  })
+  .strict();
+
+const productDetailOptionChoiceSchema = z
+  .object({
+    id: z.uuid(),
+    label: plainTextLabelSchema,
+    priceDeltaIdr: z.number().int().nonnegative(),
+    componentVariantId: z.uuid().nullable(),
+    sortOrder: z.number().int(),
+  })
+  .strict();
+
+const productDetailOptionGroupSchema = z
+  .object({
+    id: z.uuid(),
+    name: plainTextLabelSchema,
+    minSelect: z.number().int().nonnegative(),
+    maxSelect: z.number().int().nonnegative(),
+    quantityPerSelection: z.number().int().positive(),
+    isRequired: z.boolean(),
+    sortOrder: z.number().int(),
+    choices: z.array(productDetailOptionChoiceSchema).max(32),
+  })
+  .strict();
+
+const productDetailFixedComponentSchema = z
+  .object({
+    id: z.uuid(),
+    componentSlot: plainTextLabelSchema,
+    componentVariantId: z.uuid(),
+    quantity: z.number().int().positive(),
+    sortOrder: z.number().int(),
+  })
+  .strict();
+
+export const productDetailVariantSchema = z
+  .object({
+    id: z.uuid(),
+    sku: z.string().trim().min(1).max(120),
+    name: plainTextLabelSchema,
+    sizeLabel: plainTextLabelSchema.nullable(),
+    isDefault: z.boolean(),
+    sortOrder: z.number().int(),
+    maxQuantityPerOrder: z
+      .number()
+      .int()
+      .min(1)
+      .max(CATALOG_LIMITS.MAX_QUANTITY_PER_LINE),
+    bundleRecipe: z.string().max(120).nullable(),
+    bundleUnitsTotal: z.number().int().positive().nullable(),
+    bundleRulesVerified: z.boolean(),
+    availabilityStatus: z.enum(CATALOG_AVAILABILITY),
+    stockQuantity: z.number().int().nonnegative().nullable(),
+    baseOrOverrideIdr: z.number().int().nonnegative(),
+    minOptionDeltaIdr: z.number().int().nonnegative(),
+    unitGrossIdr: z.number().int().nonnegative(),
+    unconditionalDiscountIdr: z.number().int().nonnegative(),
+    effectivePriceIdr: z.number().int().nonnegative(),
+    appliedPromotion: catalogPromotionBadgeSchema.nullable(),
+    conditionalPromotion: catalogPromotionBadgeSchema.nullable(),
+    verifiedDietaryTags: z.array(catalogDietaryTagSchema).max(16),
+    verifiedAllergens: z.array(productDetailAllergenSchema).max(32),
+    optionGroups: z.array(productDetailOptionGroupSchema).max(16),
+    fixedComponents: z.array(productDetailFixedComponentSchema).max(16),
+  })
+  .strict();
+
+export const productDetailSchema = z
+  .object({
+    id: z.uuid(),
+    name: plainTextLabelSchema,
+    slug: slugSchema,
+    shortDescription: z.string().max(500).nullable(),
+    description: z.string().max(2000).nullable(),
+    ingredientsInfo: z.string().max(2000).nullable(),
+    storageInstructions: z.string().max(2000).nullable(),
+    productType: z.enum(['simple', 'variants', 'bundle']),
+    isFeatured: z.boolean(),
+    isBestSeller: z.boolean(),
+    isNew: z.boolean(),
+    primaryCategory: z
+      .object({
+        id: z.uuid(),
+        name: plainTextLabelSchema,
+        slug: slugSchema,
+      })
+      .strict(),
+    categories: z
+      .array(
+        z
+          .object({
+            id: z.uuid(),
+            name: plainTextLabelSchema,
+            slug: slugSchema,
+            isPrimary: z.boolean(),
+          })
+          .strict(),
+      )
+      .max(16),
+    images: z.array(productDetailImageSchema).max(24),
+    resolvedBranchId: z.uuid().nullable(),
+    resolvedBranchCode: slugSchema.nullable(),
+    activeVariantCount: z.number().int().positive(),
+    offeredVariants: z.array(productDetailVariantSchema).max(32),
+    relatedProducts: z
+      .array(catalogProductItemSchema)
+      .max(CATALOG_LIMITS.MAX_RELATED_PRODUCTS),
+  })
+  .strict();
+
+export const preparedCartLinePayloadSchema = z
+  .object({
+    branchId: z.uuid(),
+    branchCode: slugSchema,
+    productId: z.uuid(),
+    productSlug: slugSchema,
+    productName: plainTextLabelSchema,
+    productType: z.enum(['simple', 'variants', 'bundle']),
+    variantId: z.uuid(),
+    sku: z.string().trim().min(1).max(120),
+    variantName: plainTextLabelSchema,
+    sizeLabel: plainTextLabelSchema.nullable(),
+    quantity: z.number().int().min(1).max(CATALOG_LIMITS.MAX_QUANTITY_PER_LINE),
+    choiceIds: z.array(z.uuid()).max(12),
+    estimatedUnitPriceIdr: z.number().int().nonnegative(),
+    estimatedSubtotalIdr: z.number().int().nonnegative(),
+  })
+  .strict();

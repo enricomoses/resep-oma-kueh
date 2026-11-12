@@ -2,6 +2,7 @@ import { API_ENDPOINTS } from '@/constants/endpoint.constant';
 import { requestApi } from '@/lib/axios';
 import {
   catalogDirectorySchema,
+  productDetailSchema,
   publicCategoryDirectorySchema,
 } from '@/validations/catalog.schema';
 import type { CatalogQueryInput } from '@/types/catalog';
@@ -36,5 +37,21 @@ export function readCatalog(
       signal,
     },
     catalogDirectorySchema,
+  );
+}
+
+export function readProductDetail(
+  slug: string,
+  branch?: string | null,
+  signal?: AbortSignal,
+) {
+  return requestApi(
+    {
+      url: `${API_ENDPOINTS.PRODUCTS}/${encodeURIComponent(slug)}`,
+      method: 'GET',
+      params: branch ? { branch } : undefined,
+      signal,
+    },
+    productDetailSchema,
   );
 }

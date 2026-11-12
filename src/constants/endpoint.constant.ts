@@ -4,6 +4,7 @@ export const API_ENDPOINTS = {
   BRANCHES: '/branches',
   CATEGORIES: '/categories',
   CATALOG: '/catalog',
+  PRODUCTS: '/products',
   CONTENT: '/content',
   FAQS: '/faqs',
 } as const;

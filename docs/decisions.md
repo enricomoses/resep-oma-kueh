@@ -146,3 +146,27 @@
   - Halaman `/menu` (`src/app/(site)/menu/page.tsx`) meneruskan DTO SSR awal beserta key ternormalisasi (`serializeCatalogQueryKey` di `src/constants/catalog.constant.ts`) ke `<MenuView />` sehingga hidrasi awal tidak memicu double fetch di browser.
   - Tanpa cabang terpilih, `/menu` tetap dapat dijelajahi (seri, deskripsi, label diet terverifikasi) tanpa menampilkan harga cabang final atau aksi tambah ke keranjang.
   - Home (`src/features/home/service.server.ts` & `src/components/home/featured-bakes-section.tsx`) kini menggunakan `getCategories()` untuk `Shop by Series` dan `computeVariantEffectivePrice` untuk menampilkan harga mulai per cabang (`Mulai dari Rp...`) pada `Featured Bakes` ketika cabang dipilih.
+
+## D017 — Halaman detail produk, varian cabang, dan informasi pangan terverifikasi (F10, 12 November 2026)
+
+- **Thin `/menu/[slug]` async page dan metadata tanpa kebocoran draft:**
+  - Route `/menu/[slug]` mematuhi Next.js 16 App Router dengan melakukan `await params` dan `await searchParams`.
+  - Fungsi `generateMetadata` memanggil `await connection()` dan membaca proyeksi publik ringan `readPublishedProductBySlug(slug)` langsung dari repository server, menghasilkan metadata `title`, `description`, `openGraph`, dan `twitter` berbasis data produk yang dipublikasikan. Jika produk tidak ditemukan atau masih berstatus draft, metadata mengembalikan fallback generik tanpa membocorkan nama/deskripsi produk draft ke crawler atau pencari publik.
+  - Halaman RSC memanggil `getProductDetail(...)` langsung tanpa self-fetch `/api`. Upstream database error menampilkan antarmuka kegagalan dengan tombol coba lagi (retry), bukan menyamarkannya menjadi `404 Not Found`. `notFound()` hanya dipicu jika produk berstatus bukan `published` atau tidak ditemukan di database.
+- **Varian cabang aktif, kalkulator harga shared, dan status stok jujur:**
+  - Detail produk menampilkan opsi ukuran dan varian langsung dari database (`product_variants`), bukan asumsi universal hardcode.
+  - Untuk cabang yang dipilih, varian memuat harga dasar, penimpa harga cabang (`price_override_idr`), opsi wajib termurah, serta promosi tanpa syarat aktif melalui kalkulator harga murni bersama (`computeVariantEffectivePrice` dari `src/features/catalog/pricing.ts`).
+  - Bila cabang belum dipilih, antarmuka berada dalam mode penjelajahan (browse mode) dengan pemberitahuan ramah bahwa pemilihan cabang diperlukan untuk melihat ketersediaan stok aktual dan menambahkan ke keranjang.
+  - Varian yang tidak ditawarkan cabang (`is_offered === false`) disembunyikan dari pilihan cabang tersebut; varian dengan stok habis dinonaktifkan dengan badge `Stok Habis`; varian dengan status `unconfirmed` menampilkan peringatan stok belum terkonfirmasi (`Perlu konfirmasi stok cabang saat checkout`); dan seluruh varian menyertakan catatan ketersediaan cabang (`Stok dapat berubah sewaktu-waktu`).
+- **Galeri responsif dan pencocokan foto varian accessible:**
+  - `ProductGallery` merender foto produk utama dengan optimasi `next/image` (`sizes="(max-width: 768px) 100vw, 50vw"`, `aspect-ratio: 4/3`, `priority`).
+  - Ketika varian dengan `image_url` terpilih dipilih pengguna, galeri otomatis menampilkan foto varian yang sesuai disertai badge `Foto varian terpilih`.
+  - Strip thumbnail dapat diakses via keyboard (navigasi tombol, state `aria-current="true"`, dan fokus visual jelas).
+- **Informasi pangan terverifikasi dan sanggahan alergen (PRD §15):**
+  - Hanya menampilkan klaim diet (`variant_dietary_tags`) yang berstatus `verification_status === 'verified'` dan telah disetujui (`verified_at !== null`).
+  - Tidak menampilkan klaim vegan/halal palsu atau spekulatif.
+  - Komponen `ProductFoodInfo` secara tegas menyertakan sanggahan alergen (`ALLERGEN_CAVEAT`): ketiadaan label alergen bukan jaminan produk bebas kontaminasi silang (cross-contact), karena seluruh produk diproduksi di dapur bakery bersama.
+  - Petunjuk penyimpanan (`storage_instructions`) dan bahan utama (`ingredients_summary`) ditampilkan sesuai data terverifikasi.
+- **Kesiapan CTA Keranjang (Wiring F10 menuju F12):**
+  - Mengingat persistensi keranjang (`localStorage`, sinkronisasi cabang, drawer) dan penanganan konflik baru diimplementasikan pada **F12** serta bundle rules pada **F11**, tombol CTA `+ Keranjang` memvalidasi dan menyiapkan payload bertipe `PreparedCartLinePayload` (tervalidasi melalui `preparedCartLinePayloadSchema`).
+  - Setelah tombol ditekan, pengguna menerima umpan balik visual terstruktur yang merinci varian yang dipilih, jumlah, harga satuan efektif, subtotal, dan catatan integrasi F12. Hal ini memastikan tombol tidak tampak berhasil tanpa melakukan aksi apa pun, sembari tidak mengklaim fitur keranjang penuh telah selesai sebelum F12.

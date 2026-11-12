@@ -54,3 +54,39 @@ export async function readActiveCatalogPromotions(signal?: AbortSignal) {
   if (error) throw new Error('Catalog promotions read unavailable');
   return data;
 }
+
+export async function readPublishedProductBySlug(
+  slug: string,
+  signal?: AbortSignal,
+) {
+  const client = createPublicReadClient();
+  const { data, error } = await client
+    .from('products')
+    .select(
+      'id,name,slug,short_description,description,ingredients_info,storage_instructions,product_type,is_featured,is_best_seller,is_new,status,needs_owner_review,sort_order,created_at,product_categories(category_id,is_primary,categories(id,name,slug,status)),product_images(id,variant_id,storage_bucket,storage_path,alt_text,is_approved,is_primary,sort_order),product_variants(id,sku,name,size_label,base_price_idr,status,sort_order,is_default,max_quantity_per_order,bundle_recipe,bundle_units_total,bundle_rules_verified,branch_variant_offers(branch_id,is_listed,availability_status,stock_quantity,price_override_idr),option_groups(id,name,min_select,max_select,quantity_per_selection,is_required,sort_order,option_choices(id,label,price_delta_idr,component_variant_id,is_active,sort_order)),bundle_fixed_components!bundle_fixed_components_bundle_variant_id_fkey(id,component_slot,component_variant_id,quantity,sort_order),variant_dietary_tags(dietary_tag_id,verification_status,verified_at,dietary_tags(id,slug,name)),variant_allergens(allergen_id,presence,verified_at,allergens(id,slug,name)))',
+    )
+    .eq('slug', slug)
+    .eq('status', 'published')
+    .retry(false)
+    .abortSignal(withDeadline(signal))
+    .maybeSingle();
+  if (error) throw new Error('Product detail read unavailable');
+  return data;
+}
+
+export function resolvePublicProductImageUrl(
+  storageBucket: string,
+  storagePath: string,
+): string | null {
+  if (storageBucket !== 'product-images' || !storagePath.trim()) {
+    return null;
+  }
+  try {
+    const { data } = createPublicReadClient()
+      .storage.from(storageBucket)
+      .getPublicUrl(storagePath);
+    return data.publicUrl || null;
+  } catch {
+    return null;
+  }
+}
