@@ -9,10 +9,7 @@ export function DemoBanner({ className }: DemoBannerProps) {
   return (
     <aside
       aria-label={DEMO_COPY.LABEL}
-      className={cn(
-        'border-b border-current px-4 py-3 text-center text-sm',
-        className,
-      )}
+      className={cn('demo-banner', className)}
     >
       {DEMO_COPY.MESSAGE}
     </aside>

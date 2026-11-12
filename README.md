@@ -53,5 +53,6 @@ Isi URL dan publishable key **lokal** sendiri pada env aplikasi saat UI mulai me
 
 - [PRD](docs/prd.md) dan [execution guide](docs/execution-guide.md)
 - [Arsitektur aktual](docs/architecture.md)
+- [Fondasi visual dan API komponen F05](DESIGN.md)
 - [Status dan bukti pengujian](docs/implementation-status.md)
 - [Keputusan](docs/decisions.md)

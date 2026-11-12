@@ -1,1 +1,1 @@
-export { ScaffoldView } from './scaffold-view';
+export { FoundationView } from './foundation-view';

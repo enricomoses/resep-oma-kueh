@@ -92,3 +92,12 @@
 - **Checkout:** generated types memakai atribut Git LF agar schema regeneration --check tetap stabil pada Windows/Linux; file lama tetap utuh saat generator gagal. Tidak mengubah kebijakan line endings seluruh repository.
 - **Policy suite:** F03 raw fixture tetap clean. Outer runner memakai disposable project/ports 55321/55322, copy migrations/tests tanpa seed, dan membersihkan hanya stack test. Normal DEMO/edit owner 54321/54322 dipertahankan; tidak sementara menghapus/mengembalikan dataset user untuk mendapat PASS.
 - **Production reference:** manifest awal hanya confirmed branches/contact facts. Default offline dry-run; remote read/apply tidak dijalankan. Future explicit target/name check, private before/after review file, digest/ref confirmation dan update-field allowlist + expectedUpdatedAt/atomic rollback diperlukan. Existing owner status/fulfillment/pricing/role tidak masuk update allowlist.
+
+## D012 — F05 fondasi visual terbatas dan native modal
+
+- **Tanggal:** 12 November 2026 (Asia/Jakarta).
+- **Identitas:** menerapkan konsep yang sudah dipatok PRD, bukan memilih ulang brand. Hex hanya globals.css; cream/burgundy sementara belum logo-identical. Next font self-host Plus Jakarta Sans, Fraunces dan Barlow Condensed terbatas campaign/DEMO. Tidak menambah paket/shadcn atau memakai aset BEM/Fina.
+- **Scope:** root RSC tetap server dan page tipis; hanya komposisi pratinjau. Komponen digunakan root atau fixture test-only Vite loopback, tanpa route playground produksi. Tidak membuat navigasi/cabang F06 atau katalog/Home domain F07. Container query menjaga kolom editorial turun ketika ruang efektif menyempit pada zoom.
+- **Modal:** native showModal untuk top layer/inert dan semantics browser; explicit endpoint wrap Tab melengkapi browser yang mengalihkan fokus ke chrome. Hook mengembalikan fokus, menyimpan overflow sebelumnya, memakai reference-counted locks untuk panel bertumpuk dan cleanup unmount. Tidak meniru aria-modal atau memakai timeout animasi.
+- **Aset:** karena logo/foto asli berizin belum ada, root memakai bidang berlabel DEMO secara eksplisit, bukan foto sintetis. Release tetap membutuhkan aset dan owner review. Tidak ada klaim harga/stok/cerita/testimoni baru.
+- **Bukti:** browser Chromium production root + fixture dengan CSS/font build nyata, DOM unit tests dan axe. CSS zoom 200% bukan pengujian OS/native toolbar zoom atau screen reader manusia. CI kini menjalankan harness browser yang tersedia; hasil hosted CI belum diketahui. Tidak ada perubahan kontrak PRD, migration, DB, auth, transport atau lockfile.

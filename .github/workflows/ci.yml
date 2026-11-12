@@ -19,7 +19,14 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
-      # Full domain E2E joins CI when its fixture harness is available.
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: f05-browser-evidence
+          path: test-results/
+          if-no-files-found: ignore
   database:
     runs-on: ubuntu-latest
     steps:
