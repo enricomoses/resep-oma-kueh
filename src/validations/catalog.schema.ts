@@ -212,17 +212,35 @@ export const productDetailAllergenSchema = z
   })
   .strict();
 
-const productDetailOptionChoiceSchema = z
+export const productDetailComponentVariantSummarySchema = z
   .object({
     id: z.uuid(),
-    label: plainTextLabelSchema,
-    priceDeltaIdr: z.number().int().nonnegative(),
-    componentVariantId: z.uuid().nullable(),
-    sortOrder: z.number().int(),
+    sku: z.string().trim().min(1).max(120),
+    name: plainTextLabelSchema,
+    productId: z.uuid().nullable().optional(),
+    availabilityStatus: z.enum(CATALOG_AVAILABILITY).optional(),
+    stockQuantity: z.number().int().nonnegative().nullable().optional(),
+    isOfferedInBranch: z.boolean().optional(),
+    verifiedDietaryTags: z.array(catalogDietaryTagSchema).optional(),
   })
   .strict();
 
-const productDetailOptionGroupSchema = z
+export const productDetailOptionChoiceSchema = z
+  .object({
+    id: z.uuid(),
+    groupId: z.uuid().optional(),
+    label: plainTextLabelSchema,
+    priceDeltaIdr: z.number().int().nonnegative(),
+    componentVariantId: z.uuid().nullable(),
+    isActive: z.boolean().optional().default(true),
+    sortOrder: z.number().int(),
+    componentVariant: productDetailComponentVariantSummarySchema
+      .nullable()
+      .optional(),
+  })
+  .strict();
+
+export const productDetailOptionGroupSchema = z
   .object({
     id: z.uuid(),
     name: plainTextLabelSchema,
@@ -235,13 +253,16 @@ const productDetailOptionGroupSchema = z
   })
   .strict();
 
-const productDetailFixedComponentSchema = z
+export const productDetailFixedComponentSchema = z
   .object({
     id: z.uuid(),
     componentSlot: plainTextLabelSchema,
     componentVariantId: z.uuid(),
     quantity: z.number().int().positive(),
     sortOrder: z.number().int(),
+    componentVariant: productDetailComponentVariantSummarySchema
+      .nullable()
+      .optional(),
   })
   .strict();
 
@@ -320,6 +341,17 @@ export const productDetailSchema = z
   })
   .strict();
 
+export const bundleBreakdownItemSchema = z
+  .object({
+    slotOrGroup: z.string().min(1).max(100),
+    label: z.string().min(1).max(200),
+    quantity: z.number().int().positive(),
+    priceDeltaIdr: z.number().int().nonnegative(),
+    componentVariantId: z.uuid().nullable(),
+    isFixed: z.boolean(),
+  })
+  .strict();
+
 export const preparedCartLinePayloadSchema = z
   .object({
     branchId: z.uuid(),
@@ -334,6 +366,8 @@ export const preparedCartLinePayloadSchema = z
     sizeLabel: plainTextLabelSchema.nullable(),
     quantity: z.number().int().min(1).max(CATALOG_LIMITS.MAX_QUANTITY_PER_LINE),
     choiceIds: z.array(z.uuid()).max(12),
+    bundleSignature: z.string().max(256).nullable().optional(),
+    bundleBreakdown: z.array(bundleBreakdownItemSchema).optional(),
     estimatedUnitPriceIdr: z.number().int().nonnegative(),
     estimatedSubtotalIdr: z.number().int().nonnegative(),
   })

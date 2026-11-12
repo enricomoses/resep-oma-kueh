@@ -21,6 +21,7 @@ import { preparedCartLinePayloadSchema } from '@/validations/catalog.schema';
 import { withBranch } from '@/utils/branch-url';
 import { cn } from '@/utils';
 import type {
+  BundleBreakdownItem,
   PreparedCartLinePayload,
   ProductDetail,
   ProductDetailVariant,
@@ -104,9 +105,17 @@ export function ProductDetailView({
     setPreparedPayload(null);
   };
 
-  const handlePrepareCart = () => {
+  const handlePrepareCart = (bundleData?: {
+    choiceIds: string[];
+    bundleSignature: string | null;
+    bundleBreakdown: BundleBreakdownItem[];
+    unitPriceIdr: number;
+  }) => {
     if (!product || !activeVariant || !activeBranchId || !activeBranchCode)
       return;
+
+    const unitPrice =
+      bundleData?.unitPriceIdr ?? activeVariant.effectivePriceIdr;
 
     const rawPayload = {
       branchId: activeBranchId,
@@ -120,9 +129,11 @@ export function ProductDetailView({
       variantName: activeVariant.name,
       sizeLabel: activeVariant.sizeLabel,
       quantity,
-      choiceIds: [],
-      estimatedUnitPriceIdr: activeVariant.effectivePriceIdr,
-      estimatedSubtotalIdr: activeVariant.effectivePriceIdr * quantity,
+      choiceIds: bundleData?.choiceIds ?? [],
+      bundleSignature: bundleData?.bundleSignature ?? null,
+      bundleBreakdown: bundleData?.bundleBreakdown ?? [],
+      estimatedUnitPriceIdr: unitPrice,
+      estimatedSubtotalIdr: unitPrice * quantity,
     };
 
     const parsed = preparedCartLinePayloadSchema.safeParse(rawPayload);

@@ -170,3 +170,29 @@
 - **Kesiapan CTA Keranjang (Wiring F10 menuju F12):**
   - Mengingat persistensi keranjang (`localStorage`, sinkronisasi cabang, drawer) dan penanganan konflik baru diimplementasikan pada **F12** serta bundle rules pada **F11**, tombol CTA `+ Keranjang` memvalidasi dan menyiapkan payload bertipe `PreparedCartLinePayload` (tervalidasi melalui `preparedCartLinePayloadSchema`).
   - Setelah tombol ditekan, pengguna menerima umpan balik visual terstruktur yang merinci varian yang dipilih, jumlah, harga satuan efektif, subtotal, dan catatan integrasi F12. Hal ini memastikan tombol tidak tampak berhasil tanpa melakukan aksi apa pun, sembari tidak mengklaim fitur keranjang penuh telah selesai sebelum F12.
+
+## D018 — Bundle Chiffon Slice Mix terstruktur dan aturan Gluten-Free terverifikasi (F11, 13 November 2026)
+
+- **Invarian Resep & Komposisi 12 Potong Chiffon Slice Mix (PRD §7.4, §13.5, §27.2, §27.4):**
+  - Paket 12 potong terdiri dari 2 rasa tetap (Keju 3 potong + Cokelat 3 potong = 6 potong via `fixedComponents`) serta 2 kelompok opsi rasa fleksibel (Group C dan Group D, masing-masing memilih 1 rasa dengan `quantity_per_selection = 3` = 6 potong via `optionGroups` dan `choices`).
+  - Aturan 4 rasa berbeda (Four Distinct Flavours): Rasa Pilihan C != Rasa Pilihan D != Keju != Cokelat. Validasi domain menolak konfigurasi jika pilihan menduplikasi rasa tetap paket atau jika pilihan pada kedua grup memilih rasa yang sama. Tidak diizinkan pemilihan 4 rasa bebas tanpa struktur (no arbitrary four-flavour free selection).
+  - Validasi total unit: konfigurasi harus menghasilkan tepat 12 potong (`totalUnits === targetUnitsTotal`). Jumlah di bawah atau di atas 12 (misalnya 9, 11, atau 15 potong) ditolak dengan kode `INVALID_TOTAL_UNITS`.
+  - Aturan komponen & grup: pilihan harus merupakan anggota sah varian paket (`FOREIGN_CHOICE` ditolak), berstatus aktif (`CHOICE_INACTIVE` ditolak), dan mematuhi batas grup `min_select` dan `max_select` (`GROUP_SELECTION_COUNT_MISMATCH` ditolak).
+- **Aturan Gluten-Free (GF) Terverifikasi:**
+  - Varian Regular (`DEMO-F04-5`) dan Gluten-Free (`DEMO-F04-6`) dipisahkan secara tegas.
+  - Untuk varian berklaim Gluten-Free, seluruh komponen penyusun (baik 2 rasa tetap maupun 2 pilihan rasa) wajib memiliki klaim diet `gluten-free` dengan status terverifikasi (`verification_status === 'verified'` dan `verified_at !== null`). Bila terdapat komponen yang belum terverifikasi GF, konfigurasi ditolak dengan kode `GF_UNVERIFIED_COMPONENT`.
+  - Ketersediaan stok cabang: jika komponen varian berstatus `sold_out` atau tidak ditawarkan di cabang terpilih (`isOfferedInBranch === false`), validator mendeteksi dan menolaknya (`COMPONENT_SOLD_OUT` / `COMPONENT_NOT_OFFERED`).
+  - Jika aturan riil paket belum diverifikasi oleh pemilik toko di database produksi (`bundle_rules_verified === false`), varian paket tetap berstatus draft dan pemesanan ditolak (`BUNDLE_NOT_VERIFIED`).
+- **Penetapan Harga & Komponen Tetap Tanpa Penagihan Ganda:**
+  - Harga dasar paket sudah mencakup komponen tetap (Keju 3 + Cokelat 3), sehingga komponen tetap tidak ditagih terpisah (`price_delta_idr: 0`).
+  - Delta harga pada pilihan rasa (`price_delta_idr`) ditambahkan ke harga dasar varian: `unitGrossIdr = baseOrOverrideIdr + sum(choice.price_delta_idr)`.
+  - Diskon promosi tanpa syarat aktif dipotong dari harga kotor: `effectivePriceIdr = max(0, unitGrossIdr - unconditionalDiscountIdr)`.
+  - Seluruh perhitungan menggunakan aritmatika integer IDR aman dengan batas teknis `CATALOG_LIMITS.MAX_UNIT_IDR`.
+- **Signature Keranjang Deterministik (Persiapan F12):**
+  - Fungsi `generateBundleSignature(variantId, selectedChoiceIds)` menghasilkan signature kanonik berformat `${variantId}:${sortedChoiceIds.join(',')}`. Pengurutan alfabetis ID pilihan memastikan urutan pemilihan oleh pengguna menghasilkan signature yang identik, menjadi dasar penggabungan baris keranjang yang sama pada F12.
+- **Arsitektur Modul Bebas Efek Samping (Boundary Client/Server):**
+  - Fungsi validasi bundle murni diletakkan di `src/utils/bundle.ts` yang hanya mengimpor modul murni (`src/types/` dan `src/constants/`). Hal ini mematuhi aturan ESLint `bakery/boundaries` sehingga fungsi yang sama dapat digunakan langsung oleh hook client (`useProductConfigurator`), komponen UI (`BundleCustomizer`), maupun repository/service server (`src/features/catalog/service.server.ts`).
+  - `src/features/catalog/bundle.ts` mengekspor ulang dari `@/utils/bundle` untuk kenyamanan domain server.
+- **Komponen UI `BundleCustomizer` dan Integrasi `ProductVariantPicker`:**
+  - UI merender daftar komponen tetap lengkap dengan badge rasa dan jumlah potong, radiogroup pilihan rasa tambahan per kelompok dengan indikator delta harga, penghitung visual progres potong kue (6/12 -> 9/12 -> 12/12), peringatan pilihan yang belum lengkap, serta banner peringatan kegagalan validasi bila terjadi konflik rasa atau stok.
+  - Tombol aksi `Siapkan untuk Keranjang` di `<ProductVariantPicker />` terkunci (disabled) selama konfigurasi belum lengkap 12 potong, dan hanya aktif ketika konfigurasi valid 100%. Payload terstruktur yang disiapkan memuat rincian komposisi 12 potong (`bundleBreakdown`) dan signature kanonik untuk dihubungkan ke persistensi keranjang pada F12.

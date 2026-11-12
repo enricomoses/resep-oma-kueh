@@ -28,6 +28,7 @@ import type {
 } from './pricing';
 import {
   readActiveCatalogPromotions,
+  readComponentVariantsByIds,
   readPublishedCatalogProducts,
   readPublishedCategories,
   readPublishedProductBySlug,
@@ -637,6 +638,40 @@ export async function getProductDetail(
 
   if (activeVariants.length === 0) return null;
 
+  // For bundle products, collect all referenced component variant IDs to resolve their branch availability & dietary claims
+  const referencedComponentIds: string[] = [];
+  if (productRow.product_type === 'bundle') {
+    for (const v of activeVariants) {
+      if (Array.isArray(v.bundle_fixed_components)) {
+        for (const fc of v.bundle_fixed_components) {
+          if (fc.component_variant_id) {
+            referencedComponentIds.push(fc.component_variant_id);
+          }
+        }
+      }
+      if (Array.isArray(v.option_groups)) {
+        for (const g of v.option_groups) {
+          if (Array.isArray(g.option_choices)) {
+            for (const c of g.option_choices) {
+              if (c.component_variant_id) {
+                referencedComponentIds.push(c.component_variant_id);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  const uniqueComponentIds = Array.from(new Set(referencedComponentIds));
+  const componentVariantRows =
+    uniqueComponentIds.length > 0
+      ? await readComponentVariantsByIds(uniqueComponentIds, signal)
+      : [];
+  const componentVariantMap = new Map(
+    componentVariantRows.map((row) => [row.id, row]),
+  );
+
   const activeVariantIdSet = new Set(activeVariants.map((v) => v.id));
 
   const resolvedBranch = query.branch
@@ -801,6 +836,47 @@ export async function getProductDetail(
         }))
         .sort((a, b) => a.slug.localeCompare(b.slug));
 
+      const resolveComponentSummary = (compVariantId: string | null) => {
+        if (!compVariantId) return null;
+        const comp = componentVariantMap.get(compVariantId);
+        if (!comp) return null;
+        const offers = Array.isArray(comp.branch_variant_offers)
+          ? comp.branch_variant_offers
+          : [];
+        const compOffer = offers.find((o) => o.branch_id === resolvedBranchId);
+        const isOfferedInBranch = Boolean(compOffer?.is_listed);
+        const availabilityStatus = normalizeOfferAvailability(
+          compOffer?.availability_status ?? 'available',
+          compOffer?.stock_quantity ?? null,
+        );
+        const compTagRows = Array.isArray(comp.variant_dietary_tags)
+          ? comp.variant_dietary_tags
+          : [];
+        const compDietaryTags: CatalogDietaryTag[] = compTagRows
+          .filter(
+            (t) =>
+              t.verification_status === 'verified' &&
+              Boolean(t.verified_at) &&
+              Boolean(t.dietary_tags),
+          )
+          .map((t) => ({
+            slug: t.dietary_tags!.slug,
+            name: t.dietary_tags!.name,
+          }))
+          .sort((a, b) => a.slug.localeCompare(b.slug));
+
+        return {
+          id: comp.id,
+          sku: comp.sku,
+          name: comp.name,
+          productId: comp.product_id ?? null,
+          availabilityStatus,
+          stockQuantity: compOffer?.stock_quantity ?? null,
+          isOfferedInBranch,
+          verifiedDietaryTags: compDietaryTags,
+        };
+      };
+
       const optionGroups = rawGroups
         .slice()
         .sort((a, b) => {
@@ -828,10 +904,15 @@ export async function getProductDetail(
             })
             .map((choice) => ({
               id: choice.id,
+              groupId: group.id,
               label: choice.label,
               priceDeltaIdr: choice.price_delta_idr,
               componentVariantId: choice.component_variant_id,
+              isActive: choice.is_active,
               sortOrder: choice.sort_order,
+              componentVariant: resolveComponentSummary(
+                choice.component_variant_id,
+              ),
             })),
         }));
 
@@ -850,6 +931,7 @@ export async function getProductDetail(
           componentVariantId: fixed.component_variant_id,
           quantity: fixed.quantity,
           sortOrder: fixed.sort_order,
+          componentVariant: resolveComponentSummary(fixed.component_variant_id),
         }));
 
       const clampedMaxQty = Math.max(

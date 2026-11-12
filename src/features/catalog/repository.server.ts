@@ -74,6 +74,23 @@ export async function readPublishedProductBySlug(
   return data;
 }
 
+export async function readComponentVariantsByIds(
+  variantIds: string[],
+  signal?: AbortSignal,
+) {
+  if (variantIds.length === 0) return [];
+  const { data, error } = await createPublicReadClient()
+    .from('product_variants')
+    .select(
+      'id,sku,name,product_id,status,variant_dietary_tags(verification_status,verified_at,dietary_tags(id,slug,name)),branch_variant_offers(branch_id,is_listed,availability_status,stock_quantity)',
+    )
+    .in('id', variantIds)
+    .retry(false)
+    .abortSignal(withDeadline(signal));
+  if (error) throw new Error('Component variants read unavailable');
+  return data ?? [];
+}
+
 export function resolvePublicProductImageUrl(
   storageBucket: string,
   storagePath: string,

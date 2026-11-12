@@ -10,12 +10,22 @@ import {
   PRODUCT_DETAIL_COPY,
 } from '@/constants/catalog.constant';
 import { formatIdr } from '@/features/catalog/pricing';
+import { useProductConfigurator } from '@/hooks/use-product-configurator';
 import { cn } from '@/utils';
 import type {
+  BundleBreakdownItem,
   PreparedCartLinePayload,
   ProductDetail,
   ProductDetailVariant,
 } from '@/types/catalog';
+import { BundleCustomizer } from './bundle-customizer';
+
+interface PrepareCartBundleData {
+  choiceIds: string[];
+  bundleSignature: string | null;
+  bundleBreakdown: BundleBreakdownItem[];
+  unitPriceIdr: number;
+}
 
 interface ProductVariantPickerProps {
   product: ProductDetail;
@@ -24,7 +34,7 @@ interface ProductVariantPickerProps {
   quantity: number;
   onChangeQuantity: (qty: number) => void;
   hasBranchSelected: boolean;
-  onPrepareCart: () => void;
+  onPrepareCart: (bundleData?: PrepareCartBundleData) => void;
   preparedPayload: PreparedCartLinePayload | null;
   className?: string;
 }
@@ -40,6 +50,13 @@ export function ProductVariantPicker({
   preparedPayload,
   className,
 }: ProductVariantPickerProps) {
+  const isBundle = product.productType === 'bundle';
+
+  const configurator = useProductConfigurator({
+    bundleVariant: isBundle ? selectedVariant : null,
+    branchId: product.resolvedBranchId,
+  });
+
   if (!hasBranchSelected) {
     return (
       <Card className={cn('product-picker-card', className)}>
@@ -92,15 +109,22 @@ export function ProductVariantPicker({
 
   const isSoldOut = selectedVariant?.availabilityStatus === 'sold_out';
   const isUnconfirmed = selectedVariant?.availabilityStatus === 'unconfirmed';
-  const isBundle = product.productType === 'bundle';
 
-  const subtotalIdr = selectedVariant
-    ? selectedVariant.effectivePriceIdr * quantity
-    : 0;
+  const currentUnitPriceIdr =
+    isBundle && configurator.validationResult
+      ? configurator.effectivePriceIdr
+      : (selectedVariant?.effectivePriceIdr ?? 0);
+
+  const subtotalIdr = currentUnitPriceIdr * quantity;
 
   const hasPromoDiscount =
     selectedVariant &&
     selectedVariant.unitGrossIdr > selectedVariant.effectivePriceIdr;
+
+  const handleVariantClick = (variant: ProductDetailVariant) => {
+    configurator.resetSelections();
+    onSelectVariant(variant);
+  };
 
   return (
     <Card className={cn('product-picker-card', className)}>
@@ -133,7 +157,7 @@ export function ProductVariantPicker({
               role="radio"
               aria-checked={isSelected}
               disabled={isVariantSoldOut}
-              onClick={() => onSelectVariant(variant)}
+              onClick={() => handleVariantClick(variant)}
               className={cn(
                 'product-variant-btn',
                 isSelected && 'product-variant-btn-active',
@@ -154,6 +178,18 @@ export function ProductVariantPicker({
       {/* Selected Variant Pricing & Availability */}
       {selectedVariant ? (
         <div className="product-price-section">
+          {/* Bundle Customizer (R11) */}
+          {isBundle ? (
+            <div className="border-burgundy/10 my-5 border-y py-5">
+              <BundleCustomizer
+                variant={selectedVariant}
+                selectedChoiceIds={configurator.selectedChoiceIds}
+                onSelectChoice={configurator.selectChoice}
+                validationResult={configurator.validationResult}
+              />
+            </div>
+          ) : null}
+
           <div className="product-price-row">
             <div>
               <span className="text-muted-foreground block text-xs">
@@ -161,7 +197,7 @@ export function ProductVariantPicker({
               </span>
               <div className="mt-0.5 flex items-baseline gap-2">
                 <span className="text-burgundy font-serif text-2xl font-bold">
-                  {formatIdr(selectedVariant.effectivePriceIdr)}
+                  {formatIdr(currentUnitPriceIdr)}
                 </span>
                 {hasPromoDiscount ? (
                   <span className="text-muted-foreground text-sm line-through">
@@ -245,25 +281,26 @@ export function ProductVariantPicker({
           {/* CTA & Feedback */}
           <div className="mt-5 space-y-3">
             {isBundle ? (
-              <div className="space-y-2">
-                <Button disabled className="w-full">
-                  {PRODUCT_DETAIL_COPY.CTA_PREPARE_CART}
-                </Button>
-                <div className="border-burgundy/15 text-burgundy/90 rounded-md border bg-cream/70 p-3 text-xs">
-                  <strong className="block font-semibold">
-                    {PRODUCT_DETAIL_COPY.CTA_BUNDLE_NOTICE_TITLE}
-                  </strong>
-                  <span className="mt-0.5 block">
-                    {PRODUCT_DETAIL_COPY.CTA_BUNDLE_NOTICE_BODY}
-                  </span>
-                </div>
-              </div>
+              <Button
+                disabled={!configurator.isComplete || isSoldOut}
+                onClick={() =>
+                  onPrepareCart({
+                    choiceIds: configurator.selectedChoiceIds,
+                    bundleSignature: configurator.bundleSignature,
+                    bundleBreakdown: configurator.breakdown,
+                    unitPriceIdr: configurator.effectivePriceIdr,
+                  })
+                }
+                className="w-full"
+              >
+                {PRODUCT_DETAIL_COPY.CTA_PREPARE_CART}
+              </Button>
             ) : isSoldOut ? (
               <Button disabled variant="secondary" className="w-full">
                 {PRODUCT_DETAIL_COPY.CTA_SOLD_OUT}
               </Button>
             ) : (
-              <Button onClick={onPrepareCart} className="w-full">
+              <Button onClick={() => onPrepareCart()} className="w-full">
                 {PRODUCT_DETAIL_COPY.CTA_PREPARE_CART}
               </Button>
             )}
@@ -290,10 +327,32 @@ export function ProductVariantPicker({
                     <div>
                       <strong>Jumlah:</strong> {preparedPayload.quantity} unit
                     </div>
+                    {preparedPayload.bundleSignature ? (
+                      <div>
+                        <strong>Signature:</strong>{' '}
+                        {preparedPayload.bundleSignature}
+                      </div>
+                    ) : null}
                     <div>
                       <strong>Subtotal:</strong>{' '}
                       {formatIdr(preparedPayload.estimatedSubtotalIdr)}
                     </div>
+                    {preparedPayload.bundleBreakdown &&
+                    preparedPayload.bundleBreakdown.length > 0 ? (
+                      <div className="mt-2 space-y-1 font-sans">
+                        <strong className="text-burgundy block font-semibold">
+                          Komposisi 12 Potong:
+                        </strong>
+                        <ul className="text-burgundy/90 list-inside list-disc space-y-0.5 text-[11px]">
+                          {preparedPayload.bundleBreakdown.map((item, idx) => (
+                            <li key={idx}>
+                              {item.slotOrGroup}: {item.label} ({item.quantity}{' '}
+                              potong)
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               </Feedback>

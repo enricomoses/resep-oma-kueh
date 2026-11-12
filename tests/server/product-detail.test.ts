@@ -275,6 +275,198 @@ function createDetailFixtures() {
     ],
   };
 
+  const mixProduct = {
+    id: 'f0400000-0000-4000-8000-000000000402',
+    name: 'DEMO — Chiffon Slice Mix',
+    slug: 'demo-mix',
+    short_description: 'Paket 12 slices dengan 4 varian rasa.',
+    description: 'SYNTHETIC DEMO bundle 12 potong.',
+    ingredients_info: 'Tepung terigu, telur, susu, keju, cokelat.',
+    storage_instructions: 'Suhu ruang 3 hari.',
+    product_type: 'bundle',
+    is_featured: true,
+    is_best_seller: true,
+    is_new: false,
+    status: 'published',
+    needs_owner_review: false,
+    sort_order: 5,
+    created_at: '2026-11-10T08:00:00+07:00',
+    product_categories: [
+      {
+        category_id: CAT_CHIFFON_ID,
+        is_primary: true,
+        categories: {
+          id: CAT_CHIFFON_ID,
+          name: 'DEMO — Chiffon Series',
+          slug: 'demo-chiffon-series',
+          status: 'published',
+        },
+      },
+    ],
+    product_images: [
+      {
+        id: 'f0400000-0000-4000-8000-000000000520',
+        variant_id: null,
+        storage_bucket: 'product-images',
+        storage_path: 'synthetic/demo-mix.png',
+        alt_text: 'DEMO — Chiffon Slice Mix',
+        is_approved: true,
+        is_primary: true,
+        sort_order: 0,
+      },
+    ],
+    product_variants: [
+      {
+        id: 'f0400000-0000-4000-8000-000000000605',
+        sku: 'DEMO-F04-5',
+        name: 'DEMO — Regular pack 12 slices',
+        size_label: 'Pack 12 slices',
+        base_price_idr: 180_000,
+        status: 'active',
+        sort_order: 0,
+        is_default: true,
+        max_quantity_per_order: 10,
+        bundle_recipe: 'chiffon_mix',
+        bundle_units_total: 12,
+        bundle_rules_verified: true,
+        branch_variant_offers: [
+          {
+            branch_id: SURABAYA_ID,
+            is_listed: true,
+            availability_status: 'available',
+            stock_quantity: null,
+            price_override_idr: null,
+          },
+        ],
+        bundle_fixed_components: [
+          {
+            id: 'f0400000-0000-4000-8000-000000000820',
+            component_slot: 'cheese',
+            component_variant_id: 'f0400000-0000-4000-8000-000000000607',
+            quantity: 3,
+            sort_order: 0,
+          },
+          {
+            id: 'f0400000-0000-4000-8000-000000000821',
+            component_slot: 'choco',
+            component_variant_id: 'f0400000-0000-4000-8000-000000000609',
+            quantity: 3,
+            sort_order: 1,
+          },
+        ],
+        option_groups: [
+          {
+            id: 'f0400000-0000-4000-8000-000000000800',
+            name: 'DEMO C — Regular',
+            min_select: 1,
+            max_select: 1,
+            quantity_per_selection: 3,
+            is_required: true,
+            sort_order: 0,
+            option_choices: [
+              {
+                id: 'f0400000-0000-4000-8000-000000000810',
+                label: 'DEMO — Pandan',
+                price_delta_idr: 0,
+                component_variant_id: 'f0400000-0000-4000-8000-000000000611',
+                is_active: true,
+                sort_order: 0,
+              },
+            ],
+          },
+          {
+            id: 'f0400000-0000-4000-8000-000000000801',
+            name: 'DEMO D — Regular',
+            min_select: 1,
+            max_select: 1,
+            quantity_per_selection: 3,
+            is_required: true,
+            sort_order: 1,
+            option_choices: [
+              {
+                id: 'f0400000-0000-4000-8000-000000000811',
+                label: 'DEMO — Vanilla',
+                price_delta_idr: 0,
+                component_variant_id: 'f0400000-0000-4000-8000-000000000613',
+                is_active: true,
+                sort_order: 0,
+              },
+            ],
+          },
+        ],
+        variant_dietary_tags: [],
+        variant_allergens: [],
+      },
+    ],
+  };
+
+  const componentVariants = [
+    {
+      id: 'f0400000-0000-4000-8000-000000000607',
+      sku: 'DEMO-CHEESE',
+      name: 'Cheese Chiffon Slice',
+      product_id: 'f0400000-0000-4000-8000-000000000403',
+      status: 'active',
+      variant_dietary_tags: [],
+      branch_variant_offers: [
+        {
+          branch_id: SURABAYA_ID,
+          is_listed: true,
+          availability_status: 'available',
+          stock_quantity: null,
+        },
+      ],
+    },
+    {
+      id: 'f0400000-0000-4000-8000-000000000609',
+      sku: 'DEMO-CHOCO',
+      name: 'Choco Chiffon Slice',
+      product_id: 'f0400000-0000-4000-8000-000000000404',
+      status: 'active',
+      variant_dietary_tags: [],
+      branch_variant_offers: [
+        {
+          branch_id: SURABAYA_ID,
+          is_listed: true,
+          availability_status: 'available',
+          stock_quantity: null,
+        },
+      ],
+    },
+    {
+      id: 'f0400000-0000-4000-8000-000000000611',
+      sku: 'DEMO-PANDAN',
+      name: 'Pandan Chiffon Slice',
+      product_id: 'f0400000-0000-4000-8000-000000000405',
+      status: 'active',
+      variant_dietary_tags: [],
+      branch_variant_offers: [
+        {
+          branch_id: SURABAYA_ID,
+          is_listed: true,
+          availability_status: 'available',
+          stock_quantity: null,
+        },
+      ],
+    },
+    {
+      id: 'f0400000-0000-4000-8000-000000000613',
+      sku: 'DEMO-VANILLA',
+      name: 'Vanilla Chiffon Slice',
+      product_id: 'f0400000-0000-4000-8000-000000000406',
+      status: 'active',
+      variant_dietary_tags: [],
+      branch_variant_offers: [
+        {
+          branch_id: SURABAYA_ID,
+          is_listed: true,
+          availability_status: 'available',
+          stock_quantity: null,
+        },
+      ],
+    },
+  ];
+
   const promotions = [
     {
       id: 'f0400000-0000-4000-8000-000000000931',
@@ -298,7 +490,14 @@ function createDetailFixtures() {
     },
   ];
 
-  return { branches, coffeeProduct, breadProduct, promotions };
+  return {
+    branches,
+    coffeeProduct,
+    breadProduct,
+    mixProduct,
+    componentVariants,
+    promotions,
+  };
 }
 
 function stubDetailSupabaseRest(fixtures = createDetailFixtures()) {
@@ -314,6 +513,8 @@ function stubDetailSupabaseRest(fixtures = createDetailFixtures()) {
 
     if (table === 'branches') return Response.json(fixtures.branches);
     if (table === 'promotions') return Response.json(fixtures.promotions);
+    if (table === 'product_variants')
+      return Response.json(fixtures.componentVariants);
     if (table === 'products') {
       const slugEq = url.searchParams.get('slug');
       if (slugEq === 'eq.demo-coffee') {
@@ -321,6 +522,9 @@ function stubDetailSupabaseRest(fixtures = createDetailFixtures()) {
       }
       if (slugEq === 'eq.demo-bread-cheese') {
         return Response.json(fixtures.breadProduct);
+      }
+      if (slugEq === 'eq.demo-mix') {
+        return Response.json(fixtures.mixProduct);
       }
       if (slugEq) {
         return Response.json(null);
@@ -401,6 +605,45 @@ it('handles single SKU product and returns null for unpublished or missing produ
     branch: 'surabaya',
   });
   expect(missing).toBeNull();
+});
+
+it('returns bundle product detail with fixed components, option groups, and resolved component variants for Chiffon Mix (F11/R11)', async () => {
+  stubDetailSupabaseRest();
+
+  const bundleDetail = await getProductDetail({
+    slug: 'demo-mix',
+    branch: 'surabaya',
+  });
+
+  expect(bundleDetail).not.toBeNull();
+  expect(bundleDetail?.productType).toBe('bundle');
+  expect(bundleDetail?.offeredVariants).toHaveLength(1);
+
+  const regularVariant = bundleDetail?.offeredVariants[0];
+  expect(regularVariant?.bundleRecipe).toBe('chiffon_mix');
+  expect(regularVariant?.bundleUnitsTotal).toBe(12);
+  expect(regularVariant?.bundleRulesVerified).toBe(true);
+
+  // 2 fixed components: Cheese and Choco with quantity 3
+  expect(regularVariant?.fixedComponents).toHaveLength(2);
+  const cheeseFixed = regularVariant?.fixedComponents.find(
+    (fc) => fc.componentSlot === 'cheese',
+  );
+  expect(cheeseFixed?.quantity).toBe(3);
+  expect(cheeseFixed?.componentVariant?.name).toBe('Cheese Chiffon Slice');
+
+  // 2 option groups: Group C and Group D
+  expect(regularVariant?.optionGroups).toHaveLength(2);
+  const groupC = regularVariant?.optionGroups.find(
+    (g) => g.name === 'DEMO C — Regular',
+  );
+  expect(groupC?.minSelect).toBe(1);
+  expect(groupC?.maxSelect).toBe(1);
+  expect(groupC?.quantityPerSelection).toBe(3);
+  expect(groupC?.choices[0].label).toBe('DEMO — Pandan');
+  expect(groupC?.choices[0].componentVariant?.name).toBe(
+    'Pandan Chiffon Slice',
+  );
 });
 
 it('enforces route handler contract for /api/products/[slug] (200, 400, 404, 503)', async () => {

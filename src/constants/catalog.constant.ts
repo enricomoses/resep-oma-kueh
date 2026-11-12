@@ -204,6 +204,35 @@ export const PRODUCT_DETAIL_COPY = {
   RETRY_CTA: 'Coba muat ulang',
 } as const;
 
+export const BUNDLE_CUSTOMIZER_COPY = {
+  TITLE: 'Kustomisasi Rasa Paket Mix',
+  SUBTITLE:
+    'Paket 12 potong terdiri dari 2 rasa tetap (Keju & Cokelat, masing-masing 3 potong) serta 2 rasa pilihan Anda (masing-masing 3 potong dari kelompok berbeda).',
+  FIXED_SECTION_TITLE: 'Komposisi Tetap (6 Potong):',
+  FIXED_SECTION_NOTE: 'Termasuk dalam harga paket dan tidak dapat diubah.',
+  SELECTION_SECTION_TITLE: 'Pilih 2 Rasa Tambahan (6 Potong):',
+  TOTAL_UNITS_LABEL: 'Total potong kue:',
+  TOTAL_UNITS_VALUE: (current: number, target: number) =>
+    `${current} dari ${target} potong`,
+  PRICE_BREAKDOWN_TITLE: 'Rincian Harga Paket',
+  BASE_PRICE_LABEL: 'Harga dasar paket:',
+  OPTION_DELTA_LABEL: 'Tambahan pilihan rasa:',
+  TOTAL_UNIT_GROSS_LABEL: 'Harga paket per unit:',
+  MISSING_SELECTIONS_WARNING: (missingCount: number) =>
+    `Silakan pilih ${missingCount} rasa lagi untuk melengkapi 12 potong.`,
+  DUPLICATE_FLAVOUR_WARNING:
+    'Setiap rasa dalam paket mix harus berbeda. Pilihan tidak boleh menduplikasi rasa tetap (Keju/Cokelat) atau rasa pilihan lainnya.',
+  UNVERIFIED_GF_WARNING:
+    'Varian Gluten-Free hanya dapat memilih komponen rasa yang telah terverifikasi Gluten-Free.',
+  COMPONENT_UNAVAILABLE_WARNING:
+    'Salah satu komponen rasa pilihan sedang tidak tersedia atau habis di cabang terpilih.',
+  CONFIRM_CONFIG_CTA: 'Siapkan Paket untuk Keranjang',
+  CONFIG_READY_TITLE: 'Konfigurasi Paket Mix Lengkap (Menunggu F12)',
+  CONFIG_READY_BODY:
+    '12 potong dengan 4 rasa berbeda telah terkonfigurasi dan tervalidasi. Integrasi keranjang belanja aktif pada F12.',
+  SLICES_SUFFIX: 'potong',
+} as const;
+
 export function serializeCatalogQueryKey(params: CatalogQueryInput) {
   return {
     branch: params.branch ?? null,
