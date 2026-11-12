@@ -8,6 +8,18 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
+## Kontrak bakery dan arsitektur
+
+- Baca `docs/prd.md` revisi 1.1 dan `docs/execution-guide.md`; implementasikan hanya Fxx yang diminta. Bukti aktual ada di `docs/implementation-status.md`, keputusan di `docs/decisions.md`.
+- Client UI → hook → browser service → `lib/axios` → BFF Route Handler → server domain/repository → Supabase. RSC boleh memanggil `features/*/service.server.ts` langsung tanpa self-fetch. Proxy hanya refresh, bukan otorisasi final.
+- Page tipis, view hanya data/status/komposisi. Komponen visual satu utama/file, named export, `interface` props, `className?` + `cn`; provider tanpa DOM tidak membutuhkan className. Default export hanya untuk konvensi Next/tooling.
+- Alias `@/`, `import type`, TypeScript strict tanpa any/ts-ignore. Barrel hanya client-safe; server-only selalu impor langsung. Tidak ada Axios/SDK/fetch pada UI/hook atau SDK Supabase pada browser service.
+- Constants untuk route/endpoint/query key/stale time/limit/copy; tambah hanya yang digunakan. Input dan output boundary memakai Zod. Transport mempertahankan envelope, requestId dan pagination; tidak menyamarkan error/abort atau memunculkan toast sendiri.
+- Server env dan helper Supabase session per request diberi `server-only`. Public read client tidak menerima cookie/admin JWT/service-role; actual grants/RLS diuji F03, bukan dibuktikan oleh nama helper. Route Handler Auth harus mengoper response ke `createServerAuthClient(response)` agar cookies dan header cache SDK tidak hilang.
+- Public reads baseline uncached. Ikuti Cache Components versi terpasang; jangan menyalin segment config Next lama. Matcher Proxy memakai literal karena static analysis Next; jangan memasukkan jalur chat/checkout publik.
+- Bakery krem/burgundy, Plus Jakarta Sans/Fraunces/Barlow Condensed sesuai PRD pada F05; scaffold belum desain final. Tidak shadcn, warna/font BEM/Fina, payment, akun customer, order tracking, atau data bisnis karangan. Checkout/chat tidak menulis order/history/stock.
+- Format: 2 spasi, single quotes, semicolon, trailing comma all, arrow parentheses; jalankan format → lint → typecheck/tes relevan → build, review diff dan update evidence. Jangan menulis secret/nilai env/PII ke log/response/laporan.
+
 ## Git per fitur — Resep Oma Kueh
 
 Instruksi owner pada 12 November 2026 mengizinkan commit lokal dan push ke GitHub secara otomatis per fitur. Aturan ini menggantikan ketentuan commit/push manual pada PRD dan execution guide; tidak perlu meminta izin ulang untuk setiap Fxx.

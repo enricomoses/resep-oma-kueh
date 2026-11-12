@@ -30,3 +30,34 @@
 - **Sumber keputusan bisnis:** konfirmasi owner 11 November 2026 yang sudah dicatat pada PRD §3.1 dan §27.1; F00 tidak menambahkan sumber/izin baru dari lampiran historis.
 - **Tetap final:** Gmail publik `resepoma.kueh2@gmail.com` dan alamat publik Surabaya **Rungkut Asri Tengah V No. 22, Surabaya**, beserta dua WhatsApp cabang/Instagram yang ada di PRD.
 - **Masih pending:** alamat Bintaro/Maps/hours/fulfillment, SKU/harga/stock/bundle rules, diet/allergen, jadwal/promo, aset/consent, policy serta akun/recovery dan target rilis. Daftar rinci mengikuti PRD §23 dan implementation status. Tidak mengubah pending menjadi harga/claim/jadwal aktif.
+
+## D005 — Fondasi F01 dan baseline setup yang relevan
+
+- **Tanggal:** 12 November 2026 (Asia/Jakarta).
+- **Keputusan:** pertahankan seluruh paket M03 owner dan Next/React terpasang. Manifest/lock/.npmrc dimasukkan pada commit fondasi karena dibutuhkan untuk mereproduksi transport, SDK dan tooling; tidak menghapus atau mengganti pilihan paket pengguna yang tidak terkait. Perbaikan hanya types Node 24.19.2, Testing Library DOM 10.4.2 dan Vite 8.3.8 untuk peer yang terbukti hilang/tidak cocok.
+- **Konfigurasi:** Node 24.18.0/npm 11.16.x; strict TS, Prettier/Tailwind, named exports/type imports, boundary ESLint, Vitest/Playwright/Knip/CI. Ignore docs dihapus sesuai kontrak F01 dan .env.example dikecualikan dari ignore; .env.local serta konfigurasi Supabase pengguna tidak diubah.
+- **Batas:** tidak membuat domain/tabel/endpoint kosong. Paket M03 yang belum digunakan fitur sekarang dipertahankan dengan pengecualian Knip eksplisit. Perubahan class order/quotes pada scaffold/PRD adalah formatter, bukan redesign. Blok Next AGENTS tetap utuh.
+
+## D006 — Env dan Supabase terpisah tanpa klaim RLS prematur
+
+- **Tanggal:** 12 November 2026 (Asia/Jakarta).
+- **Keputusan:** env kosong untuk DB boleh pada scaffold sebelum fitur DB; adapter menolak URL/key yang belum valid saat digunakan. Error hanya nama key dan tidak menyertakan nilai/cause, termasuk exception dari custom refinement. Public env memvalidasi format publishable atau role anon legacy, bukan signature.
+- **Provider:** F23 belum dipilih, sehingga flag generatif true ditolak secara fail-closed; disabled tidak memerlukan model/key. Tidak menambahkan provider/limiter SDK sekarang.
+- **Session:** SSR client per request; cookie bridge menangani seluruh chunk dan header cache argumen kedua setAll pada SDK 0.12.7. Handler wajib mengoper response, RSC read-only tidak menulis cookie. Proxy matcher literal terbatas admin/auth karena static analysis Next; tidak mencakup chat/checkout publik dan tidak menggantikan guard F15.
+- **Public reads:** anon client terpisah tanpa cookie/persistence/admin JWT/service-role, no-store/credentials omit. SDK helper saja tidak membuktikan SELECT-only; actual grants/RLS/RPC/Storage/JWT dan generated types menunggu F02–F04. Detail implementasi ada di [architecture.md](architecture.md).
+
+## D007 — Bukti boundary dan risiko tooling residual
+
+- **Tanggal:** 12 November 2026 (Asia/Jakarta).
+- **Keputusan:** unit/DOM/server projects Vitest terpisah; alias server-only hanya pada server tests. Compiler Next asli menguji positive control RSC dan negative Client Component memakai modul server proyek. Fixture memakai env bersih, alias sumber eksplisit dan cleanup temp terverifikasi. Playwright hanya smoke scaffold production build, bukan storefront/DB.
+- **Advisory aktual:** npm audit melaporkan 7 moderate pada rantai development typescript-eslint → minimatch 10.2.6, [GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249). Versi upstream typescript-eslint 8.72.2 masih mensyaratkan minimatch ^10.2.2, sedangkan patch advisory 11.0.1 berada di major lain. Tidak memaksakan override major atau audit fix massal tanpa evaluasi API; catat risiko tooling residual dan pantau upstream. Bukan klaim runtime vulnerability atau audit security PASS.
+- **CI:** template foundation memakai checkout/setup-node v7 sesuai dokumentasi resmi yang diperiksa, npm ci/check tanpa secret produksi. SQL dan full domain E2E CI ditambahkan bersama harness terkait; hasil lokal tidak dinyatakan sebagai hasil remote CI.
+
+## D008 — Runner serial dan bukti clean install
+
+- **Tanggal:** 12 November 2026 (Asia/Jakarta).
+- **Masalah aktual:** run ulang fork worker gagal memuat konfigurasi ESLint dalam setup deadline dan worker DOM tidak mulai; suite tidak dianggap PASS. Memakai pool threads, satu worker, file serial dan inheritance eksplisit mengatasi startup pada host Windows. Isolation tetap aktif, assertion tidak dihapus, timeout produk tidak diubah. Semua 46 kasus kemudian dijalankan, bukan skipped.
+- **Instalasi:** percobaan npm ci biasa dihentikan ketika belum selesai. `npm ci --no-audit --no-fund --prefer-offline` berhasil exit 0 dari lockfile yang sama; audit keamanan dilakukan terpisah dan hasil moderat D007 tetap dicatat. Npm memperingatkan ESLint 9 yang tidak lagi didukung; migrasi major tooling tidak dipaksakan pada F01 tanpa evaluasi kompatibilitas.
+- **Diff dependency:** dari snapshot awal F01 hanya versi paket lama @types/node dan undici-types yang berubah; paket baru mengikuti peer DOM/Vite. Pilihan M03 lain tidak hilang. Env lokal dan konfigurasi Supabase pengguna tetap sama secara hash.
+
+- **Hasil final D008:** thread saja belum menghilangkan timeout loader ESLint. Semua 18 kasus config dipindahkan utuh ke script Node dengan assert, terpisah dari 28 tes runtime Vitest; check menjalankan keduanya, tanpa skipped/assertion dihapus. Final check exit 0.

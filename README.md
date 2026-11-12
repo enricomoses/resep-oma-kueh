@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Resep Oma Kueh
 
-## Getting Started
+Next App Router fullstack. Saat ini hanya fondasi F01; storefront/schema/RLS/admin/checkout/Ask Oma belum diimplementasikan.
 
-First, run the development server:
+## Development lokal
 
-```bash
+Gunakan Node dari `.node-version` dan npm 11.16.x. Dari root bakery:
+
+```powershell
+npm ci
+if (-not (Test-Path -LiteralPath .env.local)) {
+  Copy-Item -LiteralPath .env.example -Destination .env.local
+}
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Salin contoh env hanya jika file lokal belum ada; jangan menimpa credential yang sudah diisi. Isi credential lokal sendiri, bukan ke chat/Git. Provider generatif tetap nonaktif. Scaffold bisa dibuka sebelum URL/key DB diisi; adapter DB akan menolak konfigurasi kosong ketika dipakai. Aset/font scaffold belum desain bakery final.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Pemeriksaan
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```powershell
+npm run format
+npm run check
+npx playwright install chromium
+npm run test:e2e
+```
 
-## Learn More
+`check` menjalankan lint → typegen/typecheck → Vitest → compiler boundary → unused → format check → build. Playwright menyalakan production server sendiri dan memerlukan build yang baru lulus. Boundary fixture tidak memakai env produksi. `test:db` adalah pgTAP CLI lokal; belum ada schema/suite F01 dan tidak dihitung PASS. Jangan menambahkan argumen remote.
 
-To learn more about Next.js, take a look at the following resources:
+DB lokal memerlukan Docker/Supabase bakery. Inisialisasi konfigurasi/schema dan workflow DB dilanjutkan sesuai F02–F04; tidak ada reset/migration/deployment otomatis dari check/CI.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Kontrak dan status
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [PRD](docs/prd.md) dan [execution guide](docs/execution-guide.md)
+- [Arsitektur aktual](docs/architecture.md)
+- [Status dan bukti pengujian](docs/implementation-status.md)
+- [Keputusan](docs/decisions.md)

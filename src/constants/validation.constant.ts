@@ -1,0 +1,6 @@
+export const LIMITS = {
+  REQUEST_TIMEOUT_MS: 10_000,
+  REQUEST_ID_LENGTH: 128,
+  ERROR_MESSAGE_LENGTH: 500,
+  PAGE_SIZE: 24,
+} as const;

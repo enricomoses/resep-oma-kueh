@@ -1516,7 +1516,7 @@ Install only required packages. Do not blindly use frozen versions from guide fi
 Example **expected direction**, not a complete `globals.css` replacement:
 
 ```css
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   --brand-burgundy: #782b2c;
