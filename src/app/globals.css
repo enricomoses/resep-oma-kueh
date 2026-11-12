@@ -905,6 +905,179 @@ svg {
     justify-content: space-between;
     gap: 0.75rem;
   }
+  .content-page-main {
+    display: grid;
+    gap: 0;
+  }
+  .content-section {
+    display: grid;
+    gap: 2rem;
+    padding-block: var(--space-section);
+    border-top: 1px solid var(--border-sand);
+  }
+  .content-section:first-child {
+    border-top: 0;
+  }
+  .content-header-block {
+    display: grid;
+    justify-items: start;
+    gap: 1.25rem;
+    max-width: 66ch;
+  }
+  .editorial-display {
+    font-family: var(--font-fraunces), serif;
+    font-size: clamp(2.25rem, 4.2vw, 3.75rem);
+    font-weight: 500;
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+  .editorial-lead {
+    color: var(--text-cocoa);
+    font-size: clamp(1.0625rem, 1.4vw, 1.1875rem);
+    line-height: 1.65;
+    max-width: 60ch;
+  }
+  .content-source-note {
+    font-size: 0.875rem;
+    color: var(--text-cocoa);
+    max-width: 62ch;
+  }
+  .content-error-block {
+    display: grid;
+    justify-items: start;
+    gap: 1rem;
+  }
+  .content-feedback-banner {
+    max-width: 66ch;
+  }
+  .content-values-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16.5rem), 1fr));
+    gap: 1.25rem;
+  }
+  .content-value-card {
+    display: grid;
+    align-content: start;
+    gap: 0.625rem;
+  }
+  .content-value-card h3,
+  .content-faq-card h3,
+  .content-branch-card h3,
+  .content-channel-card h3 {
+    font-size: 1.1875rem;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+  .content-value-card p,
+  .content-faq-card p,
+  .content-card-desc,
+  .content-channel-card p {
+    color: var(--text-cocoa);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+  .content-team-card,
+  .content-b2b-card,
+  .content-legal-card {
+    display: grid;
+    gap: 1.25rem;
+  }
+  .content-disclaimer-box {
+    padding: 1rem 1.25rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border-sand);
+    background: var(--bg-soft);
+    color: var(--text-cocoa);
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+  .content-branch-card {
+    display: grid;
+    align-content: space-between;
+    gap: 1.25rem;
+  }
+  .content-detail-list {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+  }
+  .content-detail-item {
+    display: grid;
+    gap: 0.25rem;
+  }
+  .content-detail-item dt {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--brand-burgundy);
+  }
+  .content-detail-item dd {
+    margin: 0;
+    color: var(--brand-deep);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+  .content-hours-list {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+    padding-left: 1.125rem;
+  }
+  .content-b2b-header {
+    display: grid;
+    justify-items: start;
+    gap: 0.75rem;
+    max-width: 62ch;
+  }
+  .content-b2b-controls {
+    display: grid;
+    gap: 1.25rem;
+    max-width: 42rem;
+  }
+  .content-channels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 1.25rem;
+  }
+  .content-channel-card {
+    display: grid;
+    gap: 0.625rem;
+  }
+  .content-channel-card h3 {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .content-faq-groups {
+    display: grid;
+    gap: 2rem;
+  }
+  .content-faq-category-group {
+    display: grid;
+    gap: 1rem;
+  }
+  .content-faq-list {
+    display: grid;
+    gap: 1rem;
+  }
+  .content-faq-card {
+    display: grid;
+    gap: 0.625rem;
+  }
+  .content-legal-body {
+    display: grid;
+    gap: 1rem;
+    max-width: 68ch;
+  }
+  .content-legal-body p {
+    color: var(--text-cocoa);
+    font-size: 1rem;
+    line-height: 1.7;
+  }
 }
 @media (min-width: 48rem) {
   .site-contact-grid {
