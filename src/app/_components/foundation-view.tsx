@@ -1,7 +1,7 @@
 import { ArrowDown } from 'lucide-react';
 
 import { ActionLink } from '@/components/ui/action-link';
-import { Badge } from '@/components/ui/badge';
+import { SITE_COPY } from '@/constants/site.constant';
 import { FOUNDATION_COPY } from '@/constants/ui.constant';
 import { cn } from '@/utils';
 
@@ -12,16 +12,11 @@ interface FoundationViewProps {
 }
 export function FoundationView({ className }: FoundationViewProps) {
   return (
-    <main className={cn('content-container', className)}>
-      <header className="foundation-header">
-        <div>
-          <p className="foundation-brand">{FOUNDATION_COPY.BRAND}</p>
-          <span className="foundation-logo-note">
-            {FOUNDATION_COPY.LOGO_NOTE}
-          </span>
-        </div>
-        <Badge tone="accent">{FOUNDATION_COPY.STATUS}</Badge>
-      </header>
+    <main
+      id={SITE_COPY.MAIN_ID}
+      tabIndex={-1}
+      className={cn('content-container', className)}
+    >
       <section className="foundation-hero" aria-labelledby="foundation-title">
         <div>
           <h1 className="foundation-title" id="foundation-title" lang="en">

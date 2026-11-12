@@ -20,7 +20,7 @@ export const FOUNDATION_COPY = {
   NOTES_BODY:
     'Pratinjau ini memperkenalkan suasana visual Resep Oma Kueh. Foto produk dan logo akan menggunakan aset resmi yang telah disetujui.',
   NOTES_DETAIL:
-    'Belum ada pemesanan yang diproses di halaman ini. Katalog, pilihan cabang, dan informasi terbaru akan hadir pada tahap berikutnya.',
+    'Belum ada pemesanan yang diproses di halaman ini. Katalog dan informasi produk akan hadir pada tahap berikutnya.',
   MEDIA_MARK: 'DEMO',
   MEDIA_CAPTION:
     'Ruang untuk foto bakery asli. Ini placeholder, bukan foto produk.',

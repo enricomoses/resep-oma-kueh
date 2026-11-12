@@ -43,5 +43,7 @@ jobs:
       - run: npm run test:db:seed
       - run: npm run db:types:local -- --check
       - run: npm run test:db:tooling
+      - run: npx playwright install --with-deps chromium
+      - run: node scripts/test-site-local.mjs
       - if: always()
         run: npx supabase stop

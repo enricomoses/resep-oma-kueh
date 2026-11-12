@@ -35,3 +35,7 @@ Logo resmi, foto makanan/kelas asli berizin, serta sampling warna logo masih **r
 ## Verifikasi dan batas bukti
 
 Kasus dan command aktual ada di `docs/implementation-status.md`: viewport 375/768/1280/1440, axe WCAG A/AA, keyboard, native modal, field errors, quantity, reduced motion dan 200% CSS zoom. CSS zoom Chromium menguji pembesaran/reflow otomatis; bukan bukti pengujian zoom OS, screen reader manusia, Safari/iOS atau Firefox. Screenshot lokal di test-results diabaikan Git agar artefak bukan sumber desain baru.
+
+## Shell F06
+
+Navbar/footer, branch selector dan kontak terkonfirmasi memperluas fondasi F05, dengan mode Operate untuk memilih cabang dan berpindah halaman. Identitas cream/burgundy/font tetap; tidak memilih visual world baru. Desktop nav horizontal, mobile memakai native Drawer F05. Footer burgundy memakai cream untuk teks dan focus ring; status cabang, null address dan fallback dijelaskan lewat teks. Skip link menuju main. Cart adalah empty count nyata, chat satu slot informatif, halaman belum-domain diberi preparation copy. Detail kontrak/evidence ada di docs/branches.md dan implementation-status.md.

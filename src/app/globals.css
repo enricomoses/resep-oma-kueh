@@ -506,3 +506,199 @@ svg {
     scroll-behavior: auto;
   }
 }
+
+@layer components {
+  .site-skip {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 20;
+    padding: 0.75rem 1rem;
+    background: var(--surface-white);
+    color: var(--brand-deep);
+    transform: translateY(-200%);
+  }
+  .site-skip:focus {
+    transform: translateY(0);
+  }
+  .site-header {
+    border-bottom: 1px solid var(--border-sand);
+  }
+  .site-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-block: 1.5rem;
+  }
+  .site-brand {
+    display: grid;
+    color: var(--brand-deep);
+    text-decoration: none;
+    font-size: 1.125rem;
+    line-height: 1.5;
+  }
+  .site-brand small {
+    color: var(--text-cocoa);
+    font-size: 0.75rem;
+    font-weight: 400;
+  }
+  .site-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .site-menu-toggle {
+    width: 2.75rem;
+    padding: 0.5rem;
+  }
+  .site-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .site-nav a {
+    min-height: 2.75rem;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    text-decoration: none;
+    font-size: 0.9375rem;
+  }
+  .site-nav a[aria-current='page'] {
+    background: var(--accent-rose);
+    border-radius: 0.5rem;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+  }
+  .site-desktop-nav {
+    display: none;
+  }
+  .site-branch-row {
+    padding-block: 0 1.5rem;
+  }
+  .branch-selector {
+    display: grid;
+    gap: 1rem;
+  }
+  .branch-selector .ui-field-note {
+    max-width: 75ch;
+  }
+  .cart-badge {
+    gap: 0.5rem;
+    padding: 0.625rem;
+    min-width: 2.75rem;
+  }
+  .site-footer {
+    padding-block: 3rem 2rem;
+    background: var(--brand-deep);
+    color: var(--brand-cream);
+  }
+  .site-footer-heading {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-bottom: 2rem;
+  }
+  .site-footer-heading h2 {
+    font-family: var(--font-fraunces), serif;
+    font-size: var(--type-heading);
+    line-height: 1.15;
+  }
+  .site-contact-grid {
+    display: grid;
+    gap: 2rem;
+  }
+  .site-contact-grid section {
+    display: grid;
+    align-content: start;
+    gap: 0.75rem;
+    max-width: 40ch;
+  }
+  .site-contact-grid h3 {
+    font-weight: 700;
+  }
+  .site-contact-grid p {
+    font-size: 0.9375rem;
+  }
+  .site-footer a {
+    color: var(--brand-cream);
+    text-decoration: underline;
+    min-height: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    overflow-wrap: anywhere;
+  }
+  .site-footer :focus-visible {
+    outline-color: var(--brand-cream);
+  }
+  .site-contact-note {
+    margin-bottom: 2rem;
+  }
+  .site-footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--text-cocoa);
+  }
+  .chat-slot {
+    display: flex;
+    align-items: start;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1.5rem var(--gutter);
+    border-top: 1px solid var(--border-sand);
+    background: var(--surface-white);
+  }
+  .chat-slot p {
+    font-size: 0.875rem;
+    color: var(--text-cocoa);
+  }
+  .site-dialog-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .preparing-view {
+    padding-block: var(--space-section);
+    min-height: 45dvh;
+  }
+  .preparing-view p {
+    margin-top: 1.5rem;
+    max-width: 65ch;
+  }
+}
+@media (min-width: 48rem) {
+  .site-contact-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .branch-selector .ui-field {
+    grid-template-columns: minmax(14rem, 22rem) 1fr;
+    column-gap: 2rem;
+  }
+  .branch-selector .ui-field-label,
+  .branch-selector .ui-select-wrap {
+    grid-column: 1;
+  }
+  .branch-selector .ui-field-note {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+  }
+  .branch-selector .ui-field-error {
+    grid-column: 1/-1;
+  }
+}
+@container (min-width: 65rem) {
+  .site-desktop-nav {
+    display: flex;
+    flex-direction: row;
+    gap: 0.25rem;
+  }
+  .site-menu-toggle {
+    display: none;
+  }
+}

@@ -70,8 +70,11 @@ for (const width of [375, 768, 1280, 1440])
     expect(fonts[0]).toContain('Plus Jakarta Sans');
     expect(fonts[1]).toContain('Fraunces');
     expect(fonts[2]).toContain('Barlow Condensed');
-    await page.keyboard.press('Tab');
     const link = page.getByRole('link', { name: 'Catatan pratinjau' });
+    for (let index = 0; index < 16; index++) {
+      await page.keyboard.press('Tab');
+      if (await link.evaluate((el) => el === document.activeElement)) break;
+    }
     await expect(link).toBeFocused();
     expect(await link.evaluate((el) => getComputedStyle(el).outlineWidth)).toBe(
       '3px',
