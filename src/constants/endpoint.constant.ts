@@ -17,4 +17,5 @@ export const API_ENDPOINTS = {
   ADMIN_OVERVIEW: '/admin/overview',
   ADMIN_CATEGORIES: '/admin/categories',
   ADMIN_PRODUCTS: '/admin/products',
+  ADMIN_MEDIA_UPLOAD: '/admin/media/upload',
 } as const;

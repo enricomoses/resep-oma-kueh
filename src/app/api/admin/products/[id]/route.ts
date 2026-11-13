@@ -1,4 +1,5 @@
 import { ADMIN_CATALOG_LIMITS } from '@/constants/admin-catalog.constant';
+import { getAdminProductWithOptionalEditor } from '@/features/admin-catalog/configuration.server';
 import {
   parseUuidRouteParam,
   rejectImmutableSlugOnPatch,
@@ -21,6 +22,7 @@ import {
   readBoundedJsonBody,
 } from '@/features/auth/http.server';
 import {
+  adminProductDetailAggregateResponseSchema,
   adminProductDetailResponseSchema,
   archiveAdminEntitySchema,
   updateAdminProductSchema,
@@ -41,6 +43,27 @@ export async function GET(request: Request, context: ProductRouteContext) {
     });
     const { id } = await context.params;
     const productId = parseUuidRouteParam(id);
+    const includeEditor =
+      new URL(request.url).searchParams.get('include') === 'editor';
+
+    if (includeEditor) {
+      const aggregate = await getAdminProductWithOptionalEditor(
+        profile,
+        productId,
+        true,
+        {
+          response: carrier,
+          signal: request.signal,
+        },
+      );
+      return createAuthJsonSuccess(
+        { product: aggregate.product, editor: aggregate.editor! },
+        adminProductDetailAggregateResponseSchema,
+        requestId,
+        carrier,
+      );
+    }
+
     const product = await getAdminProductById(profile, productId, {
       response: carrier,
       signal: request.signal,

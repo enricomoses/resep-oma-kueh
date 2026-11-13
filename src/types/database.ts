@@ -1239,6 +1239,14 @@ export type Database = {
         Args: { variant_uuid: string };
         Returns: Json;
       };
+      save_product_configuration: {
+        Args: {
+          p_expected_updated_at: string;
+          p_payload: Json;
+          p_product_id: string;
+        };
+        Returns: Json;
+      };
     };
     Enums: {
       [_ in never]: never;

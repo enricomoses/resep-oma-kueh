@@ -1,4 +1,5 @@
 import { ADMIN_CATALOG_LIMITS } from '@/constants/admin-catalog.constant';
+import { ROUTES } from '@/constants/routes.constant';
 
 /**
  * Normalizes human-entered names into deterministic URL-safe slugs without touching DB state.
@@ -84,4 +85,8 @@ export function clampAdminPageAfterRemoval(
  */
 export function escapeLiteralSearchPattern(query: string): string {
   return query.replace(/[\\%_]/g, (match) => `\\${match}`);
+}
+
+export function buildAdminProductEditRoute(productId: string): string {
+  return `${ROUTES.ADMIN_PRODUCTS}/${encodeURIComponent(productId)}/edit`;
 }

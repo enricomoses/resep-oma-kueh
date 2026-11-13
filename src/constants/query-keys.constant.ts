@@ -93,6 +93,23 @@ export const QUERY_KEYS = {
       identity?.branchId ?? 'none',
       id,
     ] as const,
+  ADMIN_PRODUCT_EDITOR: (
+    identity: {
+      userId: string;
+      role: string;
+      branchId: string | null;
+    } | null,
+    id: string,
+  ) =>
+    [
+      'resep-oma-kueh',
+      'admin',
+      'product-editor',
+      identity?.userId ?? 'anon',
+      identity?.role ?? 'none',
+      identity?.branchId ?? 'none',
+      id,
+    ] as const,
 } as const;
 
 export const STALE_TIME = { PUBLIC: 60_000 } as const;

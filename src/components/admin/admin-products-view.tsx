@@ -1,8 +1,15 @@
 'use client';
 
-import { Archive, Pencil, Plus, RefreshCw } from 'lucide-react';
+import {
+  Archive,
+  Pencil,
+  Plus,
+  RefreshCw,
+  SlidersHorizontal,
+} from 'lucide-react';
 import { type FormEvent, useEffect, useState } from 'react';
 
+import { ActionLink } from '@/components/ui/action-link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -16,6 +23,7 @@ import {
   ADMIN_CATALOG_COPY,
   ADMIN_CATALOG_LIMITS,
 } from '@/constants/admin-catalog.constant';
+import { ROUTES } from '@/constants/routes.constant';
 import {
   useAdminCategories,
   useAdminProductDetail,
@@ -36,6 +44,7 @@ import type {
 import type { AdminSessionProfile } from '@/types/auth';
 import { cn } from '@/utils';
 import {
+  buildAdminProductEditRoute,
   clampAdminPageAfterRemoval,
   slugifyCatalogName,
 } from '@/utils/admin-catalog';
@@ -411,6 +420,14 @@ export function AdminProductsView({
             <Plus size={16} aria-hidden="true" />
             <span>{ADMIN_CATALOG_COPY.PRODUCTS.ADD_BUTTON}</span>
           </Button>
+          <ActionLink
+            href={ROUTES.ADMIN_PRODUCTS_NEW}
+            variant="secondary"
+            size="sm"
+          >
+            <SlidersHorizontal size={15} aria-hidden="true" />
+            <span>{ADMIN_CATALOG_COPY.PRODUCT_EDITOR.NEW_PRODUCT_BTN}</span>
+          </ActionLink>
         </div>
       </div>
 
@@ -543,6 +560,16 @@ export function AdminProductsView({
               </div>
 
               <div className="admin-row-actions">
+                <ActionLink
+                  href={buildAdminProductEditRoute(product.id)}
+                  variant="primary"
+                  size="sm"
+                >
+                  <SlidersHorizontal size={15} aria-hidden="true" />
+                  <span>
+                    {ADMIN_CATALOG_COPY.PRODUCT_EDITOR.OPEN_EDITOR_BTN}
+                  </span>
+                </ActionLink>
                 <Button
                   type="button"
                   variant="secondary"

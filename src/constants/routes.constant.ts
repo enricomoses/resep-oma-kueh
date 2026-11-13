@@ -12,6 +12,7 @@ export const ROUTES = {
   ADMIN: '/admin',
   ADMIN_CATEGORIES: '/admin/categories',
   ADMIN_PRODUCTS: '/admin/products',
+  ADMIN_PRODUCTS_NEW: '/admin/products/new',
   ADMIN_LOGIN: '/admin/login',
   ADMIN_RESET_PASSWORD: '/admin/reset-password',
   AUTH_CALLBACK: '/auth/callback',

@@ -10,8 +10,36 @@ export const ADMIN_CATALOG_STATUSES = [
 
 export const ADMIN_PRODUCT_TYPES = ['simple', 'variants', 'bundle'] as const;
 
+export const ADMIN_VARIANT_STATUSES = ['draft', 'active', 'archived'] as const;
+
+export const ADMIN_DIETARY_VERIFICATION_STATUSES = [
+  'pending',
+  'verified',
+] as const;
+
+export const ADMIN_ALLERGEN_PRESENCES = [
+  'contains',
+  'may_contain',
+  'not_declared',
+] as const;
+
+export const ADMIN_BUNDLE_SLOTS = ['cheese', 'choco'] as const;
+
+export const ADMIN_MEDIA_LIMITS = {
+  MAX_FILE_BYTES: 5 * 1024 * 1024,
+  MAX_DIMENSION_PX: 6000,
+  MAX_INPUT_PIXELS: 36_000_000,
+  SIGNED_PREVIEW_TTL_SECONDS: 300,
+  ALT_TEXT_MIN: 3,
+  ALT_TEXT_MAX: 200,
+} as const;
+
 export const ADMIN_CATALOG_LIMITS = {
   MAX_BODY_BYTES: 32_768,
+  MAX_CONFIGURATION_BODY_BYTES: 131_072,
+  MAX_UNIT_PRICE_IDR: 1_000_000_000,
+  CHIFFON_TOTAL_UNITS: 12,
+  CHIFFON_GROUP_SELECTION_QTY: 3,
   NAME_MIN: 2,
   NAME_MAX: 120,
   SLUG_MIN: 2,
@@ -253,6 +281,77 @@ export const ADMIN_CATALOG_COPY = {
         'Produk belum memenuhi syarat publikasi (review selesai, >=1 kategori terpublikasi, >=1 varian aktif ditawarkan cabang aktif, dan >=1 foto disetujui).',
       PRICE_NOT_ON_PRODUCT:
         'Data produk inti tidak menerima harga langsung; harga diatur pada varian SKU.',
+    },
+  },
+  PRODUCT_EDITOR: {
+    CREATE_PAGE_TITLE: 'Buat Produk Baru (Editor Lengkap)',
+    EDIT_PAGE_TITLE: 'Editor Konfigurasi Produk',
+    BACK_TO_PRODUCTS: 'Kembali ke Daftar Produk',
+    NEW_PRODUCT_BTN: 'Editor Produk Baru',
+    OPEN_EDITOR_BTN: 'Editor Lengkap',
+    CREATE_STEP_DESC:
+      'Langkah 1 membuat draf inti produk tanpa harga langsung. Setelah tersimpan, lanjutkan konfigurasi SKU, foto Storage, kategori, paket, dan klaim diet/alergen dalam satu simpan atomik.',
+    SAVE_DRAFT_BTN: 'Simpan Konfigurasi Draf',
+    SAVE_PUBLISH_BTN: 'Simpan & Publikasikan',
+    CONCURRENCY_CONFLICT_ACTION: 'Muat Ulang Data Terbaru',
+    PREVIEW_HEADING: 'Pratinjau Kartu Katalog Publik',
+    PREVIEW_SUBTITLE:
+      'Menggunakan komponen MenuProductCard dan kalkulator harga resmi yang sama dengan halaman /menu.',
+    PREVIEW_NO_BRANCH_NOTE:
+      'Harga efektif penuh dan penawaran cabang mengikuti ketersediaan masing-masing cabang pada tahap penawaran.',
+    ERRORS: {
+      DUPLICATE_CATEGORY: 'Kategori tidak boleh dipilih lebih dari sekali.',
+      SINGLE_PRIMARY_CATEGORY:
+        'Pilih tepat satu kategori utama bila kategori ditambahkan.',
+      MIN_ONE_VARIANT: 'Minimal satu varian SKU wajib tersedia.',
+      DUPLICATE_SKU: 'Kode SKU tidak boleh duplikat pada produk ini.',
+      SKU_IMMUTABLE:
+        'SKU varian yang sudah tersimpan bersifat permanen dan tidak bisa diubah.',
+      SINGLE_DEFAULT_VARIANT:
+        'Tepat satu varian non-arsip harus ditandai sebagai varian default.',
+      SIMPLE_MAX_ACTIVE_VARIANTS:
+        'Produk tipe tunggal hanya boleh memiliki 1 varian berstatus aktif.',
+      SINGLE_PRIMARY_IMAGE:
+        'Maksimal satu foto yang boleh ditandai sebagai foto utama.',
+      IMAGE_ALT_REQUIRED_FOR_APPROVAL:
+        'Foto yang disetujui wajib memiliki teks alt (minimal 3 karakter).',
+      IMAGE_STORAGE_INVALID:
+        'Path atau bucket foto tidak valid. Unggah ulang melalui endpoint upload admin.',
+      FOREIGN_OR_INVALID_COMPONENT:
+        'Komponen paket harus merujuk ke SKU aktif produk non-bundle lain (bukan produk ini sendiri).',
+      DUPLICATE_COMPONENT_IN_BUNDLE:
+        'Varian komponen yang sama tidak boleh dipakai berulang dalam konfigurasi paket.',
+      INVALID_BUNDLE_UNITS:
+        'Paket Chiffon Mix harus tepat 12 potong (Cheese 3 + Choco 3 tetap + 2 grup pilihan masing-masing 1 rasa × 3 potong).',
+      DIETARY_EVIDENCE_REQUIRED:
+        'Klaim diet terverifikasi wajib disertai catatan bukti pemeriksaan (minimal 3 karakter).',
+      GF_COMPONENT_UNVERIFIED:
+        'Klaim Gluten-Free terverifikasi pada paket membutuhkan seluruh komponen tetap dan pilihan aktif juga terverifikasi Gluten-Free.',
+      VARIANT_REFERENCED_BY_BUNDLE:
+        'Varian tidak dapat diarsipkan karena masih dirujuk oleh konfigurasi paket aktif lain.',
+      VARIANT_ARCHIVE_REQUIRED:
+        'Varian yang sudah memiliki referensi tidak boleh dihapus; gunakan arsip lunak.',
+    },
+  },
+  MEDIA: {
+    SECTION_TITLE: 'Media Foto Produk (Draft Privat → Publik Terkurasi)',
+    UPLOAD_LABEL: 'Unggah Foto Baru (JPG/PNG/WebP/AVIF, maks 5 MiB)',
+    UPLOAD_PENDING: 'Memvalidasi dan mengunggah ke bucket privat...',
+    DRAFT_BADGE: 'Draf Privat (Signed URL)',
+    APPROVED_BADGE: 'Disetujui Publik',
+    PROMOTE_LABEL: 'Setujui & Promosikan ke Bucket Publik saat Simpan',
+    PRIMARY_LABEL: 'Foto Utama Kartu',
+    ALT_LABEL: 'Teks Alt (Aksesibilitas & Publikasi)',
+    VARIANT_LINK_LABEL: 'Tautkan ke Varian (Opsional)',
+    ALL_VARIANTS_OPTION: 'Umum (Semua Varian)',
+    REMOVE_IMAGE_BTN: 'Hapus Foto dari Produk',
+    ERRORS: {
+      FILE_TOO_LARGE: 'Ukuran berkas melebihi batas maksimal 5 MiB.',
+      INVALID_FILE_TYPE:
+        'Format berkas tidak valid atau spoofed. Gunakan JPG, PNG, WebP, atau AVIF yang valid (SVG ditolak).',
+      DIMENSIONS_EXCEEDED:
+        'Dimensi foto tidak boleh melebihi 6000 × 6000 piksel atau berkas rusak.',
+      INVALID_STORAGE_PATH: 'Path Storage tidak valid atau tidak aman.',
     },
   },
 } as const;

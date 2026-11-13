@@ -16,18 +16,23 @@ import {
   readAdminCategoriesRequest,
   readAdminOverviewRequest,
   readAdminProductDetailRequest,
+  readAdminProductEditorRequest,
   readAdminProductsRequest,
+  saveAdminProductConfigurationRequest,
   updateAdminCategoryRequest,
   updateAdminProductRequest,
+  uploadAdminProductMediaRequest,
 } from '@/services/admin-catalog.service';
 import type {
   AdminCategoryListResponse,
   AdminOverviewResponse,
+  AdminProductEditorAggregate,
   AdminProductListResponse,
   AdminProductQuery,
   ArchiveAdminEntityInput,
   CreateAdminCategoryInput,
   CreateAdminProductInput,
+  SaveProductConfigurationInput,
   UpdateAdminCategoryInput,
   UpdateAdminProductInput,
 } from '@/types/admin-catalog';
@@ -218,5 +223,40 @@ export function useArchiveAdminProduct() {
       payload: ArchiveAdminEntityInput;
     }) => archiveAdminProductRequest(id, payload),
     onSuccess: () => invalidateCatalogScopes(queryClient),
+  });
+}
+
+export function useAdminProductEditor(
+  profile: AdminSessionProfile,
+  productId: string,
+  initialData?: AdminProductEditorAggregate,
+) {
+  return useQuery({
+    queryKey: QUERY_KEYS.ADMIN_PRODUCT_EDITOR(toIdentity(profile), productId),
+    queryFn: async ({ signal }) => {
+      const response = await readAdminProductEditorRequest(productId, signal);
+      return response.data.editor;
+    },
+    initialData,
+    enabled: profile.role === 'owner' && Boolean(productId),
+    staleTime: 0,
+    gcTime: 60_000,
+    retry: false,
+  });
+}
+
+export function useSaveAdminProductConfiguration(productId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: SaveProductConfigurationInput) =>
+      saveAdminProductConfigurationRequest(productId, payload),
+    onSuccess: () => invalidateCatalogScopes(queryClient),
+  });
+}
+
+export function useUploadAdminProductMedia() {
+  return useMutation({
+    mutationFn: (file: File) => uploadAdminProductMediaRequest(file),
   });
 }

@@ -5,15 +5,19 @@ import type {
   ArchiveAdminEntityInput,
   CreateAdminCategoryInput,
   CreateAdminProductInput,
+  SaveProductConfigurationInput,
   UpdateAdminCategoryInput,
   UpdateAdminProductInput,
 } from '@/types/admin-catalog';
 import {
   adminCategoryDetailResponseSchema,
   adminCategoryListResponseSchema,
+  adminMediaUploadResponseSchema,
   adminOverviewResponseSchema,
+  adminProductDetailAggregateResponseSchema,
   adminProductDetailResponseSchema,
   adminProductListResponseSchema,
+  adminSaveConfigurationResponseSchema,
 } from '@/validations/admin-catalog.schema';
 
 export function readAdminOverviewRequest(signal?: AbortSignal) {
@@ -164,5 +168,53 @@ export function archiveAdminProductRequest(
       signal,
     },
     adminProductDetailResponseSchema,
+  );
+}
+
+export function readAdminProductEditorRequest(
+  id: string,
+  signal?: AbortSignal,
+) {
+  return requestApi(
+    {
+      url: `${API_ENDPOINTS.ADMIN_PRODUCTS}/${encodeURIComponent(id)}`,
+      method: 'GET',
+      params: { include: 'editor' },
+      signal,
+    },
+    adminProductDetailAggregateResponseSchema,
+  );
+}
+
+export function saveAdminProductConfigurationRequest(
+  id: string,
+  payload: SaveProductConfigurationInput,
+  signal?: AbortSignal,
+) {
+  return requestApi(
+    {
+      url: `${API_ENDPOINTS.ADMIN_PRODUCTS}/${encodeURIComponent(id)}/configuration`,
+      method: 'PUT',
+      data: payload,
+      signal,
+    },
+    adminSaveConfigurationResponseSchema,
+  );
+}
+
+export function uploadAdminProductMediaRequest(
+  file: File,
+  signal?: AbortSignal,
+) {
+  const formData = new FormData();
+  formData.append('file', file);
+  return requestApi(
+    {
+      url: API_ENDPOINTS.ADMIN_MEDIA_UPLOAD,
+      method: 'POST',
+      data: formData,
+      signal,
+    },
+    adminMediaUploadResponseSchema,
   );
 }

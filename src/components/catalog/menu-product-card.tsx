@@ -1,5 +1,5 @@
 import { ArrowRight } from 'lucide-react';
-import { MediaPlaceholder } from '@/app/_components';
+import { MenuProductCardMedia } from '@/components/catalog/menu-product-card-media';
 import { ActionLink } from '@/components/ui/action-link';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
@@ -8,15 +8,15 @@ import {
   CATALOG_AVAILABILITY_LABELS,
   CATALOG_COPY,
 } from '@/constants/catalog.constant';
-import { formatIdr } from '@/features/catalog/pricing';
 import { withBranch } from '@/utils/branch-url';
-import { cn } from '@/utils';
+import { cn, formatIdr } from '@/utils';
 import type { CatalogProductItem } from '@/types/catalog';
 
 interface MenuProductCardProps {
   product: CatalogProductItem;
   hasBranchSelected: boolean;
   branchCode: string | null;
+  previewImageUrl?: string | null;
   className?: string;
 }
 
@@ -24,6 +24,7 @@ export function MenuProductCard({
   product,
   hasBranchSelected,
   branchCode,
+  previewImageUrl = null,
   className,
 }: MenuProductCardProps) {
   const detailHref = withBranch(
@@ -44,9 +45,10 @@ export function MenuProductCard({
 
   return (
     <Card className={cn('menu-product-card', className)}>
-      <MediaPlaceholder
-        caption={product.imageAlt}
-        className="home-card-media"
+      <MenuProductCardMedia
+        previewImageUrl={previewImageUrl}
+        imageAlt={product.imageAlt || product.name}
+        placeholderCaption={product.imageAlt}
       />
 
       <div className="home-badge-row">

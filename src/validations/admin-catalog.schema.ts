@@ -1,10 +1,19 @@
 import { z } from 'zod';
 
 import {
+  ADMIN_ALLERGEN_PRESENCES,
+  ADMIN_BUNDLE_SLOTS,
   ADMIN_CATALOG_LIMITS,
   ADMIN_CATALOG_STATUSES,
+  ADMIN_DIETARY_VERIFICATION_STATUSES,
+  ADMIN_MEDIA_LIMITS,
   ADMIN_PRODUCT_TYPES,
+  ADMIN_VARIANT_STATUSES,
 } from '@/constants/admin-catalog.constant';
+import {
+  ADMIN_MEDIA_ALLOWED_MIME_TYPES,
+  ADMIN_MEDIA_BUCKETS,
+} from '@/utils/admin-media';
 import { adminRoleSchema } from '@/validations/auth.schema';
 
 export const adminCatalogStatusSchema = z.enum(ADMIN_CATALOG_STATUSES);
@@ -236,4 +245,231 @@ export const updateAdminProductSchema = z.strictObject({
     .min(ADMIN_CATALOG_LIMITS.SORT_ORDER_MIN)
     .max(ADMIN_CATALOG_LIMITS.SORT_ORDER_MAX),
   expectedUpdatedAt: isoTimestampSchema,
+});
+
+export const adminVariantStatusSchema = z.enum(ADMIN_VARIANT_STATUSES);
+export const adminDietaryVerificationStatusSchema = z.enum(
+  ADMIN_DIETARY_VERIFICATION_STATUSES,
+);
+export const adminAllergenPresenceSchema = z.enum(ADMIN_ALLERGEN_PRESENCES);
+const adminBundleSlotSchema = z.enum(ADMIN_BUNDLE_SLOTS);
+const adminStorageBucketSchema = z.enum([
+  ADMIN_MEDIA_BUCKETS.DRAFTS,
+  ADMIN_MEDIA_BUCKETS.PRODUCT_IMAGES,
+]);
+
+const skuSchema = z
+  .string()
+  .trim()
+  .min(1, { message: 'Kode SKU wajib diisi.' })
+  .max(80)
+  .regex(/^[A-Z0-9]+([_-][A-Z0-9]+)*$/, {
+    message:
+      'SKU harus huruf kapital/angka dengan pemisah strip atau garis bawah (contoh: DEMO-F04-6).',
+  });
+
+export const adminConfigCategorySchema = z.strictObject({
+  categoryId: z.uuid({ message: 'Kategori tidak valid.' }),
+  isPrimary: z.boolean(),
+});
+
+export const adminConfigFixedComponentSchema = z.strictObject({
+  id: z.uuid(),
+  componentVariantId: z.uuid({ message: 'Varian komponen wajib dipilih.' }),
+  componentSlot: adminBundleSlotSchema,
+  quantity: z.int().min(1).max(99),
+  sortOrder: z.int().min(0).max(9999),
+});
+
+export const adminConfigOptionChoiceSchema = z.strictObject({
+  id: z.uuid(),
+  label: z
+    .string()
+    .trim()
+    .min(1, { message: 'Label pilihan wajib diisi.' })
+    .max(200),
+  componentVariantId: z.uuid({ message: 'Varian komponen wajib dipilih.' }),
+  priceDeltaIdr: z.int().min(0).max(ADMIN_CATALOG_LIMITS.MAX_UNIT_PRICE_IDR),
+  isActive: z.boolean(),
+  sortOrder: z.int().min(0).max(9999),
+});
+
+export const adminConfigOptionGroupSchema = z.strictObject({
+  id: z.uuid(),
+  name: z
+    .string()
+    .trim()
+    .min(1, { message: 'Nama grup pilihan wajib diisi.' })
+    .max(200),
+  minSelect: z.int().min(0).max(99),
+  maxSelect: z.int().min(0).max(99),
+  quantityPerSelection: z.int().min(1).max(99),
+  sortOrder: z.int().min(0).max(9999),
+  isRequired: z.boolean(),
+  choices: z.array(adminConfigOptionChoiceSchema).max(24),
+});
+
+export const adminConfigDietaryTagSchema = z.strictObject({
+  dietaryTagId: z.uuid(),
+  verificationStatus: adminDietaryVerificationStatusSchema,
+  verifiedAt: isoTimestampSchema.nullable(),
+  note: nullableTrimmedText(ADMIN_CATALOG_LIMITS.NOTES_MAX),
+});
+
+export const adminConfigAllergenSchema = z.strictObject({
+  allergenId: z.uuid(),
+  presence: adminAllergenPresenceSchema,
+  sourceNote: nullableTrimmedText(ADMIN_CATALOG_LIMITS.NOTES_MAX),
+  verifiedAt: isoTimestampSchema.nullable(),
+});
+
+export const adminConfigVariantSchema = z.strictObject({
+  id: z.uuid(),
+  sku: skuSchema,
+  name: z
+    .string()
+    .trim()
+    .min(1, { message: 'Nama varian wajib diisi.' })
+    .max(200),
+  sizeLabel: nullableTrimmedText(200),
+  basePriceIdr: z
+    .int({ message: 'Harga dasar varian harus bilangan bulat rupiah.' })
+    .min(1, { message: 'Harga varian minimal Rp1.' })
+    .max(ADMIN_CATALOG_LIMITS.MAX_UNIT_PRICE_IDR),
+  status: adminVariantStatusSchema,
+  sortOrder: z.int().min(0).max(9999),
+  maxQuantityPerOrder: z.int().min(1).max(99),
+  isDefault: z.boolean(),
+  bundleRecipe: z.literal('chiffon_mix').nullable(),
+  bundleUnitsTotal: z.int().min(1).max(99).nullable(),
+  bundleRulesVerified: z.boolean(),
+  fixedComponents: z.array(adminConfigFixedComponentSchema).max(10),
+  optionGroups: z.array(adminConfigOptionGroupSchema).max(10),
+  dietaryTags: z.array(adminConfigDietaryTagSchema).max(20),
+  allergens: z.array(adminConfigAllergenSchema).max(30),
+});
+
+export const adminConfigImageSchema = z.strictObject({
+  id: z.uuid(),
+  variantId: z.uuid().nullable(),
+  storageBucket: adminStorageBucketSchema,
+  storagePath: z.string().trim().min(1).max(500),
+  altText: nullableTrimmedText(ADMIN_MEDIA_LIMITS.ALT_TEXT_MAX),
+  isApproved: z.boolean(),
+  isPrimary: z.boolean(),
+  sortOrder: z.int().min(0).max(9999),
+});
+
+export const saveProductConfigurationSchema = z.strictObject({
+  expectedUpdatedAt: isoTimestampSchema,
+  product: z.strictObject({
+    name: z
+      .string()
+      .trim()
+      .min(ADMIN_CATALOG_LIMITS.NAME_MIN, {
+        message: 'Nama produk minimal 2 karakter.',
+      })
+      .max(ADMIN_CATALOG_LIMITS.NAME_MAX),
+    productType: adminProductTypeSchema,
+    status: adminCatalogStatusSchema,
+    shortDescription: nullableTrimmedText(ADMIN_CATALOG_LIMITS.SHORT_DESC_MAX),
+    description: nullableTrimmedText(ADMIN_CATALOG_LIMITS.DESC_MAX),
+    ingredientsInfo: nullableTrimmedText(ADMIN_CATALOG_LIMITS.NOTES_MAX),
+    storageInstructions: nullableTrimmedText(ADMIN_CATALOG_LIMITS.NOTES_MAX),
+    isFeatured: z.boolean(),
+    isBestSeller: z.boolean(),
+    isNew: z.boolean(),
+    needsOwnerReview: z.boolean(),
+    sortOrder: z
+      .int()
+      .min(ADMIN_CATALOG_LIMITS.SORT_ORDER_MIN)
+      .max(ADMIN_CATALOG_LIMITS.SORT_ORDER_MAX),
+  }),
+  categories: z.array(adminConfigCategorySchema).max(20),
+  variants: z.array(adminConfigVariantSchema).min(1).max(30),
+  images: z.array(adminConfigImageSchema).max(30),
+});
+
+export const adminReferenceDietaryTagSchema = z.strictObject({
+  id: z.uuid(),
+  slug: z.string().min(1),
+  name: z.string().min(1),
+  description: z.string().nullable(),
+});
+
+export const adminReferenceAllergenSchema = z.strictObject({
+  id: z.uuid(),
+  slug: z.string().min(1),
+  name: z.string().min(1),
+});
+
+export const adminReferenceComponentVariantSchema = z.strictObject({
+  id: z.uuid(),
+  productId: z.uuid(),
+  productName: z.string().min(1),
+  productSlug: z.string().min(1),
+  productStatus: adminCatalogStatusSchema,
+  productType: adminProductTypeSchema,
+  sku: z.string().min(1),
+  variantName: z.string().min(1),
+  sizeLabel: z.string().nullable(),
+  basePriceIdr: z.int().nonnegative(),
+  status: adminVariantStatusSchema,
+  isGlutenFreeVerified: z.boolean(),
+  listedBranchCount: z.int().nonnegative(),
+});
+
+export const adminEditorVariantSchema = adminConfigVariantSchema.extend({
+  branchOfferCount: z.int().nonnegative(),
+});
+
+export const adminEditorImageSchema = adminConfigImageSchema.extend({
+  previewUrl: z.string().min(1).nullable(),
+});
+
+export const adminProductEditorAggregateSchema = z.strictObject({
+  product: adminProductItemSchema.extend({
+    shortDescription: z.string().nullable(),
+    description: z.string().nullable(),
+    ingredientsInfo: z.string().nullable(),
+    storageInstructions: z.string().nullable(),
+  }),
+  categories: z.array(adminConfigCategorySchema),
+  variants: z.array(adminEditorVariantSchema),
+  images: z.array(adminEditorImageSchema),
+  referenceData: z.strictObject({
+    categories: z.array(adminCategoryItemSchema),
+    dietaryTags: z.array(adminReferenceDietaryTagSchema),
+    allergens: z.array(adminReferenceAllergenSchema),
+    componentVariants: z.array(adminReferenceComponentVariantSchema),
+  }),
+});
+
+export const adminProductDetailAggregateResponseSchema = z.strictObject({
+  product: adminProductItemSchema,
+  editor: adminProductEditorAggregateSchema,
+});
+
+export const adminProductBootstrapResponseSchema = z.strictObject({
+  categories: z.array(adminCategoryItemSchema),
+  dietaryTags: z.array(adminReferenceDietaryTagSchema),
+  allergens: z.array(adminReferenceAllergenSchema),
+  componentVariants: z.array(adminReferenceComponentVariantSchema),
+});
+
+export const adminSaveConfigurationResponseSchema = z.strictObject({
+  productId: z.uuid(),
+  updatedAt: isoTimestampSchema,
+  editor: adminProductEditorAggregateSchema,
+});
+
+export const adminMediaUploadResponseSchema = z.strictObject({
+  storageBucket: z.literal(ADMIN_MEDIA_BUCKETS.DRAFTS),
+  storagePath: z.string().min(1),
+  previewUrl: z.string().min(1),
+  mimeType: z.enum(ADMIN_MEDIA_ALLOWED_MIME_TYPES),
+  byteSize: z.int().positive().max(ADMIN_MEDIA_LIMITS.MAX_FILE_BYTES),
+  width: z.int().positive().max(ADMIN_MEDIA_LIMITS.MAX_DIMENSION_PX),
+  height: z.int().positive().max(ADMIN_MEDIA_LIMITS.MAX_DIMENSION_PX),
+  originalFileName: z.string().min(1).max(120),
 });
