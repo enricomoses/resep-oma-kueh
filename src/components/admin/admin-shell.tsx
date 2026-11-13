@@ -49,6 +49,8 @@ function getNavIcon(id: string) {
       return <Store size={18} aria-hidden="true" />;
     case 'locations':
       return <MapPin size={18} aria-hidden="true" />;
+    case 'promotions':
+      return <Tags size={18} aria-hidden="true" />;
     default:
       return <ShieldCheck size={18} aria-hidden="true" />;
   }

@@ -167,6 +167,13 @@ export function AdminOverviewView({
               >
                 {ADMIN_CATALOG_COPY.LOCATIONS.TITLE}
               </ActionLink>
+              <ActionLink
+                href={ROUTES.ADMIN_PROMOTIONS}
+                variant="secondary"
+                size="sm"
+              >
+                {ADMIN_CATALOG_COPY.PROMOTIONS.TITLE}
+              </ActionLink>
             </div>
           </Card>
         </>

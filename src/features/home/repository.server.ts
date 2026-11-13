@@ -50,7 +50,7 @@ export async function readActivePromotions(signal?: AbortSignal) {
   const { data, error } = await createPublicReadClient()
     .from('promotions')
     .select(
-      'id,title,slug,description,discount_type,discount_value,min_spend_idr,max_discount_idr,scope,starts_at,ends_at,status,is_enabled,is_stackable,priority,promotion_branches(branch_id),promotion_categories(category_id),promotion_products(product_id),promotion_variants(variant_id)',
+      'id,title,slug,description,discount_type,discount_value,min_spend_idr,max_discount_idr,scope,starts_at,ends_at,status,is_enabled,is_stackable,priority,banner_image_path,promotion_branches(branch_id),promotion_categories(category_id),promotion_products(product_id),promotion_variants(variant_id)',
     )
     .eq('status', 'published')
     .eq('is_enabled', true)

@@ -22,6 +22,7 @@ import { CART_CONFLICTS, CART_COPY } from '@/constants/cart.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { useBranches } from '@/hooks/use-branches';
 import { useCart } from '@/hooks/use-cart';
+import { usePublicPromotions } from '@/hooks/use-promotions';
 import { withBranch } from '@/utils/branch-url';
 import { cn, formatIdr } from '@/utils';
 import type { CartValidatedLine } from '@/types/cart';
@@ -49,6 +50,11 @@ export function CartView({ className }: CartViewProps) {
   } = useCart();
 
   const { selected: selectedBranch, code: branchCode } = useBranches();
+  const { data: promoData } = usePublicPromotions(
+    branchCode,
+    Boolean(branchCode),
+  );
+  const shippingBanner = promoData?.shippingBanner ?? null;
   const [clearDialogOpen, setClearDialogOpen] = useState(false);
 
   // 1. Loading / Hydration State (distinct from empty cart)
@@ -362,6 +368,16 @@ export function CartView({ className }: CartViewProps) {
 
               {/* Price Caveat */}
               <p className="cart-price-caveat">{CART_COPY.PRICE_CAVEAT_NOTE}</p>
+
+              {shippingBanner ? (
+                <Feedback
+                  tone="info"
+                  title={shippingBanner.title}
+                  className="mt-3"
+                >
+                  <p className="text-xs">{shippingBanner.body}</p>
+                </Feedback>
+              ) : null}
 
               {/* Checkout Action Button */}
               <div className="mt-6">

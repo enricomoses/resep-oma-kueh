@@ -1208,6 +1208,13 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      archive_admin_promotion: {
+        Args: {
+          p_expected_updated_at: string;
+          p_promotion_id: string;
+        };
+        Returns: Json;
+      };
       owner_upsert_branch_offer: {
         Args: {
           p_availability_status: string;
@@ -1259,6 +1266,14 @@ export type Database = {
           p_branch_id: string;
           p_expected_branch_updated_at: string;
           p_hours: Json;
+        };
+        Returns: Json;
+      };
+      save_admin_promotion: {
+        Args: {
+          p_expected_updated_at: string | null;
+          p_payload: Json;
+          p_promotion_id: string | null;
         };
         Returns: Json;
       };

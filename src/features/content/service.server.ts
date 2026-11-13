@@ -142,6 +142,16 @@ function getTemplateEntryForKey(key: PublicCmsKey): PublicCmsEntry {
           items: [],
         },
       };
+    case 'promo.shipping_banner':
+      return {
+        key,
+        source: 'template',
+        updatedAt: null,
+        content: {
+          title: 'Informasi Ongkos Kirim',
+          body: 'Ongkos kirim dikonfirmasi langsung oleh admin cabang melalui WhatsApp setelah pesanan disiapkan.',
+        },
+      };
   }
 }
 

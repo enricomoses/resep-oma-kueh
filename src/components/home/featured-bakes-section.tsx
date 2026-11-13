@@ -58,6 +58,10 @@ export function FeaturedBakesSection({
               selectedBranchId && product.branchFromPriceIdr
                 ? product.branchFromPriceIdr[selectedBranchId]
                 : undefined;
+            const branchPromo =
+              selectedBranchId && product.branchPromotions
+                ? product.branchPromotions[selectedBranchId]
+                : undefined;
             return (
               <Card key={product.id} className="home-featured-card">
                 <MediaPlaceholder
@@ -66,6 +70,9 @@ export function FeaturedBakesSection({
                 />
                 <div className="home-badge-row">
                   <Badge tone="accent">{HOME_COPY.BADGE_FEATURED}</Badge>
+                  {branchPromo ? (
+                    <Badge tone="accent">{branchPromo.badgeTitle}</Badge>
+                  ) : null}
                   {product.isBestSeller ? (
                     <Badge tone="success">{HOME_COPY.BADGE_BEST_SELLER}</Badge>
                   ) : null}
@@ -87,9 +94,22 @@ export function FeaturedBakesSection({
                     <p>{product.shortDescription ?? product.description}</p>
                   ) : null}
                   <p className="home-price-note">
-                    {branchPrice !== undefined
-                      ? `${HOME_COPY.FEATURED_PRICE_FROM_PREFIX} ${formatIdr(branchPrice)}`
-                      : HOME_COPY.FEATURED_PRICE_NOTE}
+                    {branchPrice !== undefined ? (
+                      <>
+                        <span>
+                          {HOME_COPY.FEATURED_PRICE_FROM_PREFIX}{' '}
+                          {formatIdr(branchPrice)}
+                        </span>
+                        {branchPromo &&
+                        branchPrice < branchPromo.originalFromPriceIdr ? (
+                          <span className="ml-2 line-through opacity-75">
+                            {formatIdr(branchPromo.originalFromPriceIdr)}
+                          </span>
+                        ) : null}
+                      </>
+                    ) : (
+                      HOME_COPY.FEATURED_PRICE_NOTE
+                    )}
                   </p>
                 </div>
                 <ActionLink

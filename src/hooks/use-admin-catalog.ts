@@ -21,8 +21,13 @@ import {
   readAdminProductDetailRequest,
   readAdminProductEditorRequest,
   readAdminProductsRequest,
+  readAdminPromotionsRequest,
   replaceAdminBranchHoursRequest,
   saveAdminProductConfigurationRequest,
+  saveAdminPromotionRequest,
+  saveAdminShippingBannerRequest,
+  archiveAdminPromotionRequest,
+  createAdminPromotionRequest,
   updateAdminBranchRequest,
   updateAdminCategoryRequest,
   updateAdminProductRequest,
@@ -50,6 +55,11 @@ import type {
   UpsertBranchAvailabilityInput,
 } from '@/types/admin-catalog';
 import type { AdminSessionProfile } from '@/types/auth';
+import type {
+  AdminPromotionsListResponse,
+  SaveAdminPromotionInput,
+  SaveAdminShippingBannerInput,
+} from '@/types/promotion';
 
 const PUBLIC_BRANCHES_PREFIX = ['resep-oma-kueh', 'branches'] as const;
 const PUBLIC_CATALOG_PREFIX = ['resep-oma-kueh', 'catalog'] as const;
@@ -57,6 +67,7 @@ const PUBLIC_PRODUCT_DETAIL_PREFIX = [
   'resep-oma-kueh',
   'product-detail',
 ] as const;
+const PUBLIC_PROMOTIONS_PREFIX = ['resep-oma-kueh', 'promotions'] as const;
 const PUBLIC_CONTENT_PREFIX = ['resep-oma-kueh', 'content'] as const;
 const PUBLIC_CART_VALIDATE_PREFIX = [
   'resep-oma-kueh',
@@ -71,25 +82,31 @@ function toIdentity(profile: AdminSessionProfile) {
   };
 }
 
-async function invalidateCatalogScopes(queryClient: QueryClient) {
-  await Promise.all([
+function invalidateCatalogScopes(queryClient: QueryClient) {
+  void Promise.all([
     queryClient.invalidateQueries({ queryKey: QUERY_KEYS.ADMIN_ROOT }),
     queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CATEGORIES }),
     queryClient.invalidateQueries({ queryKey: PUBLIC_CATALOG_PREFIX }),
     queryClient.invalidateQueries({ queryKey: PUBLIC_PRODUCT_DETAIL_PREFIX }),
-  ]);
+    queryClient.invalidateQueries({ queryKey: PUBLIC_PROMOTIONS_PREFIX }),
+  ]).catch(() => undefined);
 }
 
-async function invalidateBranchOfferScopes(queryClient: QueryClient) {
-  await Promise.all([
+function invalidateBranchOfferScopes(queryClient: QueryClient) {
+  void Promise.all([
     queryClient.invalidateQueries({ queryKey: QUERY_KEYS.ADMIN_ROOT }),
     queryClient.invalidateQueries({ queryKey: PUBLIC_BRANCHES_PREFIX }),
     queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CATEGORIES }),
     queryClient.invalidateQueries({ queryKey: PUBLIC_CATALOG_PREFIX }),
     queryClient.invalidateQueries({ queryKey: PUBLIC_PRODUCT_DETAIL_PREFIX }),
+    queryClient.invalidateQueries({ queryKey: PUBLIC_PROMOTIONS_PREFIX }),
     queryClient.invalidateQueries({ queryKey: PUBLIC_CONTENT_PREFIX }),
     queryClient.invalidateQueries({ queryKey: PUBLIC_CART_VALIDATE_PREFIX }),
-  ]);
+  ]).catch(() => undefined);
+}
+
+function invalidatePromotionScopes(queryClient: QueryClient) {
+  invalidateBranchOfferScopes(queryClient);
 }
 
 export function useAdminOverview(
@@ -391,9 +408,76 @@ export function useBulkUpdateAdminAvailability() {
       bulkUpdateAdminAvailabilityRequest(payload),
     onSuccess: (response) => {
       if (response.data.succeededCount > 0) {
-        return invalidateBranchOfferScopes(queryClient);
+        invalidateBranchOfferScopes(queryClient);
       }
-      return undefined;
     },
+  });
+}
+
+export function useAdminPromotions(
+  profile: AdminSessionProfile,
+  initialData?: AdminPromotionsListResponse,
+) {
+  return useQuery({
+    queryKey: QUERY_KEYS.ADMIN_PROMOTIONS(toIdentity(profile)),
+    queryFn: async ({ signal }) => {
+      const response = await readAdminPromotionsRequest(signal);
+      return response.data;
+    },
+    initialData,
+    enabled: profile.role === 'owner',
+    staleTime: 0,
+    gcTime: 60_000,
+    retry: false,
+  });
+}
+
+export function useCreateAdminPromotion() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: SaveAdminPromotionInput) =>
+      createAdminPromotionRequest(payload),
+    onSuccess: () => invalidatePromotionScopes(queryClient),
+  });
+}
+
+export function useUpdateAdminPromotion() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: SaveAdminPromotionInput;
+    }) => saveAdminPromotionRequest(id, payload),
+    onSuccess: () => invalidatePromotionScopes(queryClient),
+  });
+}
+
+export function useArchiveAdminPromotion() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      expectedUpdatedAt,
+    }: {
+      id: string;
+      expectedUpdatedAt: string;
+    }) => archiveAdminPromotionRequest(id, { expectedUpdatedAt }),
+    onSuccess: () => invalidatePromotionScopes(queryClient),
+  });
+}
+
+export function useSaveAdminShippingBanner() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: SaveAdminShippingBannerInput) =>
+      saveAdminShippingBannerRequest(payload),
+    onSuccess: () => invalidatePromotionScopes(queryClient),
   });
 }

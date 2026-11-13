@@ -1,9 +1,12 @@
 import { Tag } from 'lucide-react';
+import Image from 'next/image';
 import { Card } from '@/components/ui/card';
 import { Feedback } from '@/components/ui/feedback';
 import { HOME_COPY, HOME_SECTION_IDS } from '@/constants/home.constant';
-import { cn } from '@/utils';
 import type { HomePromotion, HomeSectionResult } from '@/types/home';
+import type { PublicShippingBanner } from '@/types/promotion';
+import { cn } from '@/utils';
+import { formatJakartaDateTimeDisplay } from '@/utils/admin-promotions';
 
 const rupiahFormatter = new Intl.NumberFormat('id-ID', {
   style: 'currency',
@@ -22,12 +25,14 @@ interface CurrentTreatsSectionProps {
   promotions: HomeSectionResult<HomePromotion[]>;
   selectedBranchId: string | null;
   selectedBranchName: string | null;
+  shippingBanner?: PublicShippingBanner | null;
   className?: string;
 }
 export function CurrentTreatsSection({
   promotions,
   selectedBranchId,
   selectedBranchName,
+  shippingBanner,
   className,
 }: CurrentTreatsSectionProps) {
   const visiblePromotions =
@@ -54,6 +59,11 @@ export function CurrentTreatsSection({
           <p className="home-section-subtitle">{HOME_COPY.TREATS_SUBTITLE}</p>
         </div>
       </div>
+      {shippingBanner ? (
+        <Feedback tone="info" title={shippingBanner.title} className="mb-4">
+          <p className="text-xs">{shippingBanner.body}</p>
+        </Feedback>
+      ) : null}
       {promotions.status === 'error' ? (
         <Feedback tone="error" title={HOME_COPY.TREATS_ERROR} />
       ) : visiblePromotions.length === 0 ? (
@@ -62,6 +72,18 @@ export function CurrentTreatsSection({
         <div className="home-treats-grid">
           {visiblePromotions.map((promotion) => (
             <Card key={promotion.id} className="home-treat-card">
+              {promotion.bannerImageUrl ? (
+                <div className="relative mb-3 h-36 w-full overflow-hidden rounded-[var(--radius-sm)] border border-[var(--border-sand)]">
+                  <Image
+                    src={promotion.bannerImageUrl}
+                    alt={`Banner promosi ${promotion.title}`}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 380px"
+                    unoptimized
+                    className="object-cover"
+                  />
+                </div>
+              ) : null}
               <div className="home-treat-header">
                 <span className="home-campaign-pill">
                   <Tag size={14} aria-hidden="true" />
@@ -73,6 +95,10 @@ export function CurrentTreatsSection({
               </div>
               <h3>{promotion.title}</h3>
               {promotion.description ? <p>{promotion.description}</p> : null}
+              <p className="text-muted-foreground text-xs">
+                {formatJakartaDateTimeDisplay(promotion.startsAt)} –{' '}
+                {formatJakartaDateTimeDisplay(promotion.endsAt)}
+              </p>
               <p className="home-price-note">
                 {promotion.branchIds.length === 0
                   ? HOME_COPY.TREATS_ALL_BRANCHES

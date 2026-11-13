@@ -106,6 +106,7 @@ export const cmsPayloadSchemasByKey = {
   'legal.privacy': cmsTitleBodyPayloadSchema,
   'legal.ordering_policy': cmsTitleBodyPayloadSchema,
   'community.instagram': cmsCommunityInstagramPayloadSchema,
+  'promo.shipping_banner': cmsTitleBodyPayloadSchema,
 } as const;
 
 const contentSourceSchema = z.enum(['published', 'template']);
@@ -197,6 +198,14 @@ export const publicCmsEntrySchema = z.discriminatedUnion('key', [
       source: contentSourceSchema,
       updatedAt: z.string().nullable(),
       content: cmsCommunityInstagramPayloadSchema,
+    })
+    .strict(),
+  z
+    .object({
+      key: z.literal('promo.shipping_banner'),
+      source: contentSourceSchema,
+      updatedAt: z.string().nullable(),
+      content: cmsTitleBodyPayloadSchema,
     })
     .strict(),
 ]);

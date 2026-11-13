@@ -30,6 +30,16 @@ import {
   adminSaveConfigurationResponseSchema,
 } from '@/validations/admin-catalog.schema';
 
+import type {
+  SaveAdminPromotionInput,
+  SaveAdminShippingBannerInput,
+} from '@/types/promotion';
+import {
+  adminPromotionMutationResponseSchema,
+  adminPromotionsListResponseSchema,
+  adminShippingBannerMutationResponseSchema,
+} from '@/validations/promotion.schema';
+
 export function readAdminOverviewRequest(signal?: AbortSignal) {
   return requestApi(
     {
@@ -316,5 +326,78 @@ export function bulkUpdateAdminAvailabilityRequest(
       signal,
     },
     adminBulkAvailabilityResponseSchema,
+  );
+}
+
+export function readAdminPromotionsRequest(signal?: AbortSignal) {
+  return requestApi(
+    {
+      url: API_ENDPOINTS.ADMIN_PROMOTIONS,
+      method: 'GET',
+      signal,
+    },
+    adminPromotionsListResponseSchema,
+  );
+}
+
+export function createAdminPromotionRequest(
+  payload: SaveAdminPromotionInput,
+  signal?: AbortSignal,
+) {
+  return requestApi(
+    {
+      url: API_ENDPOINTS.ADMIN_PROMOTIONS,
+      method: 'POST',
+      data: payload,
+      signal,
+    },
+    adminPromotionMutationResponseSchema,
+  );
+}
+
+export function saveAdminPromotionRequest(
+  promotionId: string,
+  payload: SaveAdminPromotionInput,
+  signal?: AbortSignal,
+) {
+  return requestApi(
+    {
+      url: `${API_ENDPOINTS.ADMIN_PROMOTIONS}/${encodeURIComponent(promotionId)}`,
+      method: 'PATCH',
+      data: payload,
+      signal,
+    },
+    adminPromotionMutationResponseSchema,
+  );
+}
+
+export function archiveAdminPromotionRequest(
+  promotionId: string,
+  payload: ArchiveAdminEntityInput,
+  signal?: AbortSignal,
+) {
+  return requestApi(
+    {
+      url: `${API_ENDPOINTS.ADMIN_PROMOTIONS}/${encodeURIComponent(promotionId)}`,
+      method: 'DELETE',
+      data: payload,
+      signal,
+    },
+    adminPromotionMutationResponseSchema,
+  );
+}
+
+export function saveAdminShippingBannerRequest(
+  payload: SaveAdminShippingBannerInput,
+  signal?: AbortSignal,
+) {
+  return requestApi(
+    {
+      url: API_ENDPOINTS.ADMIN_PROMOTIONS_SHIPPING_BANNER,
+      method: 'PUT',
+      data: payload,
+      signal,
+    },
+    adminShippingBannerMutationResponseSchema,
   );
 }

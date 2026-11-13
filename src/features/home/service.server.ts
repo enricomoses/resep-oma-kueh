@@ -5,6 +5,11 @@ import { computeVariantEffectivePrice } from '@/features/catalog/pricing';
 import type { PricingPromotionInput } from '@/features/catalog/pricing';
 import { getCategories } from '@/features/catalog/service.server';
 import {
+  readPublishedShippingBanner,
+  resolvePublicBannerUrl,
+} from '@/features/promotions/repository.server';
+import { mapPublishedShippingBannerRow } from '@/features/promotions/service.server';
+import {
   cmsEditorialPayloadSchema,
   cmsHeroPayloadSchema,
   cmsInstagramPayloadSchema,
@@ -46,6 +51,9 @@ export async function getHomeData(
   const nowDate = options.now ?? new Date();
   const nowMs = nowDate.getTime();
   const rawPromotionsPromise = readActivePromotions(signal).catch(() => null);
+  const rawShippingBannerPromise = readPublishedShippingBanner(signal).catch(
+    () => null,
+  );
 
   const [
     content,
@@ -241,6 +249,10 @@ export async function getHomeData(
             images.find((img) => Boolean(img.alt_text));
 
           const branchFromPriceIdr: Record<string, number> = {};
+          const branchPromotions: Record<
+            string,
+            { badgeTitle: string; originalFromPriceIdr: number }
+          > = {};
           const variants = Array.isArray(row.product_variants)
             ? row.product_variants.filter((v) => v.status === 'active')
             : [];
@@ -284,6 +296,22 @@ export async function getHomeData(
               if (prev === undefined || evaluated.effectivePriceIdr < prev) {
                 branchFromPriceIdr[offer.branch_id] =
                   evaluated.effectivePriceIdr;
+                if (
+                  evaluated.appliedPromotion &&
+                  evaluated.unconditionalDiscountIdr > 0
+                ) {
+                  branchPromotions[offer.branch_id] = {
+                    badgeTitle: evaluated.appliedPromotion.title,
+                    originalFromPriceIdr: evaluated.unitGrossIdr,
+                  };
+                } else if (evaluated.conditionalPromotion) {
+                  branchPromotions[offer.branch_id] = {
+                    badgeTitle: evaluated.conditionalPromotion.title,
+                    originalFromPriceIdr: evaluated.unitGrossIdr,
+                  };
+                } else {
+                  delete branchPromotions[offer.branch_id];
+                }
               }
             }
           }
@@ -302,6 +330,9 @@ export async function getHomeData(
             ...(Object.keys(branchFromPriceIdr).length > 0
               ? { branchFromPriceIdr }
               : {}),
+            ...(Object.keys(branchPromotions).length > 0
+              ? { branchPromotions }
+              : {}),
           });
         });
     }),
@@ -311,15 +342,48 @@ export async function getHomeData(
       return rows
         .filter((row) => {
           if (row.status !== 'published' || !row.is_enabled) return false;
+          if ((row as { is_stackable?: boolean }).is_stackable) return false;
           const startsMs = Date.parse(row.starts_at);
           const endsMs = Date.parse(row.ends_at);
           if (Number.isNaN(startsMs) || Number.isNaN(endsMs)) return false;
-          return startsMs <= nowMs && nowMs < endsMs;
+          if (!(startsMs <= nowMs && nowMs < endsMs)) return false;
+          const promoRow = row as {
+            scope: string;
+            promotion_categories?: { category_id: string }[] | null;
+            promotion_products?: { product_id: string }[] | null;
+            promotion_variants?: { variant_id: string }[] | null;
+          };
+          if (
+            promoRow.scope === 'category' &&
+            Array.isArray(promoRow.promotion_categories) &&
+            promoRow.promotion_categories.length === 0
+          ) {
+            return false;
+          }
+          if (
+            promoRow.scope === 'product' &&
+            Array.isArray(promoRow.promotion_products) &&
+            promoRow.promotion_products.length === 0
+          ) {
+            return false;
+          }
+          if (
+            promoRow.scope === 'variant' &&
+            Array.isArray(promoRow.promotion_variants) &&
+            promoRow.promotion_variants.length === 0
+          ) {
+            return false;
+          }
+          return true;
         })
         .map((row) => {
           const branchRows = Array.isArray(row.promotion_branches)
             ? row.promotion_branches
             : [];
+          const bannerPath =
+            (row as { banner_image_path?: string | null }).banner_image_path ??
+            null;
+          const bannerImageUrl = resolvePublicBannerUrl(bannerPath);
           return homePromotionSchema.parse({
             id: row.id,
             title: row.title,
@@ -333,6 +397,7 @@ export async function getHomeData(
             startsAt: row.starts_at,
             endsAt: row.ends_at,
             branchIds: branchRows.map((item) => item.branch_id),
+            ...(bannerImageUrl ? { bannerImageUrl } : {}),
           });
         });
     }),
@@ -402,6 +467,10 @@ export async function getHomeData(
     }),
   ]);
 
+  const shippingBanner = mapPublishedShippingBannerRow(
+    await rawShippingBannerPromise,
+  );
+
   return homePageDataSchema.parse({
     content,
     categories,
@@ -409,5 +478,6 @@ export async function getHomeData(
     promotions,
     upcomingClasses,
     testimonials,
+    ...(shippingBanner ? { shippingBanner } : {}),
   });
 }

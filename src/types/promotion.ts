@@ -1,0 +1,49 @@
+import type { z } from 'zod';
+
+import type {
+  adminPromotionItemSchema,
+  adminPromotionReferenceOptionsSchema,
+  adminPromotionsListResponseSchema,
+  adminPromotionTargetSummarySchema,
+  adminShippingBannerItemSchema,
+  promotionClockStateSchema,
+  promotionDiscountTypeSchema,
+  promotionScopeSchema,
+  promotionStatusSchema,
+  publicPromotionItemSchema,
+  publicPromotionsQuerySchema,
+  publicPromotionsResponseSchema,
+  publicShippingBannerSchema,
+  saveAdminPromotionSchema,
+  saveAdminShippingBannerSchema,
+} from '@/validations/promotion.schema';
+
+export type PromotionDiscountType = z.infer<typeof promotionDiscountTypeSchema>;
+export type PromotionScope = z.infer<typeof promotionScopeSchema>;
+export type PromotionStatus = z.infer<typeof promotionStatusSchema>;
+export type PromotionClockState = z.infer<typeof promotionClockStateSchema>;
+
+export type PublicPromotionsQuery = z.infer<typeof publicPromotionsQuerySchema>;
+export type PublicPromotionItem = z.infer<typeof publicPromotionItemSchema>;
+export type PublicShippingBanner = z.infer<typeof publicShippingBannerSchema>;
+export type PublicPromotionsResponse = z.infer<
+  typeof publicPromotionsResponseSchema
+>;
+
+export type AdminPromotionTargetSummary = z.infer<
+  typeof adminPromotionTargetSummarySchema
+>;
+export type AdminPromotionItem = z.infer<typeof adminPromotionItemSchema>;
+export type AdminShippingBannerItem = z.infer<
+  typeof adminShippingBannerItemSchema
+>;
+export type AdminPromotionReferenceOptions = z.infer<
+  typeof adminPromotionReferenceOptionsSchema
+>;
+export type AdminPromotionsListResponse = z.infer<
+  typeof adminPromotionsListResponseSchema
+>;
+export type SaveAdminPromotionInput = z.infer<typeof saveAdminPromotionSchema>;
+export type SaveAdminShippingBannerInput = z.infer<
+  typeof saveAdminShippingBannerSchema
+>;

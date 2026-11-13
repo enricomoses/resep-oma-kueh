@@ -1009,6 +1009,67 @@ try {
     { allow_pickup: true },
     'staff cannot toggle fulfillment or update branches',
   );
+  for (const actor of ['anon', 'surabaya', 'bintaro']) {
+    const rpcSavePromo = await rest(actor, 'rpc/save_admin_promotion', 'POST', {
+      p_promotion_id: null,
+      p_expected_updated_at: null,
+      p_payload: {
+        title: 'Bypass Promo',
+        slug: 'bypass-promo',
+        discountType: 'percentage',
+        discountValue: 10,
+        scope: 'all',
+        startsAt: '2026-11-12T00:00:00Z',
+        endsAt: '2026-11-20T00:00:00Z',
+        status: 'published',
+        isEnabled: true,
+        isStackable: false,
+      },
+    });
+    check(
+      [401, 403].includes(rpcSavePromo.status),
+      `${actor} cannot invoke save_admin_promotion RPC`,
+    );
+    const rpcArchivePromo = await rest(
+      actor,
+      'rpc/archive_admin_promotion',
+      'POST',
+      {
+        p_promotion_id: id(40),
+        p_expected_updated_at: '2026-01-01T00:00:00Z',
+      },
+    );
+    check(
+      [401, 403].includes(rpcArchivePromo.status),
+      `${actor} cannot invoke archive_admin_promotion RPC`,
+    );
+  }
+  await denied(
+    'surabaya',
+    'promotions?select=id',
+    'POST',
+    {
+      title: 'Staff Promo',
+      slug: 'staff-promo',
+      discount_type: 'percentage',
+      discount_value: 10,
+      scope: 'all',
+      starts_at: '2026-11-12T00:00:00Z',
+      ends_at: '2026-11-20T00:00:00Z',
+    },
+    'staff cannot insert promotions via REST',
+  );
+  await denied(
+    'bintaro',
+    'site_content?select=key',
+    'POST',
+    {
+      key: 'promo.shipping_banner',
+      content_json: { title: 'Fake Banner', body: 'Gratis ongkir' },
+      status: 'published',
+    },
+    'staff cannot write promo.shipping_banner to site_content via REST',
+  );
   check(
     snapshot() === beforeDenials,
     'all expected denies leave complete business/Storage snapshot identical',
@@ -1076,7 +1137,7 @@ try {
       product_categories: 'product_id',
       branch_variant_offers: 'variant_id',
     };
-    sql(`begin; delete from public.site_content where key in ('footer.note','home.story');
+    sql(`begin; delete from public.site_content where key in ('footer.note','home.story','promo.shipping_banner');
       delete from public.admin_profiles where user_id in (${users.map((u) => `'${u}'`).join(',')});
       ${deleteOrder.map((t) => `delete from public.${t} where ${key[t] ?? 'id'}::text like 'f0300000-%';`).join('\n')} commit;`);
   }

@@ -7,6 +7,8 @@ export const QUERY_KEYS = {
     ['resep-oma-kueh', 'catalog', params] as const,
   PRODUCT_DETAIL: (slug: string, branch: string | null) =>
     ['resep-oma-kueh', 'product-detail', slug, branch] as const,
+  PROMOTIONS: (branch: string | null) =>
+    ['resep-oma-kueh', 'promotions', branch] as const,
   CONTENT: (keys: readonly string[]) =>
     ['resep-oma-kueh', 'content', ...keys] as const,
   FAQS: ['resep-oma-kueh', 'faqs'] as const,
@@ -141,6 +143,21 @@ export const QUERY_KEYS = {
       identity?.role ?? 'none',
       identity?.branchId ?? 'none',
       params,
+    ] as const,
+  ADMIN_PROMOTIONS: (
+    identity: {
+      userId: string;
+      role: string;
+      branchId: string | null;
+    } | null,
+  ) =>
+    [
+      'resep-oma-kueh',
+      'admin',
+      'promotions',
+      identity?.userId ?? 'anon',
+      identity?.role ?? 'none',
+      identity?.branchId ?? 'none',
     ] as const,
 } as const;
 

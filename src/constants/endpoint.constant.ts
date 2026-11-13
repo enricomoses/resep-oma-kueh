@@ -5,6 +5,7 @@ export const API_ENDPOINTS = {
   CATEGORIES: '/categories',
   CATALOG: '/catalog',
   PRODUCTS: '/products',
+  PROMOTIONS: '/promotions',
   CONTENT: '/content',
   FAQS: '/faqs',
   CART_VALIDATE: '/cart/validate',
@@ -20,4 +21,6 @@ export const API_ENDPOINTS = {
   ADMIN_MEDIA_UPLOAD: '/admin/media/upload',
   ADMIN_BRANCHES: '/admin/branches',
   ADMIN_AVAILABILITY: '/admin/availability',
+  ADMIN_PROMOTIONS: '/admin/promotions',
+  ADMIN_PROMOTIONS_SHIPPING_BANNER: '/admin/promotions/shipping-banner',
 } as const;

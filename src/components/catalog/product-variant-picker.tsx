@@ -228,7 +228,16 @@ export function ProductVariantPicker({
                 }
               </Badge>
               {selectedVariant.appliedPromotion ? (
-                <Badge tone="accent">{CATALOG_COPY.BADGE_PROMO_APPLIED}</Badge>
+                <Badge tone="accent">
+                  {CATALOG_COPY.BADGE_PROMO_APPLIED}:{' '}
+                  {selectedVariant.appliedPromotion.title}
+                </Badge>
+              ) : selectedVariant.conditionalPromotion ? (
+                <Badge tone="neutral">
+                  {CATALOG_COPY.BADGE_PROMO_CONDITIONAL}:{' '}
+                  {selectedVariant.conditionalPromotion.title} (min.{' '}
+                  {formatIdr(selectedVariant.conditionalPromotion.minSpendIdr)})
+                </Badge>
               ) : null}
             </div>
           </div>

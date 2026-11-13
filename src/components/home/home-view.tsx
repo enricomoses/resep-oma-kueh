@@ -78,6 +78,7 @@ export function HomeView({ data, contacts, className }: HomeViewProps) {
         promotions={data.promotions}
         selectedBranchId={selected?.id ?? null}
         selectedBranchName={selected?.name ?? null}
+        shippingBanner={data.shippingBanner ?? null}
       />
       <BakeWithOmaSection
         title={content.classPromo.title}

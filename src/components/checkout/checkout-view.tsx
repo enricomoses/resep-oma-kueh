@@ -35,6 +35,7 @@ import { ROUTES } from '@/constants/routes.constant';
 import { useBranches } from '@/hooks/use-branches';
 import { useCart } from '@/hooks/use-cart';
 import { useCheckoutPrepare } from '@/hooks/use-checkout';
+import { usePublicPromotions } from '@/hooks/use-promotions';
 import { ApiClientError } from '@/lib/errors';
 import type {
   CheckoutFormValues,
@@ -69,6 +70,11 @@ export function CheckoutView({ className }: CheckoutViewProps) {
   } = useCart();
 
   const { selected: selectedBranch, code: branchCode } = useBranches();
+  const { data: promoData } = usePublicPromotions(
+    branchCode,
+    Boolean(branchCode),
+  );
+  const shippingBanner = promoData?.shippingBanner ?? null;
   const prepareMutation = useCheckoutPrepare();
 
   const allowPickup = selectedBranch?.allowPickup !== false;
@@ -997,6 +1003,16 @@ export function CheckoutView({ className }: CheckoutViewProps) {
                       <dd>{formatIdr(reviewedQuote.estimatedTotalIdr)}</dd>
                     </div>
                   </dl>
+
+                  {shippingBanner ? (
+                    <Feedback
+                      tone="info"
+                      title={shippingBanner.title}
+                      className="mt-3"
+                    >
+                      <p className="text-xs">{shippingBanner.body}</p>
+                    </Feedback>
+                  ) : null}
 
                   {/* Fulfillment Summary */}
                   <div className="checkout-fulfillment-preview">

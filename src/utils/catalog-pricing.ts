@@ -271,7 +271,9 @@ function comparePromotionCandidates(
   if (b.promotion.priority !== a.promotion.priority) {
     return b.promotion.priority - a.promotion.priority;
   }
-  return a.promotion.id.localeCompare(b.promotion.id);
+  if (a.promotion.id < b.promotion.id) return -1;
+  if (a.promotion.id > b.promotion.id) return 1;
+  return 0;
 }
 
 function toPromotionBadge(

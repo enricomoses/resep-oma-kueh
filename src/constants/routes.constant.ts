@@ -15,6 +15,7 @@ export const ROUTES = {
   ADMIN_PRODUCTS_NEW: '/admin/products/new',
   ADMIN_AVAILABILITY: '/admin/availability',
   ADMIN_LOCATIONS: '/admin/locations',
+  ADMIN_PROMOTIONS: '/admin/promotions',
   ADMIN_LOGIN: '/admin/login',
   ADMIN_RESET_PASSWORD: '/admin/reset-password',
   AUTH_CALLBACK: '/auth/callback',

@@ -10,6 +10,7 @@ export const PUBLIC_CMS_KEYS = [
   'legal.privacy',
   'legal.ordering_policy',
   'community.instagram',
+  'promo.shipping_banner',
 ] as const;
 
 export const CONTENT_LIMITS = {

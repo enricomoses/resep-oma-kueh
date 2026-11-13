@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { HOME_LIMITS } from '@/constants/home.constant';
+import { publicShippingBannerSchema } from '@/validations/promotion.schema';
 
 const slugSchema = z
   .string()
@@ -116,6 +117,17 @@ export const homeFeaturedProductSchema = z
     branchFromPriceIdr: z
       .record(z.string(), z.number().int().nonnegative())
       .optional(),
+    branchPromotions: z
+      .record(
+        z.string(),
+        z
+          .object({
+            badgeTitle: plainTextLabelSchema,
+            originalFromPriceIdr: z.number().int().nonnegative(),
+          })
+          .strict(),
+      )
+      .optional(),
   })
   .strict();
 
@@ -133,6 +145,7 @@ export const homePromotionSchema = z
     startsAt: z.string().min(1),
     endsAt: z.string().min(1),
     branchIds: z.array(z.uuid()),
+    bannerImageUrl: z.string().max(2000).nullable().optional(),
   })
   .strict();
 
@@ -203,5 +216,6 @@ export const homePageDataSchema = z
     testimonials: createSectionResultSchema(
       z.array(homeTestimonialSchema).max(HOME_LIMITS.TESTIMONIALS),
     ),
+    shippingBanner: publicShippingBannerSchema.nullable().optional(),
   })
   .strict();

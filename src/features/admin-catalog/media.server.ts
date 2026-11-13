@@ -368,7 +368,8 @@ export async function resolveAdminMediaPreviewUrl(
 export async function cleanupOrphanStorageObjects(
   profile: AdminSessionProfile,
   targets: ReadonlyArray<{ storageBucket: string; storagePath: string }>,
-  reason: 'config_save_rollback' | 'removed_from_product',
+  reason:
+    'config_save_rollback' | 'removed_from_product' | 'removed_from_promotion',
   ctx: AdminRepoContext = {},
 ): Promise<{ deletedCount: number; skippedReferencedCount: number }> {
   assertOwnerForMedia(profile);
@@ -392,7 +393,18 @@ export async function cleanupOrphanStorageObjects(
       .eq('storage_bucket', target.storageBucket)
       .eq('storage_path', target.storagePath);
 
-    if (refError || (count ?? 0) > 0) {
+    let promoCount = 0;
+    let promoRefError = false;
+    if (target.storageBucket === ADMIN_MEDIA_BUCKETS.PRODUCT_IMAGES) {
+      const promoRef = await client
+        .from('promotions')
+        .select('id', { count: 'exact', head: true })
+        .eq('banner_image_path', target.storagePath);
+      promoCount = promoRef.count ?? 0;
+      promoRefError = Boolean(promoRef.error);
+    }
+
+    if (refError || promoRefError || (count ?? 0) > 0 || promoCount > 0) {
       skippedReferencedCount += 1;
       continue;
     }

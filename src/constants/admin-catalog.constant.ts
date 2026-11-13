@@ -135,10 +135,9 @@ export const ADMIN_NAV_ITEMS: readonly AdminNavItem[] = [
   {
     id: 'promotions',
     label: 'Promosi',
-    href: null,
+    href: ROUTES.ADMIN_PROMOTIONS,
     roles: ['owner'],
-    implemented: false,
-    stageTag: 'F19',
+    implemented: true,
   },
   {
     id: 'content-locations',
@@ -450,6 +449,34 @@ export const ADMIN_CATALOG_COPY = {
         'Konfigurasi harga varian atau paket melebihi batas harga yang diizinkan.',
       STALE_CONFLICT:
         'Data penawaran atau harga SKU ini telah diubah sesi lain. Muat ulang sebelum menyimpan ulang.',
+    },
+  },
+  PROMOTIONS: {
+    TITLE: 'Promosi & Banner Promo',
+    SUBTITLE:
+      'Kelola promosi non-stackable per cabang, kategori, produk, atau varian beserta banner pengiriman informasional (Owner only).',
+    ADD_BUTTON: 'Buat Promo Baru',
+    REFRESH: 'Muat ulang',
+    EMPTY: 'Belum ada promosi terdaftar.',
+    ARCHIVE_CONFIRM_TITLE: 'Arsipkan promosi ini?',
+    ARCHIVE_CONFIRM_DESC:
+      'Promosi akan dinonaktifkan dan diarsipkan secara lunak tanpa menghapus histori konfigurasi.',
+    ARCHIVE_CONFIRM_SUBMIT: 'Ya, Arsipkan Promo',
+    ERRORS: {
+      OWNER_ONLY: 'Hanya Owner yang dapat mengelola promosi.',
+      TARGET_MISSING:
+        'Pilih minimal satu target aktif/terpublikasi yang sesuai dengan scope promosi sebelum mempublikasikan.',
+      TARGET_MISMATCH: 'Target promosi tidak sesuai dengan scope yang dipilih.',
+      NON_STACKABLE:
+        'Promosi tidak boleh bersifat stackable sesuai aturan Resep Oma Kueh.',
+      INVALID_PERIOD:
+        'Waktu berakhir promosi harus lebih lambat dari waktu mulai (batas akhir bersifat eksklusif).',
+      SLUG_COLLISION: 'Slug promosi sudah digunakan.',
+      SLUG_IMMUTABLE: 'Slug promosi tidak dapat diubah setelah dibuat.',
+      BRANCH_INACTIVE:
+        'Promosi terpublikasi harus mencakup minimal satu cabang aktif.',
+      STALE_CONFLICT:
+        'Data promosi telah diubah sesi lain. Muat ulang sebelum menyimpan ulang.',
     },
   },
 } as const;
