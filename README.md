@@ -61,7 +61,7 @@ Workflow [.github/workflows/ci.yml](.github/workflows/ci.yml) menjalankan dua jo
 - `foundation`: `npm ci` -> `npm run check` -> Playwright Chromium (`npm run test:e2e`) dengan env sintetis non-produksi.
 - `database`: `npm ci` -> `test:db` -> `db:start` -> `db:reset:local` -> `db:seed:verify` -> `test:db:seed` -> `test:db:permissions` -> `db:types:local -- --check` -> `test:db:tooling` -> `scripts/test-site-local.mjs`.
 
-## Kontrak dan status
+## Kontrak, rilis, dan status
 
 - [PRD](docs/prd.md) dan [execution guide](docs/execution-guide.md)
 - [Arsitektur aktual](docs/architecture.md)
@@ -69,5 +69,17 @@ Workflow [.github/workflows/ci.yml](.github/workflows/ci.yml) menjalankan dua jo
 - [Cabang dan pengujian lokal](docs/branches.md)
 - [Database dan keamanan seed](docs/database.md)
 - [Matriks keamanan dan RLS](docs/security.md)
+- [Panduan Owner UAT (F25)](docs/uat-f25.md)
+- [Paket rilis & deployment runbook (F26)](docs/deployment.md)
+- [Panduan operasional & handover Owner (F26)](docs/owner-manual.md)
 - [Status dan bukti pengujian](docs/implementation-status.md)
 - [Keputusan arsitektur](docs/decisions.md)
+
+## Endpoint kesehatan & smoke runtime
+
+- `GET /api/health` memeriksa validasi env server serta ketersediaan koneksi baca DB tanpa membocorkan secret, nama key env, atau nomor versi (`Cache-Control: no-store`, `X-Robots-Tag: noindex, nofollow`, `Referrer-Policy: no-referrer`).
+- Untuk memverifikasi deployment staging/produksi HTTPS setelah host aktif (tanpa mengirim order maupun WhatsApp otomatis):
+
+```powershell
+npm run smoke:runtime -- --url=https://<host-target>
+```

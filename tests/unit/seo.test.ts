@@ -52,6 +52,18 @@ it('builds metadata with canonical URL, OG tags, and noindex overrides cleanly',
   ).toBe(true);
   expect(
     isNoIndexDeployment({
+      siteUrl: 'https://deploy-preview-12--resep-oma-kueh.netlify.app',
+      demoMode: false,
+    }),
+  ).toBe(true);
+  expect(
+    isNoIndexDeployment({
+      siteUrl: 'https://staging-resep-oma-kueh.netlify.app',
+      demoMode: false,
+    }),
+  ).toBe(true);
+  expect(
+    isNoIndexDeployment({
       siteUrl: 'https://resepomakueh.com',
       demoMode: true,
     }),

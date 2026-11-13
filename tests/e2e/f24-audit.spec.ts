@@ -250,5 +250,14 @@ test.describe('F24 multi-viewport, accessibility, SEO, and security header audit
     >;
     expect(bakerySchema['@type']).toBe('Bakery');
     expect(JSON.stringify(bakerySchema)).not.toContain('aggregateRating');
+
+    const healthRes = await request.get('/api/health');
+    expect([200, 503]).toContain(healthRes.status());
+    const healthHeaders = healthRes.headers();
+    expect(healthHeaders['cache-control']).toContain('no-store');
+    expect(healthHeaders['x-robots-tag']).toBe('noindex, nofollow');
+    const healthText = await healthRes.text();
+    expect(healthText.toLowerCase()).not.toContain('version');
+    expect(healthText).not.toContain('sb_publishable');
   });
 });

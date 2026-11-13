@@ -23,6 +23,7 @@
     "test:db:seed": "node scripts/test-db-seed.mjs",
     "test:db:tooling": "node scripts/test-db-tooling.mjs",
     "test:db:permissions": "node --conditions=react-server --import tsx scripts/test-db-permissions.mjs",
+    "smoke:runtime": "node scripts/smoke-runtime.mjs",
     "lint:unused": "knip --no-progress",
     "check": "npm run lint && npm run typecheck && npm test && npm run test:boundaries && npm run lint:unused && npm run format:check && npm run build"
   },

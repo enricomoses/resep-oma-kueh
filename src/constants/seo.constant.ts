@@ -6,7 +6,13 @@ export const SEO_DEFAULTS = {
   DEFAULT_DESCRIPTION:
     'Resep Oma Kueh menghadirkan kue klasik dengan sentuhan modern di Surabaya dan Bintaro, serta kelas memanggang ROK Baking Class.',
   PREVIEW_HOST_SUFFIXES: ['.vercel.app'],
-  PREVIEW_HOST_PREFIXES: ['staging.', 'preview.'],
+  PREVIEW_HOST_PREFIXES: [
+    'staging.',
+    'staging-',
+    'preview.',
+    'preview-',
+    'deploy-preview-',
+  ],
 } as const;
 
 export const ROBOTS_DISALLOW_PATHS = [

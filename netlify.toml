@@ -1,0 +1,15 @@
+[build]
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "24.18.0"
+
+[context.deploy-preview.environment]
+  APP_ENV = "staging"
+  NEXT_PUBLIC_DEMO_MODE = "true"
+  CHAT_PROVIDER_ENABLED = "false"
+
+[context.branch-deploy.environment]
+  APP_ENV = "staging"
+  NEXT_PUBLIC_DEMO_MODE = "true"
+  CHAT_PROVIDER_ENABLED = "false"
