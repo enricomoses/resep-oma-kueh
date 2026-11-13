@@ -7,6 +7,7 @@ const SURABAYA_ID = 'f0400000-0000-4000-8000-000000000001';
 const BINTARO_ID = 'f0400000-0000-4000-8000-000000000002';
 const VARIANT_A_ID = 'f0400000-0000-4000-8000-000000000600';
 const VARIANT_SOLD_OUT_ID = 'f0400000-0000-4000-8000-000000000601';
+const VARIANT_DRAFT_ID = 'f0400000-0000-4000-8000-000000000602';
 const PRODUCT_A_ID = 'f0400000-0000-4000-8000-000000000400';
 
 const branchesFixture = [
@@ -41,7 +42,7 @@ const variantsFixture = [
     name: 'Chiffon Pandan Medium',
     size_label: 'Medium 18cm',
     base_price_idr: 85_000,
-    status: 'published',
+    status: 'active',
     max_quantity_per_order: 20,
     bundle_recipe: null,
     bundle_units_total: null,
@@ -82,7 +83,7 @@ const variantsFixture = [
     name: 'Roti Klasik',
     size_label: 'Piece',
     base_price_idr: 25_000,
-    status: 'published',
+    status: 'active',
     max_quantity_per_order: 10,
     bundle_recipe: null,
     bundle_units_total: null,
@@ -104,6 +105,40 @@ const variantsFixture = [
         is_listed: true,
         availability_status: 'sold_out',
         stock_quantity: 0,
+        price_override_idr: null,
+      },
+    ],
+    option_groups: [],
+    bundle_fixed_components: [],
+  },
+  {
+    id: VARIANT_DRAFT_ID,
+    sku: 'DEMO-DRAFT',
+    name: 'Varian Draft',
+    size_label: 'Piece',
+    base_price_idr: 30_000,
+    status: 'draft',
+    max_quantity_per_order: 10,
+    bundle_recipe: null,
+    bundle_units_total: null,
+    bundle_rules_verified: false,
+    products: {
+      id: 'f0400000-0000-4000-8000-000000000406',
+      name: 'Varian Draft',
+      slug: 'varian-draft',
+      product_type: 'simple',
+      status: 'published',
+      product_categories: [],
+      product_images: [
+        { alt_text: 'Varian Draft', is_primary: true, sort_order: 0 },
+      ],
+    },
+    branch_variant_offers: [
+      {
+        branch_id: SURABAYA_ID,
+        is_listed: true,
+        availability_status: 'available',
+        stock_quantity: 10,
         price_override_idr: null,
       },
     ],
@@ -278,6 +313,31 @@ describe('Cart Server Validation Tests', () => {
 
     expect(result.branchId).toBe(BINTARO_ID);
     expect(result.lines[0].conflict).toBe(CART_CONFLICTS.SOLD_OUT);
+    expect(result.hasBlockingConflicts).toBe(true);
+  });
+
+  it('treats non-active (draft/archived) variants as archived conflict while passing active DB enum variants', async () => {
+    const result = await validateCartItems({
+      branchId: SURABAYA_ID,
+      items: [
+        {
+          lineId: 'line-active',
+          variantId: VARIANT_A_ID,
+          choiceIds: [],
+          quantity: 1,
+        },
+        {
+          lineId: 'line-draft',
+          variantId: VARIANT_DRAFT_ID,
+          choiceIds: [],
+          quantity: 1,
+        },
+      ],
+    });
+
+    expect(result.lines[0].conflict).toBe(CART_CONFLICTS.NONE);
+    expect(result.lines[0].availabilityStatus).toBe('available');
+    expect(result.lines[1].conflict).toBe(CART_CONFLICTS.ARCHIVED);
     expect(result.hasBlockingConflicts).toBe(true);
   });
 });

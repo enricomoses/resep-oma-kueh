@@ -75,6 +75,64 @@ function formatSlotLabel(slot: string): string {
   }
 }
 
+interface ComponentVariantLookup {
+  status?: string;
+  product_id?: string | null;
+  name?: string | null;
+  branch_variant_offers?: Array<{
+    branch_id: string;
+    is_listed: boolean;
+    availability_status: string;
+    stock_quantity: number | null;
+  }> | null;
+}
+
+function assertComponentAvailable(
+  comp: ComponentVariantLookup | null | undefined,
+  branchId: string,
+  unavailableMessage: string,
+  soldOutMessage: string,
+): void {
+  const compOffer = comp?.branch_variant_offers?.find(
+    (o) => o.branch_id === branchId && o.is_listed,
+  );
+  if (!comp || comp.status !== 'active' || !compOffer) {
+    throw new CheckoutItemUnavailableError(unavailableMessage);
+  }
+  if (
+    compOffer.availability_status === 'sold_out' ||
+    (compOffer.stock_quantity !== null && compOffer.stock_quantity <= 0)
+  ) {
+    throw new CheckoutStockChangedError(soldOutMessage);
+  }
+}
+
+function assertOptionGroupSelections(
+  groups: Array<{
+    id: string;
+    name: string;
+    min_select: number;
+    max_select: number | null;
+    is_required: boolean;
+  }>,
+  counts: Map<string, number>,
+): void {
+  for (const grp of groups) {
+    const selectedCount = counts.get(grp.id) ?? 0;
+    const minRequired = Math.max(grp.min_select ?? 0, grp.is_required ? 1 : 0);
+    if (selectedCount < minRequired) {
+      throw new CheckoutValidationError(
+        `Pilihan pada "${grp.name}" kurang dari batas minimum (${minRequired}).`,
+      );
+    }
+    if (grp.max_select !== null && selectedCount > grp.max_select) {
+      throw new CheckoutValidationError(
+        `Pilihan pada "${grp.name}" melebihi batas maksimum (${grp.max_select}).`,
+      );
+    }
+  }
+}
+
 /**
  * Pure server-side quote generator and validator (PRD §8, §15, §27.2–27.3).
  *
@@ -242,7 +300,7 @@ export async function prepareCheckoutQuote(
       );
     }
 
-    if (variant.status === 'archived' || variant.status === 'draft') {
+    if (variant.status !== 'active') {
       throw new CheckoutItemUnavailableError(
         CHECKOUT_COPY.ERROR_ITEM_NOT_OFFERED,
       );
@@ -299,6 +357,7 @@ export async function prepareCheckoutQuote(
 
       bundleBreakdown = [];
       const fixedFlavourSet = new Set<string>();
+      const fixedProductIdSet = new Set<string>();
       let fixedUnitsTotal = 0;
 
       // Validate fixed components
@@ -307,25 +366,16 @@ export async function prepareCheckoutQuote(
         const comp = fc.component_variant_id
           ? componentVariantMap.get(fc.component_variant_id)
           : null;
-        const compOffer = comp?.branch_variant_offers?.find(
-          (o) => o.branch_id === branch.id && o.is_listed,
+        assertComponentAvailable(
+          comp,
+          branch.id,
+          `Komponen paket "${comp?.name ?? fc.component_slot}" tidak ditawarkan di cabang terpilih.`,
+          `Komponen paket "${comp?.name ?? fc.component_slot}" sedang habis di cabang terpilih.`,
         );
 
-        if (!compOffer) {
-          throw new CheckoutItemUnavailableError(
-            `Komponen paket "${comp?.name ?? fc.component_slot}" tidak ditawarkan di cabang terpilih.`,
-          );
+        if (comp?.product_id) {
+          fixedProductIdSet.add(comp.product_id);
         }
-
-        if (
-          compOffer.availability_status === 'sold_out' ||
-          (compOffer.stock_quantity !== null && compOffer.stock_quantity <= 0)
-        ) {
-          throw new CheckoutStockChangedError(
-            `Komponen paket "${comp?.name ?? fc.component_slot}" sedang habis di cabang terpilih.`,
-          );
-        }
-
         const slotNorm = normalizeFlavour(fc.component_slot);
         fixedFlavourSet.add(slotNorm);
         if (slotNorm.includes('cheese')) {
@@ -378,7 +428,9 @@ export async function prepareCheckoutQuote(
         }
       }
 
+      const groupSelectionCounts = new Map<string, number>();
       const selectedFlavourSet = new Set<string>();
+      const selectedProductIdSet = new Set<string>();
       let flexibleUnitsTotal = 0;
 
       for (const choiceId of item.choiceIds) {
@@ -390,49 +442,54 @@ export async function prepareCheckoutQuote(
         }
 
         const { choice, group } = lookup;
+        groupSelectionCounts.set(
+          group.id,
+          (groupSelectionCounts.get(group.id) ?? 0) + 1,
+        );
+
         if (choice.is_active === false) {
           throw new CheckoutStockChangedError(
             `Pilihan rasa "${choice.label}" sedang dinonaktifkan.`,
           );
         }
 
-        // Distinct flavour check
+        const comp = choice.component_variant_id
+          ? componentVariantMap.get(choice.component_variant_id)
+          : null;
+
+        // Distinct flavour check (normalized label + component product identity)
         const choiceNorm = normalizeFlavour(choice.label);
         const matchesFixed =
           fixedFlavourSet.has(choiceNorm) ||
           choiceNorm.includes('cheese') ||
           choiceNorm.includes('keju') ||
           choiceNorm.includes('choco') ||
-          choiceNorm.includes('cokelat');
+          choiceNorm.includes('cokelat') ||
+          (comp?.product_id ? fixedProductIdSet.has(comp.product_id) : false);
+        const matchesSelected =
+          selectedFlavourSet.has(choiceNorm) ||
+          (comp?.product_id
+            ? selectedProductIdSet.has(comp.product_id)
+            : false);
 
-        if (matchesFixed || selectedFlavourSet.has(choiceNorm)) {
+        if (matchesFixed || matchesSelected) {
           throw new CheckoutValidationError(
             `Pilihan rasa "${choice.label}" menduplikasi rasa lain pada paket. Seluruh rasa harus berbeda.`,
           );
         }
         selectedFlavourSet.add(choiceNorm);
+        if (comp?.product_id) {
+          selectedProductIdSet.add(comp.product_id);
+        }
 
         // Component availability in branch
         if (choice.component_variant_id) {
-          const comp = componentVariantMap.get(choice.component_variant_id);
-          const compOffer = comp?.branch_variant_offers?.find(
-            (o) => o.branch_id === branch.id && o.is_listed,
+          assertComponentAvailable(
+            comp,
+            branch.id,
+            `Pilihan rasa "${choice.label}" tidak ditawarkan di cabang terpilih.`,
+            `Pilihan rasa "${choice.label}" sedang habis di cabang terpilih.`,
           );
-
-          if (!compOffer) {
-            throw new CheckoutItemUnavailableError(
-              `Pilihan rasa "${choice.label}" tidak ditawarkan di cabang terpilih.`,
-            );
-          }
-
-          if (
-            compOffer.availability_status === 'sold_out' ||
-            (compOffer.stock_quantity !== null && compOffer.stock_quantity <= 0)
-          ) {
-            throw new CheckoutStockChangedError(
-              `Pilihan rasa "${choice.label}" sedang habis di cabang terpilih.`,
-            );
-          }
         }
 
         const qtyPerSelection = group.quantity_per_selection ?? 3;
@@ -455,28 +512,41 @@ export async function prepareCheckoutQuote(
         });
       }
 
+      // Enforce per-group min/max selection bounds (A09 tamper protection)
+      assertOptionGroupSelections(
+        variant.option_groups ?? [],
+        groupSelectionCounts,
+      );
+
       // Check sum of units equals total target (12 slices)
       const targetUnitsTotal = variant.bundle_units_total ?? 12;
       const totalUnits = fixedUnitsTotal + flexibleUnitsTotal;
       if (totalUnits !== targetUnitsTotal) {
         throw new CheckoutValidationError(CHECKOUT_COPY.ERROR_BUNDLE_INVALID);
       }
-    } else if (item.choiceIds.length > 0) {
+    } else if (
+      (variant.option_groups ?? []).length > 0 ||
+      item.choiceIds.length > 0
+    ) {
       // Non-bundle variant options
       const choiceMap = new Map<
         string,
-        NonNullable<
-          NonNullable<
-            (typeof variant.option_groups)[number]['option_choices']
-          >[number]
-        >
+        {
+          choice: NonNullable<
+            NonNullable<
+              (typeof variant.option_groups)[number]['option_choices']
+            >[number]
+          >;
+          group: (typeof variant.option_groups)[number];
+        }
       >();
       for (const grp of variant.option_groups ?? []) {
         for (const ch of grp.option_choices ?? []) {
-          choiceMap.set(ch.id, ch);
+          choiceMap.set(ch.id, { choice: ch, group: grp });
         }
       }
 
+      const groupSelectionCounts = new Map<string, number>();
       const seenChoiceIds = new Set<string>();
       for (const choiceId of item.choiceIds) {
         if (seenChoiceIds.has(choiceId)) {
@@ -486,10 +556,16 @@ export async function prepareCheckoutQuote(
         }
         seenChoiceIds.add(choiceId);
 
-        const choice = choiceMap.get(choiceId);
-        if (!choice) {
+        const lookup = choiceMap.get(choiceId);
+        if (!lookup) {
           throw new CheckoutValidationError('Pilihan opsi tidak valid.');
         }
+
+        const { choice, group } = lookup;
+        groupSelectionCounts.set(
+          group.id,
+          (groupSelectionCounts.get(group.id) ?? 0) + 1,
+        );
 
         if (choice.is_active === false) {
           throw new CheckoutStockChangedError(
@@ -499,24 +575,12 @@ export async function prepareCheckoutQuote(
 
         if (choice.component_variant_id) {
           const comp = componentVariantMap.get(choice.component_variant_id);
-          const compOffer = comp?.branch_variant_offers?.find(
-            (o) => o.branch_id === branch.id && o.is_listed,
+          assertComponentAvailable(
+            comp,
+            branch.id,
+            `Pilihan "${choice.label}" tidak ditawarkan di cabang terpilih.`,
+            `Pilihan "${choice.label}" sedang habis di cabang terpilih.`,
           );
-
-          if (!compOffer) {
-            throw new CheckoutItemUnavailableError(
-              `Pilihan "${choice.label}" tidak ditawarkan di cabang terpilih.`,
-            );
-          }
-
-          if (
-            compOffer.availability_status === 'sold_out' ||
-            (compOffer.stock_quantity !== null && compOffer.stock_quantity <= 0)
-          ) {
-            throw new CheckoutStockChangedError(
-              `Pilihan "${choice.label}" sedang habis di cabang terpilih.`,
-            );
-          }
         }
 
         selectedOptionDeltasIdr.push(choice.price_delta_idr);
@@ -526,6 +590,11 @@ export async function prepareCheckoutQuote(
           priceDeltaIdr: choice.price_delta_idr,
         });
       }
+
+      assertOptionGroupSelections(
+        variant.option_groups ?? [],
+        groupSelectionCounts,
+      );
     }
 
     const basePriceIdr = variant.base_price_idr;

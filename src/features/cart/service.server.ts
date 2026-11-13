@@ -156,7 +156,7 @@ export async function validateCartItems(
 
     if (
       !variant ||
-      variant.status !== 'published' ||
+      variant.status !== 'active' ||
       !product ||
       product.status !== 'published'
     ) {
@@ -206,6 +206,8 @@ export async function validateCartItems(
                 (o) => o.branch_id === branch.id && o.is_listed,
               );
               const compAvailable =
+                comp &&
+                comp.status === 'active' &&
                 compOffer &&
                 compOffer.availability_status !== 'sold_out' &&
                 (compOffer.stock_quantity === null ||
@@ -238,6 +240,8 @@ export async function validateCartItems(
           (o) => o.branch_id === branch.id && o.is_listed,
         );
         const compAvailable =
+          comp &&
+          comp.status === 'active' &&
           compOffer &&
           compOffer.availability_status !== 'sold_out' &&
           (compOffer.stock_quantity === null || compOffer.stock_quantity > 0);

@@ -2,6 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import type { PublicBranch } from '@/types/branch';
+import { CHAT_COPY } from '@/constants/chat.constant';
 import { BRANCH, SITE_COPY } from '@/constants/site.constant';
 
 const synthetic: PublicBranch[] = [
@@ -63,8 +64,8 @@ test('default none, explicit choice survives reload and navigation/filter parame
   await expect(select).toBeEnabled();
   await expect(select).toHaveValue('');
   await expect(
-    page.getByRole('button', { name: SITE_COPY.CART_EMPTY }),
-  ).toBeDisabled();
+    page.getByRole('link', { name: 'Keranjang belanja kosong · 0 item' }),
+  ).toHaveAttribute('href', '/cart');
   const first = branches.find((branch) => branch.code === 'surabaya')!;
   const second = branches.find((branch) => branch.code === 'bintaro')!;
   await select.selectOption(first.id);
@@ -197,7 +198,7 @@ test('mobile navigation Escape returns focus, links preserve branch and one chat
   await expect(page).toHaveURL(/\/contact\?branch=surabaya/);
   await expect(drawer).not.toBeVisible();
   await expect(
-    page.getByRole('complementary', { name: SITE_COPY.CHAT }),
+    page.getByRole('button', { name: CHAT_COPY.TRIGGER_OPEN }),
   ).toHaveCount(1);
   for (const name of ['FAQ', 'Privasi', 'Kebijakan pemesanan']) {
     const link = page.getByRole('link', { name, exact: true });

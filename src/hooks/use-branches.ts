@@ -20,28 +20,35 @@ export function useBranches() {
   const router = useRouter();
   const codes = params.getAll(BRANCH.PARAM);
   const code = codes.length === 0 ? null : codes.length === 1 ? codes[0] : '';
+  const serverInitialData =
+    code === null && context.initial.status === 'success'
+      ? context.initial.data
+      : undefined;
+  const hasServerInitial = serverInitialData !== undefined;
   const query = useQuery({
     queryKey: QUERY_KEYS.BRANCHES(code),
     queryFn: ({ signal }) => readBranches(code, signal),
     staleTime: STALE_TIME.PUBLIC,
-    initialData:
-      code === null && context.initial.status === 'success'
-        ? {
-            ok: true as const,
-            data: context.initial.data,
-            requestId: 'server-initial',
-          }
-        : undefined,
+    initialData: serverInitialData
+      ? {
+          ok: true as const,
+          data: serverInitialData,
+          requestId: 'server-initial',
+        }
+      : undefined,
   });
-  const data = query.data?.data;
+  // Match SSR HTML on initial hydration render even when Suspense siblings resolve React Query first.
+  const canExposeClientQuery = context.hydrated || hasServerInitial;
+  const data = canExposeClientQuery ? query.data?.data : undefined;
   const items = data?.items ?? [];
-  const selected = query.isError
-    ? null
-    : code !== null
-      ? (items.find((item) => item.id === data?.resolvedBranchId) ?? null)
-      : context.hydrated
-        ? (items.find((item) => item.id === preference) ?? null)
-        : null;
+  const selected =
+    !canExposeClientQuery || query.isError
+      ? null
+      : code !== null
+        ? (items.find((item) => item.id === data?.resolvedBranchId) ?? null)
+        : context.hydrated
+          ? (items.find((item) => item.id === preference) ?? null)
+          : null;
   const [pending, setPending] = useState<PublicBranch | null>(null);
   const [notice, setNotice] = useState('');
   const busy = useRef(false);
@@ -90,10 +97,14 @@ export function useBranches() {
     selected,
     code,
     hydrated: context.hydrated,
-    isPending: query.isPending,
-    isError: query.isError,
-    isEmpty: query.isSuccess && items.length === 0,
-    invalidUrl: code !== null && query.isSuccess && !data?.resolvedBranchId,
+    isPending: canExposeClientQuery ? query.isPending : true,
+    isError: canExposeClientQuery ? query.isError : false,
+    isEmpty: canExposeClientQuery && query.isSuccess && items.length === 0,
+    invalidUrl:
+      canExposeClientQuery &&
+      code !== null &&
+      query.isSuccess &&
+      !data?.resolvedBranchId,
     invalidPreference:
       code === null &&
       context.hydrated &&

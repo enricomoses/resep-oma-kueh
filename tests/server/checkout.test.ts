@@ -19,9 +19,11 @@ const COMP_CHEESE_ID = 'f0400000-0000-4000-8000-000000000701';
 const COMP_CHOCO_ID = 'f0400000-0000-4000-8000-000000000702';
 const COMP_PANDAN_ID = 'f0400000-0000-4000-8000-000000000703';
 const COMP_EARLGREY_ID = 'f0400000-0000-4000-8000-000000000704';
+const COMP_MOCHA_ID = 'f0400000-0000-4000-8000-000000000705';
 
 const CHOICE_PANDAN_ID = 'f0400000-0000-4000-8000-000000000801';
 const CHOICE_EARLGREY_ID = 'f0400000-0000-4000-8000-000000000802';
+const CHOICE_MOCHA_C_ID = 'f0400000-0000-4000-8000-000000000803';
 
 const branchesFixture = [
   {
@@ -55,7 +57,7 @@ const variantsFixture = [
     name: 'Chiffon Pandan Medium',
     size_label: 'Medium 18cm',
     base_price_idr: 85_000,
-    status: 'published',
+    status: 'active',
     max_quantity_per_order: 20,
     bundle_recipe: null,
     bundle_units_total: null,
@@ -96,7 +98,7 @@ const variantsFixture = [
     name: 'Roti Klasik',
     size_label: 'Piece',
     base_price_idr: 25_000,
-    status: 'published',
+    status: 'active',
     max_quantity_per_order: 10,
     bundle_recipe: null,
     bundle_units_total: null,
@@ -130,7 +132,7 @@ const variantsFixture = [
     name: 'Paket Chiffon Slice Mix',
     size_label: '12 Potong',
     base_price_idr: 150_000,
-    status: 'published',
+    status: 'active',
     max_quantity_per_order: 5,
     bundle_recipe: 'chiffon_mix',
     bundle_units_total: 12,
@@ -172,6 +174,14 @@ const variantsFixture = [
             component_variant_id: COMP_PANDAN_ID,
             is_active: true,
             sort_order: 1,
+          },
+          {
+            id: CHOICE_MOCHA_C_ID,
+            label: 'Mocha',
+            price_delta_idr: 5_000,
+            component_variant_id: COMP_MOCHA_ID,
+            is_active: true,
+            sort_order: 2,
           },
         ],
       },
@@ -219,7 +229,7 @@ const componentVariantsFixture = [
     id: COMP_CHEESE_ID,
     name: 'Keju (Cheese)',
     sku: 'SLICE-CHEESE',
-    status: 'published',
+    status: 'active',
     branch_variant_offers: [
       {
         branch_id: SURABAYA_ID,
@@ -233,7 +243,7 @@ const componentVariantsFixture = [
     id: COMP_CHOCO_ID,
     name: 'Cokelat (Choco)',
     sku: 'SLICE-CHOCO',
-    status: 'published',
+    status: 'active',
     branch_variant_offers: [
       {
         branch_id: SURABAYA_ID,
@@ -247,7 +257,7 @@ const componentVariantsFixture = [
     id: COMP_PANDAN_ID,
     name: 'Pandan',
     sku: 'SLICE-PANDAN',
-    status: 'published',
+    status: 'active',
     branch_variant_offers: [
       {
         branch_id: SURABAYA_ID,
@@ -261,7 +271,21 @@ const componentVariantsFixture = [
     id: COMP_EARLGREY_ID,
     name: 'Earl Grey',
     sku: 'SLICE-EARLGREY',
-    status: 'published',
+    status: 'active',
+    branch_variant_offers: [
+      {
+        branch_id: SURABAYA_ID,
+        is_listed: true,
+        availability_status: 'available',
+        stock_quantity: 20,
+      },
+    ],
+  },
+  {
+    id: COMP_MOCHA_ID,
+    name: 'Mocha',
+    sku: 'SLICE-MOCHA',
+    status: 'active',
     branch_variant_offers: [
       {
         branch_id: SURABAYA_ID,
@@ -745,5 +769,35 @@ describe('POST /api/checkout/prepare Server Tests (PRD §8, §15, §27.2–27.3)
     const timeout = new CheckoutTimeoutError();
     expect(timeout.status).toBe(504);
     expect(timeout.code).toBe('TIMEOUT');
+  });
+
+  it('rejects A09 bundle group-selection bypass (2 choices in Group C and 0 in Group D) with HTTP 422', async () => {
+    const response = await POST(
+      new Request('http://localhost:3000/api/checkout/prepare', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          branchId: SURABAYA_ID,
+          items: [
+            {
+              variantId: VARIANT_BUNDLE_ID,
+              quantity: 1,
+              choiceIds: [CHOICE_PANDAN_ID, CHOICE_MOCHA_C_ID],
+            },
+          ],
+          fulfillment: {
+            method: 'pickup',
+            requestedDate: formatJakartaDateIso(),
+          },
+          customerName: 'Bypass Tester',
+          acknowledgedManualConfirmation: true,
+        }),
+      }),
+    );
+
+    expect(response.status).toBe(422);
+    const json = await response.json();
+    expect(json.ok).toBe(false);
+    expect(json.error.code).toBe('VALIDATION_ERROR');
   });
 });
