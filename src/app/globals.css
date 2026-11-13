@@ -1830,3 +1830,161 @@ svg {
   font-size: 0.875rem;
   color: var(--text-cocoa);
 }
+
+/* --------------------------------------------------
+ * F14 — Checkout Quote Review & WhatsApp Handoff Styles
+ * -------------------------------------------------- */
+.checkout-page {
+  padding-block: 2.5rem 5rem;
+  min-height: 60vh;
+}
+.checkout-container {
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--space-gutter);
+}
+.checkout-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-sand);
+}
+.checkout-main-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+@media (min-width: 64rem) {
+  .checkout-main-grid {
+    grid-template-columns: minmax(0, 1fr) 360px;
+  }
+}
+.checkout-primary-col {
+  min-width: 0;
+}
+.checkout-form-card,
+.checkout-review-card,
+.checkout-consultation-card {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+.checkout-card-header {
+  display: grid;
+  gap: 0.375rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-sand);
+}
+.checkout-section-title {
+  font-family: var(--font-fraunces), serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--brand-burgundy);
+  line-height: 1.25;
+}
+.checkout-section-desc {
+  font-size: 0.875rem;
+  color: var(--text-cocoa);
+  line-height: 1.55;
+}
+.checkout-form {
+  display: grid;
+  gap: 1.25rem;
+}
+.checkout-form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+@media (min-width: 40rem) {
+  .checkout-form-row-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.checkout-consent-box {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border-sand);
+  background-color: var(--brand-cream);
+}
+.checkout-consent-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--brand-deep);
+  cursor: pointer;
+}
+.checkout-consent-checkbox {
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-top: 0.1875rem;
+  flex-shrink: 0;
+  accent-color: var(--brand-burgundy);
+  cursor: pointer;
+}
+.checkout-consent-policy {
+  font-size: 0.8125rem;
+  color: var(--text-cocoa);
+  padding-left: 1.875rem;
+  line-height: 1.5;
+}
+.checkout-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+.checkout-quote-lines {
+  display: grid;
+  gap: 0.75rem;
+}
+.checkout-quote-line {
+  padding: 1rem;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border-sand);
+  background-color: var(--surface-card);
+}
+.checkout-fulfillment-preview {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border-sand);
+  background-color: var(--surface-card);
+  color: var(--brand-deep);
+}
+.checkout-message-preview-block {
+  display: grid;
+  gap: 0.5rem;
+}
+.checkout-preview-textarea {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  background-color: var(--surface-card);
+}
+.checkout-review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+.checkout-sidebar-items {
+  display: grid;
+  gap: 0.75rem;
+  max-height: 18rem;
+  overflow-y: auto;
+}
+.checkout-sidebar-item {
+  display: grid;
+  gap: 0.125rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cart-spinner {
+    animation: none;
+  }
+}

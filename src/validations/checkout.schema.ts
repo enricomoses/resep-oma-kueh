@@ -76,12 +76,17 @@ export const checkoutPrepareRequestSchema = z
       .min(1, CHECKOUT_COPY.ERROR_EMPTY_ITEMS)
       .max(CHECKOUT_LIMITS.MAX_DISTINCT_LINES),
     fulfillment: checkoutFulfillmentInputSchema,
-    customerName: plainTextLabelSchema
+    customerName: z
+      .string()
+      .trim()
       .min(
         CHECKOUT_LIMITS.MIN_CUSTOMER_NAME_LENGTH,
-        CHECKOUT_COPY.ERROR_INVALID_REQUEST,
+        CHECKOUT_COPY.ERROR_CUSTOMER_NAME_REQUIRED,
       )
-      .max(CHECKOUT_LIMITS.MAX_CUSTOMER_NAME_LENGTH),
+      .max(
+        CHECKOUT_LIMITS.MAX_CUSTOMER_NAME_LENGTH,
+        CHECKOUT_COPY.ERROR_CUSTOMER_NAME_REQUIRED,
+      ),
     acknowledgedManualConfirmation: z.literal(
       true,
       CHECKOUT_COPY.ERROR_MANUAL_CONFIRMATION_REQUIRED,
@@ -93,6 +98,63 @@ export const checkoutPrepareRequestSchema = z
       .optional(),
   })
   .strict();
+
+export const checkoutFormSchema = z
+  .object({
+    customerName: z
+      .string()
+      .trim()
+      .min(
+        CHECKOUT_LIMITS.MIN_CUSTOMER_NAME_LENGTH,
+        CHECKOUT_COPY.ERROR_CUSTOMER_NAME_REQUIRED,
+      )
+      .max(
+        CHECKOUT_LIMITS.MAX_CUSTOMER_NAME_LENGTH,
+        CHECKOUT_COPY.ERROR_CUSTOMER_NAME_REQUIRED,
+      ),
+    method: z.enum(FULFILLMENT_METHODS),
+    requestedDate: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, CHECKOUT_COPY.ERROR_INVALID_DATE),
+    requestedTimeWindow: z
+      .string()
+      .trim()
+      .max(CHECKOUT_LIMITS.MAX_TIME_WINDOW_LENGTH)
+      .optional(),
+    address: z
+      .string()
+      .trim()
+      .max(CHECKOUT_LIMITS.MAX_ADDRESS_LENGTH)
+      .optional(),
+    note: z.string().trim().max(CHECKOUT_LIMITS.MAX_NOTE_LENGTH).optional(),
+    acknowledgedManualConfirmation: z
+      .boolean()
+      .refine(
+        (val) => val === true,
+        CHECKOUT_COPY.ERROR_MANUAL_CONFIRMATION_REQUIRED,
+      ),
+  })
+  .strict()
+  .superRefine((val, ctx) => {
+    if (!isValidJakartaDate(val.requestedDate)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['requestedDate'],
+        message: CHECKOUT_COPY.ERROR_INVALID_DATE,
+      });
+    }
+
+    if (val.method === 'delivery') {
+      const cleanAddress = val.address?.trim() ?? '';
+      if (cleanAddress.length < CHECKOUT_LIMITS.MIN_ADDRESS_LENGTH) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['address'],
+          message: CHECKOUT_COPY.ERROR_DELIVERY_ADDRESS_REQUIRED,
+        });
+      }
+    }
+  });
 
 export const checkoutPrepareLineSchema = z
   .object({

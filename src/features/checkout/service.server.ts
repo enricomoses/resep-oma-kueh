@@ -104,6 +104,27 @@ export async function prepareCheckoutQuote(
     throw new CheckoutBranchNotFoundError();
   }
 
+  const branchCapabilities = branch as typeof branch & {
+    allow_pickup?: boolean;
+    allow_delivery?: boolean;
+  };
+  if (
+    payload.fulfillment.method === 'pickup' &&
+    branchCapabilities.allow_pickup === false
+  ) {
+    throw new CheckoutValidationError(
+      CHECKOUT_COPY.ERROR_FULFILLMENT_METHOD_UNAVAILABLE,
+    );
+  }
+  if (
+    payload.fulfillment.method === 'delivery' &&
+    branchCapabilities.allow_delivery === false
+  ) {
+    throw new CheckoutValidationError(
+      CHECKOUT_COPY.ERROR_FULFILLMENT_METHOD_UNAVAILABLE,
+    );
+  }
+
   const formattedWaNumber = formatWhatsappDigits(branch.whatsapp_number);
 
   // 2. Fetch requested variants

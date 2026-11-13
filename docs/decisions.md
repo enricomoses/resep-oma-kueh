@@ -254,3 +254,20 @@
   - Fallback URL panjang: Jika panjang encoded WhatsApp URL melebihi batas 4000 karakter, URL otomatis diarahkan ke `https://wa.me/<number>` tanpa query teks (`requiresCopy = true`), dan teks pesan lengkap tetap disediakan di `messagePreview` untuk disalin manual oleh pengguna.
 - **Logging Tanpa PII:**
   - Logging sisi server hanya mencatat metadata non-sensitif: `requestId`, `branchId`, `itemCount`, dan status error/sukses. Nama pelanggan, nomor telepon, alamat, catatan, dan pesan mentah tidak pernah dicetak ke log sistem.
+
+## D021 — Antarmuka checkout quote review, perlindungan data transien, dan handoff WhatsApp (F14, 13 November 2026)
+
+- **Formulir Checkout Transien & Validasi RHF + Zod (PRD §6.5, §8, §27.3):**
+  - Mengimplementasikan halaman `/checkout` (`src/app/(site)/checkout/page.tsx`) dan komponen klien `CheckoutView` (`src/components/checkout/checkout-view.tsx`) menggunakan `react-hook-form` dan `@hookform/resolvers/zod` dengan skema `checkoutFormSchema`.
+  - Seluruh data pemesan (`customerName` 2–80 karakter, `method`, `requestedDate`, `requestedTimeWindow`, `address` wajib minimal 5 karakter untuk `delivery`, `note`, dan checkbox persetujuan konfirmasi manual `acknowledgedManualConfirmation`) disimpan murni di memori komponen React (transient memory). Data tersebut tidak pernah disimpan ke `localStorage`/`sessionStorage` dan tidak pernah dimasukkan ke parameter URL browser.
+  - Menyertakan tautan kebijakan ke `/privacy` dan `/ordering-policy` pada kotak persetujuan konfirmasi manual.
+- **Alur Review Dua Langkah & Pembatalan Penerimaan Saat Input Berubah:**
+  - **Langkah 1 (`Tinjau Estimasi & Pesan WhatsApp`):** Memanggil `POST /api/checkout/prepare` melalui `useCheckoutPrepare` dengan `expectedQuoteFingerprint: null`. Menampilkan kartu `Tinjauan Estimasi Resmi Server` berisi rincian baris, komposisi bundle 12 potong, harga kotor/diskon/subtotal otoritatif, status ongkos kirim `Menunggu konfirmasi admin`, peringatan server, dan pratinjau pesan WhatsApp read-only tanpa membuka tab WhatsApp.
+  - **Langkah 2 (`Lanjut ke WhatsApp`):** Memanggil kembali `POST /api/checkout/prepare` dengan `expectedQuoteFingerprint: reviewedQuote.quoteFingerprint`. Hanya apabila server mengembalikan `requiresReview === false`, antarmuka membuka `whatsappUrl` tepercaya dari respons server terbaru.
+  - Apabila harga atau promo berubah di antara langkah 1 dan langkah 2 (`requiresReview === true` disertai peringatan `PRICE_CHANGED`), WhatsApp tidak dibuka; estimasi terbaru ditampilkan dan pengguna wajib meninjau ulang.
+  - Setiap perubahan pada isi keranjang, cabang aktif, maupun field formulir secara otomatis membatalkan status penerimaan kuotasi (`reviewedQuote` di-reset).
+  - Perlindungan klik ganda (double-submit guard) diterapkan melalui `inFlightRef` sinkron dan state `isPending` / `loading`.
+- **Ketahanan Error, Cabang Tanpa Fulfillment, dan Fallback Handoff:**
+  - Error `400`, `401`, `404`, `409` (`STOCK_CHANGED`/`ITEM_UNAVAILABLE`), `413`, `422` (`VALIDATION_ERROR`), `429`, `503`, `504`/timeout, maupun gangguan jaringan tidak pernah mengosongkan keranjang belanja. Pada error `409`, revalidasi keranjang dipicu otomatis agar konflik baris terlihat jelas.
+  - Jika cabang menonaktifkan baik pickup maupun delivery (`allowPickup === false && allowDelivery === false`), halaman menampilkan kartu konsultasi WhatsApp cabang (`Konsultasi via WhatsApp Cabang`) dan tidak menampilkan pengiriman pesanan terselubung.
+  - Menyediakan fallback lengkap pasca-handoff dan saat popup diblokir: tombol `Buka WhatsApp Lagi`, tombol `Salin Detail Pesanan`, serta `<textarea readOnly>` yang otomatis memilih (select/highlight) seluruh teks pesan apabila `navigator.clipboard.writeText` gagal atau ketika panjang URL melebihi batas (`requiresCopy === true`). Tidak menampilkan toast palsu "pesanan terkirim/dibayar", tidak mengirim pesan otomatis, dan tidak menghapus keranjang saat handoff.

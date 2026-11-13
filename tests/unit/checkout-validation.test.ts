@@ -15,6 +15,7 @@ import {
   sanitizeUserInput,
 } from '@/utils/checkout';
 import {
+  checkoutFormSchema,
   checkoutFulfillmentInputSchema,
   checkoutItemInputSchema,
   checkoutPrepareRequestSchema,
@@ -337,6 +338,46 @@ describe('Checkout Validation & Utils Unit Tests', () => {
       expect(checkoutPrepareRequestSchema.safeParse(payload).success).toBe(
         false,
       );
+    });
+
+    it('validates client checkoutFormSchema (2-80 chars name, conditional delivery address, manual consent)', () => {
+      const validForm = {
+        customerName: 'Ibu Ratna',
+        method: 'delivery' as const,
+        requestedDate: formatJakartaDateIso(),
+        requestedTimeWindow: 'Pagi',
+        address: 'Jl. Rungkut Asri Tengah No. 22',
+        note: 'Jangan dibanting',
+        acknowledgedManualConfirmation: true,
+      };
+      expect(checkoutFormSchema.safeParse(validForm).success).toBe(true);
+
+      // 1-char name rejected
+      expect(
+        checkoutFormSchema.safeParse({ ...validForm, customerName: 'A' })
+          .success,
+      ).toBe(false);
+
+      // 81-char name rejected
+      expect(
+        checkoutFormSchema.safeParse({
+          ...validForm,
+          customerName: 'A'.repeat(81),
+        }).success,
+      ).toBe(false);
+
+      // Missing delivery address rejected
+      expect(
+        checkoutFormSchema.safeParse({ ...validForm, address: '' }).success,
+      ).toBe(false);
+
+      // Unchecked consent rejected
+      expect(
+        checkoutFormSchema.safeParse({
+          ...validForm,
+          acknowledgedManualConfirmation: false,
+        }).success,
+      ).toBe(false);
     });
   });
 });

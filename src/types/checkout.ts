@@ -1,5 +1,6 @@
 import type { z } from 'zod';
 import type {
+  checkoutFormSchema,
   checkoutFulfillmentInputSchema,
   checkoutItemInputSchema,
   checkoutPrepareLineSchema,
@@ -8,6 +9,7 @@ import type {
   checkoutWarningSchema,
 } from '@/validations/checkout.schema';
 
+export type CheckoutFormValues = z.infer<typeof checkoutFormSchema>;
 export type CheckoutItemInput = z.infer<typeof checkoutItemInputSchema>;
 export type CheckoutFulfillmentInput = z.infer<
   typeof checkoutFulfillmentInputSchema

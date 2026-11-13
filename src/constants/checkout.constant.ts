@@ -3,8 +3,8 @@ export const CHECKOUT_LIMITS = {
   MAX_DISTINCT_LINES: 15,
   MAX_QTY_PER_LINE: 99,
   MAX_OPTIONS_PER_LINE: 12,
-  MIN_CUSTOMER_NAME_LENGTH: 1,
-  MAX_CUSTOMER_NAME_LENGTH: 100,
+  MIN_CUSTOMER_NAME_LENGTH: 2,
+  MAX_CUSTOMER_NAME_LENGTH: 80,
   MIN_ADDRESS_LENGTH: 5,
   MAX_ADDRESS_LENGTH: 500,
   MAX_NOTE_LENGTH: 500,
@@ -23,6 +23,62 @@ export const CHECKOUT_WARNING_CODES = {
 } as const;
 
 export const CHECKOUT_COPY = {
+  PAGE_TITLE: 'Checkout via WhatsApp',
+  PAGE_DESCRIPTION:
+    'Tinjau estimasi pesanan Anda dan lanjutkan konfirmasi dengan admin cabang Resep Oma Kueh melalui WhatsApp.',
+  FORM_SECTION_TITLE: 'Data Pemesan & Pengiriman',
+  FORM_SECTION_DESC:
+    'Data pemesan hanya digunakan sementara untuk menyusun pesan WhatsApp dan tidak disimpan di perangkat Anda.',
+  FIELD_CUSTOMER_NAME_LABEL: 'Nama Pemesan',
+  FIELD_CUSTOMER_NAME_PLACEHOLDER: 'Contoh: Ibu Ratna',
+  FIELD_CUSTOMER_NAME_HELPER: 'Masukkan 2 hingga 80 karakter.',
+  FIELD_METHOD_LABEL: 'Metode Penerimaan',
+  FIELD_DATE_LABEL: 'Tanggal Diinginkan',
+  FIELD_DATE_HELPER: 'Pilih tanggal hari ini hingga 90 hari ke depan (WIB).',
+  FIELD_TIME_WINDOW_LABEL: 'Preferensi Waktu (Opsional)',
+  FIELD_TIME_WINDOW_PLACEHOLDER: 'Contoh: Pagi (09:00 - 12:00)',
+  FIELD_ADDRESS_LABEL: 'Alamat Pengiriman Lengkap',
+  FIELD_ADDRESS_PLACEHOLDER:
+    'Nama jalan, nomor rumah, RT/RW, kelurahan, kecamatan, dan patokan lokasi',
+  FIELD_ADDRESS_HELPER:
+    'Wajib diisi untuk metode Delivery (minimal 5 karakter).',
+  FIELD_NOTE_LABEL: 'Catatan Pesanan (Opsional)',
+  FIELD_NOTE_PLACEHOLDER:
+    'Contoh: Tulisan kartu ucapan atau instruksi khusus kurir',
+  CONSENT_LABEL:
+    'Saya memahami pesanan dan biaya akhir harus dikonfirmasi admin melalui WhatsApp.',
+  CONSENT_POLICY_NOTE_PREFIX: 'Dengan melanjutkan, Anda memahami ',
+  CONSENT_PRIVACY_LINK: 'Kebijakan Privasi',
+  CONSENT_ORDERING_LINK: 'Kebijakan Pemesanan',
+  CTA_PREPARE_QUOTE: 'Tinjau Estimasi & Pesan WhatsApp',
+  CTA_PREPARING_QUOTE: 'Menyiapkan Estimasi...',
+  CTA_PROCEED_WHATSAPP: 'Lanjut ke WhatsApp',
+  CTA_PROCEEDING_WHATSAPP: 'Memverifikasi Estimasi...',
+  CTA_REOPEN_WHATSAPP: 'Buka WhatsApp Lagi',
+  CTA_COPY_MESSAGE: 'Salin Detail Pesanan',
+  CTA_COPIED_MESSAGE: 'Detail Pesanan Tersalin',
+  CTA_BACK_TO_CART: 'Kembali ke Keranjang',
+  CTA_CONSULT_WHATSAPP: 'Konsultasi via WhatsApp Cabang',
+  QUOTE_REVIEW_TITLE: 'Tinjauan Estimasi Resmi Server',
+  QUOTE_REVIEW_SUBTITLE:
+    'Periksa rincian harga terbaru dari server sebelum membuka WhatsApp.',
+  QUOTE_PREVIEW_MESSAGE_LABEL: 'Pratinjau Pesan WhatsApp',
+  HANDOFF_READY_TITLE: 'Pesan Siap Dikirim di WhatsApp',
+  HANDOFF_READY_DESC:
+    'Pesanan Anda belum otomatis terkirim. Silakan kirim pesan yang telah disiapkan di aplikasi WhatsApp untuk dikonfirmasi admin cabang.',
+  HANDOFF_POPUP_BLOCKED_NOTE:
+    'Jika jendela WhatsApp belum terbuka otomatis, gunakan tombol Buka WhatsApp Lagi atau salin teks pesanan di bawah.',
+  HANDOFF_LONG_URL_TITLE: 'Pesan Cukup Panjang — Salin & Tempel Manual',
+  HANDOFF_LONG_URL_DESC:
+    'Rincian pesanan melebihi batas panjang tautan otomatis. Silakan klik Salin Detail Pesanan, lalu klik Buka WhatsApp Lagi dan tempel (paste) pesan di chat admin.',
+  COPY_SUCCESS_NOTE:
+    'Teks pesanan berhasil disalin ke clipboard. Silakan tempel di chat WhatsApp admin cabang.',
+  COPY_FALLBACK_NOTE:
+    'Gagal menyalin otomatis. Teks pesanan di bawah telah dipilih—tekan Ctrl+C ( atau tahan lalu pilih Salin) secara manual.',
+  FULFILLMENT_DISABLED_TITLE:
+    'Pemesanan Mandiri Belum Tersedia untuk Cabang Ini',
+  FULFILLMENT_DISABLED_BODY:
+    'Saat ini baik metode Pickup maupun Delivery belum diaktifkan untuk pemesanan langsung di cabang ini. Silakan konsultasikan kebutuhan pesanan Anda langsung bersama admin cabang melalui WhatsApp.',
   WARNING_MANUAL_CONFIRMATION:
     'Ketersediaan stok, ongkos kirim, dan total akhir akan dikonfirmasi oleh admin cabang.',
   WARNING_PRICE_CHANGED:
@@ -36,6 +92,11 @@ export const CHECKOUT_COPY = {
   INTRO: 'Saya ingin memesan dari website Resep Oma.',
   CLOSING:
     'Mohon konfirmasi ketersediaan, ongkos kirim,\ntotal akhir, dan instruksi pembayaran. Terima kasih!',
+  ERROR_FORM_SUMMARY_TITLE: 'Mohon periksa kembali isian formulir Anda',
+  ERROR_CUSTOMER_NAME_REQUIRED:
+    'Nama pemesan wajib diisi (2 hingga 80 karakter).',
+  ERROR_FULFILLMENT_METHOD_UNAVAILABLE:
+    'Metode penerimaan yang dipilih tidak tersedia di cabang ini.',
   ERROR_TOO_LARGE: 'Ukuran payload melebihi batas 32 KiB.',
   ERROR_INVALID_REQUEST: 'Permintaan checkout tidak valid.',
   ERROR_BRANCH_NOT_FOUND: 'Cabang tidak ditemukan atau tidak aktif.',

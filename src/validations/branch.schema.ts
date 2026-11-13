@@ -17,6 +17,8 @@ export const publicBranchSchema = z
     whatsappNumber: z.string().regex(/^[1-9][0-9]{7,14}$/),
     address: z.string().max(500).nullable(),
     mapsUrl: z.url().startsWith('https://').nullable(),
+    allowPickup: z.boolean().optional(),
+    allowDelivery: z.boolean().optional(),
   })
   .strict();
 export const branchDirectorySchema = z
