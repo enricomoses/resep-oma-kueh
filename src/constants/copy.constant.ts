@@ -4,6 +4,8 @@ export const API_ERROR_CODES = [
   'FORBIDDEN',
   'NOT_FOUND',
   'CONFLICT',
+  'STOCK_CHANGED',
+  'ITEM_UNAVAILABLE',
   'VALIDATION_ERROR',
   'REQUEST_TOO_LARGE',
   'RATE_LIMITED',
@@ -22,6 +24,9 @@ export const ERROR_COPY = {
   FORBIDDEN: 'Akses tidak diizinkan.',
   NOT_FOUND: 'Data tidak ditemukan.',
   CONFLICT: 'Data telah berubah. Periksa kembali.',
+  STOCK_CHANGED:
+    'Ketersediaan stok telah berubah. Periksa kembali keranjang Anda.',
+  ITEM_UNAVAILABLE: 'Beberapa produk tidak tersedia di cabang terpilih.',
   VALIDATION_ERROR: 'Periksa isian Anda.',
   REQUEST_TOO_LARGE: 'Permintaan terlalu besar.',
   RATE_LIMITED: 'Terlalu banyak permintaan. Coba lagi nanti.',

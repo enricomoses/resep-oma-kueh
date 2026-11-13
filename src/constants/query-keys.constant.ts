@@ -12,6 +12,7 @@ export const QUERY_KEYS = {
   FAQS: ['resep-oma-kueh', 'faqs'] as const,
   CART_VALIDATE: (branchId: string | null, signature: string) =>
     ['resep-oma-kueh', 'cart-validate', branchId, signature] as const,
+  CHECKOUT_PREPARE: ['resep-oma-kueh', 'checkout-prepare'] as const,
 } as const;
 
 export const STALE_TIME = { PUBLIC: 60_000 } as const;

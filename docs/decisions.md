@@ -224,3 +224,33 @@
   - Tombol aksi pada halaman detail varian dan bundle customizer terhubung langsung ke aksi `addLine` pada store keranjang.
   - Halaman `/cart` membedakan dengan jelas antara status pemuatan revalidasi awal (skeleton loading), status keranjang kosong (dengan tombol kembali belanja ke menu cabang), status gagal validasi server (dengan tombol retry), dan status keranjang terisi.
   - Rincian keranjang menyajikan foto produk, nama produk yang dapat diklik ke detail, label varian, breakdown komposisi 12 potong bundle, kontrol kuantitas (+/-), tombol hapus item, rincian estimasi subtotal dan diskon, catatan bahwa konfirmasi akhir stok dan ongkir dilakukan via WhatsApp, serta tautan menuju `/checkout`.
+
+## D020 — Backend kuotasi checkout server otoritatif, verifikasi fingerprint dua langkah, dan handoff WhatsApp (F13, 13 November 2026)
+
+- **Backend Kuotasi Otoritatif Tanpa State Mutasi (`POST /api/checkout/prepare`, PRD §8, §15, §27.2–27.3):**
+  - Mengimplementasikan Route Handler `POST /api/checkout/prepare` dengan boundary Zod ketat (`checkoutPrepareRequestSchema`, `checkoutPrepareResponseSchema`).
+  - Menegakkan batas ukuran payload 32 KiB (`CHECKOUT_LIMITS.MAX_REQUEST_BYTES = 32 * 1024`). Permintaan yang melebihi batas langsung ditolak dengan HTTP 413 `REQUEST_TOO_LARGE`.
+  - Header respons menyertakan `Cache-Control: no-store, no-cache, must-revalidate` untuk mencegah caching perantara.
+  - **Jaminan Read-Only Mutlak:** Menolak tegas penulisan baris order, order items, riwayat, atau pengurangan stok di database saat proses prepare. Snapshot tabel bisnis diverifikasi tidak berubah sama sekali sebelum dan sesudah permintaan.
+- **Validasi dan Single Source of Truth:**
+  - Cabang, nomor WhatsApp admin tujuan (`6281703384308` Surabaya dan `6285119785194` Bintaro), harga dasar, price override cabang, dan ketersediaan stok dibaca langsung dari database Supabase (`readActiveBranches`, `readCartVariantsByIds`, `readComponentVariantsByIds`).
+  - Harga, nomor WhatsApp, atau parameter buatan dari sisi client sama sekali tidak diterima sebagai otoritas bisnis.
+  - Jika item habis atau stok kurang -> HTTP 409 `STOCK_CHANGED`.
+  - Jika item tidak terdaftar/ditawarkan di cabang terpilih -> HTTP 409 `ITEM_UNAVAILABLE`.
+  - Jika cabang tidak ditemukan atau tidak aktif -> HTTP 404 `NOT_FOUND`.
+  - Jika format JSON rusak -> HTTP 400 `INVALID_REQUEST`.
+  - Jika validasi skema gagal (tanggal masa lalu, tanggal > 90 hari, kalender fiktif seperti 29 Februari non-kabisat atau 31 April, alamat delivery kosong) -> HTTP 422 `VALIDATION_ERROR` dengan `fieldErrors` terstruktur.
+  - Jika database upstream bermasalah -> HTTP 503 `UPSTREAM_ERROR`.
+- **Verifikasi Kuotasi Dua Langkah via SHA-256 Fingerprint Kanonik:**
+  - Fungsi server-only `generateQuoteFingerprint` menghasilkan SHA-256 fingerprint 64-karakter hex kanonik dari data bisnis otoritatif: `branchId`, nomor WhatsApp cabang, baris terurut stabil (ID varian, SKU, kuantitas, harga kotor satuan, harga satuan efektif, diskon, total baris, ID opsi terurut leksikografis, dan ID promosi), subtotal, diskon, dan estimasi total.
+  - Menyingkirkan secara ketat: `quotedAt`, `expiresAt`, `requestId`, urutan query input yang tidak stabil, serta seluruh PII pengguna (`customerName`, `address`, `note`, `fulfillmentMethod`).
+  - Panggilan pertama (`expectedQuoteFingerprint == null`): Menghasilkan kuotasi dengan `requiresReview = true`.
+  - Panggilan kedua / reprepare dengan fingerprint yang sama: Menghasilkan `requiresReview = false`.
+  - Jika terjadi perubahan harga/stok di tengah jalan: Mengembalikan HTTP 200 dengan fingerprint baru, `requiresReview = true`, dan kode peringatan `PRICE_CHANGED`.
+  - Setiap kuotasi memiliki TTL 5 menit (`QUOTE_TTL_MS = 300_000`) dengan timestamp `quotedAt` dan `expiresAt` ISO UTC.
+- **Komposisi Pesanan WhatsApp dan Sanitasi Input (PRD §8.3):**
+  - Pesanan WhatsApp multiline mengikuti format resmi PRD §8.3 dengan header sapaan, nama cabang, rincian produk (termasuk badge `[Termasuk]` untuk fixed components 12-slice bundle dan delta `(+Rp...)`), subtotal, diskon, estimasi total, label ongkir menunggu konfirmasi admin cabang, serta blok pemesan, metode, tanggal kalender Indonesia, alamat, dan catatan.
+  - Sanitasi input ketat terhadap input pengguna: menghilangkan karakter kontrol ASCII dan karakter markup WhatsApp/HTML (`*`, `_`, `~`, '`', `<`, `>`, `\`) untuk mencegah injection pada pesan WhatsApp.
+  - Fallback URL panjang: Jika panjang encoded WhatsApp URL melebihi batas 4000 karakter, URL otomatis diarahkan ke `https://wa.me/<number>` tanpa query teks (`requiresCopy = true`), dan teks pesan lengkap tetap disediakan di `messagePreview` untuk disalin manual oleh pengguna.
+- **Logging Tanpa PII:**
+  - Logging sisi server hanya mencatat metadata non-sensitif: `requestId`, `branchId`, `itemCount`, dan status error/sukses. Nama pelanggan, nomor telepon, alamat, catatan, dan pesan mentah tidak pernah dicetak ke log sistem.
