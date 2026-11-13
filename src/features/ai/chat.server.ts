@@ -1,16 +1,30 @@
 import 'server-only';
 
+import { getServerEnvironment } from '@/config/environment.server';
+import { EnvironmentConfigurationError } from '@/config/parse-environment';
 import {
   CHAT_COPY,
   CHAT_LIMITS,
+  CHAT_OPERATIONS,
   CHAT_QUICK_PROMPTS,
 } from '@/constants/chat.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import {
+  ChatGenerativeQuotaError,
+  ChatLimiterUnavailableError,
   ChatServerError,
   ChatTimeoutError,
   ChatUpstreamError,
 } from '@/features/ai/errors.server';
+import {
+  type ExternalLimiterStore,
+  type GenerativeLimiterLease,
+  reserveGenerativeSlot,
+} from '@/features/ai/generative-limiter.server';
+import {
+  createGeminiChatProvider,
+  type GenerativeChatProvider,
+} from '@/features/ai/generative-provider.server';
 import {
   readChatActiveBranches,
   readChatActivePromotionsData,
@@ -31,11 +45,13 @@ import {
 } from '@/utils/catalog-pricing';
 import {
   buildSearchTokens,
+  extractChatMonetaryValues,
   extractDietarySlugFromQuery,
   normalizeChatMatchText,
   parseIdrBudgetFromQuery,
   sanitizeChatDisplayText,
   truncateChatAnswer,
+  verifyAndSanitizeGenerativeAnswer,
 } from '@/utils/chat';
 import { formatWhatsappDigits } from '@/utils/checkout';
 import {
@@ -47,6 +63,7 @@ import { formatIdr } from '@/utils/currency';
 import {
   chatPlanSchema,
   chatResponseDataSchema,
+  generativeAnswerOutputSchema,
 } from '@/validations/chat.schema';
 
 const REFUSE_MUTATION_REGEX =
@@ -1311,73 +1328,239 @@ async function handleSearchFaqs(
   });
 }
 
-export async function answerAskOmaChat(
-  input: ChatRequestInput,
-  options: { now?: Date; signal?: AbortSignal } = {},
-): Promise<ChatResponseData> {
-  const now = options.now ?? new Date();
-  const totalDeadlineSignal = AbortSignal.timeout(
-    CHAT_LIMITS.TOTAL_CHAT_DEADLINE_MS,
-  );
-  const combinedSignal = options.signal
-    ? AbortSignal.any([options.signal, totalDeadlineSignal])
-    : totalDeadlineSignal;
+const ALLOWED_DIET_SLUGS = new Set([
+  'gluten-free',
+  'vegan',
+  'egg-free',
+  'dairy-free',
+]);
 
-  if (combinedSignal.aborted) {
-    throw new ChatTimeoutError();
+type ChatExecutionMode = 'deterministic' | 'generative' | 'generative_fallback';
+
+interface AskOmaChatExecutionOptions {
+  now?: Date;
+  signal?: AbortSignal;
+  clientKey?: string;
+  provider?: GenerativeChatProvider;
+  limiterStore?: ExternalLimiterStore;
+  envOverride?: ReturnType<typeof getServerEnvironment>;
+}
+
+interface AskOmaChatExecutionResult {
+  data: ChatResponseData;
+  meta: {
+    mode: ChatExecutionMode;
+    fallbackReason?: string;
+  };
+}
+
+function clampPlanLimit(rawLimit: unknown): number {
+  const num =
+    typeof rawLimit === 'number' ? Math.trunc(rawLimit) : CHAT_LIMITS.MAX_ITEMS;
+  if (!Number.isFinite(num) || num < 1) return CHAT_LIMITS.MAX_ITEMS;
+  return Math.min(num, CHAT_LIMITS.MAX_ITEMS);
+}
+
+function sanitizeProposedDietSlug(raw: unknown): string | null {
+  if (typeof raw !== 'string') return null;
+  const trimmed = raw.trim().toLowerCase();
+  return ALLOWED_DIET_SLUGS.has(trimmed) ? trimmed : null;
+}
+
+/**
+ * Validates and constrains an LLM-proposed plan against backend authorization
+ * and schema rules before executing read-only catalog retrieval.
+ */
+export function validateGenerativeProposedPlan(
+  rawPlan: unknown,
+  input: ChatRequestInput,
+): ChatPlan | null {
+  if (!rawPlan || typeof rawPlan !== 'object' || Array.isArray(rawPlan)) {
+    return null;
   }
 
-  const plan = planChatOperation(input);
+  const candidate = rawPlan as Record<string, unknown>;
+  const operation = candidate.operation;
+  if (
+    typeof operation !== 'string' ||
+    !(CHAT_OPERATIONS as readonly string[]).includes(operation)
+  ) {
+    return null;
+  }
 
+  const rawQuery = typeof candidate.query === 'string' ? candidate.query : '';
+  if (rawQuery && REFUSE_MUTATION_REGEX.test(rawQuery)) {
+    return null;
+  }
+
+  const fallbackQuery = sanitizeChatDisplayText(
+    input.message,
+    CHAT_LIMITS.MAX_SEARCH_CHARS,
+  );
+  const safeQuery = rawQuery
+    ? sanitizeChatDisplayText(rawQuery, CHAT_LIMITS.MAX_SEARCH_CHARS)
+    : fallbackQuery;
+
+  let normalizedCandidate: unknown;
+  switch (operation) {
+    case 'refuse':
+      normalizedCandidate = {
+        operation: 'refuse',
+        reason:
+          candidate.reason === 'order_or_payment_tracking' ||
+          candidate.reason === 'secret_or_internal' ||
+          candidate.reason === 'mutation_or_admin'
+            ? candidate.reason
+            : 'mutation_or_admin',
+      };
+      break;
+    case 'clarify':
+      normalizedCandidate = {
+        operation: 'clarify',
+        reason:
+          candidate.reason === 'branch_required_for_price'
+            ? 'branch_required_for_price'
+            : 'ambiguous',
+      };
+      break;
+    case 'get_branches':
+      normalizedCandidate = { operation: 'get_branches' };
+      break;
+    case 'get_active_promotions':
+      normalizedCandidate = {
+        operation: 'get_active_promotions',
+        limit: clampPlanLimit(candidate.limit),
+      };
+      break;
+    case 'get_upcoming_classes':
+      normalizedCandidate = {
+        operation: 'get_upcoming_classes',
+        limit: clampPlanLimit(candidate.limit),
+      };
+      break;
+    case 'search_faqs':
+      normalizedCandidate = {
+        operation: 'search_faqs',
+        query: safeQuery,
+        limit: clampPlanLimit(candidate.limit),
+      };
+      break;
+    case 'search_products':
+      normalizedCandidate = {
+        operation: 'search_products',
+        query: safeQuery,
+        dietSlug: sanitizeProposedDietSlug(candidate.dietSlug),
+        limit: clampPlanLimit(candidate.limit),
+      };
+      break;
+    case 'get_product_detail':
+      if (!safeQuery) return null;
+      normalizedCandidate = {
+        operation: 'get_product_detail',
+        query: safeQuery,
+      };
+      break;
+    case 'recommend_by_budget': {
+      if (!input.branchId) {
+        normalizedCandidate = {
+          operation: 'clarify',
+          reason: 'branch_required_for_price',
+        };
+        break;
+      }
+      const proposedMax =
+        typeof candidate.maxPriceIdr === 'number'
+          ? Math.trunc(candidate.maxPriceIdr)
+          : null;
+      const inferredMax = parseIdrBudgetFromQuery(input.message);
+      const maxPriceIdr =
+        proposedMax && proposedMax > 0 && proposedMax <= 1_000_000_000
+          ? proposedMax
+          : inferredMax;
+      if (!maxPriceIdr || maxPriceIdr <= 0) {
+        return null;
+      }
+      normalizedCandidate = {
+        operation: 'recommend_by_budget',
+        maxPriceIdr,
+        query: safeQuery,
+        dietSlug: sanitizeProposedDietSlug(candidate.dietSlug),
+        limit: clampPlanLimit(candidate.limit),
+      };
+      break;
+    }
+    default:
+      return null;
+  }
+
+  const parsed = chatPlanSchema.safeParse(normalizedCandidate);
+  return parsed.success ? parsed.data : null;
+}
+
+function collectAllowedPriceValues(
+  dto: ChatResponseData,
+  plan: ChatPlan,
+  input: ChatRequestInput,
+): number[] {
+  const values = new Set<number>(extractChatMonetaryValues(dto.answer));
+  for (const item of dto.items) {
+    if (item.priceLabel) {
+      for (const v of extractChatMonetaryValues(item.priceLabel)) {
+        values.add(v);
+      }
+    }
+    if (item.subtitle) {
+      for (const v of extractChatMonetaryValues(item.subtitle)) {
+        values.add(v);
+      }
+    }
+  }
+  if (plan.operation === 'recommend_by_budget') {
+    values.add(plan.maxPriceIdr);
+  }
+  const messageBudget = parseIdrBudgetFromQuery(input.message);
+  if (messageBudget !== null) {
+    values.add(messageBudget);
+  }
+  return [...values];
+}
+
+async function executeChatPlan(
+  plan: ChatPlan,
+  branchId: string | null,
+  now: Date,
+  combinedSignal: AbortSignal,
+): Promise<ChatResponseData> {
   try {
     switch (plan.operation) {
       case 'refuse':
-        return await handleRefuse(input.branchId ?? null, plan.reason);
+        return await handleRefuse(branchId, plan.reason);
       case 'clarify':
-        return await handleClarify(input.branchId ?? null, plan.reason);
+        return await handleClarify(branchId, plan.reason);
       case 'get_branches':
-        return await handleBranches(input.branchId ?? null, combinedSignal);
+        return await handleBranches(branchId, combinedSignal);
       case 'recommend_by_budget':
         return await handleRecommendByBudget(
           plan,
-          input.branchId ?? null,
+          branchId,
           now,
           combinedSignal,
         );
       case 'search_products':
-        return await handleSearchProducts(
-          plan,
-          input.branchId ?? null,
-          now,
-          combinedSignal,
-        );
+        return await handleSearchProducts(plan, branchId, now, combinedSignal);
       case 'get_product_detail':
-        return await handleProductDetail(
-          plan,
-          input.branchId ?? null,
-          now,
-          combinedSignal,
-        );
+        return await handleProductDetail(plan, branchId, now, combinedSignal);
       case 'get_active_promotions':
         return await handleActivePromotions(
           plan,
-          input.branchId ?? null,
+          branchId,
           now,
           combinedSignal,
         );
       case 'get_upcoming_classes':
-        return await handleUpcomingClasses(
-          plan,
-          input.branchId ?? null,
-          now,
-          combinedSignal,
-        );
+        return await handleUpcomingClasses(plan, branchId, now, combinedSignal);
       case 'search_faqs':
-        return await handleSearchFaqs(
-          plan,
-          input.branchId ?? null,
-          combinedSignal,
-        );
+        return await handleSearchFaqs(plan, branchId, combinedSignal);
     }
   } catch (err) {
     if (err instanceof ChatServerError) {
@@ -1391,5 +1574,248 @@ export async function answerAskOmaChat(
       throw new ChatTimeoutError();
     }
     throw new ChatUpstreamError();
+  }
+}
+
+export async function answerAskOmaChatWithMeta(
+  input: ChatRequestInput,
+  options: AskOmaChatExecutionOptions = {},
+): Promise<AskOmaChatExecutionResult> {
+  const now = options.now ?? new Date();
+  const totalDeadlineSignal = AbortSignal.timeout(
+    CHAT_LIMITS.TOTAL_CHAT_DEADLINE_MS,
+  );
+  const combinedSignal = options.signal
+    ? AbortSignal.any([options.signal, totalDeadlineSignal])
+    : totalDeadlineSignal;
+
+  if (combinedSignal.aborted) {
+    throw new ChatTimeoutError();
+  }
+
+  const deterministicPlan = planChatOperation(input);
+
+  // Enforce refusal before touching limiter store or generative provider.
+  if (deterministicPlan.operation === 'refuse') {
+    const data = await executeChatPlan(
+      deterministicPlan,
+      input.branchId ?? null,
+      now,
+      combinedSignal,
+    );
+    return { data, meta: { mode: 'deterministic' } };
+  }
+
+  let env: ReturnType<typeof getServerEnvironment>;
+  try {
+    env = options.envOverride ?? getServerEnvironment();
+  } catch (err) {
+    if (err instanceof EnvironmentConfigurationError) {
+      throw new ChatLimiterUnavailableError();
+    }
+    throw err;
+  }
+
+  if (!env.CHAT_PROVIDER_ENABLED) {
+    const data = await executeChatPlan(
+      deterministicPlan,
+      input.branchId ?? null,
+      now,
+      combinedSignal,
+    );
+    return { data, meta: { mode: 'deterministic' } };
+  }
+
+  if (
+    !env.GOOGLE_GEN_AI_API_KEY ||
+    !env.GOOGLE_GEN_AI_CHAT_MODEL ||
+    !env.CHAT_GENERATIVE_QUOTA_PER_DAY ||
+    !env.CHAT_LIMITER_STORE_URL ||
+    !env.CHAT_LIMITER_STORE_TOKEN
+  ) {
+    throw new ChatLimiterUnavailableError();
+  }
+
+  let lease: GenerativeLimiterLease | null = null;
+  let quotaExhausted = false;
+  try {
+    lease = await reserveGenerativeSlot({
+      storeUrl: env.CHAT_LIMITER_STORE_URL,
+      storeToken: env.CHAT_LIMITER_STORE_TOKEN,
+      hashSalt: env.CHAT_LIMITER_HASH_SALT,
+      clientKey: options.clientKey ?? 'anon-server',
+      dailyQuota: env.CHAT_GENERATIVE_QUOTA_PER_DAY,
+      rpmLimit: env.CHAT_GENERATIVE_RPM_LIMIT,
+      globalRpmLimit: env.CHAT_GENERATIVE_GLOBAL_RPM_LIMIT,
+      maxConcurrency: env.CHAT_GENERATIVE_MAX_CONCURRENCY,
+      now,
+      signal: combinedSignal,
+      store: options.limiterStore,
+    });
+  } catch (err) {
+    if (err instanceof ChatGenerativeQuotaError) {
+      quotaExhausted = true;
+    } else if (err instanceof ChatServerError) {
+      throw err;
+    } else {
+      throw new ChatLimiterUnavailableError();
+    }
+  }
+
+  if (quotaExhausted || !lease) {
+    const fallbackData = await executeChatPlan(
+      deterministicPlan,
+      input.branchId ?? null,
+      now,
+      combinedSignal,
+    );
+    return {
+      data: chatResponseDataSchema.parse({
+        ...fallbackData,
+        notice: CHAT_COPY.GENERATIVE_QUOTA_FALLBACK_NOTICE,
+      }),
+      meta: {
+        mode: 'generative_fallback',
+        fallbackReason: 'quota_exhausted',
+      },
+    };
+  }
+
+  try {
+    const provider =
+      options.provider ??
+      createGeminiChatProvider({
+        apiKey: env.GOOGLE_GEN_AI_API_KEY,
+        model: env.GOOGLE_GEN_AI_CHAT_MODEL,
+      });
+
+    let activePlan: ChatPlan = deterministicPlan;
+    let fallbackReason: string | undefined;
+
+    try {
+      const rawPlan = await provider.proposeReadPlan({
+        message: input.message,
+        history: input.history,
+        hasBranch: Boolean(input.branchId),
+        branchName: null,
+        signal: combinedSignal,
+      });
+      const validated = validateGenerativeProposedPlan(rawPlan, input);
+      if (validated) {
+        activePlan = validated;
+      } else {
+        fallbackReason = 'invalid_plan';
+      }
+    } catch (err) {
+      if (options.signal?.aborted || totalDeadlineSignal.aborted) {
+        throw new ChatTimeoutError();
+      }
+      fallbackReason =
+        err instanceof Error &&
+        (err.name === 'TimeoutError' || err.name === 'AbortError')
+          ? 'planner_timeout'
+          : 'planner_error';
+    }
+
+    const retrievedData = await executeChatPlan(
+      activePlan,
+      input.branchId ?? null,
+      now,
+      combinedSignal,
+    );
+
+    if (
+      activePlan.operation === 'refuse' ||
+      activePlan.operation === 'clarify'
+    ) {
+      return {
+        data: retrievedData,
+        meta: {
+          mode: fallbackReason ? 'generative_fallback' : 'generative',
+          fallbackReason,
+        },
+      };
+    }
+
+    try {
+      const rawComposed = await provider.composeGroundedAnswer({
+        message: input.message,
+        history: input.history,
+        groundedDto: retrievedData,
+        signal: combinedSignal,
+      });
+      const parsedOutput = generativeAnswerOutputSchema.safeParse(rawComposed);
+      if (!parsedOutput.success) {
+        return {
+          data: chatResponseDataSchema.parse({
+            ...retrievedData,
+            notice:
+              retrievedData.notice || CHAT_COPY.GENERATIVE_FALLBACK_NOTICE,
+          }),
+          meta: {
+            mode: 'generative_fallback',
+            fallbackReason: fallbackReason ?? 'invalid_composer_output',
+          },
+        };
+      }
+
+      const verification = verifyAndSanitizeGenerativeAnswer(
+        parsedOutput.data.answer,
+        {
+          allowedHrefs: retrievedData.items.map((item) => item.href),
+          allowedPriceValues: collectAllowedPriceValues(
+            retrievedData,
+            activePlan,
+            input,
+          ),
+        },
+      );
+
+      if (!verification.ok) {
+        return {
+          data: chatResponseDataSchema.parse({
+            ...retrievedData,
+            notice:
+              retrievedData.notice || CHAT_COPY.GENERATIVE_FALLBACK_NOTICE,
+          }),
+          meta: {
+            mode: 'generative_fallback',
+            fallbackReason:
+              fallbackReason ??
+              verification.reason ??
+              'composer_verification_failed',
+          },
+        };
+      }
+
+      return {
+        data: chatResponseDataSchema.parse({
+          ...retrievedData,
+          answer: truncateChatAnswer(verification.sanitizedText),
+        }),
+        meta: {
+          mode: fallbackReason ? 'generative_fallback' : 'generative',
+          fallbackReason,
+        },
+      };
+    } catch (err) {
+      if (options.signal?.aborted || totalDeadlineSignal.aborted) {
+        throw new ChatTimeoutError();
+      }
+      const composeErrorReason =
+        err instanceof Error &&
+        (err.name === 'TimeoutError' || err.name === 'AbortError')
+          ? 'composer_timeout'
+          : 'composer_error';
+      return {
+        data: retrievedData,
+        meta: {
+          mode: 'generative_fallback',
+          fallbackReason: fallbackReason ?? composeErrorReason,
+        },
+      };
+    }
+  } finally {
+    await lease.release();
   }
 }

@@ -224,3 +224,157 @@ export function extractDietarySlugFromQuery(text: string): string | null {
   }
   return null;
 }
+
+const URL_OR_LINK_DETECTION_REGEX =
+  /(?:https?:\/\/[^\s)\]]+|www\.[^\s)\]]+|wa\.me\/\d[^\s)\]]*|(?:^|[\s(])(\/(?:menu|classes|admin|api|auth|cart|checkout|contact|faq|about|ordering-policy|privacy)(?:\/[^\s)\]]*)?))/gi;
+
+const RUPIAH_MENTION_REGEX =
+  /(?:rp\.?\s*|idr\s*)(\d{1,3}(?:[.,]\d{3})+|\d+(?:[.,]\d+)?)(?:\s*(jt|juta|rb|ribu|k|rupiah))?\b|\b(\d+(?:[.,]\d+)?)\s*(jt|juta|rb|ribu|k|rupiah)\b|\b(\d{1,3}(?:\.\d{3})+)\b/gi;
+
+const UNSAFE_STOCK_OR_PAYMENT_CLAIM_REGEX =
+  /\b(pesanan\s+(?:anda\s+|sudah\s+)?(?:tercatat|berhasil|dibayar|diproses|dikonfirmasi)|sudah\s+(?:terbayar|dipesan)|(?:dijamin|pasti)\s+(?:ready|tersedia|aman))\b/i;
+
+function normalizeCandidateHref(raw: string): string {
+  return raw.trim().replace(/[.,;:!?]+$/, '');
+}
+
+export function extractChatMonetaryValues(text: string): number[] {
+  const values: number[] = [];
+  for (const match of text.matchAll(RUPIAH_MENTION_REGEX)) {
+    const rawNum = match[1] ?? match[3] ?? match[5];
+    if (!rawNum) continue;
+    const unit = (match[2] ?? match[4] ?? '').toLowerCase();
+    let value: number;
+    if (unit === 'jt' || unit === 'juta') {
+      const parsed = Number.parseFloat(rawNum.replace(',', '.'));
+      if (!Number.isFinite(parsed)) continue;
+      value = Math.round(parsed * 1_000_000);
+    } else if (unit === 'rb' || unit === 'ribu' || unit === 'k') {
+      const parsed = Number.parseFloat(rawNum.replace(',', '.'));
+      if (!Number.isFinite(parsed)) continue;
+      value = Math.round(parsed * 1_000);
+    } else {
+      const digitsOnly = rawNum.replace(/[.,]/g, '');
+      value = Number.parseInt(digitsOnly, 10);
+    }
+    if (Number.isSafeInteger(value) && value > 0) {
+      values.push(value);
+    }
+  }
+  return values;
+}
+
+export interface VerifyGenerativeAnswerResult {
+  ok: boolean;
+  sanitizedText: string;
+  reason?:
+    'empty_output' | 'disallowed_link' | 'hallucinated_price' | 'unsafe_claim';
+}
+
+/**
+ * Verifies LLM-composed prose against backend DTO facts and link allowlist:
+ * strips XSS/Bidi, redacts/flags unauthorized URLs or hallucinated Rupiah figures,
+ * and rejects unverifiable stock/order guarantees.
+ */
+export function verifyAndSanitizeGenerativeAnswer(
+  rawAnswer: string,
+  options: {
+    allowedHrefs: readonly string[];
+    allowedPriceValues: readonly number[];
+  },
+): VerifyGenerativeAnswerResult {
+  const sanitized = sanitizeChatMultilineText(
+    rawAnswer,
+    CHAT_LIMITS.MAX_ANSWER_LENGTH,
+  );
+  if (!sanitized) {
+    return { ok: false, sanitizedText: '', reason: 'empty_output' };
+  }
+
+  if (UNSAFE_STOCK_OR_PAYMENT_CLAIM_REGEX.test(sanitized)) {
+    return {
+      ok: false,
+      sanitizedText: sanitized,
+      reason: 'unsafe_claim',
+    };
+  }
+
+  const allowedHrefSet = new Set(options.allowedHrefs.map((h) => h.trim()));
+  let hasDisallowedLink = false;
+  const linkRedacted = sanitized.replace(
+    URL_OR_LINK_DETECTION_REGEX,
+    (fullMatch, pathGroup: string | undefined) => {
+      const target = normalizeCandidateHref(pathGroup ?? fullMatch);
+      if (allowedHrefSet.has(target)) {
+        return fullMatch;
+      }
+      if (
+        isSafeChatHref(target) &&
+        allowedHrefSet.size > 0 &&
+        [...allowedHrefSet].some(
+          (allowed) => allowed.split('?')[0] === target.split('?')[0],
+        )
+      ) {
+        return fullMatch;
+      }
+      hasDisallowedLink = true;
+      const prefixSpace =
+        pathGroup && /^\s/.test(fullMatch) ? fullMatch[0] : '';
+      return `${prefixSpace}[tautan dihapus]`;
+    },
+  );
+
+  if (hasDisallowedLink) {
+    return {
+      ok: false,
+      sanitizedText: linkRedacted,
+      reason: 'disallowed_link',
+    };
+  }
+
+  const allowedSet = new Set(
+    options.allowedPriceValues.filter((n) => Number.isSafeInteger(n) && n > 0),
+  );
+  const mentionedValues = extractChatMonetaryValues(linkRedacted);
+  const hasHallucinatedPrice = mentionedValues.some((v) => !allowedSet.has(v));
+
+  if (hasHallucinatedPrice) {
+    const priceRedacted = linkRedacted.replace(
+      RUPIAH_MENTION_REGEX,
+      (fullMatch) => {
+        const vals = extractChatMonetaryValues(fullMatch);
+        if (vals.length > 0 && vals.every((v) => allowedSet.has(v))) {
+          return fullMatch;
+        }
+        return '[harga cek katalog]';
+      },
+    );
+    return {
+      ok: false,
+      sanitizedText: priceRedacted,
+      reason: 'hallucinated_price',
+    };
+  }
+
+  return {
+    ok: true,
+    sanitizedText: linkRedacted,
+  };
+}
+
+export function sanitizeChatMultilineText(
+  raw: string | null | undefined,
+  maxLength: number = CHAT_LIMITS.MAX_ANSWER_LENGTH,
+): string {
+  if (!raw) return '';
+  const cleaned = raw
+    .replace(CONTROL_AND_BIDI_REGEX, '')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(UNSAFE_SCHEME_REGEX, '')
+    .replace(/\r\n?/g, '\n')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .replace(/[ \t]{2,}/g, ' ')
+    .trim();
+  return truncateChatAnswer(cleaned, maxLength);
+}

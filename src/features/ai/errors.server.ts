@@ -41,3 +41,19 @@ export class ChatUpstreamError extends ChatServerError {
     this.name = 'ChatUpstreamError';
   }
 }
+
+export class ChatLimiterUnavailableError extends ChatServerError {
+  constructor(
+    message: string = CHAT_COPY.GENERATIVE_LIMITER_UNAVAILABLE_MESSAGE,
+  ) {
+    super(message, 'UPSTREAM_ERROR', 503);
+    this.name = 'ChatLimiterUnavailableError';
+  }
+}
+
+export class ChatGenerativeQuotaError extends Error {
+  constructor(message: string = 'Generative daily quota exhausted') {
+    super(message);
+    this.name = 'ChatGenerativeQuotaError';
+  }
+}

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { CHAT_COPY, CHAT_LIMITS } from '@/constants/chat.constant';
 import { ERROR_COPY } from '@/constants/copy.constant';
-import { answerAskOmaChat } from '@/features/ai/chat.server';
+import { answerAskOmaChatWithMeta } from '@/features/ai/chat.server';
 import { ChatServerError } from '@/features/ai/errors.server';
 import {
   enforceChatRateLimit,
@@ -76,6 +76,8 @@ function logChatOutcome(params: {
   durationMs: number;
   itemCount: number;
   hasBranch: boolean;
+  mode?: string;
+  fallbackReason?: string;
 }) {
   // Never log message text, chat history, cookies, tokens, or customer PII.
   console.info('[ask-oma-chat]', params);
@@ -103,8 +105,9 @@ export async function POST(request: Request) {
     );
   }
 
+  const clientKey = resolveChatRateLimitKey(request);
   try {
-    enforceChatRateLimit(resolveChatRateLimitKey(request));
+    enforceChatRateLimit(clientKey);
   } catch (err) {
     const retryAfter =
       err instanceof ChatServerError && err.retryAfterSeconds
@@ -203,8 +206,9 @@ export async function POST(request: Request) {
 
   try {
     // Intentionally never forwards incoming admin cookies or Authorization headers.
-    const data = await answerAskOmaChat(parsed.data, {
+    const { data, meta } = await answerAskOmaChatWithMeta(parsed.data, {
       signal: request.signal,
+      clientKey,
     });
     const payload = chatSuccessResponseSchema.parse({
       ok: true,
@@ -219,6 +223,8 @@ export async function POST(request: Request) {
       durationMs: Date.now() - startedAt,
       itemCount: data.items.length,
       hasBranch: Boolean(parsed.data.branchId),
+      mode: meta.mode,
+      fallbackReason: meta.fallbackReason,
     });
 
     return NextResponse.json(payload, {
@@ -230,6 +236,10 @@ export async function POST(request: Request) {
     const code = err instanceof ChatServerError ? err.code : 'UPSTREAM_ERROR';
     const message =
       err instanceof ChatServerError ? err.message : CHAT_COPY.OUTAGE_MESSAGE;
+    const headers: Record<string, string> =
+      status === 429 && err instanceof ChatServerError && err.retryAfterSeconds
+        ? { ...NO_STORE_HEADERS, 'Retry-After': String(err.retryAfterSeconds) }
+        : NO_STORE_HEADERS;
 
     logChatOutcome({
       requestId,
@@ -246,7 +256,7 @@ export async function POST(request: Request) {
         error: { code, message },
         requestId,
       }),
-      { status, headers: NO_STORE_HEADERS },
+      { status, headers },
     );
   }
 }

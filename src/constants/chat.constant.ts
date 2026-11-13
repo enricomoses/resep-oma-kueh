@@ -7,7 +7,16 @@ export const CHAT_LIMITS = {
   MAX_SEARCH_CHARS: 100,
   QUERY_DEADLINE_MS: 5_000,
   TOTAL_CHAT_DEADLINE_MS: 15_000,
+  GENERATIVE_PLANNER_TIMEOUT_MS: 4_500,
+  GENERATIVE_COMPOSER_TIMEOUT_MS: 6_500,
   GENERATIVE_MAX_OUTPUT_TOKENS: 1024,
+  GENERATIVE_DEFAULT_RPM_LIMIT: 10,
+  GENERATIVE_DEFAULT_GLOBAL_RPM_LIMIT: 30,
+  GENERATIVE_DEFAULT_MAX_CONCURRENCY: 5,
+  LIMITER_STORE_TIMEOUT_MS: 2_500,
+  LIMITER_RPM_TTL_SECONDS: 120,
+  LIMITER_DAILY_TTL_SECONDS: 172_800,
+  LIMITER_CONCURRENCY_TTL_SECONDS: 60,
   RATE_LIMIT_WINDOW_MS: 60_000,
   RATE_LIMIT_MAX_REQUESTS: 15,
   MAX_RATE_LIMIT_BUCKETS: 2048,
@@ -78,6 +87,12 @@ export const CHAT_COPY = {
   FAQ_NOTICE: 'Jawaban merujuk pada FAQ terpublikasi Resep Oma Kueh.',
   CLARIFY_NOTICE:
     'Ask Oma menggunakan pencocokan katalog & FAQ deterministik (tanpa LLM). Pilih salah satu topik atau perjelas pertanyaan Anda.',
+  GENERATIVE_QUOTA_FALLBACK_NOTICE:
+    'Kuota asisten AI hari ini telah terpenuhi; jawaban disusun dari katalog & FAQ deterministik resmi.',
+  GENERATIVE_FALLBACK_NOTICE:
+    'Asisten katalog menampilkan ringkasan deterministik resmi setelah verifikasi data.',
+  GENERATIVE_LIMITER_UNAVAILABLE_MESSAGE:
+    'Layanan asisten AI sementara dinonaktifkan untuk menjaga kuota dan keamanan. Silakan gunakan pencarian katalog atau hubungi admin cabang via WhatsApp.',
   REFUSE_NOTICE:
     'Ask Oma hanya melayani pencarian data publik (hanya-baca) tanpa akses transaksi, admin, atau perubahan database.',
   REFUSE_MESSAGE:

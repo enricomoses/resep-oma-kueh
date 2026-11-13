@@ -90,6 +90,10 @@ export const chatItemLinkSchema = z.strictObject({
   badge: z.string().max(80).optional(),
 });
 
+export const generativeAnswerOutputSchema = z.strictObject({
+  answer: z.string().trim().min(1).max(CHAT_LIMITS.MAX_ANSWER_LENGTH),
+});
+
 export const chatResponseDataSchema = z.strictObject({
   answer: z.string().min(1).max(CHAT_LIMITS.MAX_ANSWER_LENGTH),
   items: z.array(chatItemLinkSchema).max(CHAT_LIMITS.MAX_ITEMS),

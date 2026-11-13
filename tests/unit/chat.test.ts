@@ -3,13 +3,19 @@ import { describe, expect, it } from 'vitest';
 import { CHAT_LIMITS } from '@/constants/chat.constant';
 import {
   buildSearchTokens,
+  extractChatMonetaryValues,
   extractDietarySlugFromQuery,
   isSafeChatHref,
   parseIdrBudgetFromQuery,
   sanitizeChatDisplayText,
+  sanitizeChatMultilineText,
   truncateChatAnswer,
+  verifyAndSanitizeGenerativeAnswer,
 } from '@/utils/chat';
-import { chatRequestSchema } from '@/validations/chat.schema';
+import {
+  chatRequestSchema,
+  generativeAnswerOutputSchema,
+} from '@/validations/chat.schema';
 
 const SURABAYA_ID = 'f0400000-0000-4000-8000-000000000001';
 
@@ -104,5 +110,84 @@ describe('F22 Ask Oma pure helpers, Zod request boundary, and deterministic plan
       })),
     });
     expect(tooManyHistory.success).toBe(false);
+  });
+
+  it('validates generative output schema and preserves grounded prices/links while stripping XSS/Bidi', () => {
+    expect(
+      generativeAnswerOutputSchema.safeParse({ answer: '   ' }).success,
+    ).toBe(false);
+    expect(
+      generativeAnswerOutputSchema.safeParse({
+        answer: 'Ada Coffee Chiffon Rp 18.000',
+        extraField: true,
+      }).success,
+    ).toBe(false);
+
+    expect(
+      extractChatMonetaryValues('Harga Rp 18.000 atau 25rb (1,5jt)'),
+    ).toEqual([18_000, 25_000, 1_500_000]);
+
+    const sanitized = sanitizeChatMultilineText(
+      'Baris 1\u202e\n<script>alert(1)</script>\n\n\nBaris 2',
+    );
+    expect(sanitized).not.toContain('<script>');
+    expect(sanitized).not.toContain('\u202e');
+    expect(sanitized).not.toContain('\n\n\n');
+    expect(sanitized).toContain('Baris 1');
+    expect(sanitized).toContain('Baris 2');
+
+    const grounded = verifyAndSanitizeGenerativeAnswer(
+      'Rekomendasi cabang Surabaya:\n• Coffee Chiffon seharga Rp 18.000, lihat /menu/coffee-chiffon?branch=surabaya',
+      {
+        allowedHrefs: ['/menu/coffee-chiffon?branch=surabaya'],
+        allowedPriceValues: [18_000],
+      },
+    );
+    expect(grounded.ok).toBe(true);
+    expect(grounded.sanitizedText).toContain('Rp 18.000');
+  });
+
+  it('rejects empty outputs, hallucinated prices, unauthorized external/WA links, and unsafe payment/stock claims', () => {
+    const emptyRes = verifyAndSanitizeGenerativeAnswer('   ', {
+      allowedHrefs: [],
+      allowedPriceValues: [],
+    });
+    expect(emptyRes).toEqual({
+      ok: false,
+      sanitizedText: '',
+      reason: 'empty_output',
+    });
+
+    const hallucinatedPrice = verifyAndSanitizeGenerativeAnswer(
+      'Coffee Chiffon sekarang Rp 5.000 saja!',
+      {
+        allowedHrefs: ['/menu/coffee-chiffon'],
+        allowedPriceValues: [18_000],
+      },
+    );
+    expect(hallucinatedPrice.ok).toBe(false);
+    expect(hallucinatedPrice.reason).toBe('hallucinated_price');
+    expect(hallucinatedPrice.sanitizedText).toContain('[harga cek katalog]');
+
+    const foreignLink = verifyAndSanitizeGenerativeAnswer(
+      'Pesan cepat via https://wa.me/62811111111 atau https://evil.example',
+      {
+        allowedHrefs: ['/menu/coffee-chiffon'],
+        allowedPriceValues: [],
+      },
+    );
+    expect(foreignLink.ok).toBe(false);
+    expect(foreignLink.reason).toBe('disallowed_link');
+    expect(foreignLink.sanitizedText).toContain('[tautan dihapus]');
+
+    const unsafeClaim = verifyAndSanitizeGenerativeAnswer(
+      'Stok dijamin tersedia sekarang dan pesanan sudah dicatat.',
+      {
+        allowedHrefs: [],
+        allowedPriceValues: [],
+      },
+    );
+    expect(unsafeClaim.ok).toBe(false);
+    expect(unsafeClaim.reason).toBe('unsafe_claim');
   });
 });

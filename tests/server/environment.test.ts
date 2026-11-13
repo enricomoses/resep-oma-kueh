@@ -31,19 +31,58 @@ describe('server configuration', () => {
       CHAT_PROVIDER_ENABLED: false,
     });
   });
-  it('fails closed for premature provider activation, and never attaches private input', () => {
+  it('fails closed for premature provider activation, missing limiter store/quota, or HTTP store in production without echoing secrets', () => {
     for (const input of [
       { APP_ENV: 'invalid', GOOGLE_GEN_AI_API_KEY: 'synthetic-private' },
       { CHAT_PROVIDER_ENABLED: 'true' },
+      {
+        APP_ENV: 'production',
+        CHAT_PROVIDER_ENABLED: 'true',
+        GOOGLE_GEN_AI_API_KEY: 'synthetic-private-key',
+        GOOGLE_GEN_AI_CHAT_MODEL: 'gemini-custom-test',
+        CHAT_GENERATIVE_QUOTA_PER_DAY: '500',
+        CHAT_LIMITER_STORE_URL: 'http://localhost:8079',
+        CHAT_LIMITER_STORE_TOKEN: 'synthetic-store-token',
+      },
+      {
+        APP_ENV: 'development',
+        CHAT_PROVIDER_ENABLED: 'true',
+        GOOGLE_GEN_AI_API_KEY: 'synthetic-private-key',
+        GOOGLE_GEN_AI_CHAT_MODEL: 'gemini-custom-test',
+      },
     ]) {
       expect(() => parseEnvironment(serverEnvironmentSchema, input)).toThrow();
       try {
         parseEnvironment(serverEnvironmentSchema, input);
       } catch (error: unknown) {
         expect(String(error)).not.toContain('synthetic-private');
+        expect(String(error)).not.toContain('synthetic-store-token');
         expect(error).not.toHaveProperty('cause');
       }
     }
+  });
+  it('accepts complete F23 generative environment with external HTTPS limiter and custom model without hardcoded default', () => {
+    const parsed = parseEnvironment(serverEnvironmentSchema, {
+      APP_ENV: 'production',
+      CHAT_PROVIDER_ENABLED: 'true',
+      GOOGLE_GEN_AI_API_KEY: 'synthetic-private-key',
+      GOOGLE_GEN_AI_CHAT_MODEL: 'gemini-custom-test',
+      CHAT_GENERATIVE_QUOTA_PER_DAY: '250',
+      CHAT_GENERATIVE_RPM_LIMIT: '8',
+      CHAT_GENERATIVE_GLOBAL_RPM_LIMIT: '25',
+      CHAT_GENERATIVE_MAX_CONCURRENCY: '4',
+      CHAT_LIMITER_STORE_URL: 'https://limiter.example.invalid',
+      CHAT_LIMITER_STORE_TOKEN: 'synthetic-store-token',
+    });
+    expect(parsed).toMatchObject({
+      APP_ENV: 'production',
+      CHAT_PROVIDER_ENABLED: true,
+      GOOGLE_GEN_AI_CHAT_MODEL: 'gemini-custom-test',
+      CHAT_GENERATIVE_QUOTA_PER_DAY: 250,
+      CHAT_GENERATIVE_RPM_LIMIT: 8,
+      CHAT_GENERATIVE_GLOBAL_RPM_LIMIT: 25,
+      CHAT_GENERATIVE_MAX_CONCURRENCY: 4,
+    });
   });
 });
 
