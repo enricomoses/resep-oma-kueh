@@ -48,7 +48,6 @@ export const SITE_COPY = {
   CART_EMPTY: 'Keranjang kosong · 0 item',
   CART_PENDING: 'Keranjang tersedia pada tahap berikutnya.',
   CHAT: 'Ask Oma',
-  CHAT_PENDING: 'Ask Oma belum tersedia. Silakan hubungi admin cabang.',
   PREPARING: 'Halaman sedang disiapkan',
   PREPARING_BODY:
     'Navigasi ini sudah tersedia. Konten dan layanan halaman ini belum diaktifkan.',

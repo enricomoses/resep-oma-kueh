@@ -12,6 +12,7 @@ export const API_ENDPOINTS = {
   FAQS: '/faqs',
   CART_VALIDATE: '/cart/validate',
   CHECKOUT_PREPARE: '/checkout/prepare',
+  CHAT: '/chat',
   AUTH_LOGIN: '/auth/login',
   AUTH_LOGOUT: '/auth/logout',
   AUTH_REQUEST_RESET: '/auth/request-password-reset',

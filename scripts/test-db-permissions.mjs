@@ -549,9 +549,10 @@ try {
   // Actual SDK adapter still pins anonymous credentials after an owner sign-in.
   process.env.NEXT_PUBLIC_SUPABASE_URL = local.url;
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = local.anonKey;
-  const { createPublicReadClient } =
+  const { createPublicReadClient, createChatReadClient } =
     await import('../src/lib/supabase/public-read.server.ts');
   const chat = createPublicReadClient();
+  const chatAnon = createChatReadClient();
   const signedIn = await chat.auth.signInWithPassword({
     email: owner.email,
     password: owner.password,
@@ -560,6 +561,10 @@ try {
     !signedIn.error && signedIn.data.user?.id === owner.id,
     'test simulates an owner session on the real SDK client',
   );
+  await chatAnon.auth.signInWithPassword({
+    email: owner.email,
+    password: owner.password,
+  });
   const chatDrafts = await chat
     .from('products')
     .select('id')
@@ -567,6 +572,14 @@ try {
   check(
     !chatDrafts.error && chatDrafts.data?.length === 0,
     'real public read adapter ignores attached owner session for DB requests',
+  );
+  const chatAnonDrafts = await chatAnon
+    .from('products')
+    .select('id')
+    .eq('status', 'draft');
+  check(
+    !chatAnonDrafts.error && chatAnonDrafts.data?.length === 0,
+    'F22 dedicated createChatReadClient stays anon despite owner session',
   );
   for (const [bucket, isPublic] of [
     ['media-drafts', false],
@@ -1207,6 +1220,64 @@ try {
   check(
     snapshot() === beforeDenials,
     'chat SELECT/RPC has no business side effects',
+  );
+
+  const chatAnonInsert = await chatAnon.from('products').insert({
+    slug: 'f22-denied-product',
+    name: 'Denied Product',
+    product_type: 'unit',
+    status: 'draft',
+  });
+  check(chatAnonInsert.error !== null, 'F22 chatAnon cannot insert products');
+
+  const chatAnonUpdate = await chatAnon
+    .from('products')
+    .update({ name: 'Mutated Product' })
+    .eq('slug', 'nastar-wisjman');
+  check(chatAnonUpdate.error !== null, 'F22 chatAnon cannot update products');
+
+  const chatAnonDelete = await chatAnon
+    .from('products')
+    .delete()
+    .eq('slug', 'nastar-wisjman');
+  check(chatAnonDelete.error !== null, 'F22 chatAnon cannot delete products');
+
+  const chatAnonUpsert = await chatAnon.from('faqs').upsert({
+    question: 'Injected FAQ',
+    answer: 'No',
+    category: 'Umum',
+    is_published: true,
+  });
+  check(chatAnonUpsert.error !== null, 'F22 chatAnon cannot upsert faqs');
+
+  const chatAnonPromoRpc = await chatAnon.rpc('save_admin_promotion', {});
+  check(
+    chatAnonPromoRpc.error !== null,
+    'F22 chatAnon cannot call save_admin_promotion RPC',
+  );
+
+  const chatAnonConfigRpc = await chatAnon.rpc(
+    'save_product_configuration',
+    {},
+  );
+  check(
+    chatAnonConfigRpc.error !== null,
+    'F22 chatAnon cannot call save_product_configuration RPC',
+  );
+
+  const chatAnonStorage = await chatAnon.storage
+    .from('product-images')
+    .upload('f22-denied.txt', Buffer.from('denied'), {
+      contentType: 'text/plain',
+    });
+  check(
+    chatAnonStorage.error !== null,
+    'F22 chatAnon cannot upload to product-images storage',
+  );
+
+  check(
+    snapshot() === beforeDenials,
+    'F22 chatAnon writes/RPC/Storage denied and snapshot unchanged',
   );
 } finally {
   if (seeded && users[0])

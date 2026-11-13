@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 import { getSupabaseEnvironment } from '@/config/environment.client';
 import type { Database } from '@/types/database';
 
-export function createPublicReadClient() {
+function createAnonymousSupabaseClient() {
   const { url, publishableKey } = getSupabaseEnvironment();
   return createClient<Database>(url, publishableKey, {
     auth: {
@@ -33,4 +33,16 @@ export function createPublicReadClient() {
       },
     },
   });
+}
+
+export function createPublicReadClient() {
+  return createAnonymousSupabaseClient();
+}
+
+/**
+ * Dedicated anonymous SELECT-only Supabase client for Ask Oma retrieval.
+ * Intentionally separate from SSR cookie/admin auth context.
+ */
+export function createChatReadClient() {
+  return createAnonymousSupabaseClient();
 }
