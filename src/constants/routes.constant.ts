@@ -9,4 +9,8 @@ export const ROUTES = {
   ORDERING_POLICY: '/ordering-policy',
   CART: '/cart',
   CHECKOUT: '/checkout',
+  ADMIN: '/admin',
+  ADMIN_LOGIN: '/admin/login',
+  ADMIN_RESET_PASSWORD: '/admin/reset-password',
+  AUTH_CALLBACK: '/auth/callback',
 } as const;

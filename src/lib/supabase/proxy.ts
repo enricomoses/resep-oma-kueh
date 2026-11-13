@@ -6,12 +6,24 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 import { getSupabaseEnvironment } from '@/config/environment.client';
+import { EnvironmentConfigurationError } from '@/config/parse-environment';
 import type { Database } from '@/types/database';
 
 import { noStoreFetch } from './no-store-fetch';
 
 export async function refreshAuthSession(request: NextRequest) {
-  const { url, publishableKey } = getSupabaseEnvironment();
+  let url: string;
+  let publishableKey: string;
+  try {
+    ({ url, publishableKey } = getSupabaseEnvironment());
+  } catch (error) {
+    if (error instanceof EnvironmentConfigurationError) {
+      const response = NextResponse.next({ request });
+      response.headers.set('Cache-Control', 'private, no-store');
+      return response;
+    }
+    throw error;
+  }
   const pendingCookies = new Map<
     string,
     { name: string; value: string; options: CookieOptions }

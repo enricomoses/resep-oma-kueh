@@ -13,6 +13,22 @@ export const QUERY_KEYS = {
   CART_VALIDATE: (branchId: string | null, signature: string) =>
     ['resep-oma-kueh', 'cart-validate', branchId, signature] as const,
   CHECKOUT_PREPARE: ['resep-oma-kueh', 'checkout-prepare'] as const,
+  ADMIN_ROOT: ['resep-oma-kueh', 'admin'] as const,
+  ADMIN_SESSION: (
+    identity: {
+      userId: string;
+      role: string;
+      branchId: string | null;
+    } | null,
+  ) =>
+    [
+      'resep-oma-kueh',
+      'admin',
+      'session',
+      identity?.userId ?? 'anon',
+      identity?.role ?? 'none',
+      identity?.branchId ?? 'none',
+    ] as const,
 } as const;
 
 export const STALE_TIME = { PUBLIC: 60_000 } as const;
