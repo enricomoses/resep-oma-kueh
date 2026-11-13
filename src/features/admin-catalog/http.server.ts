@@ -43,6 +43,19 @@ export function revalidatePublicPromotionPaths(): void {
   }
 }
 
+export function revalidatePublicContentPaths(): void {
+  try {
+    revalidatePath(ROUTES.HOME);
+    revalidatePath(ROUTES.ABOUT);
+    revalidatePath(ROUTES.CONTACT);
+    revalidatePath(ROUTES.FAQ);
+    revalidatePath(ROUTES.PRIVACY);
+    revalidatePath(ROUTES.ORDERING_POLICY);
+  } catch {
+    // Outside Next.js request lifecycle (e.g., direct handler tests).
+  }
+}
+
 const uuidSchema = z.uuid();
 
 export function parseUuidRouteParam(rawId: string): string {

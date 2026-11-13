@@ -350,3 +350,35 @@ export async function getContactPageData(
     customBusiness,
   });
 }
+
+export async function getSiteFooterMeta(signal?: AbortSignal) {
+  let email: string = APPROVED_CONTACTS.email;
+  let instagramUrl: string = APPROVED_CONTACTS.instagramUrl;
+  let footerNote: string | null = null;
+
+  try {
+    const content = await getPublicContent(
+      { keys: 'business.contacts,footer.note' },
+      signal,
+    );
+    for (const entry of content.items) {
+      if (entry.key === 'business.contacts') {
+        email = entry.content.email;
+        instagramUrl = entry.content.instagram_url;
+      } else if (entry.key === 'footer.note' && entry.source === 'published') {
+        footerNote = entry.content.text;
+      }
+    }
+  } catch {
+    // Public footer layout stays available using approved constant contacts.
+  }
+
+  return {
+    contacts: {
+      email,
+      instagramUrl,
+      branches: APPROVED_CONTACTS.branches,
+    },
+    footerNote,
+  };
+}

@@ -190,8 +190,39 @@ function renderHome(data: HomePageData = LOADED_DATA) {
   );
 }
 
-it('renders all 9 main Home sections in the exact PRD §6.2 order', () => {
-  const { container } = renderHome();
+it('hides What They Say when no consented testimonials exist, and renders all 9 sections in exact PRD §6.2 order when present', () => {
+  const hiddenRender = renderHome();
+  const hiddenSectionIds = Array.from(
+    hiddenRender.container.querySelectorAll('main > section'),
+  ).map((section) => section.id);
+  expect(hiddenSectionIds).toEqual([
+    HOME_SECTION_IDS.HERO,
+    HOME_SECTION_IDS.SERIES,
+    HOME_SECTION_IDS.FEATURED,
+    HOME_SECTION_IDS.STORY,
+    HOME_SECTION_IDS.TREATS,
+    HOME_SECTION_IDS.CLASSES,
+    HOME_SECTION_IDS.FIND_US,
+    HOME_SECTION_IDS.COMMUNITY,
+  ]);
+  expect(screen.queryByText(HOME_COPY.TESTIMONIALS_EMPTY)).toBeNull();
+  hiddenRender.unmount();
+
+  const { container } = renderHome({
+    ...LOADED_DATA,
+    testimonials: {
+      status: 'success',
+      data: [
+        {
+          id: 'f0400000-0000-4000-8000-000000000970',
+          displayName: 'Pelanggan Resep Oma',
+          quote: 'Empuk dan harum klasik.',
+          rating: 5,
+          sourceLabel: 'Izin tercatat',
+        },
+      ],
+    },
+  });
   const sectionIds = Array.from(
     container.querySelectorAll('main > section'),
   ).map((section) => section.id);
@@ -207,7 +238,7 @@ it('renders all 9 main Home sections in the exact PRD §6.2 order', () => {
     HOME_SECTION_IDS.COMMUNITY,
   ]);
   expect(screen.getByText(HOME_COPY.FEATURED_PRICE_NOTE)).toBeInTheDocument();
-  expect(screen.getByText(HOME_COPY.TESTIMONIALS_EMPTY)).toBeInTheDocument();
+  expect(screen.getByText(/Empuk dan harum klasik/)).toBeInTheDocument();
 });
 
 it('updates branch-scoped promotions, classes, and links when a branch is selected in Find Us', async () => {

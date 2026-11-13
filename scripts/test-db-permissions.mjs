@@ -1070,6 +1070,64 @@ try {
     },
     'staff cannot write promo.shipping_banner to site_content via REST',
   );
+  for (const actor of ['anon', 'surabaya', 'bintaro']) {
+    await denied(
+      actor,
+      'faqs?select=id',
+      'POST',
+      {
+        category: 'Umum',
+        question: 'Q?',
+        answer: 'A.',
+        status: 'published',
+      },
+      `${actor} cannot insert faqs via REST`,
+    );
+    await denied(
+      actor,
+      'testimonials?select=id',
+      'POST',
+      {
+        display_name: 'Anonim',
+        quote: 'Enak',
+        status: 'draft',
+      },
+      `${actor} cannot insert testimonials via REST`,
+    );
+    const rpcEv = await rest(
+      actor,
+      'rpc/read_owner_testimonial_evidence',
+      'POST',
+      {
+        testimonial_uuid: id(90),
+      },
+    );
+    check(
+      [401, 403].includes(rpcEv.status),
+      `${actor} cannot invoke read_owner_testimonial_evidence RPC`,
+    );
+  }
+  await denied(
+    'owner',
+    'testimonials?select=id',
+    'POST',
+    {
+      display_name: 'Pelanggan Resep Oma',
+      quote: 'Tanpa izin publish harus ditolak',
+      status: 'published',
+      consent_at: null,
+      consent_reference: null,
+    },
+    'owner cannot publish testimonial without consent_at and consent_reference',
+  );
+  const directTestimonialEvidenceSelect = await rest(
+    'owner',
+    'testimonials?select=id,consent_reference,consent_at',
+  );
+  check(
+    directTestimonialEvidenceSelect.status >= 400,
+    'direct REST select of testimonial consent evidence columns denied by column grants',
+  );
   check(
     snapshot() === beforeDenials,
     'all expected denies leave complete business/Storage snapshot identical',

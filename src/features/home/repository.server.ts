@@ -80,6 +80,19 @@ export async function readUpcomingClassSessions(signal?: AbortSignal) {
   return data;
 }
 
+export function resolvePublicBrandAssetUrl(
+  imagePath: string | null | undefined,
+): string | null {
+  if (!imagePath || !imagePath.startsWith('approved/')) {
+    return null;
+  }
+  const client = createPublicReadClient();
+  const storage = (client as { storage?: typeof client.storage }).storage;
+  if (!storage) return null;
+  const { data } = storage.from('brand-assets').getPublicUrl(imagePath);
+  return data.publicUrl ?? null;
+}
+
 export async function readPublishedTestimonials(signal?: AbortSignal) {
   const { data, error } = await createPublicReadClient()
     .from('testimonials')

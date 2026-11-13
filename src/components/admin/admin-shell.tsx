@@ -1,10 +1,13 @@
 'use client';
 
 import {
+  FileText,
+  HelpCircle,
   LayoutDashboard,
   LogOut,
   MapPin,
   Menu,
+  MessageSquareQuote,
   Package,
   ShieldCheck,
   Store,
@@ -51,6 +54,12 @@ function getNavIcon(id: string) {
       return <MapPin size={18} aria-hidden="true" />;
     case 'promotions':
       return <Tags size={18} aria-hidden="true" />;
+    case 'content':
+      return <FileText size={18} aria-hidden="true" />;
+    case 'faqs':
+      return <HelpCircle size={18} aria-hidden="true" />;
+    case 'testimonials':
+      return <MessageSquareQuote size={18} aria-hidden="true" />;
     default:
       return <ShieldCheck size={18} aria-hidden="true" />;
   }

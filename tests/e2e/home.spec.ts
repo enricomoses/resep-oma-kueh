@@ -61,20 +61,35 @@ test('renders complete Home sequence in exact PRD §6.2 order with accessible de
   await page.goto('/');
   await page.evaluate(() => document.fonts.ready);
 
+  const isLocalSite = process.env.BAKERY_SITE_LOCAL === '1';
+
   const sectionIds = await page.evaluate(() =>
     Array.from(document.querySelectorAll('main > section')).map((s) => s.id),
   );
-  expect(sectionIds).toEqual([
-    HOME_SECTION_IDS.HERO,
-    HOME_SECTION_IDS.SERIES,
-    HOME_SECTION_IDS.FEATURED,
-    HOME_SECTION_IDS.STORY,
-    HOME_SECTION_IDS.TREATS,
-    HOME_SECTION_IDS.CLASSES,
-    HOME_SECTION_IDS.TESTIMONIALS,
-    HOME_SECTION_IDS.FIND_US,
-    HOME_SECTION_IDS.COMMUNITY,
-  ]);
+  expect(sectionIds).toEqual(
+    isLocalSite
+      ? [
+          HOME_SECTION_IDS.HERO,
+          HOME_SECTION_IDS.SERIES,
+          HOME_SECTION_IDS.FEATURED,
+          HOME_SECTION_IDS.STORY,
+          HOME_SECTION_IDS.TREATS,
+          HOME_SECTION_IDS.CLASSES,
+          HOME_SECTION_IDS.FIND_US,
+          HOME_SECTION_IDS.COMMUNITY,
+        ]
+      : [
+          HOME_SECTION_IDS.HERO,
+          HOME_SECTION_IDS.SERIES,
+          HOME_SECTION_IDS.FEATURED,
+          HOME_SECTION_IDS.STORY,
+          HOME_SECTION_IDS.TREATS,
+          HOME_SECTION_IDS.CLASSES,
+          HOME_SECTION_IDS.TESTIMONIALS,
+          HOME_SECTION_IDS.FIND_US,
+          HOME_SECTION_IDS.COMMUNITY,
+        ],
+  );
 
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     HOME_CMS_DEFAULTS.HERO.headline,
@@ -94,9 +109,22 @@ test('renders complete Home sequence in exact PRD §6.2 order with accessible de
   await expect(
     page.getByRole('heading', { level: 2, name: HOME_COPY.TREATS_TITLE }),
   ).toBeVisible();
-  await expect(
-    page.getByRole('heading', { level: 2, name: HOME_COPY.TESTIMONIALS_TITLE }),
-  ).toBeVisible();
+  if (isLocalSite) {
+    await expect(
+      page.getByRole('heading', {
+        level: 2,
+        name: HOME_COPY.TESTIMONIALS_TITLE,
+      }),
+    ).toHaveCount(0);
+  } else {
+    await expect(
+      page.getByRole('heading', {
+        level: 2,
+        name: HOME_COPY.TESTIMONIALS_TITLE,
+      }),
+    ).toBeVisible();
+    await expect(page.getByText(HOME_COPY.TESTIMONIALS_ERROR)).toBeVisible();
+  }
   await expect(
     page.getByRole('heading', { level: 2, name: HOME_COPY.FIND_US_TITLE }),
   ).toBeVisible();
@@ -128,7 +156,7 @@ test('renders complete Home sequence in exact PRD §6.2 order with accessible de
     await expect(
       page.getByRole('heading', { level: 3, name: 'DEMO — Fruit Tartlet' }),
     ).toBeVisible();
-    await expect(page.getByText(HOME_COPY.TESTIMONIALS_EMPTY)).toBeVisible();
+    await expect(page.getByText(HOME_COPY.TESTIMONIALS_EMPTY)).toHaveCount(0);
   }
 
   expect(

@@ -19,11 +19,13 @@ interface ContactDetails {
 interface SiteFooterProps {
   contacts: ContactDetails;
   initialUnavailable: boolean;
+  footerNote?: string | null;
   className?: string;
 }
 export function SiteFooter({
   contacts,
   initialUnavailable,
+  footerNote,
   className,
 }: SiteFooterProps) {
   const { selected, code, items, isError, isPending, pathname } = useBranches();
@@ -54,6 +56,7 @@ export function SiteFooter({
           <h2>{SITE_COPY.CONTACTS}</h2>
           <p>{APP.NAME}</p>
         </div>
+        {footerNote ? <p className="site-contact-note">{footerNote}</p> : null}
         {fallbackNotice ? (
           <p className="site-contact-note">{SITE_COPY.CONTACT_FALLBACK}</p>
         ) : null}

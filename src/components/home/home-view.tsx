@@ -55,6 +55,9 @@ export function HomeView({ data, contacts, className }: HomeViewProps) {
         headline={content.hero.headline}
         subcopy={content.hero.subcopy}
         imageAlt={content.hero.imageAlt}
+        imageUrl={
+          'imageUrl' in content.hero ? (content.hero.imageUrl ?? null) : null
+        }
         branchCode={branchCode}
       />
       <ShopBySeriesSection
@@ -70,6 +73,9 @@ export function HomeView({ data, contacts, className }: HomeViewProps) {
         title={content.story.title}
         body={content.story.body}
         imageAlt={content.story.imageAlt}
+        imageUrl={
+          'imageUrl' in content.story ? (content.story.imageUrl ?? null) : null
+        }
         customBusinessTitle={content.customBusiness.title}
         customBusinessBody={content.customBusiness.body}
         branchCode={branchCode}
@@ -97,7 +103,12 @@ export function HomeView({ data, contacts, className }: HomeViewProps) {
           void switchBranch(branch);
         }}
       />
-      <InstagramCommunitySection instagramUrl={content.instagram.url} />
+      <InstagramCommunitySection
+        instagramUrl={content.instagram.url}
+        items={
+          'items' in content.instagram ? content.instagram.items : undefined
+        }
+      />
     </main>
   );
 }

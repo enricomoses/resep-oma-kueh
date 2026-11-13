@@ -1,7 +1,8 @@
 import { z } from 'zod';
 import { CONTENT_LIMITS, PUBLIC_CMS_KEYS } from '@/constants/content.constant';
 
-const HTML_TAG_REGEX = /<[^>]*>/;
+const UNSAFE_MARKUP_REGEX =
+  /<[/!A-Za-z]|<[^>]*>|javascript:|vbscript:|data:text\/html/i;
 
 const safePlainText = (maxLen: number) =>
   z
@@ -9,7 +10,7 @@ const safePlainText = (maxLen: number) =>
     .trim()
     .min(1)
     .max(maxLen)
-    .refine((value) => !HTML_TAG_REGEX.test(value), {
+    .refine((value) => !UNSAFE_MARKUP_REGEX.test(value), {
       message: 'Raw HTML tags are not permitted in plain-text CMS content.',
     });
 
@@ -42,7 +43,12 @@ export const contentQuerySchema = z
 const cmsBusinessContactsPayloadSchema = z
   .object({
     email: z.email().max(200),
-    instagram_url: z.url().startsWith('https://www.instagram.com/'),
+    instagram_url: z
+      .url()
+      .regex(
+        /^https:\/\/www\.instagram\.com\/[a-zA-Z0-9_.]+\/$/,
+        'Instagram URL must match https://www.instagram.com/<handle>/',
+      ),
   })
   .strict();
 
@@ -82,14 +88,24 @@ const cmsInstagramFeedItemSchema = z
   .object({
     image_path: safePlainText(500),
     alt: safePlainText(200),
-    href: z.url().startsWith('https://www.instagram.com/'),
+    href: z
+      .url()
+      .regex(
+        /^https:\/\/www\.instagram\.com\/[^\s<>"']+$/,
+        'Instagram post URL must use https://www.instagram.com/',
+      ),
     media_approved: z.literal(true),
   })
   .strict();
 
 const cmsCommunityInstagramPayloadSchema = z
   .object({
-    url: z.url().startsWith('https://www.instagram.com/'),
+    url: z
+      .url()
+      .regex(
+        /^https:\/\/www\.instagram\.com\/[a-zA-Z0-9_.]+\/$/,
+        'Instagram URL must match https://www.instagram.com/<handle>/',
+      ),
     items: z.array(cmsInstagramFeedItemSchema).max(12),
   })
   .strict();

@@ -159,6 +159,51 @@ export const QUERY_KEYS = {
       identity?.role ?? 'none',
       identity?.branchId ?? 'none',
     ] as const,
+  ADMIN_CONTENT: (
+    identity: {
+      userId: string;
+      role: string;
+      branchId: string | null;
+    } | null,
+  ) =>
+    [
+      'resep-oma-kueh',
+      'admin',
+      'content',
+      identity?.userId ?? 'anon',
+      identity?.role ?? 'none',
+      identity?.branchId ?? 'none',
+    ] as const,
+  ADMIN_FAQS: (
+    identity: {
+      userId: string;
+      role: string;
+      branchId: string | null;
+    } | null,
+  ) =>
+    [
+      'resep-oma-kueh',
+      'admin',
+      'faqs',
+      identity?.userId ?? 'anon',
+      identity?.role ?? 'none',
+      identity?.branchId ?? 'none',
+    ] as const,
+  ADMIN_TESTIMONIALS: (
+    identity: {
+      userId: string;
+      role: string;
+      branchId: string | null;
+    } | null,
+  ) =>
+    [
+      'resep-oma-kueh',
+      'admin',
+      'testimonials',
+      identity?.userId ?? 'anon',
+      identity?.role ?? 'none',
+      identity?.branchId ?? 'none',
+    ] as const,
 } as const;
 
 export const STALE_TIME = { PUBLIC: 60_000 } as const;

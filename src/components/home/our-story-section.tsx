@@ -1,4 +1,5 @@
 import { ArrowRight, Building2 } from 'lucide-react';
+import Image from 'next/image';
 import { MediaPlaceholder } from '@/app/_components';
 import { ActionLink } from '@/components/ui/action-link';
 import { Badge } from '@/components/ui/badge';
@@ -12,6 +13,7 @@ interface OurStorySectionProps {
   title: string;
   body: string;
   imageAlt: string;
+  imageUrl?: string | null;
   customBusinessTitle: string;
   customBusinessBody: string;
   branchCode: string | null;
@@ -21,6 +23,7 @@ export function OurStorySection({
   title,
   body,
   imageAlt,
+  imageUrl,
   customBusinessTitle,
   customBusinessBody,
   branchCode,
@@ -60,7 +63,22 @@ export function OurStorySection({
             <ArrowRight size={16} aria-hidden="true" />
           </ActionLink>
         </div>
-        <MediaPlaceholder caption={imageAlt} />
+        {imageUrl ? (
+          <figure className="media-placeholder overflow-hidden p-0">
+            <div className="relative h-full min-h-60 w-full">
+              <Image
+                src={imageUrl}
+                alt={imageAlt}
+                fill
+                sizes="(max-width: 768px) 100vw, 480px"
+                unoptimized
+                className="object-cover"
+              />
+            </div>
+          </figure>
+        ) : (
+          <MediaPlaceholder caption={imageAlt} />
+        )}
       </div>
       <Card tone="surface" className="home-custom-business-card">
         <div className="home-custom-business-copy">
@@ -72,7 +90,7 @@ export function OurStorySection({
           <p>{customBusinessBody}</p>
         </div>
         <ActionLink
-          href={withBranch(ROUTES.CONTACT, branchCode)}
+          href={`${withBranch(ROUTES.CONTACT, branchCode)}#custom-business`}
           variant="primary"
           prefetch={false}
         >

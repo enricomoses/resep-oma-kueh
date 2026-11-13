@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import type { ReactNode } from 'react';
 import { connection } from 'next/server';
 import { getInitialBranches } from '@/features/branches/service.server';
-import { APPROVED_CONTACTS } from '@/features/branches/contacts.server';
+import { getSiteFooterMeta } from '@/features/content/service.server';
 import { BranchProvider } from '@/providers/branch-provider';
 import { SiteHeader } from '@/components/site/site-header';
 import { SiteFooter } from '@/components/site/site-footer';
@@ -15,7 +15,10 @@ interface SiteContentProps {
 }
 async function SiteContent({ children }: SiteContentProps) {
   await connection();
-  const initial = await getInitialBranches();
+  const [initial, footerMeta] = await Promise.all([
+    getInitialBranches(),
+    getSiteFooterMeta(),
+  ]);
   return (
     <BranchProvider initial={initial}>
       <a className="site-skip" href={`#${SITE_COPY.MAIN_ID}`}>
@@ -24,7 +27,8 @@ async function SiteContent({ children }: SiteContentProps) {
       <SiteHeader />
       {children}
       <SiteFooter
-        contacts={APPROVED_CONTACTS}
+        contacts={footerMeta.contacts}
+        footerNote={footerMeta.footerNote}
         initialUnavailable={initial.status === 'error'}
       />
       {getPublicEnvironment().NEXT_PUBLIC_CHAT_WIDGET_ENABLED ? (

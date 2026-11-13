@@ -140,12 +140,25 @@ export const ADMIN_NAV_ITEMS: readonly AdminNavItem[] = [
     implemented: true,
   },
   {
-    id: 'content-locations',
-    label: 'Konten & FAQ',
-    href: null,
+    id: 'content',
+    label: 'Konten & Halaman',
+    href: ROUTES.ADMIN_CONTENT,
     roles: ['owner'],
-    implemented: false,
-    stageTag: 'F20',
+    implemented: true,
+  },
+  {
+    id: 'faqs',
+    label: 'FAQ Publik',
+    href: ROUTES.ADMIN_FAQS,
+    roles: ['owner'],
+    implemented: true,
+  },
+  {
+    id: 'testimonials',
+    label: 'Testimoni & Izin',
+    href: ROUTES.ADMIN_TESTIMONIALS,
+    roles: ['owner'],
+    implemented: true,
   },
   {
     id: 'classes',
@@ -477,6 +490,73 @@ export const ADMIN_CATALOG_COPY = {
         'Promosi terpublikasi harus mencakup minimal satu cabang aktif.',
       STALE_CONFLICT:
         'Data promosi telah diubah sesi lain. Muat ulang sebelum menyimpan ulang.',
+    },
+  },
+  CMS: {
+    TITLE: 'Konten & Halaman Publik',
+    SUBTITLE:
+      'Editor terstruktur berbasis skema untuk beranda, Tentang Oma, B2B/Custom, komunitas Instagram, catatan footer, dan kebijakan hukum (Owner only).',
+    REFRESH: 'Muat ulang konten',
+    SAVE_DRAFT: 'Simpan sebagai Draf',
+    PUBLISH: 'Publikasikan Konten',
+    OWNER_SIGNOFF_GATE:
+      'Release gate kebijakan & klaim: publikasi "legal.privacy", "legal.ordering_policy", dan naskah tentang dapur/alami membutuhkan persetujuan eksplisit Owner sebelum rilis produksi.',
+    NO_NATURAL_UNIVERSAL_NOTE:
+      'Klaim bahan alami/tanpa pengawet atau profil food scientist harus menunggu review Owner dan tidak pernah menjadi klaim alergen/diet universal semua SKU.',
+    CONTACTS_SOURCE_NOTE:
+      'Nomor WhatsApp & alamat cabang dikelola terpusat di Lokasi & Jam Cabang, bukan duplikasi di konten umum.',
+    ERRORS: {
+      OWNER_ONLY: 'Hanya Owner yang dapat mengelola konten CMS.',
+      INVALID_KEY: 'Kunci konten tidak termasuk dalam daftar resmi CMS.',
+      UNSAFE_TEXT:
+        'Konten hanya menerima teks polos terstruktur tanpa tag HTML, script, atau tautan tidak aman.',
+      MEDIA_REQUIRED:
+        'Publikasi media pada blok ini membutuhkan foto yang diunggah dan disetujui (media_approved) beserta teks alt.',
+      STALE_CONFLICT:
+        'Konten pada kunci ini telah diubah sesi lain. Muat ulang sebelum menyimpan ulang.',
+    },
+  },
+  FAQS: {
+    TITLE: 'Manajemen FAQ Publik',
+    SUBTITLE:
+      'Kelola pertanyaan umum berdasarkan kategori dan urutan tampil. FAQ berstatus draf atau arsip tidak muncul di halaman publik maupun Asisten Ask Oma.',
+    ADD_BUTTON: 'Tambah FAQ',
+    REFRESH: 'Muat ulang',
+    EMPTY: 'Belum ada FAQ terdaftar.',
+    ARCHIVE_CONFIRM_TITLE: 'Arsipkan FAQ ini?',
+    ARCHIVE_CONFIRM_DESC:
+      'FAQ akan diarsipkan secara lunak dan disembunyikan dari halaman publik serta basis pengetahuan FAQ tanpa mengubah urutan item lain.',
+    ARCHIVE_CONFIRM_SUBMIT: 'Ya, Arsipkan FAQ',
+    ERRORS: {
+      OWNER_ONLY: 'Hanya Owner yang dapat mengelola FAQ.',
+      STALE_CONFLICT:
+        'Data FAQ telah diubah sesi lain. Muat ulang sebelum menyimpan ulang.',
+    },
+  },
+  TESTIMONIALS: {
+    TITLE: 'Testimoni & Izin Publikasi',
+    SUBTITLE:
+      'Seluruh testimoni awal dimulai sebagai draf anonim tanpa rating. Publikasi hanya diizinkan bila bukti persetujuan (consent_at + referensi privat) tercatat di RPC Owner.',
+    ADD_BUTTON: 'Tambah Draf Testimoni',
+    REFRESH: 'Muat ulang',
+    EMPTY: 'Belum ada testimoni terdaftar.',
+    PREVIEW_HEADING: 'Pratinjau Panel Owner: What They Say',
+    PREVIEW_PUBLIC_HIDDEN_NOTE:
+      'Saat ini 0 testimoni berstatus terpublikasi + berizin, sehingga bagian "What They Say" disembunyikan otomatis di halaman Beranda publik.',
+    EVIDENCE_PRIVACY_NOTE:
+      'Bukti persetujuan bersifat privat untuk Owner saja (disimpan tanpa screenshot WhatsApp atau PII di situs publik maupun repositori).',
+    ARCHIVE_CONFIRM_TITLE: 'Arsipkan testimoni ini?',
+    ARCHIVE_CONFIRM_DESC:
+      'Testimoni akan disembunyikan dari Beranda publik tanpa menghapus catatan histori draf.',
+    ARCHIVE_CONFIRM_SUBMIT: 'Ya, Arsipkan Testimoni',
+    ERRORS: {
+      OWNER_ONLY: 'Hanya Owner yang dapat mengelola testimoni.',
+      CONSENT_REQUIRED:
+        'Testimoni tidak dapat dipublikasikan tanpa tanggal persetujuan (consent_at) dan referensi izin privat non-PII.',
+      INVALID_SOURCE_URL:
+        'Tautan sumber testimoni harus menggunakan protokol https:// yang aman tanpa karakter khusus.',
+      STALE_CONFLICT:
+        'Data testimoni telah diubah sesi lain. Muat ulang sebelum menyimpan ulang.',
     },
   },
 } as const;

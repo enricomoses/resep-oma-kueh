@@ -8,12 +8,22 @@ import type { HomeSectionResult, HomeTestimonial } from '@/types/home';
 
 interface WhatTheySaySectionProps {
   testimonials: HomeSectionResult<HomeTestimonial[]>;
+  allowEmptyPreview?: boolean;
   className?: string;
 }
 export function WhatTheySaySection({
   testimonials,
+  allowEmptyPreview = false,
   className,
 }: WhatTheySaySectionProps) {
+  if (
+    !allowEmptyPreview &&
+    testimonials.status === 'success' &&
+    testimonials.data.length === 0
+  ) {
+    return null;
+  }
+
   return (
     <section
       id={HOME_SECTION_IDS.TESTIMONIALS}

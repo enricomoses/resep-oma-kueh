@@ -52,6 +52,7 @@ const homeHeroContentSchema = z
     headline: plainTextLabelSchema,
     subcopy: plainTextBodySchema,
     imageAlt: plainTextLabelSchema,
+    imageUrl: z.url().max(2000).nullable().optional(),
   })
   .strict();
 
@@ -60,6 +61,7 @@ const homeStoryContentSchema = z
     title: plainTextLabelSchema,
     body: plainTextBodySchema,
     imageAlt: plainTextLabelSchema,
+    imageUrl: z.url().max(2000).nullable().optional(),
   })
   .strict();
 
@@ -67,12 +69,23 @@ const homeSimpleBlockContentSchema = z
   .object({
     title: plainTextLabelSchema,
     body: plainTextBodySchema,
+    imageAlt: plainTextLabelSchema.optional(),
+    imageUrl: z.url().max(2000).nullable().optional(),
+  })
+  .strict();
+
+const homeInstagramItemSchema = z
+  .object({
+    imageUrl: z.url().max(2000).nullable(),
+    alt: plainTextLabelSchema,
+    href: z.url().startsWith('https://www.instagram.com/'),
   })
   .strict();
 
 const homeInstagramContentSchema = z
   .object({
     url: z.url().startsWith('https://www.instagram.com/'),
+    items: z.array(homeInstagramItemSchema).max(12).optional(),
   })
   .strict();
 

@@ -153,3 +153,43 @@ export function mapPostgresPromotionError(error: PostgresLikeError): never {
 
   throw new AdminCatalogUpstreamError();
 }
+
+export function mapPostgresCmsError(
+  error: PostgresLikeError,
+  entity: 'content' | 'faq' | 'testimonial',
+): never {
+  const code = error.code ?? '';
+  const message = (error.message ?? '').toLowerCase();
+
+  if (code === '42501') {
+    const msg =
+      entity === 'content'
+        ? ADMIN_CATALOG_COPY.CMS.ERRORS.OWNER_ONLY
+        : entity === 'faq'
+          ? ADMIN_CATALOG_COPY.FAQS.ERRORS.OWNER_ONLY
+          : ADMIN_CATALOG_COPY.TESTIMONIALS.ERRORS.OWNER_ONLY;
+    throw new AuthForbiddenError(msg);
+  }
+
+  if (code === '23514') {
+    if (
+      entity === 'testimonial' &&
+      (message.includes('consent') || message.includes('testimonials_check'))
+    ) {
+      const msg = ADMIN_CATALOG_COPY.TESTIMONIALS.ERRORS.CONSENT_REQUIRED;
+      throw new AdminCatalogValidationError(msg, { consentAt: [msg] });
+    }
+    if (entity === 'testimonial' && message.includes('source_url')) {
+      const msg = ADMIN_CATALOG_COPY.TESTIMONIALS.ERRORS.INVALID_SOURCE_URL;
+      throw new AdminCatalogValidationError(msg, { sourceUrl: [msg] });
+    }
+    const msg = ADMIN_CATALOG_COPY.CMS.ERRORS.UNSAFE_TEXT;
+    throw new AdminCatalogValidationError(msg, { root: [msg] });
+  }
+
+  if (code === 'P0002') {
+    throw new AdminCatalogNotFoundError();
+  }
+
+  throw new AdminCatalogUpstreamError();
+}

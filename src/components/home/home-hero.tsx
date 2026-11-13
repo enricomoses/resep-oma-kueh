@@ -1,4 +1,5 @@
 import { ArrowRight, Sparkles } from 'lucide-react';
+import Image from 'next/image';
 import { MediaPlaceholder } from '@/app/_components';
 import { ActionLink } from '@/components/ui/action-link';
 import { Badge } from '@/components/ui/badge';
@@ -12,6 +13,7 @@ interface HomeHeroProps {
   headline: string;
   subcopy: string;
   imageAlt: string;
+  imageUrl?: string | null;
   branchCode: string | null;
   className?: string;
 }
@@ -19,6 +21,7 @@ export function HomeHero({
   headline,
   subcopy,
   imageAlt,
+  imageUrl,
   branchCode,
   className,
 }: HomeHeroProps) {
@@ -57,7 +60,22 @@ export function HomeHero({
           </ActionLink>
         </div>
       </div>
-      <MediaPlaceholder caption={imageAlt} />
+      {imageUrl ? (
+        <figure className="media-placeholder overflow-hidden p-0">
+          <div className="relative h-full min-h-64 w-full">
+            <Image
+              src={imageUrl}
+              alt={imageAlt}
+              fill
+              sizes="(max-width: 768px) 100vw, 520px"
+              unoptimized
+              className="object-cover"
+            />
+          </div>
+        </figure>
+      ) : (
+        <MediaPlaceholder caption={imageAlt} />
+      )}
     </section>
   );
 }

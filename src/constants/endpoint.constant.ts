@@ -23,4 +23,7 @@ export const API_ENDPOINTS = {
   ADMIN_AVAILABILITY: '/admin/availability',
   ADMIN_PROMOTIONS: '/admin/promotions',
   ADMIN_PROMOTIONS_SHIPPING_BANNER: '/admin/promotions/shipping-banner',
+  ADMIN_CONTENT: '/admin/content',
+  ADMIN_FAQS: '/admin/faqs',
+  ADMIN_TESTIMONIALS: '/admin/testimonials',
 } as const;

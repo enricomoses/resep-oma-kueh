@@ -28,6 +28,7 @@ import {
   readPublishedHomeContent,
   readPublishedTestimonials,
   readUpcomingClassSessions,
+  resolvePublicBrandAssetUrl,
 } from './repository.server';
 
 interface GetHomeDataOptions {
@@ -97,6 +98,10 @@ export async function getHomeData(
             heroParsed.success && heroParsed.data.image_alt
               ? heroParsed.data.image_alt
               : HOME_CMS_DEFAULTS.HERO.imageAlt,
+          imageUrl:
+            heroParsed.success && heroParsed.data.media_approved
+              ? resolvePublicBrandAssetUrl(heroParsed.data.image_path)
+              : null,
         },
         story: {
           title: storyParsed.success
@@ -109,6 +114,10 @@ export async function getHomeData(
             storyParsed.success && storyParsed.data.image_alt
               ? storyParsed.data.image_alt
               : HOME_CMS_DEFAULTS.STORY.imageAlt,
+          imageUrl:
+            storyParsed.success && storyParsed.data.media_approved
+              ? resolvePublicBrandAssetUrl(storyParsed.data.image_path)
+              : null,
         },
         customBusiness: {
           title: customBusinessParsed.success
@@ -117,6 +126,15 @@ export async function getHomeData(
           body: customBusinessParsed.success
             ? customBusinessParsed.data.body
             : HOME_CMS_DEFAULTS.CUSTOM_BUSINESS.body,
+          ...(customBusinessParsed.success &&
+          customBusinessParsed.data.image_alt
+            ? { imageAlt: customBusinessParsed.data.image_alt }
+            : {}),
+          imageUrl:
+            customBusinessParsed.success &&
+            customBusinessParsed.data.media_approved
+              ? resolvePublicBrandAssetUrl(customBusinessParsed.data.image_path)
+              : null,
         },
         classPromo: {
           title: classPromoParsed.success
@@ -125,11 +143,27 @@ export async function getHomeData(
           body: classPromoParsed.success
             ? classPromoParsed.data.body
             : HOME_CMS_DEFAULTS.CLASS_PROMO.body,
+          ...(classPromoParsed.success && classPromoParsed.data.image_alt
+            ? { imageAlt: classPromoParsed.data.image_alt }
+            : {}),
+          imageUrl:
+            classPromoParsed.success && classPromoParsed.data.media_approved
+              ? resolvePublicBrandAssetUrl(classPromoParsed.data.image_path)
+              : null,
         },
         instagram: {
           url: instagramParsed.success
             ? instagramParsed.data.url
             : HOME_CMS_DEFAULTS.INSTAGRAM.url,
+          items: instagramParsed.success
+            ? instagramParsed.data.items.map((item) => ({
+                imageUrl: item.media_approved
+                  ? resolvePublicBrandAssetUrl(item.image_path)
+                  : null,
+                alt: item.alt,
+                href: item.href,
+              }))
+            : [],
         },
       });
     }),

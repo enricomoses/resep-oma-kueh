@@ -1,6 +1,7 @@
 export const ADMIN_MEDIA_BUCKETS = {
   DRAFTS: 'media-drafts',
   PRODUCT_IMAGES: 'product-images',
+  BRAND_ASSETS: 'brand-assets',
 } as const;
 
 export const ADMIN_MEDIA_ALLOWED_MIME_TYPES = [
@@ -38,7 +39,10 @@ export function isSafeStoragePathForBucket(
   if (bucket === ADMIN_MEDIA_BUCKETS.DRAFTS) {
     return SAFE_DRAFT_PATH_REGEX.test(storagePath);
   }
-  if (bucket === ADMIN_MEDIA_BUCKETS.PRODUCT_IMAGES) {
+  if (
+    bucket === ADMIN_MEDIA_BUCKETS.PRODUCT_IMAGES ||
+    bucket === ADMIN_MEDIA_BUCKETS.BRAND_ASSETS
+  ) {
     return SAFE_APPROVED_PATH_REGEX.test(storagePath);
   }
   return false;

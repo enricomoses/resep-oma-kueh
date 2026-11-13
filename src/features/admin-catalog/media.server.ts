@@ -275,11 +275,20 @@ export async function uploadDraftProductMedia(
  * Copies & re-encodes a verified draft object into public bucket `product-images`
  * under random UUID path `approved/<uuid>.<ext>` using owner SSR session.
  */
-export async function promoteDraftMediaToPublicBucket(
+export async function promoteDraftMediaToPublicBucket<
+  TBucket extends
+    | typeof ADMIN_MEDIA_BUCKETS.PRODUCT_IMAGES
+    | typeof ADMIN_MEDIA_BUCKETS.BRAND_ASSETS =
+    typeof ADMIN_MEDIA_BUCKETS.PRODUCT_IMAGES,
+>(
   profile: AdminSessionProfile,
   draftStoragePath: string,
   ctx: AdminRepoContext = {},
-): Promise<{ storageBucket: 'product-images'; storagePath: string }> {
+  targetBucket: TBucket = ADMIN_MEDIA_BUCKETS.PRODUCT_IMAGES as TBucket,
+): Promise<{
+  storageBucket: TBucket;
+  storagePath: string;
+}> {
   assertOwnerForMedia(profile);
 
   if (
@@ -312,7 +321,7 @@ export async function promoteDraftMediaToPublicBucket(
 
   const approvedPath = `approved/${crypto.randomUUID().toLowerCase()}.${reencoded.extension}`;
   const { error: uploadError } = await client.storage
-    .from(ADMIN_MEDIA_BUCKETS.PRODUCT_IMAGES)
+    .from(targetBucket)
     .upload(approvedPath, reencoded.buffer, {
       contentType: reencoded.mimeType,
       upsert: false,
@@ -323,7 +332,7 @@ export async function promoteDraftMediaToPublicBucket(
   }
 
   return {
-    storageBucket: ADMIN_MEDIA_BUCKETS.PRODUCT_IMAGES,
+    storageBucket: targetBucket,
     storagePath: approvedPath,
   };
 }
@@ -338,9 +347,12 @@ export async function resolveAdminMediaPreviewUrl(
   }
 
   const client = await createServerAuthClient(ctx.response);
-  if (storageBucket === ADMIN_MEDIA_BUCKETS.PRODUCT_IMAGES) {
+  if (
+    storageBucket === ADMIN_MEDIA_BUCKETS.PRODUCT_IMAGES ||
+    storageBucket === ADMIN_MEDIA_BUCKETS.BRAND_ASSETS
+  ) {
     const { data } = client.storage
-      .from(ADMIN_MEDIA_BUCKETS.PRODUCT_IMAGES)
+      .from(storageBucket)
       .getPublicUrl(storagePath);
     return data.publicUrl ?? null;
   }
@@ -361,15 +373,46 @@ export async function resolveAdminMediaPreviewUrl(
   return null;
 }
 
+function siteContentReferencesImagePath(
+  contentJson: unknown,
+  storagePath: string,
+): boolean {
+  if (
+    !contentJson ||
+    typeof contentJson !== 'object' ||
+    Array.isArray(contentJson)
+  ) {
+    return false;
+  }
+  const obj = contentJson as Record<string, unknown>;
+  if (obj.image_path === storagePath) {
+    return true;
+  }
+  if (Array.isArray(obj.items)) {
+    return obj.items.some(
+      (item) =>
+        Boolean(item) &&
+        typeof item === 'object' &&
+        !Array.isArray(item) &&
+        (item as Record<string, unknown>).image_path === storagePath,
+    );
+  }
+  return false;
+}
+
 /**
  * Controlled single-object orphan cleanup after failed config transaction or unreferenced removal.
- * Checks product_images references before deleting so shared/referenced assets are never deleted.
+ * Checks product_images, promotions, and site_content references before deleting so shared/referenced assets are never deleted.
  */
 export async function cleanupOrphanStorageObjects(
   profile: AdminSessionProfile,
   targets: ReadonlyArray<{ storageBucket: string; storagePath: string }>,
   reason:
-    'config_save_rollback' | 'removed_from_product' | 'removed_from_promotion',
+    | 'config_save_rollback'
+    | 'removed_from_product'
+    | 'removed_from_promotion'
+    | 'content_save_rollback'
+    | 'removed_from_content',
   ctx: AdminRepoContext = {},
 ): Promise<{ deletedCount: number; skippedReferencedCount: number }> {
   assertOwnerForMedia(profile);
@@ -382,31 +425,60 @@ export async function cleanupOrphanStorageObjects(
   let deletedCount = 0;
   let skippedReferencedCount = 0;
 
+  let cachedContentRows: { content_json: unknown }[] | null = null;
+  let contentLoadError = false;
+  if (
+    targets.some(
+      (target) => target.storageBucket === ADMIN_MEDIA_BUCKETS.BRAND_ASSETS,
+    )
+  ) {
+    const { data, error } = await client
+      .from('site_content')
+      .select('key,content_json');
+    if (error) {
+      contentLoadError = true;
+    } else {
+      cachedContentRows = data ?? [];
+    }
+  }
+
   for (const target of targets) {
     if (!isSafeStoragePathForBucket(target.storageBucket, target.storagePath)) {
       continue;
     }
 
-    const { count, error: refError } = await client
-      .from('product_images')
-      .select('id', { count: 'exact', head: true })
-      .eq('storage_bucket', target.storageBucket)
-      .eq('storage_path', target.storagePath);
-
-    let promoCount = 0;
-    let promoRefError = false;
-    if (target.storageBucket === ADMIN_MEDIA_BUCKETS.PRODUCT_IMAGES) {
-      const promoRef = await client
-        .from('promotions')
+    if (target.storageBucket === ADMIN_MEDIA_BUCKETS.BRAND_ASSETS) {
+      const isReferencedInContent =
+        contentLoadError ||
+        (cachedContentRows ?? []).some((row) =>
+          siteContentReferencesImagePath(row.content_json, target.storagePath),
+        );
+      if (isReferencedInContent) {
+        skippedReferencedCount += 1;
+        continue;
+      }
+    } else {
+      const { count, error: refError } = await client
+        .from('product_images')
         .select('id', { count: 'exact', head: true })
-        .eq('banner_image_path', target.storagePath);
-      promoCount = promoRef.count ?? 0;
-      promoRefError = Boolean(promoRef.error);
-    }
+        .eq('storage_bucket', target.storageBucket)
+        .eq('storage_path', target.storagePath);
 
-    if (refError || promoRefError || (count ?? 0) > 0 || promoCount > 0) {
-      skippedReferencedCount += 1;
-      continue;
+      let promoCount = 0;
+      let promoRefError = false;
+      if (target.storageBucket === ADMIN_MEDIA_BUCKETS.PRODUCT_IMAGES) {
+        const promoRef = await client
+          .from('promotions')
+          .select('id', { count: 'exact', head: true })
+          .eq('banner_image_path', target.storagePath);
+        promoCount = promoRef.count ?? 0;
+        promoRefError = Boolean(promoRef.error);
+      }
+
+      if (refError || promoRefError || (count ?? 0) > 0 || promoCount > 0) {
+        skippedReferencedCount += 1;
+        continue;
+      }
     }
 
     const { error: removeError } = await client.storage
