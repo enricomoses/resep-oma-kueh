@@ -11,6 +11,7 @@ import { APP, ROUTES } from '@/constants';
 import { FOUNDATION_COPY } from '@/constants/ui.constant';
 import { ReactQueryProvider } from '@/providers';
 import { cn } from '@/utils';
+import { isNoIndexDeployment } from '@/utils/seo';
 
 import './globals.css';
 import { DemoBanner } from '@/app/_components/demo-banner';
@@ -40,9 +41,7 @@ export const metadata: Metadata = {
   title: APP.NAME,
   alternates: { canonical: ROUTES.HOME },
   description: FOUNDATION_COPY.META,
-  robots: getPublicEnvironment().NEXT_PUBLIC_DEMO_MODE
-    ? { index: false, follow: false }
-    : undefined,
+  robots: isNoIndexDeployment() ? { index: false, follow: false } : undefined,
 };
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {

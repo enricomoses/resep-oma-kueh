@@ -67,6 +67,7 @@ export function ContactView({ data, className }: ContactViewProps) {
     items: activeBranches,
     selected,
     code,
+    hydrated,
     isError: isBranchesError,
     switchBranch,
   } = useBranches();
@@ -83,9 +84,11 @@ export function ContactView({ data, className }: ContactViewProps) {
       : 'surabaya');
 
   const resolvedBranches = data.branches.map((branch) => {
-    const live = !isBranchesError
-      ? activeBranches.find((item) => item.code === branch.code)
-      : undefined;
+    const canReadClientBranches = branch.id !== null || hydrated;
+    const live =
+      canReadClientBranches && !isBranchesError
+        ? activeBranches.find((item) => item.code === branch.code)
+        : undefined;
     return {
       ...branch,
       liveBranch: live ?? null,

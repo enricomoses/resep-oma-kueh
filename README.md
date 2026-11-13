@@ -1,10 +1,12 @@
 # Resep Oma Kueh
 
-Next App Router fullstack. F01–F04 menyediakan fondasi, schema/izin, seed DEMO lokal dan generated types. Storefront, login/admin UI, checkout dan Ask Oma belum diimplementasikan. Banner DEMO tetap terlihat pada scaffold; desain bakery dimulai F05. Matriks izin ada di [security.md](docs/security.md).
+Aplikasi web **Resep Oma Kueh** berbasis Next.js App Router fullstack, TypeScript strict, Tailwind CSS, dan Supabase (PostgreSQL, Auth, Storage) untuk storefront publik (`/`, `/menu`, `/menu/[slug]`, `/about`, `/classes`, `/classes/[slug]`, `/contact`, `/faq`, `/cart`, `/checkout`, `/privacy`, `/ordering-policy`), asisten **Ask Oma** (`/api/chat` deterministik + adapter generatif `CHAT_PROVIDER_ENABLED=false` default), serta panel admin owner/staff (`/admin/**`).
+
+Matriks izin RLS/RBAC terdokumentasi di [security.md](docs/security.md).
 
 ## Development lokal
 
-Gunakan Node dari `.node-version` dan npm 11.16.x. Dari root bakery:
+Gunakan Node dari `.node-version` dan npm 11.16.x. Dari root repository bakery:
 
 ```powershell
 npm ci
@@ -14,9 +16,12 @@ if (-not (Test-Path -LiteralPath .env.local)) {
 npm run dev
 ```
 
-Salin contoh env hanya jika file lokal belum ada; jangan menimpa credential yang sudah diisi. Isi credential lokal sendiri, bukan ke chat/Git. Provider generatif tetap nonaktif. Scaffold bisa dibuka sebelum URL/key DB diisi; adapter DB akan menolak konfigurasi kosong ketika dipakai. Aset/font scaffold belum desain bakery final.
+- Salin `.env.example` hanya jika `.env.local` belum ada; jangan menimpa credential lokal yang sudah diisi.
+- Jangan menulis secret, API key, atau data PII ke chat/log/Git.
+- `CHAT_PROVIDER_ENABLED` default `false` (asisten berjalan pada mode deterministik `POST /api/chat`). Provider generatif memerlukan key server (`GOOGLE_GEN_AI_API_KEY`, `GOOGLE_GEN_AI_CHAT_MODEL`) dan store limiter eksternal sebelum dapat diaktifkan di lingkungan non-demo.
+- App tetap dapat dibangun dan dibuka sebelum DB aktif: page publik memanggil `connection()` saat runtime request dan memiliki error/fallback UI (`APPROVED_CONTACTS` hanya kontak resmi) tanpa mengarang harga, jam operasional yang belum dikonfirmasi, atau stok.
 
-## Pemeriksaan
+## Syarat data build & pemeriksaan
 
 ```powershell
 npm run format
@@ -25,35 +30,44 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-`check` menjalankan lint → typegen/typecheck → Vitest → compiler boundary → unused → format check → build. Playwright menyalakan production server sendiri dan memerlukan build yang baru lulus. Boundary fixture tidak memakai env produksi. `test:db`/`db:test:policies` membuat stack test disposable sendiri pada 55321/55322 dan membersihkannya; dataset normal 54321/54322 tetap ada. Jangan menambahkan argumen remote.
+- `npm run check` menjalankan `lint` -> `typecheck` (`next typegen && tsc --noEmit --noUnusedLocals --noUnusedParameters`) -> `vitest run` (unit & server boundary tests) -> `test:boundaries` (`eslint` + `server-only` AST check) -> `lint:unused` (`knip`) -> `format:check` -> `next build`.
+- Production build (`npm run build`) tidak memerlukan koneksi DB produksi; sitemap dinamis dan page publik menggunakan runtime `connection()`.
+- Playwright (`npm run test:e2e`) menjalankan server production lokal sendiri di `127.0.0.1:3100` dengan environment uji non-produksi (`NEXT_PUBLIC_DEMO_MODE=true`, `CHAT_PROVIDER_ENABLED=false`).
 
-DB lokal memerlukan Docker/Supabase bakery dengan Auth/REST/Storage. `check` tidak me-reset DB. Workflow data lokal:
+## Database lokal & guard
+
+Operasi DB lokal memerlukan Docker dengan stack Supabase lokal (`54321`/`54322`) sedangkan test SQL disposable (`npm run test:db` / `npm run db:test:policies`) memakai port terisolasi (`55321`/`55322`) dan membersihkannya otomatis.
 
 ```powershell
 npm run db:start
-# PERINGATAN: menghapus semua data database bakery LOKAL, lalu migration + seed DEMO.
+# PERINGATAN: menghapus seluruh isi DB LOKAL lalu menjalankan migration + seed DEMO:
 npm run db:reset:local
 npm run db:seed:verify
 npm run test:db:seed
+npm run test:db:permissions
 npm run db:types:local
 npm run db:types:local -- --check
-npm run db:test:policies
 npm run test:db:tooling
 ```
 
-`db:start` hanya insert-missing pada dataset kosong/DEMO; data non-DEMO yang sudah ada dipertahankan. Scripts memverifikasi project/container/loopback dan menolak argumen target lain. Supabase CLI 3.1 memakai default local; flag `--local` lama tidak dipakai. Generator types menulis UTF-8 temporary file dan mengganti file lama hanya sesudah exit 0. Jangan edit generated types manual. CI memeriksa drift types dari schema aktual.
+- Semua script `scripts/db-*.mjs` memverifikasi project root, container, dan loopback host lokal, serta menolak argumen atau URL remote.
+- Seed lokal memuat data DEMO bertanda waktu tetap (`2026-11-11T00:00:00+07:00`) yang bukan fakta operasional produksi (`NEXT_PUBLIC_DEMO_MODE=true` menampilkan banner DEMO dan menandai `noindex`).
+- Untuk deploy produksi nyata, `APP_ENV=production` menolak `NEXT_PUBLIC_DEMO_MODE=true`; data DEMO wajib diganti/audit sesuai checklist produksi dan `npm run db:seed:reference` tetap default **offline dry-run**. Detail prosedur ada di [database.md](docs/database.md).
 
-Seed mempunyai 21 produk: 13 referensi historis draft (semua seri) dan 8 DEMO published, 25 SKU, bundle Regular/GF, placeholder PNG bertuliskan DEMO dan clock tetap **2026-11-11T00:00:00+07:00**. Harga/stock/GF/promo/kelas DEMO bukan fakta bisnis. Seed berulang tidak menimpa edit owner. Promo/sesi boleh kedaluwarsa seiring waktu nyata; clock produksi tidak dimundurkan. Alamat/Maps/jam yang belum terkonfirmasi tidak dikarang. Tidak ada akun/password di seed.
+## CI workflow
 
-Isi URL dan publishable key **lokal** sendiri pada env aplikasi saat UI mulai membaca DB; jangan kirim secret ke chat. `NEXT_PUBLIC_DEMO_MODE` default true menampilkan banner. Untuk rilis nyata, `APP_ENV=production` menolak demo mode; flag wajib false dan dataset harus lolos audit produksi. Jangan mematikan banner untuk menyamarkan seed.
+Workflow [.github/workflows/ci.yml](.github/workflows/ci.yml) menjalankan dua job terpisah tanpa credential produksi dan tanpa deploy/seed remote:
 
-`npm run db:seed:reference` default **offline dry-run**, hanya manifest kontak/cabang yang telah dikonfirmasi. Tidak ada apply remote pada F04. Target/ref/name, private before/after diff, digest persetujuan, dan allowlist update wajib untuk apply yang kelak diotorisasi. Tidak mengirim seed DEMO ke remote. Prosedur dan batasnya ada di [database.md](docs/database.md).
+- `foundation`: `npm ci` -> `npm run check` -> Playwright Chromium (`npm run test:e2e`) dengan env sintetis non-produksi.
+- `database`: `npm ci` -> `test:db` -> `db:start` -> `db:reset:local` -> `db:seed:verify` -> `test:db:seed` -> `test:db:permissions` -> `db:types:local -- --check` -> `test:db:tooling` -> `scripts/test-site-local.mjs`.
 
 ## Kontrak dan status
 
 - [PRD](docs/prd.md) dan [execution guide](docs/execution-guide.md)
 - [Arsitektur aktual](docs/architecture.md)
-- [Fondasi visual dan API komponen F05](DESIGN.md)
-- [Shell, cabang dan pengujian lokal F06](docs/branches.md)
+- [Fondasi visual dan API komponen](DESIGN.md)
+- [Cabang dan pengujian lokal](docs/branches.md)
+- [Database dan keamanan seed](docs/database.md)
+- [Matriks keamanan dan RLS](docs/security.md)
 - [Status dan bukti pengujian](docs/implementation-status.md)
-- [Keputusan](docs/decisions.md)
+- [Keputusan arsitektur](docs/decisions.md)

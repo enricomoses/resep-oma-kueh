@@ -67,6 +67,7 @@ export function HomeHero({
               src={imageUrl}
               alt={imageAlt}
               fill
+              preload={true}
               sizes="(max-width: 768px) 100vw, 520px"
               unoptimized
               className="object-cover"

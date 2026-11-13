@@ -10,12 +10,15 @@ import {
   serializeCatalogQueryKey,
 } from '@/constants/catalog.constant';
 import { getCatalog, getCategories } from '@/features/catalog/service.server';
+import { ROUTES } from '@/constants/routes.constant';
+import { buildPageMetadata } from '@/utils/seo';
 import type { CatalogQueryInput } from '@/types/catalog';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: 'Menu & Katalog | Resep Oma Kueh',
   description: CATALOG_COPY.SUBTITLE,
-};
+  path: ROUTES.MENU,
+});
 
 function firstParam(value: string | string[] | undefined): string | undefined {
   if (typeof value === 'string') {

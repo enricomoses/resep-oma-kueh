@@ -1,18 +1,34 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
 import { ContactView } from '@/components/content/contact-view';
+import { StructuredDataScript } from '@/components/seo/structured-data-script';
+import { getPublicEnvironment } from '@/config/environment.client';
 import { PAGE_METADATA } from '@/constants/content.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { getContactPageData } from '@/features/content/service.server';
+import { buildPageMetadata } from '@/utils/seo';
+import { buildBakeryJsonLd } from '@/utils/structured-data';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: PAGE_METADATA.CONTACT.title,
   description: PAGE_METADATA.CONTACT.description,
-  alternates: { canonical: ROUTES.CONTACT },
-};
+  path: ROUTES.CONTACT,
+});
 
 export default async function ContactPage() {
   await connection();
   const data = await getContactPageData();
-  return <ContactView data={data} />;
+  const bakeryJsonLd = buildBakeryJsonLd({
+    siteUrl: getPublicEnvironment().NEXT_PUBLIC_SITE_URL,
+    email: data.email,
+    instagramUrl: data.instagramUrl,
+    branches: data.branches,
+  });
+
+  return (
+    <>
+      <StructuredDataScript data={bakeryJsonLd} />
+      <ContactView data={data} />
+    </>
+  );
 }

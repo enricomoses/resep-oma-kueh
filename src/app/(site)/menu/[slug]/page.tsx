@@ -2,13 +2,18 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { connection } from 'next/server';
 import { ProductDetailView } from '@/components/catalog/product-detail-view';
+import { StructuredDataScript } from '@/components/seo/structured-data-script';
+import { getPublicEnvironment } from '@/config/environment.client';
 import {
   CATALOG_QUERY_PARAMS,
   PRODUCT_DETAIL_COPY,
 } from '@/constants/catalog.constant';
+import { ROUTES } from '@/constants/routes.constant';
 import { readPublishedProductBySlug } from '@/features/catalog/repository.server';
 import { getProductDetail } from '@/features/catalog/service.server';
 import type { InitialCatalogSection } from '@/hooks/use-catalog';
+import { buildPageMetadata } from '@/utils/seo';
+import { buildProductJsonLd } from '@/utils/structured-data';
 import type { ProductDetail } from '@/types/catalog';
 
 function firstParam(value: string | string[] | undefined): string | undefined {
@@ -32,24 +37,27 @@ export async function generateMetadata({
       product.status !== 'published' ||
       product.needs_owner_review
     ) {
-      return {
+      return buildPageMetadata({
         title: PRODUCT_DETAIL_COPY.METADATA_DEFAULT_TITLE,
         description: PRODUCT_DETAIL_COPY.METADATA_DEFAULT_DESCRIPTION,
-      };
+        path: `${ROUTES.MENU}/${slug}`,
+      });
     }
 
-    return {
+    return buildPageMetadata({
       title: `${product.name} | Resep Oma Kueh`,
       description:
         product.short_description ||
         product.description ||
         PRODUCT_DETAIL_COPY.METADATA_DEFAULT_DESCRIPTION,
-    };
+      path: `${ROUTES.MENU}/${product.slug}`,
+    });
   } catch {
-    return {
+    return buildPageMetadata({
       title: PRODUCT_DETAIL_COPY.METADATA_DEFAULT_TITLE,
       description: PRODUCT_DETAIL_COPY.METADATA_DEFAULT_DESCRIPTION,
-    };
+      path: `${ROUTES.MENU}/${slug}`,
+    });
   }
 }
 
@@ -82,5 +90,18 @@ export default async function MenuDetailPage({
     initialDetail = { status: 'error' };
   }
 
-  return <ProductDetailView slug={slug} initial={initialDetail} />;
+  const productJsonLd =
+    initialDetail.status === 'success'
+      ? buildProductJsonLd({
+          siteUrl: getPublicEnvironment().NEXT_PUBLIC_SITE_URL,
+          product: initialDetail.data,
+        })
+      : null;
+
+  return (
+    <>
+      <StructuredDataScript data={productJsonLd} />
+      <ProductDetailView slug={slug} initial={initialDetail} />
+    </>
+  );
 }

@@ -4,12 +4,13 @@ import { LegalPolicyView } from '@/components/content/legal-policy-view';
 import { PAGE_METADATA } from '@/constants/content.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { getInitialPublicContent } from '@/features/content/service.server';
+import { buildPageMetadata } from '@/utils/seo';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: PAGE_METADATA.ORDERING_POLICY.title,
   description: PAGE_METADATA.ORDERING_POLICY.description,
-  alternates: { canonical: ROUTES.ORDERING_POLICY },
-};
+  path: ROUTES.ORDERING_POLICY,
+});
 
 export default async function OrderingPolicyPage() {
   await connection();

@@ -4,12 +4,13 @@ import { LegalPolicyView } from '@/components/content/legal-policy-view';
 import { PAGE_METADATA } from '@/constants/content.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { getInitialPublicContent } from '@/features/content/service.server';
+import { buildPageMetadata } from '@/utils/seo';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: PAGE_METADATA.PRIVACY.title,
   description: PAGE_METADATA.PRIVACY.description,
-  alternates: { canonical: ROUTES.PRIVACY },
-};
+  path: ROUTES.PRIVACY,
+});
 
 export default async function PrivacyPage() {
   await connection();

@@ -7,12 +7,15 @@ import {
 } from '@/components/classes/classes-view';
 import { CATALOG_QUERY_PARAMS } from '@/constants/catalog.constant';
 import { CLASSES_COPY } from '@/constants/classes.constant';
+import { ROUTES } from '@/constants/routes.constant';
 import { getPublicClassesDirectory } from '@/features/classes/service.server';
+import { buildPageMetadata } from '@/utils/seo';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: 'ROK Baking Class | Resep Oma Kueh',
   description: CLASSES_COPY.SUBTITLE,
-};
+  path: ROUTES.CLASSES,
+});
 
 function firstParam(value: string | string[] | undefined): string | undefined {
   if (typeof value === 'string') {

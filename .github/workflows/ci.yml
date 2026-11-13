@@ -1,14 +1,20 @@
-name: Foundation checks
+name: CI
+
 on:
   push:
   pull_request:
+
 permissions:
   contents: read
+
 jobs:
   foundation:
     runs-on: ubuntu-latest
     env:
       APP_ENV: test
+      NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3100
+      NEXT_PUBLIC_DEMO_MODE: 'true'
+      NEXT_PUBLIC_CHAT_WIDGET_ENABLED: 'true'
       CHAT_PROVIDER_ENABLED: 'false'
       NEXT_TELEMETRY_DISABLED: '1'
     steps:
@@ -24,11 +30,16 @@ jobs:
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: f05-browser-evidence
+          name: f24-browser-evidence
           path: test-results/
           if-no-files-found: ignore
+
   database:
     runs-on: ubuntu-latest
+    env:
+      APP_ENV: test
+      CHAT_PROVIDER_ENABLED: 'false'
+      NEXT_TELEMETRY_DISABLED: '1'
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -41,6 +52,7 @@ jobs:
       - run: npm run db:reset:local
       - run: npm run db:seed:verify
       - run: npm run test:db:seed
+      - run: npm run test:db:permissions
       - run: npm run db:types:local -- --check
       - run: npm run test:db:tooling
       - run: npx playwright install --with-deps chromium
