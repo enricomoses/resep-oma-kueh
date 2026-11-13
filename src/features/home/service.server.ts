@@ -4,11 +4,18 @@ import { FOUNDATION_COPY } from '@/constants/ui.constant';
 import { computeVariantEffectivePrice } from '@/features/catalog/pricing';
 import type { PricingPromotionInput } from '@/features/catalog/pricing';
 import { getCategories } from '@/features/catalog/service.server';
+import { resolvePublicClassCoverUrl } from '@/features/classes/repository.server';
 import {
   readPublishedShippingBanner,
   resolvePublicBannerUrl,
 } from '@/features/promotions/repository.server';
 import { mapPublishedShippingBannerRow } from '@/features/promotions/service.server';
+import {
+  computeEffectiveClassPriceIdr,
+  evaluateClassSessionAvailability,
+  sortClassSessionsAscending,
+} from '@/utils/classes';
+import type { ClassSessionStatus } from '@/types/classes';
 import {
   cmsEditorialPayloadSchema,
   cmsHeroPayloadSchema,
@@ -437,27 +444,67 @@ export async function getHomeData(
     }),
     resolveSection(async () => {
       const rows = await readUpcomingClassSessions(signal);
-      return rows
+      const validSessions = rows
         .filter((row) => {
-          if (row.status !== 'scheduled' || !row.is_registration_open) {
-            return false;
-          }
-          if (row.seats_left !== null && row.seats_left <= 0) return false;
-          const startsMs = Date.parse(row.starts_at);
-          if (Number.isNaN(startsMs) || startsMs <= nowMs) return false;
-          if (row.registration_deadline_at !== null) {
-            const deadlineMs = Date.parse(row.registration_deadline_at);
-            if (Number.isNaN(deadlineMs) || deadlineMs < nowMs) return false;
-          }
           const branch = row.branches;
-          const program = row.class_programs;
-          if (!branch || !branch.is_active) return false;
-          if (!program || program.status !== 'published') return false;
-          return true;
+          const program = row.class_programs as
+            | (NonNullable<typeof row.class_programs> & {
+                base_price_idr?: number | null;
+                cover_image_path?: string | null;
+                cover_storage_bucket?: string | null;
+                cover_is_approved?: boolean | null;
+                needs_owner_review?: boolean | null;
+              })
+            | null;
+          const status = row.status as ClassSessionStatus;
+          const programIsPublic =
+            Boolean(program) &&
+            program?.status === 'published' &&
+            (program?.needs_owner_review ?? false) === false &&
+            (program?.cover_is_approved ?? true);
+          return evaluateClassSessionAvailability(
+            {
+              startsAt: row.starts_at,
+              endsAt: row.ends_at,
+              registrationDeadlineAt: row.registration_deadline_at,
+              capacity: row.capacity,
+              seatsLeft: row.seats_left,
+              status,
+              isRegistrationOpen: row.is_registration_open,
+              branchIsActive: Boolean(branch?.is_active),
+              programIsPublic,
+            },
+            nowMs,
+          ).isRegisterable;
         })
         .map((row) => {
           const branch = row.branches!;
-          const program = row.class_programs!;
+          const program = row.class_programs! as NonNullable<
+            typeof row.class_programs
+          > & {
+            base_price_idr?: number | null;
+            price_override_idr?: number | null;
+            cover_image_path?: string | null;
+            cover_storage_bucket?: string | null;
+            cover_is_approved?: boolean | null;
+          };
+          const sessionRecord = row as typeof row & {
+            price_override_idr?: number | null;
+          };
+          const coverImageUrl = resolvePublicClassCoverUrl(
+            program.cover_storage_bucket,
+            program.cover_image_path,
+            program.cover_is_approved,
+          );
+          const effectivePriceIdr =
+            typeof program.base_price_idr === 'number' &&
+            program.base_price_idr > 0
+              ? computeEffectiveClassPriceIdr(
+                  program.base_price_idr,
+                  sessionRecord.price_override_idr,
+                )
+              : undefined;
+
           return homeUpcomingSessionSchema.parse({
             id: row.id,
             startsAt: row.starts_at,
@@ -481,9 +528,13 @@ export async function getHomeData(
               ageMax: program.age_max,
               durationMinutes: program.duration_minutes,
               coverAlt: program.cover_alt_text ?? FOUNDATION_COPY.MEDIA_CAPTION,
+              ...(coverImageUrl ? { coverImageUrl } : {}),
             },
+            ...(effectivePriceIdr ? { effectivePriceIdr } : {}),
           });
         });
+
+      return sortClassSessionsAscending(validSessions);
     }),
     resolveSection(async () => {
       const rows = await readPublishedTestimonials(signal);

@@ -9,6 +9,10 @@ export const QUERY_KEYS = {
     ['resep-oma-kueh', 'product-detail', slug, branch] as const,
   PROMOTIONS: (branch: string | null) =>
     ['resep-oma-kueh', 'promotions', branch] as const,
+  CLASSES: (branch: string | null) =>
+    ['resep-oma-kueh', 'classes', branch] as const,
+  CLASS_DETAIL: (slug: string, branch: string | null) =>
+    ['resep-oma-kueh', 'class-detail', slug, branch] as const,
   CONTENT: (keys: readonly string[]) =>
     ['resep-oma-kueh', 'content', ...keys] as const,
   FAQS: ['resep-oma-kueh', 'faqs'] as const,
@@ -203,6 +207,38 @@ export const QUERY_KEYS = {
       identity?.userId ?? 'anon',
       identity?.role ?? 'none',
       identity?.branchId ?? 'none',
+    ] as const,
+  ADMIN_CLASS_PROGRAMS: (
+    identity: {
+      userId: string;
+      role: string;
+      branchId: string | null;
+    } | null,
+  ) =>
+    [
+      'resep-oma-kueh',
+      'admin',
+      'class-programs',
+      identity?.userId ?? 'anon',
+      identity?.role ?? 'none',
+      identity?.branchId ?? 'none',
+    ] as const,
+  ADMIN_CLASS_SESSIONS: (
+    identity: {
+      userId: string;
+      role: string;
+      branchId: string | null;
+    } | null,
+    params: Record<string, string | null | undefined>,
+  ) =>
+    [
+      'resep-oma-kueh',
+      'admin',
+      'class-sessions',
+      identity?.userId ?? 'anon',
+      identity?.role ?? 'none',
+      identity?.branchId ?? 'none',
+      params,
     ] as const,
 } as const;
 

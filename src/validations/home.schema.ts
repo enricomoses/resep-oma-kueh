@@ -189,8 +189,10 @@ export const homeUpcomingSessionSchema = z
         ageMax: z.number().int().nonnegative().nullable(),
         durationMinutes: z.number().int().positive().nullable(),
         coverAlt: plainTextLabelSchema,
+        coverImageUrl: z.string().max(2000).nullable().optional(),
       })
       .strict(),
+    effectivePriceIdr: z.number().int().positive().optional(),
   })
   .strict();
 

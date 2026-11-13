@@ -56,6 +56,18 @@ export function revalidatePublicContentPaths(): void {
   }
 }
 
+export function revalidatePublicClassPaths(programSlug?: string): void {
+  try {
+    revalidatePath(ROUTES.HOME);
+    revalidatePath(ROUTES.CLASSES);
+    if (programSlug) {
+      revalidatePath(`${ROUTES.CLASSES}/${programSlug}`);
+    }
+  } catch {
+    // Outside Next.js request lifecycle (e.g., direct handler tests).
+  }
+}
+
 const uuidSchema = z.uuid();
 
 export function parseUuidRouteParam(rawId: string): string {

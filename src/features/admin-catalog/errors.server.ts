@@ -193,3 +193,84 @@ export function mapPostgresCmsError(
 
   throw new AdminCatalogUpstreamError();
 }
+
+export function mapPostgresClassError(
+  error: PostgresLikeError,
+  entity: 'program' | 'session',
+): never {
+  const code = error.code ?? '';
+  const message = (error.message ?? '').toLowerCase();
+
+  if (code === '42501') {
+    if (
+      message.includes('staff_insert_fields_denied') ||
+      message.includes('staff_update_fields_denied')
+    ) {
+      throw new AuthForbiddenError(
+        ADMIN_CATALOG_COPY.CLASSES.ERRORS.STAFF_PRICE_DENIED,
+      );
+    }
+    if (message.includes('branch_write_denied')) {
+      throw new AuthForbiddenError(
+        ADMIN_CATALOG_COPY.CLASSES.ERRORS.BRANCH_DENIED,
+      );
+    }
+    throw new AuthForbiddenError(ADMIN_CATALOG_COPY.CLASSES.ERRORS.OWNER_ONLY);
+  }
+
+  if (code === '23505') {
+    const msg = ADMIN_CATALOG_COPY.CLASSES.ERRORS.SLUG_COLLISION;
+    throw new AdminCatalogConflictError(msg, { slug: [msg] });
+  }
+
+  if (code === '23503') {
+    throw new AdminCatalogValidationError(ERROR_COPY.VALIDATION_ERROR, {
+      root: ['Program kelas atau cabang target tidak ditemukan.'],
+    });
+  }
+
+  if (code === '23514') {
+    if (message.includes('identity_is_immutable')) {
+      const msg = ADMIN_CATALOG_COPY.CLASSES.ERRORS.SLUG_IMMUTABLE;
+      throw new AdminCatalogValidationError(msg, { slug: [msg] });
+    }
+    if (message.includes('class_not_registration_ready')) {
+      const msg =
+        ADMIN_CATALOG_COPY.CLASSES.ERRORS.SESSION_NOT_REGISTRATION_READY;
+      throw new AdminCatalogValidationError(msg, {
+        isRegistrationOpen: [msg],
+      });
+    }
+    if (message.includes('age_min') || message.includes('age_max')) {
+      const msg = ADMIN_CATALOG_COPY.CLASSES.ERRORS.INVALID_AGE_RANGE;
+      throw new AdminCatalogValidationError(msg, { ageMin: [msg] });
+    }
+    if (message.includes('ends_at')) {
+      const msg = ADMIN_CATALOG_COPY.CLASSES.ERRORS.INVALID_INTERVAL;
+      throw new AdminCatalogValidationError(msg, { endsAt: [msg] });
+    }
+    if (message.includes('registration_deadline_at')) {
+      const msg = ADMIN_CATALOG_COPY.CLASSES.ERRORS.INVALID_DEADLINE;
+      throw new AdminCatalogValidationError(msg, {
+        registrationDeadlineAt: [msg],
+      });
+    }
+    if (message.includes('seats_left')) {
+      const msg = ADMIN_CATALOG_COPY.CLASSES.ERRORS.INVALID_SEATS;
+      throw new AdminCatalogValidationError(msg, { seatsLeft: [msg] });
+    }
+    if (entity === 'program') {
+      const msg = ADMIN_CATALOG_COPY.CLASSES.ERRORS.PROGRAM_NOT_PUBLISH_READY;
+      throw new AdminCatalogValidationError(msg, { status: [msg] });
+    }
+    const msg =
+      ADMIN_CATALOG_COPY.CLASSES.ERRORS.SESSION_NOT_REGISTRATION_READY;
+    throw new AdminCatalogValidationError(msg, { status: [msg] });
+  }
+
+  if (code === 'P0002') {
+    throw new AdminCatalogNotFoundError();
+  }
+
+  throw new AdminCatalogUpstreamError();
+}

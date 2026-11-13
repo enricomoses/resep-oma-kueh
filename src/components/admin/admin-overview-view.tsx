@@ -195,6 +195,13 @@ export function AdminOverviewView({
               >
                 {ADMIN_CATALOG_COPY.TESTIMONIALS.TITLE}
               </ActionLink>
+              <ActionLink
+                href={ROUTES.ADMIN_CLASSES}
+                variant="secondary"
+                size="sm"
+              >
+                {ADMIN_CATALOG_COPY.CLASSES.TITLE}
+              </ActionLink>
             </div>
           </Card>
         </>
@@ -235,6 +242,13 @@ export function AdminOverviewView({
                 size="sm"
               >
                 {ADMIN_CATALOG_COPY.AVAILABILITY.TITLE}
+              </ActionLink>
+              <ActionLink
+                href={ROUTES.ADMIN_CLASSES}
+                variant="secondary"
+                size="sm"
+              >
+                {ADMIN_CATALOG_COPY.CLASSES.TITLE}
               </ActionLink>
             </div>
           </Card>

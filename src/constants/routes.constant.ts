@@ -19,6 +19,7 @@ export const ROUTES = {
   ADMIN_CONTENT: '/admin/content',
   ADMIN_FAQS: '/admin/faqs',
   ADMIN_TESTIMONIALS: '/admin/testimonials',
+  ADMIN_CLASSES: '/admin/classes',
   ADMIN_LOGIN: '/admin/login',
   ADMIN_RESET_PASSWORD: '/admin/reset-password',
   AUTH_CALLBACK: '/auth/callback',

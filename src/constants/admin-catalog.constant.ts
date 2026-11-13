@@ -163,10 +163,9 @@ export const ADMIN_NAV_ITEMS: readonly AdminNavItem[] = [
   {
     id: 'classes',
     label: 'Kelas Baking',
-    href: null,
+    href: ROUTES.ADMIN_CLASSES,
     roles: ['owner', 'branch_admin'],
-    implemented: false,
-    stageTag: 'F21',
+    implemented: true,
   },
 ] as const;
 
@@ -557,6 +556,56 @@ export const ADMIN_CATALOG_COPY = {
         'Tautan sumber testimoni harus menggunakan protokol https:// yang aman tanpa karakter khusus.',
       STALE_CONFLICT:
         'Data testimoni telah diubah sesi lain. Muat ulang sebelum menyimpan ulang.',
+    },
+  },
+  CLASSES: {
+    TITLE: 'Manajemen Kelas Baking (ROK)',
+    SUBTITLE_OWNER:
+      'Owner mengelola program ROK Baking Class (termasuk foto disetujui, harga dasar, dan review rilis) serta jadwal sesi di seluruh cabang aktif.',
+    SUBTITLE_STAFF:
+      'Admin cabang mengelola sesi kelas di cabangnya sendiri (jadwal, kapasitas, sisa kuota manual, status penuh/dibatalkan, dan buka/tutup pendaftaran).',
+    ADD_PROGRAM: 'Tambah Program Kelas',
+    ADD_SESSION: 'Tambah Sesi Cabang',
+    REFRESH: 'Muat ulang kelas',
+    EMPTY_PROGRAMS: 'Belum ada program kelas terdaftar.',
+    EMPTY_SESSIONS: 'Belum ada sesi kelas untuk filter ini.',
+    PHOTO_CONSENT_RELEASE_GATE:
+      'Release gate foto & jadwal kelas: publikasi program wajib menggunakan foto asli dengan persetujuan peserta/wali (atau placeholder DEMO terlabeli saat lokal) serta review Owner selesai — poster historis Juni/Juli tidak boleh diubah menjadi tanggal baru palsu.',
+    CAPACITY_MANUAL_NOTE:
+      'Kapasitas dan sisa kuota (seats_left) bersifat perkiraan manual sampai dikonfirmasi via WhatsApp; tidak ada pemotongan kuota otomatis.',
+    STAFF_PRICE_LOCK_NOTE:
+      'Harga dasar program dan override harga cabang (price_override_idr) hanya dapat diatur oleh Owner.',
+    ARCHIVE_PROGRAM_TITLE: 'Arsipkan program kelas ini?',
+    ARCHIVE_PROGRAM_DESC:
+      'Program akan diarsipkan secara lunak dan pendaftaran seluruh sesinya ditutup agar tidak muncul sebagai kelas aktif publik.',
+    ARCHIVE_PROGRAM_SUBMIT: 'Ya, Arsipkan Program',
+    CANCEL_SESSION_TITLE: 'Batalkan sesi kelas ini?',
+    CANCEL_SESSION_DESC:
+      'Status sesi menjadi "cancelled" dan pendaftaran ditutup (tetap tampil informatif di detail program jika belum lewat tanpa tombol daftar).',
+    CANCEL_SESSION_SUBMIT: 'Ya, Batalkan Sesi',
+    ERRORS: {
+      OWNER_ONLY: 'Hanya Owner yang dapat mengelola program kelas.',
+      BRANCH_DENIED:
+        'Admin cabang hanya dapat mengelola sesi kelas di cabangnya sendiri.',
+      STAFF_PRICE_DENIED:
+        'Admin cabang tidak memiliki izin mengatur atau mengubah override harga sesi.',
+      PROGRAM_NOT_PUBLISH_READY:
+        'Program belum dapat dipublikasikan sebelum deskripsi diisi, review Owner selesai, dan foto cover berstatus disetujui di bucket class-images beserta teks alt.',
+      SESSION_NOT_REGISTRATION_READY:
+        'Pendaftaran sesi hanya dapat dibuka untuk program terpublikasi, cabang aktif, status "scheduled", dan sisa kuota > 0 atau null.',
+      INVALID_INTERVAL:
+        'Waktu selesai (ends_at) harus lebih lambat dari starts_at.',
+      INVALID_DEADLINE:
+        'Batas pendaftaran (registration_deadline_at) tidak boleh melampaui starts_at.',
+      INVALID_SEATS:
+        'Sisa kuota (seats_left) harus antara 0 dan kapasitas sesi.',
+      INVALID_AGE_RANGE:
+        'Usia minimum (age_min) tidak boleh melebihi usia maksimum (age_max).',
+      SLUG_COLLISION: 'Slug program kelas sudah digunakan program lain.',
+      SLUG_IMMUTABLE:
+        'Slug program kelas bersifat permanen dan tidak dapat diubah.',
+      STALE_CONFLICT:
+        'Data program atau sesi telah diubah pengguna lain. Muat ulang sebelum menyimpan ulang.',
     },
   },
 } as const;

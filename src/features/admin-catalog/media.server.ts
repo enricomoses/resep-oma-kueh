@@ -278,7 +278,8 @@ export async function uploadDraftProductMedia(
 export async function promoteDraftMediaToPublicBucket<
   TBucket extends
     | typeof ADMIN_MEDIA_BUCKETS.PRODUCT_IMAGES
-    | typeof ADMIN_MEDIA_BUCKETS.BRAND_ASSETS =
+    | typeof ADMIN_MEDIA_BUCKETS.BRAND_ASSETS
+    | typeof ADMIN_MEDIA_BUCKETS.CLASS_IMAGES =
     typeof ADMIN_MEDIA_BUCKETS.PRODUCT_IMAGES,
 >(
   profile: AdminSessionProfile,
@@ -349,7 +350,8 @@ export async function resolveAdminMediaPreviewUrl(
   const client = await createServerAuthClient(ctx.response);
   if (
     storageBucket === ADMIN_MEDIA_BUCKETS.PRODUCT_IMAGES ||
-    storageBucket === ADMIN_MEDIA_BUCKETS.BRAND_ASSETS
+    storageBucket === ADMIN_MEDIA_BUCKETS.BRAND_ASSETS ||
+    storageBucket === ADMIN_MEDIA_BUCKETS.CLASS_IMAGES
   ) {
     const { data } = client.storage
       .from(storageBucket)
@@ -412,7 +414,9 @@ export async function cleanupOrphanStorageObjects(
     | 'removed_from_product'
     | 'removed_from_promotion'
     | 'content_save_rollback'
-    | 'removed_from_content',
+    | 'removed_from_content'
+    | 'class_save_rollback'
+    | 'removed_from_class',
   ctx: AdminRepoContext = {},
 ): Promise<{ deletedCount: number; skippedReferencedCount: number }> {
   assertOwnerForMedia(profile);
@@ -454,6 +458,16 @@ export async function cleanupOrphanStorageObjects(
           siteContentReferencesImagePath(row.content_json, target.storagePath),
         );
       if (isReferencedInContent) {
+        skippedReferencedCount += 1;
+        continue;
+      }
+    } else if (target.storageBucket === ADMIN_MEDIA_BUCKETS.CLASS_IMAGES) {
+      const { count, error: refError } = await client
+        .from('class_programs')
+        .select('id', { count: 'exact', head: true })
+        .eq('cover_storage_bucket', ADMIN_MEDIA_BUCKETS.CLASS_IMAGES)
+        .eq('cover_image_path', target.storagePath);
+      if (refError || (count ?? 0) > 0) {
         skippedReferencedCount += 1;
         continue;
       }

@@ -1128,6 +1128,73 @@ try {
     directTestimonialEvidenceSelect.status >= 400,
     'direct REST select of testimonial consent evidence columns denied by column grants',
   );
+  // F21 Baking Classes checks
+  const anonDraftClass = await rest(
+    'anon',
+    `class_programs?id=eq.${id(81)}&select=id`,
+  );
+  check(
+    anonDraftClass.status === 200 && anonDraftClass.data?.length === 0,
+    'anon cannot read draft/unreviewed class program via direct REST',
+  );
+  await denied(
+    'surabaya',
+    'class_programs?select=id',
+    'POST',
+    {
+      id: id(88),
+      title: 'DEMO staff class denied',
+      slug: 'demo-staff-class-denied',
+      base_price_idr: 100000,
+    },
+    'staff cannot create class_programs',
+  );
+  await denied(
+    'surabaya',
+    `class_sessions?id=eq.${id(85)}&select=id`,
+    'PATCH',
+    { price_override_idr: 199000 },
+    'staff cannot update price_override_idr on own class_session',
+  );
+  await denied(
+    'surabaya',
+    'class_sessions?select=id',
+    'POST',
+    {
+      id: id(89),
+      program_id: id(80),
+      branch_id: id(2),
+      starts_at: '2030-01-01T03:00:00Z',
+      ends_at: '2030-01-01T04:00:00Z',
+      capacity: 6,
+    },
+    'staff cannot create class_sessions for foreign branch',
+  );
+  await denied(
+    'owner',
+    'class_sessions?select=id',
+    'POST',
+    {
+      id: id(89),
+      program_id: id(80),
+      branch_id: id(1),
+      starts_at: '2030-01-01T03:00:00Z',
+      ends_at: '2030-01-01T04:00:00Z',
+      capacity: 6,
+      seats_left: 0,
+      status: 'scheduled',
+      is_registration_open: true,
+    },
+    'owner cannot open class registration when seats_left is 0',
+  );
+  check(
+    (await storage(
+      'surabaya',
+      'class-images',
+      `approved/${randomUUID()}.png`,
+    )) >= 400,
+    'staff cannot upload directly to approved class-images bucket',
+  );
   check(
     snapshot() === beforeDenials,
     'all expected denies leave complete business/Storage snapshot identical',

@@ -67,7 +67,7 @@ export async function readUpcomingClassSessions(signal?: AbortSignal) {
   const { data, error } = await createPublicReadClient()
     .from('class_sessions')
     .select(
-      'id,starts_at,ends_at,registration_deadline_at,capacity,seats_left,status,is_registration_open,branches(id,code,name,city,is_active),class_programs(id,title,slug,short_description,description,age_min,age_max,duration_minutes,cover_alt_text,status)',
+      'id,starts_at,ends_at,registration_deadline_at,capacity,seats_left,price_override_idr,status,is_registration_open,branches(id,code,name,city,is_active),class_programs(id,title,slug,short_description,description,base_price_idr,age_min,age_max,duration_minutes,cover_image_path,cover_storage_bucket,cover_is_approved,cover_alt_text,needs_owner_review,status)',
     )
     .eq('status', 'scheduled')
     .eq('is_registration_open', true)

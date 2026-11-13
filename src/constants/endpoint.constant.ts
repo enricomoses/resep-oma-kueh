@@ -6,6 +6,8 @@ export const API_ENDPOINTS = {
   CATALOG: '/catalog',
   PRODUCTS: '/products',
   PROMOTIONS: '/promotions',
+  CLASSES: '/classes',
+  CLASSES_PREPARE_REGISTRATION: '/classes/prepare-registration',
   CONTENT: '/content',
   FAQS: '/faqs',
   CART_VALIDATE: '/cart/validate',
@@ -26,4 +28,6 @@ export const API_ENDPOINTS = {
   ADMIN_CONTENT: '/admin/content',
   ADMIN_FAQS: '/admin/faqs',
   ADMIN_TESTIMONIALS: '/admin/testimonials',
+  ADMIN_CLASS_PROGRAMS: '/admin/classes/programs',
+  ADMIN_CLASS_SESSIONS: '/admin/classes/sessions',
 } as const;

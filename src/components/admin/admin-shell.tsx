@@ -2,6 +2,7 @@
 
 import {
   FileText,
+  GraduationCap,
   HelpCircle,
   LayoutDashboard,
   LogOut,
@@ -60,6 +61,8 @@ function getNavIcon(id: string) {
       return <HelpCircle size={18} aria-hidden="true" />;
     case 'testimonials':
       return <MessageSquareQuote size={18} aria-hidden="true" />;
+    case 'classes':
+      return <GraduationCap size={18} aria-hidden="true" />;
     default:
       return <ShieldCheck size={18} aria-hidden="true" />;
   }

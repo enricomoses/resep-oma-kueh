@@ -1,13 +1,16 @@
 import { ArrowRight, CalendarDays, MapPin, Users } from 'lucide-react';
+import Image from 'next/image';
 import { MediaPlaceholder } from '@/app/_components';
 import { ActionLink } from '@/components/ui/action-link';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Feedback } from '@/components/ui/feedback';
 import { ROUTES } from '@/constants';
+import { CLASSES_COPY } from '@/constants/classes.constant';
 import { HOME_COPY, HOME_SECTION_IDS } from '@/constants/home.constant';
 import { withBranch } from '@/utils/branch-url';
 import { cn } from '@/utils';
+import { formatIdr } from '@/utils/currency';
 import type { HomeSectionResult, HomeUpcomingSession } from '@/types/home';
 
 const sessionDateFormatter = new Intl.DateTimeFormat('id-ID', {
@@ -104,10 +107,22 @@ export function BakeWithOmaSection({
         <div className="home-classes-grid">
           {visibleSessions.map((session) => (
             <Card key={session.id} className="home-class-card">
-              <MediaPlaceholder
-                caption={session.program.coverAlt}
-                className="home-card-media"
-              />
+              {session.program.coverImageUrl ? (
+                <div className="home-card-media-frame">
+                  <Image
+                    src={session.program.coverImageUrl}
+                    alt={session.program.coverAlt}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 420px"
+                    className="home-card-media-img"
+                  />
+                </div>
+              ) : (
+                <MediaPlaceholder
+                  caption={session.program.coverAlt}
+                  className="home-card-media"
+                />
+              )}
               <div className="home-badge-row">
                 <Badge tone="accent">
                   <MapPin size={14} aria-hidden="true" />
@@ -130,13 +145,21 @@ export function BakeWithOmaSection({
                   <CalendarDays size={16} aria-hidden="true" />
                   <span>{formatSessionStart(session.startsAt)}</span>
                 </p>
+                {session.effectivePriceIdr ? (
+                  <p className="home-class-price">
+                    Mulai {formatIdr(session.effectivePriceIdr)}
+                  </p>
+                ) : null}
               </div>
               <ActionLink
-                href={withBranch(ROUTES.CLASSES, branchCode)}
+                href={withBranch(
+                  `${ROUTES.CLASSES}/${session.program.slug}`,
+                  branchCode ?? session.branch.code,
+                )}
                 variant="secondary"
                 prefetch={false}
               >
-                {HOME_COPY.CLASSES_CTA}
+                {CLASSES_COPY.DETAIL_CTA}
                 <ArrowRight size={16} aria-hidden="true" />
               </ActionLink>
             </Card>
