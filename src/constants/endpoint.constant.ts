@@ -14,4 +14,7 @@ export const API_ENDPOINTS = {
   AUTH_REQUEST_RESET: '/auth/request-password-reset',
   AUTH_UPDATE_PASSWORD: '/auth/update-password',
   ADMIN_SESSION: '/admin/session',
+  ADMIN_OVERVIEW: '/admin/overview',
+  ADMIN_CATEGORIES: '/admin/categories',
+  ADMIN_PRODUCTS: '/admin/products',
 } as const;

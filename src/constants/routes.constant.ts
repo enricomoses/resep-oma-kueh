@@ -10,6 +10,8 @@ export const ROUTES = {
   CART: '/cart',
   CHECKOUT: '/checkout',
   ADMIN: '/admin',
+  ADMIN_CATEGORIES: '/admin/categories',
+  ADMIN_PRODUCTS: '/admin/products',
   ADMIN_LOGIN: '/admin/login',
   ADMIN_RESET_PASSWORD: '/admin/reset-password',
   AUTH_CALLBACK: '/auth/callback',

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { connection } from 'next/server';
 
+import { AdminShell } from '@/components/admin/admin-shell';
 import { ROUTES } from '@/constants/routes.constant';
 import { requireAdminSession } from '@/features/auth/admin-guard.server';
 
@@ -12,6 +13,6 @@ export default async function AdminDashboardLayout({
   children,
 }: AdminDashboardLayoutProps) {
   await connection();
-  await requireAdminSession(ROUTES.ADMIN);
-  return <>{children}</>;
+  const profile = await requireAdminSession(ROUTES.ADMIN);
+  return <AdminShell initialProfile={profile}>{children}</AdminShell>;
 }

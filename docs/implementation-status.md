@@ -1,6 +1,33 @@
 # Status implementasi — Resep Oma Kueh
 
-Tanggal audit: **13 November 2026, Asia/Jakarta**. Kontrak: [PRD revisi 1.1](prd.md), terutama §2,12,16,17,25–27, dan [execution guide](execution-guide.md) §3/F00. Status ini mencatat bukti aktual, bukan menandai spesifikasi sebagai implementasi.
+Tanggal audit: **13 November 2026, Asia/Jakarta**. Kontrak: [PRD revisi 1.1](prd.md), terutama §2,10,12,15–17,25–27, dan [execution guide](execution-guide.md) §3/F00. Status ini mencatat bukti aktual, bukan menandai spesifikasi sebagai implementasi.
+
+## F16 — Shell admin, ringkasan operasional, kategori CRUD, dan produk draf inti
+
+**Status: PASS untuk F16 (R16 PASS pada unit/server/DOM/boundaries/build/Playwright E2E fixture; eksekusi DB live Docker lokal tidak berjalan karena daemon Docker Desktop nonaktif).** Hanya F16; editor penuh SKU varian, media upload, dietary/allergens, dan opsi paket (`F17`), ketersediaan cabang (`F18`), promosi (`F19`), CMS/lokasi (`F20`), serta kelas (`F21`) berada pada tahap berikutnya. Root bakery dan remote GitHub telah diverifikasi; awal clean dari F15 `d627612`, branch `codex/f16-admin-shell-categories-products`. Tidak ada perubahan dependency/lockfile, migration, atau seed.
+
+- **Perilaku/file:**
+  - Konstanta, validasi strict, types & utilitas murni: `src/constants/{routes,endpoint,query-keys,admin-catalog}.constant.ts`, `src/validations/admin-catalog.schema.ts`, `src/types/admin-catalog.ts`, dan `src/utils/admin-catalog.ts` (`slugifyCatalogName`, `wouldCreateCategoryCycle`, `hasActiveCategoryChildren`, `clampAdminPageAfterRemoval`, `escapeLiteralSearchPattern`).
+  - Domain, error mapping, HTTP helpers & repository (`server-only`): `src/features/admin-catalog/{errors,http,repository,service}.server.ts`.
+  - BFF Route Handlers (`no-store`, `Cache-Control: private, no-store`, cookie carrier): `src/app/api/admin/overview/route.ts`, `src/app/api/admin/categories/{route,[id]/route}.ts`, dan `src/app/api/admin/products/{route,[id]/route}.ts`.
+  - Browser service, hook React Query & invalidasi lintas namespace: `src/services/admin-catalog.service.ts` dan `src/hooks/use-admin-catalog.ts`.
+  - UI & App Router Admin (`noindex`): `src/app/admin/(dashboard)/{layout,page,categories/page,products/page}.tsx`, `src/components/admin/{admin-shell,admin-forbidden-panel,admin-overview-view,admin-categories-view,admin-products-view}.tsx`, dan styling `.admin-workspace` / `.admin-*` di `src/app/globals.css` (menggantikan placeholder `admin-guarded-shell.tsx` dari F15).
+  - Dokumentasi kontrak & keputusan: penambahan `GET /api/admin/overview` pada [PRD §15.4](prd.md) serta `D023` pada [decisions.md](decisions.md).
+  - Pengujian Unit, Server, DOM, dan Playwright E2E: `tests/unit/admin-catalog.test.ts`, `tests/server/admin-catalog.test.ts`, `tests/dom/admin-catalog-views.test.tsx`, dan `tests/e2e/admin-catalog.spec.ts` (ditambah pembaruan impor `AdminShell` pada `tests/dom/admin-auth-views.test.tsx`).
+- **Kontrak implementasi F16:**
+  1. **Shell role-scoped & Overview DB nyata:** `AdminShell` menyaring tautan navigasi berdasarkan role (`branch_admin` tidak melihat modul global owner) dan menyediakan drawer mobile accessible. `/admin` dan `GET /api/admin/overview` mengembalikan metrik basis data nyata sesuai izin role (`ownerCounts` untuk owner; `staffCounts` untuk admin cabang).
+  2. **Kategori CRUD, anti-siklus, arsip lunak & concurrency atomik:** Endpoint dan UI kategori mencegah self/ancestry cycle, menolak publikasi di bawah induk non-published, menjaga slug tetap permanen setelah pembuatan, mensyaratkan dialog konfirmasi untuk soft archive (`status = 'archived'` tanpa cascade delete destruktif), dan menegakkan `expectedUpdatedAt` (`409 CONFLICT` jika stale, 0 baris tidak pernah sukses).
+  3. **Produk Draf Inti, batas F17 & ketahanan query:** Baris produk menolak field harga (`price_idr`/`priceIdr`), memulai produk baru sebagai `draft`, memblokir publikasi jika syarat F17/kategori/review belum lengkap (`422 VALIDATION_ERROR`), menyaring pencarian literal secara aman tanpa interpolasi `.or()`, memundurkan halaman paginasi bila item terakhir halaman `> 1` diarsipkan, menginvalidasi cache privat & publik setelah mutasi, serta menolak staff `branch_admin` dengan `403 FORBIDDEN`.
+
+| Bukti  | Command/kasus                                                           | Hasil aktual                                                                                                                                                                                                                             |
+| ------ | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| F16-01 | Kontrak/docs/dependency                                                 | PRD §10, §15.4, §27.4, guide F16, migration F02/F03, dan status F15 diperiksa. Tidak ada perubahan `package.json`, `package-lock.json`, atau migration SQL.                                                                              |
+| F16-02 | `npm run format` & `npm run check`                                      | Exit 0: Prettier, ESLint, `next typegen` + strict TypeScript, **41 test files / 220 tests PASS**, `test:boundaries` (18 kasus ESLint + compiler Next), Knip `lint:unused` bersih, dan Next 16 Turbopack `build` lulus.                   |
+| F16-03 | `tests/unit/admin-catalog`, `tests/server/admin-catalog`, `tests/dom/*` | Unit (6 tests), Server (5 suites: anon 401, role overview, staff 403, draft invisibility publik, cycle/parent/archive/publish prerequisites/price reject/stale 409/SQL-HTML safety), dan DOM Views (5 suites termasuk invalidasi cache). |
+| F16-04 | Playwright E2E `admin-auth.spec.ts` + `admin-catalog.spec.ts`           | Exit 0: **4/4 tests PASS** (redirect `/admin`, `/admin/categories`, `/admin/products` ke `/admin/login`, `noindex`, `401` JSON `no-store`, `403` CSRF, mobile 390px tanpa horizontal overflow, dan axe WCAG zero violations).            |
+| F16-05 | Status Docker lokal                                                     | Daemon Docker Desktop lokal tidak aktif saat sesi (`docker info` gagal tersambung ke pipe `dockerDesktopLinuxEngine`); validasi container Supabase langsung menunggu daemon Docker aktif.                                                |
+
+**Follow-up dependency & pending:** editor lengkap produk (SKU varian, harga cabang, upload gambar Storage, dietary/allergens, option groups) pada **F17**; manajemen stok cabang pada **F18**; promosi admin pada **F19**; CMS & cabang pada **F20**; dan kelas baking pada **F21**. **R16 PASS (unit/server/DOM/boundaries/build/E2E fixture)**.
 
 ## F15 — Supabase admin Auth, reset password, dan guard
 

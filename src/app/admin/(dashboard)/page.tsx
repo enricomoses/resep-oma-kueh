@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
 
-import { AdminGuardedShell } from '@/components/admin/admin-guarded-shell';
+import { AdminOverviewView } from '@/components/admin/admin-overview-view';
 import { AUTH_COPY } from '@/constants/auth.constant';
 import { ROUTES } from '@/constants/routes.constant';
+import { getAdminOverview } from '@/features/admin-catalog/service.server';
 import { requireAdminSession } from '@/features/auth/admin-guard.server';
 
 export const metadata: Metadata = {
@@ -14,5 +15,8 @@ export const metadata: Metadata = {
 export default async function AdminDashboardPage() {
   await connection();
   const profile = await requireAdminSession(ROUTES.ADMIN);
-  return <AdminGuardedShell initialProfile={profile} />;
+  const initialOverview = await getAdminOverview(profile);
+  return (
+    <AdminOverviewView profile={profile} initialOverview={initialOverview} />
+  );
 }

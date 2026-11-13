@@ -1077,6 +1077,7 @@ Public server-rendered pages call matching server service directly; public API e
 
 | Method / Route pattern                                                               | Purpose                                                                                                                          |
 | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /api/admin/overview`                                                            | Role-scoped operational counts from DB (owner global vs branch_admin branch)                                                     |
 | `GET,POST /api/admin/categories`                                                     | List/create category                                                                                                             |
 | `GET,PATCH,DELETE /api/admin/categories/[id]`                                        | Read/edit/soft archive category                                                                                                  |
 | `GET,POST /api/admin/products`                                                       | List/create product with core validated data                                                                                     |

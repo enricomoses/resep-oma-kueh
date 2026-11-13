@@ -5,10 +5,11 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { AdminGuardedShell } from '@/components/admin/admin-guarded-shell';
+import { AdminShell } from '@/components/admin/admin-shell';
 import { AdminLoginView } from '@/components/admin/admin-login-view';
 import { AdminResetPasswordView } from '@/components/admin/admin-reset-password-view';
 import { AUTH_COPY } from '@/constants/auth.constant';
@@ -26,6 +27,7 @@ const navigation = vi.hoisted(() => ({
 
 vi.mock('next/navigation', () => ({
   useRouter: () => navigation,
+  usePathname: () => '/admin',
 }));
 
 const OWNER_PROFILE: AdminSessionProfile = {
@@ -296,12 +298,13 @@ describe('AdminGuardedShell and private query cache cleanup', () => {
 
     render(
       <QueryClientProvider client={client}>
-        <AdminGuardedShell initialProfile={STAFF_PROFILE} />
+        <AdminShell initialProfile={STAFF_PROFILE} />
       </QueryClientProvider>,
     );
 
-    expect(screen.getByText('Admin Surabaya')).toBeTruthy();
-    expect(screen.getByText(/Surabaya \(surabaya\)/i)).toBeTruthy();
+    const sidebar = within(screen.getByLabelText('Sidebar admin'));
+    expect(sidebar.getByText('Admin Surabaya')).toBeTruthy();
+    expect(sidebar.getByText(/Surabaya \(surabaya\)/i)).toBeTruthy();
     expect(client.getQueryData(sessionKey)).toEqual(STAFF_PROFILE);
 
     fireEvent.click(

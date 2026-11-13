@@ -29,6 +29,70 @@ export const QUERY_KEYS = {
       identity?.role ?? 'none',
       identity?.branchId ?? 'none',
     ] as const,
+  ADMIN_OVERVIEW: (
+    identity: {
+      userId: string;
+      role: string;
+      branchId: string | null;
+    } | null,
+  ) =>
+    [
+      'resep-oma-kueh',
+      'admin',
+      'overview',
+      identity?.userId ?? 'anon',
+      identity?.role ?? 'none',
+      identity?.branchId ?? 'none',
+    ] as const,
+  ADMIN_CATEGORIES: (
+    identity: {
+      userId: string;
+      role: string;
+      branchId: string | null;
+    } | null,
+  ) =>
+    [
+      'resep-oma-kueh',
+      'admin',
+      'categories',
+      identity?.userId ?? 'anon',
+      identity?.role ?? 'none',
+      identity?.branchId ?? 'none',
+    ] as const,
+  ADMIN_PRODUCTS: (
+    identity: {
+      userId: string;
+      role: string;
+      branchId: string | null;
+    } | null,
+    params: Record<string, string | number | null | undefined>,
+  ) =>
+    [
+      'resep-oma-kueh',
+      'admin',
+      'products',
+      identity?.userId ?? 'anon',
+      identity?.role ?? 'none',
+      identity?.branchId ?? 'none',
+      params,
+    ] as const,
+  ADMIN_PRODUCT_DETAIL: (
+    identity: {
+      userId: string;
+      role: string;
+      branchId: string | null;
+    } | null,
+    id: string,
+  ) =>
+    [
+      'resep-oma-kueh',
+      'admin',
+      'product-detail',
+      identity?.userId ?? 'anon',
+      identity?.role ?? 'none',
+      identity?.branchId ?? 'none',
+      id,
+    ] as const,
 } as const;
 
 export const STALE_TIME = { PUBLIC: 60_000 } as const;
