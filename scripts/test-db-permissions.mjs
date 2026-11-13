@@ -963,6 +963,52 @@ try {
     )) >= 400,
     'owner cannot upload outside approved public path',
   );
+  for (const actor of ['anon', 'surabaya', 'bintaro']) {
+    const rpcHours = await rest(actor, 'rpc/replace_branch_hours', 'POST', {
+      p_branch_id: id(1),
+      p_expected_branch_updated_at: '2026-01-01T00:00:00Z',
+      p_hours: [],
+    });
+    check(
+      [401, 403].includes(rpcHours.status),
+      `${actor} cannot invoke replace_branch_hours RPC`,
+    );
+    const rpcOffer = await rest(
+      actor,
+      'rpc/owner_upsert_branch_offer',
+      'POST',
+      {
+        p_branch_id: id(1),
+        p_variant_id: id(30),
+        p_expected_offer_updated_at: null,
+        p_expected_variant_updated_at: null,
+        p_update_base_price: true,
+        p_base_price_idr: 99999,
+        p_is_listed: true,
+        p_availability_status: 'available',
+        p_stock_quantity: null,
+        p_price_override_idr: null,
+      },
+    );
+    check(
+      [401, 403].includes(rpcOffer.status),
+      `${actor} cannot invoke owner_upsert_branch_offer RPC`,
+    );
+  }
+  await denied(
+    'surabaya',
+    `product_variants?id=eq.${id(30)}&select=id`,
+    'PATCH',
+    { base_price_idr: 150000 },
+    'staff cannot update base_price_idr on product_variants',
+  );
+  await denied(
+    'bintaro',
+    `branches?id=eq.${id(2)}&select=id`,
+    'PATCH',
+    { allow_pickup: true },
+    'staff cannot toggle fulfillment or update branches',
+  );
   check(
     snapshot() === beforeDenials,
     'all expected denies leave complete business/Storage snapshot identical',

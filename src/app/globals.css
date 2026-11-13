@@ -2611,6 +2611,166 @@ svg {
   justify-content: flex-end;
   gap: 0.25rem;
 }
+
+.admin-readiness-card,
+.admin-locations-panel,
+.admin-filter-card,
+.admin-bulk-card,
+.admin-availability-card {
+  display: grid;
+  gap: 0.875rem;
+}
+
+.admin-readiness-list {
+  margin: 0;
+  padding-left: 1rem;
+  display: grid;
+  gap: 0.375rem;
+}
+
+.admin-readiness-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.admin-readiness-badges {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.admin-readiness-branch-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-locations-stack,
+.admin-location-form,
+.admin-hours-form,
+.admin-hours-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-wa-preview-box,
+.admin-confirm-box,
+.admin-fulfillment-box {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface-cream);
+}
+
+.admin-wa-preview-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--brand-burgundy);
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.admin-field-error {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--brand-burgundy);
+}
+
+.admin-hours-row {
+  display: grid;
+  gap: 0.625rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.admin-hours-day-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.admin-hours-controls {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.admin-filter-grid,
+.admin-bulk-controls,
+.admin-availability-controls-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.admin-availability-card-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.admin-availability-title-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  min-width: 0;
+}
+
+.admin-availability-toggle-col,
+.admin-availability-save-col,
+.admin-staff-price-readonly,
+.admin-staff-branch-pill {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.admin-bulk-failure-list {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.admin-pagination-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .admin-hours-controls {
+    grid-template-columns:
+      auto minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.3fr)
+      auto;
+  }
+
+  .admin-filter-grid {
+    grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(0, 1fr));
+  }
+
+  .admin-bulk-controls {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  }
+
+  .admin-availability-controls-grid {
+    grid-template-columns: auto repeat(4, minmax(0, 1fr)) auto;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cart-spinner {
     animation: none;

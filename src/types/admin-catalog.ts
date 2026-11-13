@@ -2,6 +2,14 @@ import type { z } from 'zod';
 
 import type {
   adminAllergenPresenceSchema,
+  adminAvailabilityListResponseSchema,
+  adminAvailabilityOfferItemSchema,
+  adminAvailabilityQuerySchema,
+  adminBranchHourItemSchema,
+  adminBranchItemSchema,
+  adminBranchesResponseSchema,
+  adminBulkAvailabilityItemResultSchema,
+  adminBulkAvailabilityResponseSchema,
   adminCatalogStatusSchema,
   adminCategoryItemSchema,
   adminCategoryListResponseSchema,
@@ -17,6 +25,7 @@ import type {
   adminEditorImageSchema,
   adminEditorVariantSchema,
   adminMediaUploadResponseSchema,
+  adminOfferAvailabilityStatusSchema,
   adminOverviewResponseSchema,
   adminProductBootstrapResponseSchema,
   adminProductEditorAggregateSchema,
@@ -30,11 +39,15 @@ import type {
   adminSaveConfigurationResponseSchema,
   adminVariantStatusSchema,
   archiveAdminEntitySchema,
+  bulkUpdateAvailabilitySchema,
   createAdminCategorySchema,
   createAdminProductSchema,
+  replaceBranchHoursSchema,
   saveProductConfigurationSchema,
+  updateAdminBranchSchema,
   updateAdminCategorySchema,
   updateAdminProductSchema,
+  upsertBranchAvailabilitySchema,
 } from '@/validations/admin-catalog.schema';
 
 export type AdminCatalogStatus = z.infer<typeof adminCatalogStatusSchema>;
@@ -106,4 +119,33 @@ export type AdminSaveConfigurationResponse = z.infer<
 >;
 export type AdminMediaUploadResponse = z.infer<
   typeof adminMediaUploadResponseSchema
+>;
+export type AdminOfferAvailabilityStatus = z.infer<
+  typeof adminOfferAvailabilityStatusSchema
+>;
+export type AdminBranchHourItem = z.infer<typeof adminBranchHourItemSchema>;
+export type AdminBranchItem = z.infer<typeof adminBranchItemSchema>;
+export type AdminBranchesResponse = z.infer<typeof adminBranchesResponseSchema>;
+export type UpdateAdminBranchInput = z.infer<typeof updateAdminBranchSchema>;
+export type ReplaceBranchHoursInput = z.infer<typeof replaceBranchHoursSchema>;
+export type AdminAvailabilityQuery = z.infer<
+  typeof adminAvailabilityQuerySchema
+>;
+export type AdminAvailabilityOfferItem = z.infer<
+  typeof adminAvailabilityOfferItemSchema
+>;
+export type AdminAvailabilityListResponse = z.infer<
+  typeof adminAvailabilityListResponseSchema
+>;
+export type UpsertBranchAvailabilityInput = z.infer<
+  typeof upsertBranchAvailabilitySchema
+>;
+export type BulkUpdateAvailabilityInput = z.infer<
+  typeof bulkUpdateAvailabilitySchema
+>;
+export type AdminBulkAvailabilityItemResult = z.infer<
+  typeof adminBulkAvailabilityItemResultSchema
+>;
+export type AdminBulkAvailabilityResponse = z.infer<
+  typeof adminBulkAvailabilityResponseSchema
 >;

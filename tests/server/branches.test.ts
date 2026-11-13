@@ -40,7 +40,7 @@ it('selects only public fields/active rows and resolves code to UUID in domain',
   const url = new URL(String(input));
   expect(url.searchParams.get('is_active')).toBe('eq.true');
   expect(url.searchParams.get('select')).toBe(
-    'id,code,name,city,whatsapp_number,address,maps_url',
+    'id,code,name,city,whatsapp_number,address,maps_url,allow_pickup,allow_delivery',
   );
   expect(init?.cache).toBe('no-store');
   expect(

@@ -2,14 +2,24 @@ import { z } from 'zod';
 
 import {
   ADMIN_ALLERGEN_PRESENCES,
+  ADMIN_BRANCH_LIMITS,
   ADMIN_BUNDLE_SLOTS,
+  ADMIN_CATALOG_COPY,
   ADMIN_CATALOG_LIMITS,
   ADMIN_CATALOG_STATUSES,
   ADMIN_DIETARY_VERIFICATION_STATUSES,
   ADMIN_MEDIA_LIMITS,
+  ADMIN_OFFER_AVAILABILITY_STATUSES,
   ADMIN_PRODUCT_TYPES,
   ADMIN_VARIANT_STATUSES,
 } from '@/constants/admin-catalog.constant';
+import {
+  isAllowedMapsUrl,
+  isZeroStockStatusValid,
+  normalizeTimeHHMM,
+  normalizeWhatsappDigits,
+  validateWeeklyHoursIntervals,
+} from '@/utils/admin-branches';
 import {
   ADMIN_MEDIA_ALLOWED_MIME_TYPES,
   ADMIN_MEDIA_BUCKETS,
@@ -472,4 +482,314 @@ export const adminMediaUploadResponseSchema = z.strictObject({
   width: z.int().positive().max(ADMIN_MEDIA_LIMITS.MAX_DIMENSION_PX),
   height: z.int().positive().max(ADMIN_MEDIA_LIMITS.MAX_DIMENSION_PX),
   originalFileName: z.string().min(1).max(120),
+});
+
+export const adminOfferAvailabilityStatusSchema = z.enum(
+  ADMIN_OFFER_AVAILABILITY_STATUSES,
+);
+
+export const adminBranchHourItemSchema = z.strictObject({
+  id: z.uuid().optional(),
+  branchId: z.uuid().optional(),
+  dayOfWeek: z.int().min(0).max(6),
+  opensAt: z.string().trim().max(8).nullable(),
+  closesAt: z.string().trim().max(8).nullable(),
+  isClosed: z.boolean(),
+  note: nullableTrimmedText(160),
+});
+
+const adminBranchReadinessSchema = z.strictObject({
+  hasConfirmedAddress: z.boolean(),
+  hasMapsUrl: z.boolean(),
+  hasVerifiedHours: z.boolean(),
+  fulfillmentEnabled: z.boolean(),
+  officialEmail: z.string(),
+  whatsappTargetUrl: z.string(),
+});
+
+export const adminBranchItemSchema = z.strictObject({
+  id: z.uuid(),
+  code: z.enum(['surabaya', 'bintaro']),
+  name: z.string().min(1).max(120),
+  city: z.string().min(1).max(120),
+  address: z.string().max(400).nullable(),
+  mapsUrl: z.string().max(2000).nullable(),
+  whatsappNumber: z.string().regex(/^[1-9][0-9]{7,14}$/),
+  description: z.string().max(2000).nullable(),
+  allowPickup: z.boolean(),
+  allowDelivery: z.boolean(),
+  sortOrder: z.int().min(0),
+  isActive: z.boolean(),
+  updatedAt: isoTimestampSchema,
+  hours: z.array(adminBranchHourItemSchema),
+  readiness: adminBranchReadinessSchema,
+});
+
+export const adminBranchesResponseSchema = z.strictObject({
+  branches: z.array(adminBranchItemSchema),
+  approvedContacts: z.strictObject({
+    email: z.string(),
+    instagramUrl: z.string(),
+    surabayaConfirmedAddress: z.string(),
+    bintaroAddressResolved: z.boolean(),
+  }),
+});
+
+export const updateAdminBranchSchema = z
+  .strictObject({
+    expectedUpdatedAt: isoTimestampSchema,
+    name: z.string().trim().min(2).max(120),
+    city: z.string().trim().min(2).max(120),
+    address: nullableTrimmedText(400),
+    mapsUrl: z
+      .string()
+      .trim()
+      .max(2000)
+      .nullable()
+      .transform((value) => (!value ? null : value)),
+    whatsappNumber: z.string().trim().min(6).max(30),
+    description: nullableTrimmedText(2000),
+    allowPickup: z.boolean(),
+    allowDelivery: z.boolean(),
+    sortOrder: z.int().min(0).max(10_000),
+    confirmWhatsappChange: z.boolean().default(false),
+    fulfillmentReviewedForProduction: z.boolean().default(false),
+  })
+  .superRefine((value, ctx) => {
+    const normalizedWa = normalizeWhatsappDigits(value.whatsappNumber);
+    if (!normalizedWa) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['whatsappNumber'],
+        message: ADMIN_CATALOG_COPY.LOCATIONS.ERRORS.INVALID_WHATSAPP,
+      });
+    }
+
+    if (value.mapsUrl !== null && !isAllowedMapsUrl(value.mapsUrl)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['mapsUrl'],
+        message: ADMIN_CATALOG_COPY.LOCATIONS.ERRORS.INVALID_MAPS_URL,
+      });
+    }
+  });
+
+const branchHourInputSchema = z.strictObject({
+  dayOfWeek: z.int().min(0).max(6),
+  opensAt: z
+    .string()
+    .trim()
+    .max(8)
+    .nullable()
+    .transform((value) => (value ? (normalizeTimeHHMM(value) ?? value) : null)),
+  closesAt: z
+    .string()
+    .trim()
+    .max(8)
+    .nullable()
+    .transform((value) => (value ? (normalizeTimeHHMM(value) ?? value) : null)),
+  isClosed: z.boolean(),
+  note: nullableTrimmedText(160),
+});
+
+export const replaceBranchHoursSchema = z
+  .strictObject({
+    expectedUpdatedAt: isoTimestampSchema,
+    hours: z.array(branchHourInputSchema).length(7),
+  })
+  .superRefine((value, ctx) => {
+    const issues = validateWeeklyHoursIntervals(value.hours);
+    for (const issue of issues) {
+      const idx =
+        issue.dayOfWeek !== null
+          ? value.hours.findIndex((item) => item.dayOfWeek === issue.dayOfWeek)
+          : -1;
+      const basePath: (string | number)[] =
+        idx >= 0 ? ['hours', idx, 'opensAt'] : ['hours'];
+      if (issue.code === 'invalid_closed_hours') {
+        ctx.addIssue({
+          code: 'custom',
+          path: basePath,
+          message: ADMIN_CATALOG_COPY.LOCATIONS.ERRORS.INVALID_CLOSED_HOURS,
+        });
+      } else if (issue.code === 'incomplete_hours') {
+        ctx.addIssue({
+          code: 'custom',
+          path: basePath,
+          message: ADMIN_CATALOG_COPY.LOCATIONS.ERRORS.INCOMPLETE_HOURS,
+        });
+      } else if (issue.code === 'invalid_overnight_range') {
+        ctx.addIssue({
+          code: 'custom',
+          path: idx >= 0 ? ['hours', idx, 'closesAt'] : ['hours'],
+          message: ADMIN_CATALOG_COPY.LOCATIONS.ERRORS.INVALID_OVERNIGHT_RANGE,
+        });
+      } else if (issue.code === 'invalid_time_format') {
+        ctx.addIssue({
+          code: 'custom',
+          path: basePath,
+          message: 'Format jam harus HH:MM (contoh 08:30).',
+        });
+      } else {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['hours'],
+          message: 'Jadwal harus mencakup tepat 7 hari unik (Minggu–Sabtu).',
+        });
+      }
+    }
+  });
+
+export const adminBranchMutationResponseSchema = z.strictObject({
+  branch: adminBranchItemSchema,
+});
+
+export const adminAvailabilityQuerySchema = z.strictObject({
+  branchId: z.uuid().optional(),
+  search: z
+    .string()
+    .trim()
+    .max(80)
+    .optional()
+    .transform((value) => (value ? value : undefined)),
+  availabilityStatus: adminOfferAvailabilityStatusSchema.optional(),
+  listed: z.enum(['all', 'listed', 'unlisted']).default('all'),
+  page: z.coerce.number().int().min(1).default(1),
+  pageSize: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(ADMIN_BRANCH_LIMITS.MAX_AVAILABILITY_PAGE_SIZE)
+    .default(ADMIN_BRANCH_LIMITS.AVAILABILITY_PAGE_SIZE),
+});
+
+export const adminAvailabilityOfferItemSchema = z.strictObject({
+  branchId: z.uuid(),
+  branchCode: z.enum(['surabaya', 'bintaro']),
+  branchName: z.string(),
+  variantId: z.uuid(),
+  productId: z.uuid(),
+  productName: z.string(),
+  productSlug: z.string(),
+  productStatus: adminCatalogStatusSchema,
+  productType: adminProductTypeSchema,
+  sku: z.string(),
+  variantLabel: z.string(),
+  variantStatus: adminVariantStatusSchema,
+  basePriceIdr: z.int().nonnegative(),
+  priceOverrideIdr: z.int().nonnegative().nullable(),
+  effectivePriceIdr: z.int().nonnegative(),
+  isListed: z.boolean(),
+  availabilityStatus: adminOfferAvailabilityStatusSchema,
+  stockQuantity: z.int().nonnegative().nullable(),
+  hasOfferRow: z.boolean(),
+  offerUpdatedAt: isoTimestampSchema.nullable(),
+  variantUpdatedAt: isoTimestampSchema,
+});
+
+export const adminAvailabilityListResponseSchema = z.strictObject({
+  items: z.array(adminAvailabilityOfferItemSchema),
+  branches: z.array(
+    z.strictObject({
+      id: z.uuid(),
+      code: z.enum(['surabaya', 'bintaro']),
+      name: z.string(),
+      isActive: z.boolean(),
+    }),
+  ),
+  pagination: z.strictObject({
+    page: z.int().positive(),
+    pageSize: z.int().positive(),
+    totalCount: z.int().nonnegative(),
+    totalPages: z.int().positive(),
+  }),
+});
+
+export const upsertBranchAvailabilitySchema = z
+  .strictObject({
+    expectedOfferUpdatedAt: isoTimestampSchema.nullable(),
+    expectedVariantUpdatedAt: isoTimestampSchema.optional(),
+    isListed: z.boolean(),
+    availabilityStatus: adminOfferAvailabilityStatusSchema,
+    stockQuantity: z
+      .int()
+      .min(0)
+      .max(ADMIN_BRANCH_LIMITS.MAX_STOCK_QUANTITY)
+      .nullable(),
+    priceOverrideIdr: z
+      .int()
+      .min(0)
+      .max(ADMIN_BRANCH_LIMITS.MAX_PRICE_IDR)
+      .nullable()
+      .optional(),
+    basePriceIdr: z
+      .int()
+      .min(0)
+      .max(ADMIN_BRANCH_LIMITS.MAX_PRICE_IDR)
+      .optional(),
+  })
+  .superRefine((value, ctx) => {
+    if (
+      !isZeroStockStatusValid(value.stockQuantity, value.availabilityStatus)
+    ) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['availabilityStatus'],
+        message:
+          ADMIN_CATALOG_COPY.AVAILABILITY.ERRORS.ZERO_STOCK_CONTRADICTION,
+      });
+    }
+  });
+
+export const adminAvailabilityUpsertResponseSchema = z.strictObject({
+  offer: adminAvailabilityOfferItemSchema,
+});
+
+const bulkUpdateAvailabilityItemSchema = z.strictObject({
+  branchId: z.uuid(),
+  variantId: z.uuid(),
+  expectedOfferUpdatedAt: isoTimestampSchema.nullable(),
+  expectedVariantUpdatedAt: isoTimestampSchema.optional(),
+  isListed: z.boolean(),
+  availabilityStatus: adminOfferAvailabilityStatusSchema,
+  stockQuantity: z
+    .int()
+    .min(0)
+    .max(ADMIN_BRANCH_LIMITS.MAX_STOCK_QUANTITY)
+    .nullable(),
+  priceOverrideIdr: z
+    .int()
+    .min(0)
+    .max(ADMIN_BRANCH_LIMITS.MAX_PRICE_IDR)
+    .nullable()
+    .optional(),
+  basePriceIdr: z
+    .int()
+    .min(0)
+    .max(ADMIN_BRANCH_LIMITS.MAX_PRICE_IDR)
+    .optional(),
+});
+
+export const bulkUpdateAvailabilitySchema = z.strictObject({
+  items: z
+    .array(bulkUpdateAvailabilityItemSchema)
+    .min(1)
+    .max(ADMIN_BRANCH_LIMITS.MAX_BULK_ITEMS),
+});
+
+export const adminBulkAvailabilityItemResultSchema = z.strictObject({
+  branchId: z.uuid(),
+  variantId: z.uuid(),
+  ok: z.boolean(),
+  status: z.int().min(200).max(599),
+  errorCode: z.string().nullable(),
+  message: z.string().nullable(),
+  offer: adminAvailabilityOfferItemSchema.nullable(),
+});
+
+export const adminBulkAvailabilityResponseSchema = z.strictObject({
+  totalCount: z.int().positive(),
+  succeededCount: z.int().nonnegative(),
+  failedCount: z.int().nonnegative(),
+  results: z.array(adminBulkAvailabilityItemResultSchema),
 });

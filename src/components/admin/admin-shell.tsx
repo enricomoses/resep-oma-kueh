@@ -3,6 +3,7 @@
 import {
   LayoutDashboard,
   LogOut,
+  MapPin,
   Menu,
   Package,
   ShieldCheck,
@@ -44,6 +45,10 @@ function getNavIcon(id: string) {
       return <Tags size={18} aria-hidden="true" />;
     case 'products':
       return <Package size={18} aria-hidden="true" />;
+    case 'availability':
+      return <Store size={18} aria-hidden="true" />;
+    case 'locations':
+      return <MapPin size={18} aria-hidden="true" />;
     default:
       return <ShieldCheck size={18} aria-hidden="true" />;
   }

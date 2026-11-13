@@ -1,15 +1,25 @@
 import { API_ENDPOINTS } from '@/constants/endpoint.constant';
 import { requestApi } from '@/lib/axios';
 import type {
+  AdminAvailabilityQuery,
   AdminProductQuery,
   ArchiveAdminEntityInput,
+  BulkUpdateAvailabilityInput,
   CreateAdminCategoryInput,
   CreateAdminProductInput,
+  ReplaceBranchHoursInput,
   SaveProductConfigurationInput,
+  UpdateAdminBranchInput,
   UpdateAdminCategoryInput,
   UpdateAdminProductInput,
+  UpsertBranchAvailabilityInput,
 } from '@/types/admin-catalog';
 import {
+  adminAvailabilityListResponseSchema,
+  adminAvailabilityUpsertResponseSchema,
+  adminBranchMutationResponseSchema,
+  adminBranchesResponseSchema,
+  adminBulkAvailabilityResponseSchema,
   adminCategoryDetailResponseSchema,
   adminCategoryListResponseSchema,
   adminMediaUploadResponseSchema,
@@ -216,5 +226,95 @@ export function uploadAdminProductMediaRequest(
       signal,
     },
     adminMediaUploadResponseSchema,
+  );
+}
+
+export function readAdminBranchesRequest(signal?: AbortSignal) {
+  return requestApi(
+    {
+      url: API_ENDPOINTS.ADMIN_BRANCHES,
+      method: 'GET',
+      signal,
+    },
+    adminBranchesResponseSchema,
+  );
+}
+
+export function updateAdminBranchRequest(
+  branchId: string,
+  payload: UpdateAdminBranchInput,
+  signal?: AbortSignal,
+) {
+  return requestApi(
+    {
+      url: `${API_ENDPOINTS.ADMIN_BRANCHES}/${encodeURIComponent(branchId)}`,
+      method: 'PATCH',
+      data: payload,
+      signal,
+    },
+    adminBranchMutationResponseSchema,
+  );
+}
+
+export function replaceAdminBranchHoursRequest(
+  branchId: string,
+  payload: ReplaceBranchHoursInput,
+  signal?: AbortSignal,
+) {
+  return requestApi(
+    {
+      url: `${API_ENDPOINTS.ADMIN_BRANCHES}/${encodeURIComponent(branchId)}/hours`,
+      method: 'PUT',
+      data: payload,
+      signal,
+    },
+    adminBranchMutationResponseSchema,
+  );
+}
+
+export function readAdminAvailabilityRequest(
+  params: Partial<AdminAvailabilityQuery>,
+  signal?: AbortSignal,
+) {
+  return requestApi(
+    {
+      url: API_ENDPOINTS.ADMIN_AVAILABILITY,
+      method: 'GET',
+      params,
+      signal,
+    },
+    adminAvailabilityListResponseSchema,
+  );
+}
+
+export function upsertAdminAvailabilityRequest(
+  branchId: string,
+  variantId: string,
+  payload: UpsertBranchAvailabilityInput,
+  signal?: AbortSignal,
+) {
+  return requestApi(
+    {
+      url: `${API_ENDPOINTS.ADMIN_AVAILABILITY}/${encodeURIComponent(branchId)}/${encodeURIComponent(variantId)}`,
+      method: 'PUT',
+      data: payload,
+      signal,
+    },
+    adminAvailabilityUpsertResponseSchema,
+  );
+}
+
+export function bulkUpdateAdminAvailabilityRequest(
+  payload: BulkUpdateAvailabilityInput,
+  signal?: AbortSignal,
+) {
+  return requestApi(
+    {
+      url: `${API_ENDPOINTS.ADMIN_AVAILABILITY}/bulk`,
+      method: 'POST',
+      data: payload,
+      signal,
+    },
+    adminBulkAvailabilityResponseSchema,
   );
 }

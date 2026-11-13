@@ -25,6 +25,34 @@ export const ADMIN_ALLERGEN_PRESENCES = [
 
 export const ADMIN_BUNDLE_SLOTS = ['cheese', 'choco'] as const;
 
+export const ADMIN_OFFER_AVAILABILITY_STATUSES = [
+  'available',
+  'sold_out',
+  'unconfirmed',
+] as const;
+
+export const ADMIN_DAY_OF_WEEK_LABELS = [
+  'Minggu',
+  'Senin',
+  'Selasa',
+  'Rabu',
+  'Kamis',
+  'Jumat',
+  'Sabtu',
+] as const;
+
+export const ADMIN_BRANCH_LIMITS = {
+  MAX_BRANCH_BODY_BYTES: 16 * 1024,
+  MAX_HOURS_BODY_BYTES: 16 * 1024,
+  MAX_AVAILABILITY_BODY_BYTES: 16 * 1024,
+  MAX_BULK_AVAILABILITY_BODY_BYTES: 64 * 1024,
+  MAX_BULK_ITEMS: 50,
+  AVAILABILITY_PAGE_SIZE: 24,
+  MAX_AVAILABILITY_PAGE_SIZE: 100,
+  MAX_PRICE_IDR: 1_000_000_000,
+  MAX_STOCK_QUANTITY: 100_000,
+} as const;
+
 export const ADMIN_MEDIA_LIMITS = {
   MAX_FILE_BYTES: 5 * 1024 * 1024,
   MAX_DIMENSION_PX: 6000,
@@ -93,10 +121,16 @@ export const ADMIN_NAV_ITEMS: readonly AdminNavItem[] = [
   {
     id: 'availability',
     label: 'Ketersediaan Cabang',
-    href: null,
+    href: ROUTES.ADMIN_AVAILABILITY,
     roles: ['owner', 'branch_admin'],
-    implemented: false,
-    stageTag: 'F18',
+    implemented: true,
+  },
+  {
+    id: 'locations',
+    label: 'Lokasi & Jam Cabang',
+    href: ROUTES.ADMIN_LOCATIONS,
+    roles: ['owner'],
+    implemented: true,
   },
   {
     id: 'promotions',
@@ -108,7 +142,7 @@ export const ADMIN_NAV_ITEMS: readonly AdminNavItem[] = [
   },
   {
     id: 'content-locations',
-    label: 'Konten & Lokasi',
+    label: 'Konten & FAQ',
     href: null,
     roles: ['owner'],
     implemented: false,
@@ -352,6 +386,70 @@ export const ADMIN_CATALOG_COPY = {
       DIMENSIONS_EXCEEDED:
         'Dimensi foto tidak boleh melebihi 6000 × 6000 piksel atau berkas rusak.',
       INVALID_STORAGE_PATH: 'Path Storage tidak valid atau tidak aman.',
+    },
+  },
+  LOCATIONS: {
+    TITLE: 'Lokasi, Jam & Pengaturan Cabang',
+    SUBTITLE:
+      'Kelola alamat cabang, tautan Google Maps HTTPS, nomor WhatsApp resmi, status pickup/delivery, dan jam operasional 7 hari (Owner only).',
+    READINESS_TITLE: 'Kesiapan Data Cabang & Kontak',
+    SURABAYA_FINAL_NOTE:
+      'Surabaya memiliki alamat terkonfirmasi dan email resmi resepoma.kueh2@gmail.com.',
+    BINTARO_UNRESOLVED_NOTE:
+      'Alamat cabang Bintaro belum ditetapkan (unresolved) — jangan mengisi alamat karangan; biarkan kosong hingga terkonfirmasi resmi.',
+    FULFILLMENT_SAFETY_NOTE:
+      'Pickup dan delivery tetap nonaktif secara default sampai cabang siap produksi dan ditinjau eksplisit oleh Owner.',
+    WA_PREVIEW_PREFIX: 'Target tautan WhatsApp terverifikasi:',
+    WA_REVERIFY_LABEL:
+      'Saya sudah memverifikasi ulang nomor WhatsApp tujuan dan tautan https://wa.me/ di atas benar.',
+    FULFILLMENT_REVIEW_LABEL:
+      'Saya telah meninjau kesiapan operasional cabang ini dan menyetujui pengaktifan pickup/delivery untuk produksi.',
+    UNKNOWN_HOURS_HINT:
+      'Kosongkan jam buka & tutup jika belum dikonfirmasi (akan tampil sebagai "Sesuai konfirmasi", bukan 24 jam).',
+    ERRORS: {
+      OWNER_ONLY: 'Hanya Owner yang dapat mengubah data cabang dan jam buka.',
+      INVALID_WHATSAPP:
+        'Nomor WhatsApp harus berisi 8–15 digit angka internasional (mis. 6281703384308 atau 0817... akan dinormalisasi).',
+      WHATSAPP_REVERIFY_REQUIRED:
+        'Perubahan nomor WhatsApp wajib dicentang konfirmasi verifikasi ulang target.',
+      INVALID_MAPS_URL:
+        'Tautan Maps harus berupa URL HTTPS Google Maps yang valid (mis. https://maps.google.com/..., https://www.google.com/maps/..., atau https://maps.app.goo.gl/...).',
+      FULFILLMENT_REVIEW_REQUIRED:
+        'Pengaktifan pickup atau delivery memerlukan konfirmasi tinjauan kesiapan produksi.',
+      INVALID_CLOSED_HOURS:
+        'Hari bertanda tutup tidak boleh memiliki jam buka atau jam tutup.',
+      INCOMPLETE_HOURS:
+        'Jam buka dan jam tutup harus diisi berpasangan, atau kosongkan keduanya jika belum dikonfirmasi.',
+      INVALID_OVERNIGHT_RANGE:
+        'Jam tutup harus lebih lambat dari jam buka dalam hari yang sama (jam lintas tengah malam ditolak).',
+      STALE_CONFLICT:
+        'Data cabang telah diubah sesi lain. Muat ulang cabang sebelum menyimpan ulang.',
+    },
+  },
+  AVAILABILITY: {
+    TITLE: 'Ketersediaan & Harga Cabang',
+    SUBTITLE:
+      'Atur status tampil cabang, ketersediaan stok per SKU, dan (khusus Owner) harga dasar maupun override cabang.',
+    STAFF_SCOPE_NOTE:
+      'Akses Staf Cabang hanya mengizinkan pengelolaan status tampil, ketersediaan, dan stok pada cabang sendiri. Perubahan harga dasar/override serta cabang lain hanya dapat dilakukan oleh Owner.',
+    NULL_STOCK_HINT:
+      'Kosongkan stok jika tidak melacak jumlah unit. Nilai stok 0 otomatis mewajibkan status Sold Out.',
+    BULK_TITLE: 'Pembaruan Massal Terpilih',
+    BULK_HINT:
+      'Setiap baris divalidasi terpisah; kegagalan pada satu SKU dilaporkan jujur tanpa memalsukan sukses menyeluruh.',
+    ERRORS: {
+      FOREIGN_BRANCH_FORBIDDEN:
+        'Staf cabang hanya dapat mengelola cabang yang ditugaskan kepadanya.',
+      STAFF_PRICE_FORBIDDEN:
+        'Staf cabang tidak diizinkan mengubah harga dasar atau override harga cabang.',
+      ZERO_STOCK_CONTRADICTION:
+        'Stok bernilai 0 hanya diizinkan dengan status ketersediaan "Habis (Sold Out)".',
+      BUNDLE_COMPONENT_NOT_OFFERED:
+        'Varian paket tidak dapat ditampilkan di cabang selama masih ada komponen tetap/pilihan yang belum diaktifkan di cabang yang sama.',
+      PRICE_CAP_EXCEEDED:
+        'Konfigurasi harga varian atau paket melebihi batas harga yang diizinkan.',
+      STALE_CONFLICT:
+        'Data penawaran atau harga SKU ini telah diubah sesi lain. Muat ulang sebelum menyimpan ulang.',
     },
   },
 } as const;

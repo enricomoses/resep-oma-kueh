@@ -20,6 +20,18 @@ export function revalidatePublicCatalogPaths(): void {
   }
 }
 
+export function revalidatePublicLocationAndOfferPaths(): void {
+  try {
+    revalidatePath(ROUTES.HOME);
+    revalidatePath(ROUTES.MENU);
+    revalidatePath(ROUTES.CONTACT);
+    revalidatePath(ROUTES.CART);
+    revalidatePath(ROUTES.CHECKOUT);
+  } catch {
+    // Outside Next.js request lifecycle (e.g., direct handler tests).
+  }
+}
+
 const uuidSchema = z.uuid();
 
 export function parseUuidRouteParam(rawId: string): string {

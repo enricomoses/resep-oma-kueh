@@ -110,6 +110,38 @@ export const QUERY_KEYS = {
       identity?.branchId ?? 'none',
       id,
     ] as const,
+  ADMIN_BRANCHES: (
+    identity: {
+      userId: string;
+      role: string;
+      branchId: string | null;
+    } | null,
+  ) =>
+    [
+      'resep-oma-kueh',
+      'admin',
+      'branches',
+      identity?.userId ?? 'anon',
+      identity?.role ?? 'none',
+      identity?.branchId ?? 'none',
+    ] as const,
+  ADMIN_AVAILABILITY: (
+    identity: {
+      userId: string;
+      role: string;
+      branchId: string | null;
+    } | null,
+    params: Record<string, string | number | null | undefined>,
+  ) =>
+    [
+      'resep-oma-kueh',
+      'admin',
+      'availability',
+      identity?.userId ?? 'anon',
+      identity?.role ?? 'none',
+      identity?.branchId ?? 'none',
+      params,
+    ] as const,
 } as const;
 
 export const STALE_TIME = { PUBLIC: 60_000 } as const;

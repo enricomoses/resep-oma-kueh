@@ -5,7 +5,9 @@ import { BRANCH } from '@/constants/site.constant';
 export async function readActiveBranches(signal?: AbortSignal) {
   const query = createPublicReadClient()
     .from('branches')
-    .select('id,code,name,city,whatsapp_number,address,maps_url')
+    .select(
+      'id,code,name,city,whatsapp_number,address,maps_url,allow_pickup,allow_delivery',
+    )
     .eq('is_active', true)
     .retry(false)
     .order('sort_order')

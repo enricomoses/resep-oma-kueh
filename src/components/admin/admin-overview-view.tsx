@@ -153,6 +153,20 @@ export function AdminOverviewView({
               >
                 {ADMIN_CATALOG_COPY.OVERVIEW.MANAGE_PRODUCTS}
               </ActionLink>
+              <ActionLink
+                href={ROUTES.ADMIN_AVAILABILITY}
+                variant="secondary"
+                size="sm"
+              >
+                {ADMIN_CATALOG_COPY.AVAILABILITY.TITLE}
+              </ActionLink>
+              <ActionLink
+                href={ROUTES.ADMIN_LOCATIONS}
+                variant="secondary"
+                size="sm"
+              >
+                {ADMIN_CATALOG_COPY.LOCATIONS.TITLE}
+              </ActionLink>
             </div>
           </Card>
         </>
@@ -186,6 +200,15 @@ export function AdminOverviewView({
             <p className="admin-section-subtitle">
               {ADMIN_CATALOG_COPY.OVERVIEW.SCOPE_NOTE_STAFF}
             </p>
+            <div className="admin-inline-actions">
+              <ActionLink
+                href={ROUTES.ADMIN_AVAILABILITY}
+                variant="primary"
+                size="sm"
+              >
+                {ADMIN_CATALOG_COPY.AVAILABILITY.TITLE}
+              </ActionLink>
+            </div>
           </Card>
         </>
       ) : null}

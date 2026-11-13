@@ -18,4 +18,6 @@ export const API_ENDPOINTS = {
   ADMIN_CATEGORIES: '/admin/categories',
   ADMIN_PRODUCTS: '/admin/products',
   ADMIN_MEDIA_UPLOAD: '/admin/media/upload',
+  ADMIN_BRANCHES: '/admin/branches',
+  ADMIN_AVAILABILITY: '/admin/availability',
 } as const;

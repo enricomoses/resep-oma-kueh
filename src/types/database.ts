@@ -1208,6 +1208,21 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      owner_upsert_branch_offer: {
+        Args: {
+          p_availability_status: string;
+          p_base_price_idr: number | null;
+          p_branch_id: string;
+          p_expected_offer_updated_at: string | null;
+          p_expected_variant_updated_at: string | null;
+          p_is_listed: boolean;
+          p_price_override_idr: number | null;
+          p_stock_quantity: number | null;
+          p_update_base_price: boolean;
+          p_variant_id: string;
+        };
+        Returns: Json;
+      };
       read_active_branches: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -1237,6 +1252,14 @@ export type Database = {
       };
       read_owner_variant_evidence: {
         Args: { variant_uuid: string };
+        Returns: Json;
+      };
+      replace_branch_hours: {
+        Args: {
+          p_branch_id: string;
+          p_expected_branch_updated_at: string;
+          p_hours: Json;
+        };
         Returns: Json;
       };
       save_product_configuration: {
