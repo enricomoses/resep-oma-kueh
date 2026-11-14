@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
 
-import { AdminAvailabilityView } from '@/components/admin/admin-availability-view';
+import { AdminAvailabilityView } from './_components/admin-availability-view';
 import {
   ADMIN_BRANCH_LIMITS,
   ADMIN_CATALOG_COPY,

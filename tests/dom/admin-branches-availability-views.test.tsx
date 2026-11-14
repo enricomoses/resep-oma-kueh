@@ -9,9 +9,9 @@ import {
 } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { AdminAvailabilityView } from '@/components/admin/admin-availability-view';
-import { AdminLocationsView } from '@/components/admin/admin-locations-view';
-import { AdminShell } from '@/components/admin/admin-shell';
+import { AdminAvailabilityView } from '@/app/admin/(dashboard)/availability/_components/admin-availability-view';
+import { AdminLocationsView } from '@/app/admin/(dashboard)/locations/_components/admin-locations-view';
+import { AdminShell } from '@/app/admin/(dashboard)/_components/admin-shell';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { ApiClientError } from '@/lib/errors';
