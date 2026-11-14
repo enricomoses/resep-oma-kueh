@@ -40,7 +40,7 @@ export const architectureRule = {
         /\.server(?:\.[cm]?[jt]sx?)?$/.test(target) ||
         /\/lib\/supabase\/(server|proxy)$/.test(target);
       if (
-        (client || hook || service || pure) &&
+        (ui || client || hook || service || pure) &&
         (server || value === 'server-only' || target.includes('/src/features/'))
       )
         report(node, 'client/server');

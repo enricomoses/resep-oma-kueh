@@ -38,6 +38,14 @@ it.each([
     'src/components/fixture.tsx',
     "'use client'; import '@/config/environment.server';",
   ],
+  [
+    'src/components/fixture.tsx',
+    "import {getCatalog} from '@/features/catalog/service.server';",
+  ],
+  [
+    'src/app/(site)/menu/_components/fixture.tsx',
+    "import {getCatalog} from '@/features/catalog/service.server';",
+  ],
   ['src/components/fixture.tsx', "import('@/lib/axios');"],
   ['src/components/fixture.tsx', "fetch('/api/fixture');"],
 ])('rejects forbidden imports/calls in %s', async (filePath, code) => {
