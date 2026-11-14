@@ -1,71 +1,28 @@
 'use client';
 
-import {
-  FileText,
-  GraduationCap,
-  HelpCircle,
-  LayoutDashboard,
-  LogOut,
-  MapPin,
-  Menu,
-  MessageSquareQuote,
-  Package,
-  ShieldCheck,
-  Store,
-  Tags,
-} from 'lucide-react';
-import Link from 'next/link';
+import { LogOut, Menu, Store } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 
 import { ActionLink } from '@/components/ui/action-link';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Drawer } from '@/components/ui/drawer';
 import { Feedback } from '@/components/ui/feedback';
-import {
-  ADMIN_CATALOG_COPY,
-  ADMIN_NAV_ITEMS,
-} from '@/constants/admin-catalog.constant';
+import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { AUTH_COPY } from '@/constants/auth.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { useAdminLogout, useAdminSession } from '@/hooks/use-admin-auth';
 import { ApiClientError } from '@/lib/errors';
 import type { AdminSessionProfile } from '@/types/auth';
 import { cn } from '@/utils';
+import { AdminIdentityBadges } from './admin-identity-badges';
+import { AdminSidebarNav } from './admin-sidebar-nav';
 
 interface AdminShellProps {
   initialProfile: AdminSessionProfile;
   children?: ReactNode;
   className?: string;
-}
-
-function getNavIcon(id: string) {
-  switch (id) {
-    case 'overview':
-      return <LayoutDashboard size={18} aria-hidden="true" />;
-    case 'categories':
-      return <Tags size={18} aria-hidden="true" />;
-    case 'products':
-      return <Package size={18} aria-hidden="true" />;
-    case 'availability':
-      return <Store size={18} aria-hidden="true" />;
-    case 'locations':
-      return <MapPin size={18} aria-hidden="true" />;
-    case 'promotions':
-      return <Tags size={18} aria-hidden="true" />;
-    case 'content':
-      return <FileText size={18} aria-hidden="true" />;
-    case 'faqs':
-      return <HelpCircle size={18} aria-hidden="true" />;
-    case 'testimonials':
-      return <MessageSquareQuote size={18} aria-hidden="true" />;
-    case 'classes':
-      return <GraduationCap size={18} aria-hidden="true" />;
-    default:
-      return <ShieldCheck size={18} aria-hidden="true" />;
-  }
 }
 
 export function AdminShell({
@@ -83,9 +40,6 @@ export function AdminShell({
   const logoutMutation = useAdminLogout();
 
   const activeProfile = sessionQuery.data ?? initialProfile;
-  const visibleNavItems = ADMIN_NAV_ITEMS.filter((item) =>
-    item.roles.includes(activeProfile.role),
-  );
 
   const roleLabel =
     activeProfile.role === 'owner'
@@ -113,52 +67,6 @@ export function AdminShell({
     }
   }
 
-  function renderNavList(closeOnNavigate: boolean) {
-    return (
-      <nav
-        className="admin-nav-list"
-        aria-label={ADMIN_CATALOG_COPY.SHELL.NAV_LABEL}
-      >
-        {visibleNavItems.map((item) => {
-          if (item.implemented && item.href) {
-            const isCurrent =
-              item.href === ROUTES.ADMIN
-                ? pathname === ROUTES.ADMIN
-                : pathname.startsWith(item.href);
-
-            return (
-              <Link
-                key={item.id}
-                href={item.href}
-                aria-current={isCurrent ? 'page' : undefined}
-                className={cn(
-                  'admin-nav-link',
-                  isCurrent && 'admin-nav-link--active',
-                )}
-                onClick={
-                  closeOnNavigate ? () => setMobileNavOpen(false) : undefined
-                }
-              >
-                {getNavIcon(item.id)}
-                <span>{item.label}</span>
-              </Link>
-            );
-          }
-
-          return (
-            <div key={item.id} className="admin-nav-upcoming">
-              <span className="admin-nav-upcoming-label">
-                {getNavIcon(item.id)}
-                <span>{item.label}</span>
-              </span>
-              <Badge tone="neutral">{item.stageTag}</Badge>
-            </div>
-          );
-        })}
-      </nav>
-    );
-  }
-
   return (
     <div className={cn('admin-workspace', className)}>
       <aside className="admin-sidebar" aria-label="Sidebar admin">
@@ -170,18 +78,15 @@ export function AdminShell({
           </p>
         </div>
 
-        <div className="admin-sidebar-identity">
-          <p className="admin-shell-name">{activeProfile.displayName}</p>
-          {activeProfile.email ? (
-            <p className="admin-shell-email">{activeProfile.email}</p>
-          ) : null}
-          <div className="admin-shell-badges">
-            <Badge tone="accent">{roleLabel}</Badge>
-            <Badge tone="neutral">{branchScope}</Badge>
-          </div>
-        </div>
+        <AdminIdentityBadges
+          displayName={activeProfile.displayName}
+          email={activeProfile.email}
+          roleLabel={roleLabel}
+          branchScope={branchScope}
+          showEmail
+        />
 
-        {renderNavList(false)}
+        <AdminSidebarNav role={activeProfile.role} pathname={pathname} />
       </aside>
 
       <div className="admin-workspace-body">
@@ -244,14 +149,16 @@ export function AdminShell({
         description={branchScope}
       >
         <div className="admin-drawer-content">
-          <div className="admin-sidebar-identity">
-            <p className="admin-shell-name">{activeProfile.displayName}</p>
-            <div className="admin-shell-badges">
-              <Badge tone="accent">{roleLabel}</Badge>
-              <Badge tone="neutral">{branchScope}</Badge>
-            </div>
-          </div>
-          {renderNavList(true)}
+          <AdminIdentityBadges
+            displayName={activeProfile.displayName}
+            roleLabel={roleLabel}
+            branchScope={branchScope}
+          />
+          <AdminSidebarNav
+            role={activeProfile.role}
+            pathname={pathname}
+            onNavigate={() => setMobileNavOpen(false)}
+          />
         </div>
       </Drawer>
     </div>

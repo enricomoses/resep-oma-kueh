@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
 
-import { AdminResetPasswordView } from '@/components/admin/admin-reset-password-view';
+import { AdminResetPasswordView } from './_components/admin-reset-password-view';
 import { AUTH_COPY } from '@/constants/auth.constant';
 import { verifyAdminAccess } from '@/features/auth/admin-guard.server';
 import type { AuthErrorReason } from '@/types/auth';

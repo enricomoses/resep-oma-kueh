@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { connection } from 'next/server';
 
-import { AdminShell } from '@/components/admin/admin-shell';
+import { AdminShell } from './_components/admin-shell';
 import { ROUTES } from '@/constants/routes.constant';
 import { requireAdminSession } from '@/features/auth/admin-guard.server';
 

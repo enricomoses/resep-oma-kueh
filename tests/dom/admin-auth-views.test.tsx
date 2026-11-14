@@ -9,9 +9,9 @@ import {
 } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { AdminShell } from '@/components/admin/admin-shell';
-import { AdminLoginView } from '@/components/admin/admin-login-view';
-import { AdminResetPasswordView } from '@/components/admin/admin-reset-password-view';
+import { AdminShell } from '@/app/admin/(dashboard)/_components/admin-shell';
+import { AdminLoginView } from '@/app/admin/login/_components/admin-login-view';
+import { AdminResetPasswordView } from '@/app/admin/reset-password/_components/admin-reset-password-view';
 import { AUTH_COPY } from '@/constants/auth.constant';
 import { QUERY_KEYS } from '@/constants/query-keys.constant';
 import { ROUTES } from '@/constants/routes.constant';

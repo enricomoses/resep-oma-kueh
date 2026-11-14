@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { connection } from 'next/server';
 
-import { AdminLoginView } from '@/components/admin/admin-login-view';
+import { AdminLoginView } from './_components/admin-login-view';
 import { AUTH_COPY } from '@/constants/auth.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { verifyAdminAccess } from '@/features/auth/admin-guard.server';
