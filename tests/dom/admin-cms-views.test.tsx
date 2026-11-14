@@ -12,9 +12,9 @@ afterEach(() => {
   cleanup();
 });
 
-import { AdminContentView } from '@/components/admin/admin-content-view';
-import { AdminFaqsView } from '@/components/admin/admin-faqs-view';
-import { AdminTestimonialsView } from '@/components/admin/admin-testimonials-view';
+import { AdminContentView } from '@/app/admin/(dashboard)/content/_components/admin-content-view';
+import { AdminFaqsView } from '@/app/admin/(dashboard)/faqs/_components/admin-faqs-view';
+import { AdminTestimonialsView } from '@/app/admin/(dashboard)/testimonials/_components/admin-testimonials-view';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { ReactQueryProvider } from '@/providers/react-query-provider';
 import * as adminCmsService from '@/services/admin-cms.service';
