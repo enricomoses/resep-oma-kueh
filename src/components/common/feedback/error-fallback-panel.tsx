@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+
 import { ActionLink } from '@/components/ui/action-link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -8,8 +9,8 @@ import { Feedback } from '@/components/ui/feedback';
 import { APPROVED_CONTACTS } from '@/constants/contacts.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { BOUNDARY_COPY } from '@/constants/seo.constant';
-import { formatWhatsappDigits } from '@/utils/checkout';
 import { cn } from '@/utils';
+import { formatWhatsappDigits } from '@/utils/checkout';
 
 interface ErrorFallbackPanelProps {
   error: Error & { digest?: string };

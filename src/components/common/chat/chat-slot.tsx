@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 
 const LazyAskOmaWidget = dynamic(
   () =>
-    import('@/components/chat/ask-oma-widget').then(
+    import('@/components/common/chat/ask-oma-widget').then(
       (module) => module.AskOmaWidget,
     ),
   { ssr: false },

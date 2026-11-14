@@ -1,16 +1,19 @@
 import { MessageSquareQuote, Star } from 'lucide-react';
+
+import { SectionHeader } from '@/components/common/layout/section-header';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Feedback } from '@/components/ui/feedback';
 import { HOME_COPY, HOME_SECTION_IDS } from '@/constants/home.constant';
-import { cn } from '@/utils';
 import type { HomeSectionResult, HomeTestimonial } from '@/types/home';
+import { cn } from '@/utils';
 
 interface WhatTheySaySectionProps {
   testimonials: HomeSectionResult<HomeTestimonial[]>;
   allowEmptyPreview?: boolean;
   className?: string;
 }
+
 export function WhatTheySaySection({
   testimonials,
   allowEmptyPreview = false,
@@ -30,16 +33,11 @@ export function WhatTheySaySection({
       className={cn('home-section', className)}
       aria-labelledby="home-testimonials-title"
     >
-      <div className="home-section-header">
-        <div>
-          <h2 id="home-testimonials-title" className="editorial-heading">
-            {HOME_COPY.TESTIMONIALS_TITLE}
-          </h2>
-          <p className="home-section-subtitle">
-            {HOME_COPY.TESTIMONIALS_SUBTITLE}
-          </p>
-        </div>
-      </div>
+      <SectionHeader
+        titleId="home-testimonials-title"
+        title={HOME_COPY.TESTIMONIALS_TITLE}
+        subtitle={HOME_COPY.TESTIMONIALS_SUBTITLE}
+      />
       {testimonials.status === 'error' ? (
         <Feedback tone="error" title={HOME_COPY.TESTIMONIALS_ERROR} />
       ) : testimonials.data.length === 0 ? (

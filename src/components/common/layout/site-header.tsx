@@ -1,25 +1,30 @@
 'use client';
+
 import { Menu } from 'lucide-react';
 import { useState } from 'react';
-import { APP, ROUTES } from '@/constants';
-import { FOUNDATION_COPY } from '@/constants/ui.constant';
-import { SITE_COPY } from '@/constants/site.constant';
-import { useBranches } from '@/hooks/use-branches';
-import { withBranch } from '@/utils/branch-url';
-import { cn } from '@/utils';
+
 import { ActionLink } from '@/components/ui/action-link';
 import { Button } from '@/components/ui/button';
 import { Drawer } from '@/components/ui/drawer';
-import { SiteNav } from './site-nav';
+import { APP, ROUTES } from '@/constants';
+import { SITE_COPY } from '@/constants/site.constant';
+import { FOUNDATION_COPY } from '@/constants/ui.constant';
+import { useBranches } from '@/hooks/use-branches';
+import { cn } from '@/utils';
+import { withBranch } from '@/utils/branch-url';
+
+import { BranchSelector } from '@/components/common/branch/branch-selector';
 import { CartBadge } from './cart-badge';
-import { BranchSelector } from './branch-selector';
+import { SiteNav } from './site-nav';
 
 interface SiteHeaderProps {
   className?: string;
 }
+
 export function SiteHeader({ className }: SiteHeaderProps) {
   const [open, setOpen] = useState(false);
   const { selected, code } = useBranches();
+
   return (
     <header className={cn('site-header', className)}>
       <div className="content-container site-header-row">

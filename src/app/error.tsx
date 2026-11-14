@@ -1,6 +1,6 @@
 'use client';
 
-import { ErrorFallbackPanel } from '@/components/site/error-fallback-panel';
+import { ErrorFallbackPanel } from '@/components/common/feedback/error-fallback-panel';
 
 interface RootErrorProps {
   error: Error & { digest?: string };

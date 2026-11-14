@@ -1,7 +1,7 @@
 'use client';
 
-import type { KeyboardEvent, RefObject } from 'react';
 import { RotateCcw, Send, Square } from 'lucide-react';
+import type { KeyboardEvent, RefObject } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { CHAT_COPY, CHAT_LIMITS } from '@/constants/chat.constant';

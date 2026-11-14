@@ -2,7 +2,8 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
-import { MediaPlaceholder } from '@/app/_components';
+
+import { MediaPlaceholder } from '@/components/common/media-placeholder';
 import { cn } from '@/utils';
 
 interface MenuProductCardMediaProps {

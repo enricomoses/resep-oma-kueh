@@ -8,7 +8,7 @@ import {
 } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { AskOmaWidget } from '@/components/chat/ask-oma-widget';
+import { AskOmaWidget } from '@/components/common/chat/ask-oma-widget';
 import { CHAT_COPY } from '@/constants/chat.constant';
 import { ApiClientError } from '@/lib/errors';
 import { ReactQueryProvider } from '@/providers';

@@ -4,9 +4,9 @@ import { connection } from 'next/server';
 import { getInitialBranches } from '@/features/branches/service.server';
 import { getSiteFooterMeta } from '@/features/content/service.server';
 import { BranchProvider } from '@/providers/branch-provider';
-import { SiteHeader } from '@/components/site/site-header';
-import { SiteFooter } from '@/components/site/site-footer';
-import { ChatSlot } from '@/components/site/chat-slot';
+import { SiteHeader } from '@/components/common/layout/site-header';
+import { SiteFooter } from '@/components/common/layout/site-footer';
+import { ChatSlot } from '@/components/common/chat/chat-slot';
 import { SITE_COPY } from '@/constants/site.constant';
 import { getPublicEnvironment } from '@/config';
 

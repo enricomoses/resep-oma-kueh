@@ -1,15 +1,17 @@
 'use client';
-import { SITE_COPY } from '@/constants/site.constant';
-import { useBranches } from '@/hooks/use-branches';
-import { cn } from '@/utils';
+
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { FormField } from '@/components/ui/form-field';
 import { Select } from '@/components/ui/select';
+import { SITE_COPY } from '@/constants/site.constant';
+import { useBranches } from '@/hooks/use-branches';
+import { cn } from '@/utils';
 
 interface BranchSelectorProps {
   className?: string;
 }
+
 export function BranchSelector({ className }: BranchSelectorProps) {
   const state = useBranches();
   const message = state.isError
@@ -23,6 +25,7 @@ export function BranchSelector({ className }: BranchSelectorProps) {
           : !state.storageAvailable
             ? SITE_COPY.STORAGE_UNAVAILABLE
             : undefined;
+
   return (
     <div className={cn('branch-selector', className)}>
       <FormField

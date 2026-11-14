@@ -6,6 +6,7 @@ interface MediaPlaceholderProps {
   mark?: string;
   className?: string;
 }
+
 export function MediaPlaceholder({
   caption = FOUNDATION_COPY.MEDIA_CAPTION,
   mark = FOUNDATION_COPY.MEDIA_MARK,

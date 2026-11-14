@@ -1,5 +1,6 @@
 import { ArrowRight } from 'lucide-react';
-import { MenuProductCardMedia } from '@/components/catalog/menu-product-card-media';
+
+import { MenuProductCardMedia } from '@/components/common/commerce/menu-product-card-media';
 import { ActionLink } from '@/components/ui/action-link';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
@@ -8,9 +9,9 @@ import {
   CATALOG_AVAILABILITY_LABELS,
   CATALOG_COPY,
 } from '@/constants/catalog.constant';
-import { withBranch } from '@/utils/branch-url';
-import { cn, formatIdr } from '@/utils';
 import type { CatalogProductItem } from '@/types/catalog';
+import { cn, formatIdr } from '@/utils';
+import { withBranch } from '@/utils/branch-url';
 
 interface MenuProductCardProps {
   product: CatalogProductItem;

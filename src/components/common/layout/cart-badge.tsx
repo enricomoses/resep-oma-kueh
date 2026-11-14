@@ -1,13 +1,14 @@
 'use client';
 
-import Link from 'next/link';
 import { ShoppingBag } from 'lucide-react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+
 import { ROUTES } from '@/constants/routes.constant';
 import { BRANCH } from '@/constants/site.constant';
 import { useBranchContext } from '@/providers/branch-provider';
-import { withBranch } from '@/utils/branch-url';
 import { cn } from '@/utils';
+import { withBranch } from '@/utils/branch-url';
 
 interface CartBadgeProps {
   className?: string;

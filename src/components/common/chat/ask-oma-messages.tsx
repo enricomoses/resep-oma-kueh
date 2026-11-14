@@ -10,6 +10,7 @@ import type { ChatErrorState, ChatUiMessage } from '@/hooks/use-chat';
 import type { PublicBranch } from '@/types/branch';
 import { cn } from '@/utils';
 
+import { AskOmaQuickPrompts } from './ask-oma-quick-prompts';
 import { AskOmaRecommendations } from './ask-oma-recommendations';
 
 interface AskOmaMessagesProps {
@@ -53,19 +54,13 @@ export function AskOmaMessages({
       <div className="chat-bubble chat-bubble--assistant">
         <p className="chat-bubble-text">{CHAT_COPY.WELCOME}</p>
         {messages.length === 0 ? (
-          <div className="chat-quick-prompts" aria-label="Pertanyaan cepat">
-            {quickPrompts.map((prompt) => (
-              <button
-                key={prompt}
-                type="button"
-                className="chat-quick-chip"
-                disabled={isSending}
-                onClick={() => onSelectQuickPrompt(prompt)}
-              >
-                {prompt}
-              </button>
-            ))}
-          </div>
+          <AskOmaQuickPrompts
+            prompts={quickPrompts}
+            ariaLabel="Pertanyaan cepat"
+            keyPrefix="welcome"
+            disabled={isSending}
+            onSelect={onSelectQuickPrompt}
+          />
         ) : null}
       </div>
 
@@ -94,19 +89,13 @@ export function AskOmaMessages({
           {msg.role === 'assistant' &&
           msg.quickPrompts &&
           msg.quickPrompts.length > 0 ? (
-            <div className="chat-quick-prompts" aria-label="Saran lanjutan">
-              {msg.quickPrompts.map((prompt) => (
-                <button
-                  key={`${msg.id}-${prompt}`}
-                  type="button"
-                  className="chat-quick-chip"
-                  disabled={isSending}
-                  onClick={() => onSelectQuickPrompt(prompt)}
-                >
-                  {prompt}
-                </button>
-              ))}
-            </div>
+            <AskOmaQuickPrompts
+              prompts={msg.quickPrompts}
+              ariaLabel="Saran lanjutan"
+              keyPrefix={msg.id}
+              disabled={isSending}
+              onSelect={onSelectQuickPrompt}
+            />
           ) : null}
 
           {msg.role === 'assistant' && msg.notice ? (

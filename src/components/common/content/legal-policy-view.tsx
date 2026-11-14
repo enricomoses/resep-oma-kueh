@@ -1,7 +1,11 @@
 'use client';
+
+import { ErrorState } from '@/components/common/feedback/error-state';
+import { InfoCard } from '@/components/common/cards/info-card';
+import { PageHeader } from '@/components/common/layout/page-header';
+import { SectionHeader } from '@/components/common/layout/section-header';
 import { ActionLink } from '@/components/ui/action-link';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Feedback } from '@/components/ui/feedback';
 import { CONTENT_COPY, CONTENT_DEFAULTS } from '@/constants/content.constant';
@@ -9,9 +13,9 @@ import { ROUTES } from '@/constants/routes.constant';
 import { SITE_COPY } from '@/constants/site.constant';
 import { useBranches } from '@/hooks/use-branches';
 import { usePublicContent } from '@/hooks/use-content';
+import type { ContentInitial, PublicContentDirectory } from '@/types/content';
 import { cn } from '@/utils';
 import { withBranch } from '@/utils/branch-url';
-import type { ContentInitial, PublicContentDirectory } from '@/types/content';
 
 interface LegalPolicyViewProps {
   policyKey: 'legal.privacy' | 'legal.ordering_policy';
@@ -70,42 +74,36 @@ export function LegalPolicyView({
         className="content-container content-section"
         aria-labelledby="legal-hero-heading"
       >
-        <div className="content-header-block">
-          <div className="home-badge-row">
-            <Badge tone="accent">{eyebrow}</Badge>
-            <Badge tone={source === 'published' ? 'success' : 'neutral'}>
-              {source === 'published'
-                ? CONTENT_COPY.SOURCE_PUBLISHED_BADGE
-                : CONTENT_COPY.SOURCE_TEMPLATE_BADGE}
-            </Badge>
-          </div>
-          <h1 id="legal-hero-heading" className="editorial-display">
-            {title}
-          </h1>
-          {source === 'template' ? (
-            <Feedback title={CONTENT_COPY.SOURCE_TEMPLATE_BADGE}>
-              <p>{CONTENT_COPY.SOURCE_TEMPLATE_NOTE}</p>
-            </Feedback>
-          ) : null}
-        </div>
+        <PageHeader
+          titleId="legal-hero-heading"
+          title={title}
+          badges={
+            <>
+              <Badge tone="accent">{eyebrow}</Badge>
+              <Badge tone={source === 'published' ? 'success' : 'neutral'}>
+                {source === 'published'
+                  ? CONTENT_COPY.SOURCE_PUBLISHED_BADGE
+                  : CONTENT_COPY.SOURCE_TEMPLATE_BADGE}
+              </Badge>
+            </>
+          }
+          alert={
+            source === 'template' ? (
+              <Feedback title={CONTENT_COPY.SOURCE_TEMPLATE_BADGE}>
+                <p>{CONTENT_COPY.SOURCE_TEMPLATE_NOTE}</p>
+              </Feedback>
+            ) : null
+          }
+        />
 
         {isError ? (
-          <div className="content-error-block">
-            <Feedback
-              tone="error"
-              title={CONTENT_COPY.UPSTREAM_ERROR_TITLE}
-              announce
-            >
-              <p>{CONTENT_COPY.UPSTREAM_ERROR_BODY}</p>
-            </Feedback>
-            <Button
-              variant="secondary"
-              loading={isFetching}
-              onClick={() => void refetch()}
-            >
-              {CONTENT_COPY.RETRY_BUTTON}
-            </Button>
-          </div>
+          <ErrorState
+            title={CONTENT_COPY.UPSTREAM_ERROR_TITLE}
+            message={CONTENT_COPY.UPSTREAM_ERROR_BODY}
+            onRetry={() => void refetch()}
+            retryLabel={CONTENT_COPY.RETRY_BUTTON}
+            isRetrying={isFetching}
+          />
         ) : null}
 
         <Card className="content-legal-card">
@@ -121,19 +119,16 @@ export function LegalPolicyView({
         className="content-container content-section"
         aria-labelledby="legal-facts-heading"
       >
-        <div className="home-section-header">
-          <div>
-            <h2 id="legal-facts-heading" className="editorial-heading">
-              {factsHeading}
-            </h2>
-          </div>
-        </div>
+        <SectionHeader titleId="legal-facts-heading" title={factsHeading} />
         <div className="content-values-grid">
           {facts.map((fact) => (
-            <Card key={fact.id} tone="cream" className="content-value-card">
-              <h3>{fact.title}</h3>
-              <p>{fact.detail}</p>
-            </Card>
+            <InfoCard
+              key={fact.id}
+              tone="cream"
+              className="content-value-card"
+              title={fact.title}
+              description={fact.detail}
+            />
           ))}
         </div>
 

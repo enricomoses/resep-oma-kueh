@@ -1,10 +1,11 @@
 'use client';
+
+import { ActionLink } from '@/components/ui/action-link';
 import { APP } from '@/constants';
 import { SITE_COPY, SITE_HELP } from '@/constants/site.constant';
 import { useBranches } from '@/hooks/use-branches';
-import { withBranch } from '@/utils/branch-url';
 import { cn } from '@/utils';
-import { ActionLink } from '@/components/ui/action-link';
+import { withBranch } from '@/utils/branch-url';
 
 interface ContactDetails {
   email: string;
@@ -16,12 +17,14 @@ interface ContactDetails {
     address: string | null;
   }[];
 }
+
 interface SiteFooterProps {
   contacts: ContactDetails;
   initialUnavailable: boolean;
   footerNote?: string | null;
   className?: string;
 }
+
 export function SiteFooter({
   contacts,
   initialUnavailable,
@@ -49,6 +52,7 @@ export function SiteFooter({
       contacts.branches.some(
         (branch) => !items.some((item) => item.code === branch.code),
       ));
+
   return (
     <footer className={cn('site-footer', className)}>
       <div className="content-container">
