@@ -17,10 +17,10 @@ import {
   vi,
 } from 'vitest';
 
-import { AdminCategoriesView } from '@/components/admin/admin-categories-view';
-import { AdminOverviewView } from '@/components/admin/admin-overview-view';
-import { AdminProductsView } from '@/components/admin/admin-products-view';
-import { AdminShell } from '@/components/admin/admin-shell';
+import { AdminCategoriesView } from '@/app/admin/(dashboard)/categories/_components/admin-categories-view';
+import { AdminOverviewView } from '@/app/admin/(dashboard)/_components/admin-overview-view';
+import { AdminProductsView } from '@/app/admin/(dashboard)/products/_components/admin-products-view';
+import { AdminShell } from '@/app/admin/(dashboard)/_components/admin-shell';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { QUERY_KEYS } from '@/constants/query-keys.constant';
 import { ROUTES } from '@/constants/routes.constant';

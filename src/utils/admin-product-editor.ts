@@ -6,8 +6,10 @@ import {
 import { computeVariantEffectivePrice } from '@/utils/catalog-pricing';
 import type {
   AdminCategoryItem,
+  AdminProductEditorAggregate,
   AdminReferenceComponentVariant,
   AdminReferenceDietaryTag,
+  ProductEditorFormState,
   SaveProductConfigurationInput,
 } from '@/types/admin-catalog';
 import type { CatalogProductItem } from '@/types/catalog';
@@ -629,4 +631,63 @@ export function buildPublicPreviewProductDto(params: {
       verifiedDietaryTags: Array.from(verifiedTagsMap.values()),
     },
   };
+}
+
+export function toProductEditorFormState(
+  aggregate: AdminProductEditorAggregate,
+): ProductEditorFormState {
+  return {
+    expectedUpdatedAt: aggregate.product.updatedAt,
+    name: aggregate.product.name,
+    productType: aggregate.product.productType,
+    status: aggregate.product.status,
+    shortDescription: aggregate.product.shortDescription ?? '',
+    description: aggregate.product.description ?? '',
+    ingredientsInfo: aggregate.product.ingredientsInfo ?? '',
+    storageInstructions: aggregate.product.storageInstructions ?? '',
+    sortOrder: String(aggregate.product.sortOrder),
+    needsOwnerReview: aggregate.product.needsOwnerReview,
+    isFeatured: aggregate.product.isFeatured,
+    isBestSeller: aggregate.product.isBestSeller,
+    isNew: aggregate.product.isNew,
+    categories: aggregate.categories,
+    variants: aggregate.variants.map((v) => ({
+      id: v.id,
+      sku: v.sku,
+      name: v.name,
+      sizeLabel: v.sizeLabel,
+      basePriceIdr: v.basePriceIdr,
+      status: v.status,
+      sortOrder: v.sortOrder,
+      maxQuantityPerOrder: v.maxQuantityPerOrder,
+      isDefault: v.isDefault,
+      bundleRecipe: v.bundleRecipe,
+      bundleUnitsTotal: v.bundleUnitsTotal,
+      bundleRulesVerified: v.bundleRulesVerified,
+      fixedComponents: v.fixedComponents,
+      optionGroups: v.optionGroups,
+      dietaryTags: v.dietaryTags,
+      allergens: v.allergens,
+    })),
+    images: aggregate.images.map((img) => ({
+      id: img.id,
+      variantId: img.variantId,
+      storageBucket: img.storageBucket,
+      storagePath: img.storagePath,
+      altText: img.altText,
+      isApproved: img.isApproved,
+      isPrimary: img.isPrimary,
+      sortOrder: img.sortOrder,
+    })),
+  };
+}
+
+export function buildInitialProductPreviewUrls(
+  aggregate: AdminProductEditorAggregate,
+): Record<string, string | null> {
+  const map: Record<string, string | null> = {};
+  for (const img of aggregate.images) {
+    map[img.id] = img.previewUrl;
+  }
+  return map;
 }

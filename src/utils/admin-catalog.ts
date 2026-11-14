@@ -1,5 +1,9 @@
 import { ADMIN_CATALOG_LIMITS } from '@/constants/admin-catalog.constant';
 import { ROUTES } from '@/constants/routes.constant';
+import type {
+  AdminProductItem,
+  ProductDialogFormState,
+} from '@/types/admin-catalog';
 
 /**
  * Normalizes human-entered names into deterministic URL-safe slugs without touching DB state.
@@ -89,4 +93,52 @@ export function escapeLiteralSearchPattern(query: string): string {
 
 export function buildAdminProductEditRoute(productId: string): string {
   return `${ROUTES.ADMIN_PRODUCTS}/${encodeURIComponent(productId)}/edit`;
+}
+
+export function createInitialProductDialogForm(): ProductDialogFormState {
+  return {
+    mode: 'create',
+    id: null,
+    name: '',
+    slug: '',
+    slugTouched: false,
+    productType: 'simple',
+    status: 'draft',
+    shortDescription: '',
+    description: '',
+    ingredientsInfo: '',
+    storageInstructions: '',
+    sortOrder: '0',
+    needsOwnerReview: true,
+    isFeatured: false,
+    isBestSeller: false,
+    isNew: false,
+    expectedUpdatedAt: null,
+    readiness: null,
+  };
+}
+
+export function productItemToDialogForm(
+  product: AdminProductItem,
+): ProductDialogFormState {
+  return {
+    mode: 'edit',
+    id: product.id,
+    name: product.name,
+    slug: product.slug,
+    slugTouched: true,
+    productType: product.productType,
+    status: product.status,
+    shortDescription: product.shortDescription ?? '',
+    description: product.description ?? '',
+    ingredientsInfo: product.ingredientsInfo ?? '',
+    storageInstructions: product.storageInstructions ?? '',
+    sortOrder: String(product.sortOrder),
+    needsOwnerReview: product.needsOwnerReview,
+    isFeatured: product.isFeatured,
+    isBestSeller: product.isBestSeller,
+    isNew: product.isNew,
+    expectedUpdatedAt: product.updatedAt,
+    readiness: product.readiness,
+  };
 }

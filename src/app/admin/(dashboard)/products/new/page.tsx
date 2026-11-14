@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
 
-import { AdminForbiddenPanel } from '@/components/admin/admin-forbidden-panel';
-import { AdminProductCreateView } from '@/components/admin/admin-product-create-view';
+import { AdminForbiddenPanel } from '../../_components/admin-forbidden-panel';
+import { AdminProductCreateView } from './_components/admin-product-create-view';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { requireAdminSession } from '@/features/auth/admin-guard.server';

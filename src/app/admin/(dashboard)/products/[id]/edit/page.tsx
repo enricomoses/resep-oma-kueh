@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { connection } from 'next/server';
 
-import { AdminForbiddenPanel } from '@/components/admin/admin-forbidden-panel';
-import { AdminProductEditorView } from '@/components/admin/admin-product-editor-view';
+import { AdminForbiddenPanel } from '../../../_components/admin-forbidden-panel';
+import { AdminProductEditorView } from './_components/admin-product-editor-view';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { getAdminProductEditorAggregate } from '@/features/admin-catalog/configuration.server';
 import { AdminCatalogNotFoundError } from '@/features/admin-catalog/errors.server';

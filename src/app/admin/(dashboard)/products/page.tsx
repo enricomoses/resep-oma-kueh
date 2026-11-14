@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
 
-import { AdminForbiddenPanel } from '@/components/admin/admin-forbidden-panel';
-import { AdminProductsView } from '@/components/admin/admin-products-view';
+import { AdminForbiddenPanel } from '../_components/admin-forbidden-panel';
+import { AdminProductsView } from './_components/admin-products-view';
 import {
   ADMIN_CATALOG_COPY,
   ADMIN_CATALOG_LIMITS,

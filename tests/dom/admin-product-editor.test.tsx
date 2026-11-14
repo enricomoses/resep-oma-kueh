@@ -9,7 +9,7 @@ import {
 import type { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { AdminProductEditorView } from '@/components/admin/admin-product-editor-view';
+import { AdminProductEditorView } from '@/app/admin/(dashboard)/products/[id]/edit/_components/admin-product-editor-view';
 import { ApiClientError } from '@/lib/errors';
 import type { AdminProductEditorAggregate } from '@/types/admin-catalog';
 import type { AdminSessionProfile } from '@/types/auth';

@@ -149,3 +149,56 @@ export type AdminBulkAvailabilityItemResult = z.infer<
 export type AdminBulkAvailabilityResponse = z.infer<
   typeof adminBulkAvailabilityResponseSchema
 >;
+
+export interface ProductDialogFormState {
+  mode: 'create' | 'edit';
+  id: string | null;
+  name: string;
+  slug: string;
+  slugTouched: boolean;
+  productType: AdminProductType;
+  status: AdminCatalogStatus;
+  shortDescription: string;
+  description: string;
+  ingredientsInfo: string;
+  storageInstructions: string;
+  sortOrder: string;
+  needsOwnerReview: boolean;
+  isFeatured: boolean;
+  isBestSeller: boolean;
+  isNew: boolean;
+  expectedUpdatedAt: string | null;
+  readiness: AdminProductItem['readiness'] | null;
+}
+
+export interface ProductEditorFormState {
+  expectedUpdatedAt: string;
+  name: string;
+  productType: AdminProductType;
+  status: AdminCatalogStatus;
+  shortDescription: string;
+  description: string;
+  ingredientsInfo: string;
+  storageInstructions: string;
+  sortOrder: string;
+  needsOwnerReview: boolean;
+  isFeatured: boolean;
+  isBestSeller: boolean;
+  isNew: boolean;
+  categories: AdminConfigCategory[];
+  variants: AdminConfigVariant[];
+  images: AdminConfigImage[];
+}
+
+export interface CategoryFormState {
+  mode: 'create' | 'edit';
+  id: string | null;
+  name: string;
+  slug: string;
+  slugTouched: boolean;
+  parentId: string;
+  description: string;
+  sortOrder: string;
+  status: AdminCatalogStatus;
+  expectedUpdatedAt: string | null;
+}
