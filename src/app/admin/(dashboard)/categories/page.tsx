@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
 
-import { AdminCategoriesView } from '@/components/admin/admin-categories-view';
-import { AdminForbiddenPanel } from '@/components/admin/admin-forbidden-panel';
+import { AdminCategoriesView } from './_components/admin-categories-view';
+import { AdminForbiddenPanel } from '../_components/admin-forbidden-panel';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { listAdminCategories } from '@/features/admin-catalog/service.server';
