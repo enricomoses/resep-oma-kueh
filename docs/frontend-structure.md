@@ -36,9 +36,9 @@ src/
 │   └── common/            # Komponen gabungan/bisnis/layout bersama lintas halaman & modul
 ├── config/                # Konfigurasi environment client & server (`server-only`)
 ├── constants/             # Nilai konstan, route, endpoint API, query keys, copy, limit
-├── features/              # Domain & repository server-only (RSC & BFF Route Handlers)
-├── hooks/                 # Custom React hooks (TanStack Query, controller view/form, & helper mutasi)
-├── lib/                   # Transport Axios (`lib/axios/`), Supabase SSR/public-read, logger, error
+├── features/              # Domain & repository server-only (`*.server.ts` untuk RSC & BFF Route Handlers)
+├── hooks/                 # Custom React hooks (`use-*.ts`: TanStack Query & controller view/form)
+├── lib/                   # Transport Axios (`lib/axios/`), Supabase SSR/public-read, logger, error parser (`errors.ts`)
 ├── providers/             # React Context Providers (`ReactQueryProvider`, `BranchProvider`)
 ├── services/              # Layer komunikasi HTTP client ke BFF Route Handlers (`*.service.ts`)
 ├── stores/                # Global client state (Zustand: `branch.store.ts`, `cart.store.ts`)

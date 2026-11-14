@@ -1160,26 +1160,23 @@ resep-oma-kueh/
 ├── supabase/
 │   ├── config.toml
 │   ├── migrations/
-│   │   ├── <timestamp>_core_catalog.sql
-│   │   ├── <timestamp>_offers_and_options.sql
-│   │   ├── <timestamp>_promotions_classes_content.sql
-│   │   ├── <timestamp>_rls_grants_and_functions.sql
-│   │   └── <timestamp>_storage_policies.sql
+│   │   ├── 20261112000100_core_catalog_classes_cms.sql
+│   │   ├── 20261112000200_rls_grants_and_storage.sql
+│   │   └── 20261112000300_admin_catalog_write_rpcs.sql
 │   ├── seed.sql                          # deterministic LOCAL dev fixture
-│   ├── seeds/
-│   │   ├── reference-catalog.ts           # typed curated initial values
-│   │   └── production-reviewed.ts        # explicitly owner-reviewed ONLY
 │   └── tests/
-│       ├── permissions.sql
-│       └── constraints.sql
+│       ├── 01_schema_constraints.test.sql
+│       ├── 02_rls_and_grants.test.sql
+│       └── 03_seed_contract.test.sql
 ├── scripts/
-│   ├── seed-reference.ts                 # controlled idempotent remote seeding
-│   ├── verify-seed.ts
-│   └── verify-assets.ts
+│   ├── db-local-verify.mjs
+│   ├── run-next-with-env.mjs
+│   ├── seed-local.mjs                    # controlled idempotent local seeding
+│   ├── smoke-f26.mjs
+│   ├── test-eslint-boundaries.mjs
+│   └── verify-seed.mjs
 ├── public/
-│   ├── brand/                            # explicitly approved logo/maskot
-│   ├── icons/
-│   └── placeholders/                     # illustrative ONLY, hide at production
+│   └── brand/                            # explicitly approved logo/maskot
 ├── src/
 │   ├── app/
 │   │   ├── layout.tsx                    # root server layout/fonts/providers
@@ -1365,58 +1362,52 @@ resep-oma-kueh/
 │   │       ├── media-placeholder.tsx
 │   │       └── structured-data-script.tsx
 │   ├── config/
-│   │   ├── index.ts                     # safe browser config only
-│   │   ├── environment.client.ts
-│   │   ├── environment.server.ts        # server-only; direct import
-│   │   ├── fonts.ts
-│   │   └── seo.ts
+│   │   ├── environment.client.ts        # safe browser env validation
+│   │   └── environment.server.ts        # server-only; direct import
 │   ├── constants/
 │   │   ├── index.ts
+│   │   ├── admin-catalog.constant.ts
+│   │   ├── admin.constant.ts
 │   │   ├── app.constant.ts
-│   │   ├── routes.constant.ts
-│   │   ├── endpoint.constant.ts
-│   │   ├── query-keys.constant.ts
-│   │   ├── catalog.constant.ts
+│   │   ├── auth.constant.ts
 │   │   ├── cart.constant.ts
+│   │   ├── catalog.constant.ts
+│   │   ├── chat.constant.ts
 │   │   ├── checkout.constant.ts
-│   │   ├── class.constant.ts
-│   │   ├── chatbot.constant.ts
-│   │   └── validation.constant.ts
-│   ├── features/                     # SERVER DOMAIN / BUSINESS LAYER
-│   │   ├── auth/
-│   │   │   ├── admin-guard.server.ts
-│   │   │   └── auth.service.server.ts
-│   │   ├── catalog/
-│   │   │   ├── repository.server.ts
-│   │   │   ├── service.server.ts
-│   │   │   └── pricing.server.ts
-│   │   ├── cart/
-│   │   │   └── cart-rules.ts           # pure shared calculator rules only
-│   │   ├── checkout/
-│   │   │   ├── service.server.ts
-│   │   │   └── whatsapp-template.server.ts
-│   │   ├── promotions/{repository.server.ts,service.server.ts}
-│   │   ├── classes/{repository.server.ts,service.server.ts}
-│   │   ├── content/{repository.server.ts,service.server.ts}
-│   │   ├── admin/{service.server.ts,authorization.server.ts}
-│   │   └── ai/
-│   │       ├── instance.server.ts     # only when LLM enabled
-│   │       ├── retrieval.server.ts    # MUST use anonymous read client
-│   │       ├── planner.server.ts      # fixed allowlist
-│   │       ├── prompts.server.ts
-│   │       ├── chat.server.ts
-│   │       └── response-policy.server.ts
-│   ├── hooks/                         # TanStack Query + controller view/form + mutation error helper
-│   │   ├── admin-mutation-error.ts
+│   │   ├── classes.constant.ts
+│   │   ├── contacts.constant.ts
+│   │   ├── content.constant.ts
+│   │   ├── endpoint.constant.ts
+│   │   ├── home.constant.ts
+│   │   ├── promotion.constant.ts
+│   │   ├── query-keys.constant.ts
+│   │   ├── routes.constant.ts
+│   │   ├── site.constant.ts
+│   │   └── ui.constant.ts
+│   ├── features/                     # SERVER DOMAIN / BUSINESS LAYER (100% *.server.ts)
+│   │   ├── admin/{overview.server.ts}
+│   │   ├── admin-catalog/{branches,categories,classes,cms-content,cms-faqs,cms-testimonials,errors,http,media,offers,products,promotions,repository,service}.server.ts
+│   │   ├── auth/{errors,guard,rate-limit,repository,service}.server.ts
+│   │   ├── branches/{repository,service}.server.ts
+│   │   ├── cart/{repository,service}.server.ts
+│   │   ├── catalog/{repository,service}.server.ts
+│   │   ├── chat/{client,errors,gemini,planner,rate-limit,retrieval,service}.server.ts
+│   │   ├── checkout/{errors,fingerprint,rate-limit,service}.server.ts
+│   │   ├── classes/{errors,rate-limit,repository,service}.server.ts
+│   │   ├── content/{repository,service}.server.ts
+│   │   ├── health/service.server.ts
+│   │   ├── home/{repository,service}.server.ts
+│   │   └── promotions/{repository,service}.server.ts
+│   ├── hooks/                         # TanStack Query + controller view/form (100% use-*.ts)
 │   │   ├── use-{branches,cart,catalog,chat,checkout,classes,content,promotions}.ts
 │   │   ├── use-{menu-filters,checkout-flow,class-registration-flow,product-configurator}.ts
-│   │   ├── use-admin-{auth,catalog,classes,cms,login-flow}.ts
+│   │   ├── use-admin-{auth,catalog,classes,cms,login-flow,product-create}.ts
 │   │   └── use-admin-*-manager.ts     # controller hooks (classes, products, editor, promotions, categories, availability, testimonials, faqs, content, locations)
 │   ├── lib/
 │   │   ├── axios/{index.ts,instance.ts,response-handler.ts}
 │   │   ├── supabase/{client.ts,no-store-fetch.ts,proxy.ts,public-read.server.ts,server.ts}
 │   │   ├── {errors.ts,logger.server.ts,query-client.ts,request-body.server.ts,response.server.ts}
-│   ├── providers/{index.ts,branch-provider.tsx,react-query-provider.tsx}
+│   ├── providers/{branch-provider.tsx,react-query-provider.tsx}
 │   ├── services/                     # BROWSER/CLIENT SAFE ONLY (impor langsung per file)
 │   │   └── {admin-catalog,admin-classes,admin-cms,auth,branches,cart,catalog,chat,checkout,classes,content,promotion}.service.ts
 │   ├── stores/{branch.store.ts,cart.store.ts}
@@ -1425,12 +1416,14 @@ resep-oma-kueh/
 │   │   ├── database.ts                # SUPABASE CLI-GENERATED: DO NOT EDIT
 │   │   └── {admin-catalog,admin-cms,api,auth,branch,cart,catalog,chat,checkout,classes,content,home,promotion}.ts
 │   ├── utils/{index.ts,cn.ts,currency.ts,admin-*.ts,auth-redirect.ts,branch-url.ts,bundle.ts,catalog-pricing.ts,chat.ts,checkout.ts,classes.ts,security-headers.ts,seo.ts,structured-data.ts}
-│   └── validations/{admin-catalog,admin-cms,api,auth,branch,cart,catalog,chat,checkout,classes,content,env,health,home,promotion}.schema.ts
+│   ├── validations/{admin-catalog,admin-cms,api,auth,branch,cart,catalog,chat,checkout,classes,content,env,health,home,promotion}.schema.ts
 │   └── proxy.ts                       # Next 16 proxy; NO middleware.ts
 ├── tests/
-│   ├── unit/{pricing,cart,bundle,promotions,chat-policy}.test.ts
-│   ├── integration/{catalog,rls,admin,checkout,chat-read-only}.test.ts
-│   └── e2e/{shop-flow,admin-flow,classes-flow}.spec.ts
+│   ├── unit/*.test.ts
+│   ├── dom/*.test.tsx
+│   ├── server/*.test.ts
+│   ├── e2e/*.spec.ts
+│   └── fixtures/local-seed.manifest.json
 ├── .github/workflows/ci.yml
 ├── .env.example
 ├── .env.local                         # gitignored
@@ -1467,7 +1460,7 @@ resep-oma-kueh/
 | `_components/*.tsx`      | route-local atomic UI/section components (murni `.tsx`)                                                               | cross-module reuse, non-UI helper `.ts`, Axios/Supabase |
 | `components/ui`          | reusable visual primitives (incl. form controls)                                                                      | business knowledge, query, secrets                      |
 | `components/common`      | shared layout/blocks lintas 2+ routes (`branch/`, `cards/`, `chat/`, `commerce/`, `content/`, `feedback/`, `layout/`) | route-specific copy/state coupling                      |
-| `hooks`                  | TanStack query/mutation, controller view/form (`use-*-manager.ts`), error helpers                                     | import `@/hooks` barrel, direct Axios/Supabase          |
+| `hooks`                  | TanStack query/mutation & controller view/form (`use-*.ts`)                                                           | import `@/hooks` barrel, non-hook helpers, Axios/SDK    |
 | `services`               | browser HTTP typed client                                                                                             | import React components, server-only                    |
 | `features/*.server.ts`   | domain read/write rules, auth, price                                                                                  | React hooks, browser globals                            |
 | `lib/supabase`           | infrastructure SDK/session                                                                                            | domain price logic                                      |
