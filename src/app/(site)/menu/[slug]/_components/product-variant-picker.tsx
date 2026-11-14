@@ -1,4 +1,5 @@
 import { Info } from 'lucide-react';
+import { PriceDisplay } from '@/components/common/commerce/price-display';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -8,7 +9,6 @@ import {
   CATALOG_COPY,
   PRODUCT_DETAIL_COPY,
 } from '@/constants/catalog.constant';
-import { formatIdr } from '@/features/catalog/pricing';
 import { useProductConfigurator } from '@/hooks/use-product-configurator';
 import type {
   BundleBreakdownItem,
@@ -16,7 +16,7 @@ import type {
   ProductDetail,
   ProductDetailVariant,
 } from '@/types/catalog';
-import { cn } from '@/utils';
+import { cn, formatIdr } from '@/utils';
 import { BundleCustomizer } from './bundle-customizer';
 import { ProductPreparedFeedback } from './product-prepared-feedback';
 
@@ -192,16 +192,15 @@ export function ProductVariantPicker({
               <span className="text-muted-foreground block text-xs">
                 {PRODUCT_DETAIL_COPY.PRICE_UNIT_LABEL}
               </span>
-              <div className="mt-0.5 flex items-baseline gap-2">
-                <span className="text-burgundy font-serif text-2xl font-bold">
-                  {formatIdr(currentUnitPriceIdr)}
-                </span>
-                {hasPromoDiscount ? (
-                  <span className="text-muted-foreground text-sm line-through">
-                    {formatIdr(selectedVariant.unitGrossIdr)}
-                  </span>
-                ) : null}
-              </div>
+              <PriceDisplay
+                className="mt-0.5"
+                effectivePriceIdr={currentUnitPriceIdr}
+                grossPriceIdr={
+                  hasPromoDiscount ? selectedVariant.unitGrossIdr : null
+                }
+                priceClassName="text-2xl"
+                grossClassName="text-muted-foreground text-sm"
+              />
             </div>
 
             <div className="flex flex-col items-end gap-1">

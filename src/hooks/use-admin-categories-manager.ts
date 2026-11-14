@@ -3,7 +3,7 @@
 import { type FormEvent, useState } from 'react';
 
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
-import { ApiClientError } from '@/lib/errors';
+import { ApiClientError, extractAdminMutationError } from '@/lib/errors';
 import type {
   AdminCategoryItem,
   AdminCategoryListResponse,
@@ -19,7 +19,6 @@ import {
   updateAdminCategorySchema,
 } from '@/validations/admin-catalog.schema';
 
-import { extractAdminMutationError } from './admin-mutation-error';
 import {
   useAdminCategories,
   useArchiveAdminCategory,

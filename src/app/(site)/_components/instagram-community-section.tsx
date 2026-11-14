@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 import { MediaPlaceholder } from '@/components/common/media-placeholder';
 import { SectionHeader } from '@/components/common/layout/section-header';
-import { buttonStyles } from '@/components/ui/button.styles';
+import { buttonStyles } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { HOME_COPY, HOME_SECTION_IDS } from '@/constants/home.constant';
 import { cn } from '@/utils';

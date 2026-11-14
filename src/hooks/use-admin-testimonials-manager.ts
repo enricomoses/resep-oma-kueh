@@ -2,6 +2,7 @@
 
 import { type FormEvent, useMemo, useState } from 'react';
 
+import { extractAdminMutationError } from '@/lib/errors';
 import type { AdminSessionProfile } from '@/types/auth';
 import type {
   AdminTestimonialItem,
@@ -9,7 +10,6 @@ import type {
   TestimonialFormState,
 } from '@/types/admin-cms';
 
-import { extractAdminMutationError } from './admin-mutation-error';
 import {
   useAdminTestimonials,
   useArchiveAdminTestimonial,

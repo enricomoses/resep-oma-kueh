@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { type FormEvent, useState } from 'react';
 
+import { extractAdminMutationError } from '@/lib/errors';
 import type { AdminProductType } from '@/types/admin-catalog';
 import {
   buildAdminProductEditRoute,
@@ -10,7 +11,6 @@ import {
 } from '@/utils/admin-catalog';
 import { createAdminProductSchema } from '@/validations/admin-catalog.schema';
 
-import { extractAdminMutationError } from './admin-mutation-error';
 import { useCreateAdminProduct } from './use-admin-catalog';
 
 export interface ProductCreateFormState {

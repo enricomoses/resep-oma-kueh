@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 
+import { extractAdminMutationError } from '@/lib/errors';
 import type {
   AdminCmsContentStatus,
   AdminCmsListResponse,
@@ -14,7 +15,6 @@ import {
   entryToFormState,
 } from '@/utils/admin-cms';
 
-import { extractAdminMutationError } from './admin-mutation-error';
 import { useUploadAdminProductMedia } from './use-admin-catalog';
 import { useAdminCmsEntries, useSaveAdminCmsEntry } from './use-admin-cms';
 

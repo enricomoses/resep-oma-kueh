@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import { ADMIN_BRANCH_LIMITS } from '@/constants/admin-catalog.constant';
-import { ApiClientError } from '@/lib/errors';
+import { ApiClientError, extractAdminMutationError } from '@/lib/errors';
 import type {
   AdminAvailabilityListResponse,
   AdminAvailabilityOfferItem,
@@ -13,7 +13,6 @@ import type {
 } from '@/types/admin-catalog';
 import type { AdminSessionProfile } from '@/types/auth';
 
-import { extractAdminMutationError } from './admin-mutation-error';
 import {
   useAdminAvailability,
   useBulkUpdateAdminAvailability,

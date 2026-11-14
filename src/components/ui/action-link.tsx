@@ -3,8 +3,8 @@ import type { ComponentProps } from 'react';
 
 import { cn } from '@/utils';
 
-import { buttonStyles } from './button.styles';
-import type { ButtonSize, ButtonVariant } from './button.styles';
+import { buttonStyles } from './button';
+import type { ButtonSize, ButtonVariant } from './button';
 
 interface ActionLinkProps extends ComponentProps<typeof Link> {
   variant?: ButtonVariant | 'text';

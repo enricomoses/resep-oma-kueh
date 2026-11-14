@@ -6,20 +6,18 @@ import { EmptyState } from '@/components/common/feedback/empty-state';
 import { PageHeader } from '@/components/common/layout/page-header';
 import { ActionLink } from '@/components/ui/action-link';
 import { Badge } from '@/components/ui/badge';
+import { buttonStyles } from '@/components/ui/button';
 import { Feedback } from '@/components/ui/feedback';
 import { CLASSES_COPY } from '@/constants/classes.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { SITE_COPY } from '@/constants/site.constant';
 import { useBranches } from '@/hooks/use-branches';
 import { usePublicClasses } from '@/hooks/use-classes';
-import type { PublicClassesListData } from '@/types/classes';
+import type { InitialPublicClasses } from '@/types/classes';
 import { cn } from '@/utils';
 import { withBranch } from '@/utils/branch-url';
 import { buildAskNextClassWhatsAppUrl } from '@/utils/classes';
 import { ClassProgramCard } from './class-program-card';
-
-export type InitialPublicClasses =
-  { status: 'success'; data: PublicClassesListData } | { status: 'error' };
 
 interface ClassesViewProps {
   initial: InitialPublicClasses;
@@ -97,7 +95,7 @@ export function ClassesView({ initial, className }: ClassesViewProps) {
                   )}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--brand-burgundy)] px-5 py-2.5 text-sm font-medium text-white"
+                  className={buttonStyles('primary', 'md')}
                 >
                   <MessageCircle size={16} aria-hidden="true" />
                   {CLASSES_COPY.ASK_NEXT_CLASS_CTA}

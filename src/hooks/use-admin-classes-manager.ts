@@ -3,7 +3,6 @@
 import { type FormEvent, useMemo, useState } from 'react';
 
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
-import { extractAdminMutationError } from '@/hooks/admin-mutation-error';
 import { useUploadAdminProductMedia } from '@/hooks/use-admin-catalog';
 import {
   useAdminClassPrograms,
@@ -15,6 +14,7 @@ import {
   useUpdateAdminClassProgram,
   useUpdateAdminClassSession,
 } from '@/hooks/use-admin-classes';
+import { extractAdminMutationError } from '@/lib/errors';
 import type { AdminSessionProfile } from '@/types/auth';
 import type {
   AdminClassBranchOption,

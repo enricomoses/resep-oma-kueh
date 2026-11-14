@@ -2,9 +2,23 @@ import { LoaderCircle } from 'lucide-react';
 import type { ComponentPropsWithRef } from 'react';
 
 import { UI_COPY } from '@/constants/ui.constant';
+import { cn } from '@/utils';
 
-import { buttonStyles } from './button.styles';
-import type { ButtonSize, ButtonVariant } from './button.styles';
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost';
+export type ButtonSize = 'sm' | 'md' | 'lg';
+
+export function buttonStyles(
+  variant: ButtonVariant = 'primary',
+  size: ButtonSize = 'md',
+  className?: string,
+) {
+  return cn(
+    'ui-button',
+    `ui-button--${variant}`,
+    size !== 'md' && `ui-button--${size}`,
+    className,
+  );
+}
 
 interface ButtonProps extends ComponentPropsWithRef<'button'> {
   variant?: ButtonVariant;

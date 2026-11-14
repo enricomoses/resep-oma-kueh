@@ -3,7 +3,6 @@
 import { type FormEvent, useEffect, useState } from 'react';
 
 import { ADMIN_CATALOG_LIMITS } from '@/constants/admin-catalog.constant';
-import { extractAdminMutationError } from '@/hooks/admin-mutation-error';
 import {
   useAdminCategories,
   useAdminProductDetail,
@@ -12,6 +11,7 @@ import {
   useCreateAdminProduct,
   useUpdateAdminProduct,
 } from '@/hooks/use-admin-catalog';
+import { extractAdminMutationError } from '@/lib/errors';
 import type {
   AdminCatalogStatus,
   AdminCategoryListResponse,

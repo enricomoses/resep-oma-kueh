@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 
+import { extractAdminMutationError } from '@/lib/errors';
 import type { AdminSessionProfile } from '@/types/auth';
 import type {
   AdminPromotionItem,
@@ -17,7 +18,6 @@ import {
   mapPromotionItemToForm,
 } from '@/utils/admin-promotions';
 
-import { extractAdminMutationError } from './admin-mutation-error';
 import {
   useAdminPromotions,
   useArchiveAdminPromotion,

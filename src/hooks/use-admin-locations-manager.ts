@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import { extractAdminMutationError } from '@/lib/errors';
 import type {
   AdminBranchesResponse,
   ReplaceBranchHoursInput,
@@ -9,7 +10,6 @@ import type {
 } from '@/types/admin-catalog';
 import type { AdminSessionProfile } from '@/types/auth';
 
-import { extractAdminMutationError } from './admin-mutation-error';
 import {
   useAdminBranches,
   useReplaceAdminBranchHours,

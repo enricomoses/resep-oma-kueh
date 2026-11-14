@@ -2,6 +2,7 @@
 
 import { type FormEvent, useMemo, useState } from 'react';
 
+import { extractAdminMutationError } from '@/lib/errors';
 import type {
   AdminCatalogStatus,
   AdminConfigImage,
@@ -18,7 +19,6 @@ import {
   validateProductConfiguration,
 } from '@/utils/admin-product-editor';
 
-import { extractAdminMutationError } from './admin-mutation-error';
 import {
   useAdminProductEditor,
   useSaveAdminProductConfiguration,
