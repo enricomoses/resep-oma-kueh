@@ -446,3 +446,22 @@ export const adminClassSessionsDataSchema = z
 export const adminClassSessionMutationDataSchema = z
   .object({ item: adminClassSessionItemSchema })
   .strict();
+
+export const classRegistrationFormSchema = z.object({
+  sessionId: z.uuid('Pilih sesi kelas yang tersedia.'),
+  attendeeCount: z
+    .number()
+    .int()
+    .min(1, 'Minimal 1 peserta.')
+    .max(CLASSES_LIMITS.MAX_ATTENDEES_PER_REGISTRATION),
+  adultContactName: z
+    .string()
+    .trim()
+    .max(CLASSES_LIMITS.MAX_ADULT_CONTACT_NAME_LENGTH)
+    .refine((val) => !UNSAFE_MARKUP_REGEX.test(val), {
+      message: 'Nama kontak tidak boleh mengandung tag HTML atau script.',
+    }),
+  manualConfirmed: z.boolean().refine((val) => val === true, {
+    message: 'Centang konfirmasi alur WhatsApp manual sebelum melanjutkan.',
+  }),
+});

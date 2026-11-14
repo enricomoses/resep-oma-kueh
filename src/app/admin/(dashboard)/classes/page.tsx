@@ -1,10 +1,8 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
 
-import {
-  type AdminClassBranchOption,
-  AdminClassesView,
-} from '@/components/admin/admin-classes-view';
+import { AdminClassesView } from './_components/admin-classes-view';
+import type { AdminClassBranchOption } from '@/types/classes';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { listAdminBranches } from '@/features/admin-catalog/branches.server';

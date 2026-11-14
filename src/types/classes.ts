@@ -7,6 +7,7 @@ import type {
   adminClassSessionItemSchema,
   adminClassSessionsDataSchema,
   classProgramStatusSchema,
+  classRegistrationFormSchema,
   classSessionStatusSchema,
   classUnavailableReasonSchema,
   createAdminClassProgramInputSchema,
@@ -61,4 +62,57 @@ export type UpdateAdminClassSessionInput = z.infer<
 >;
 export type AdminClassArchiveInput = z.infer<
   typeof adminClassArchiveInputSchema
+>;
+
+export interface AdminClassBranchOption {
+  id: string;
+  code: string;
+  name: string;
+  city: string;
+  isActive: boolean;
+}
+
+export interface ProgramFormState {
+  id: string | null;
+  expectedUpdatedAt: string | null;
+  title: string;
+  slug: string;
+  shortDescription: string;
+  description: string;
+  basePriceIdr: string;
+  ageMin: string;
+  ageMax: string;
+  durationMinutes: string;
+  includedItemsText: string;
+  draftCoverPath: string | null;
+  clearCover: boolean;
+  coverAltText: string;
+  coverPreviewUrl: string | null;
+  coverIsApproved: boolean;
+  needsOwnerReview: boolean;
+  status: ClassProgramStatus;
+}
+
+export interface SessionFormState {
+  id: string | null;
+  expectedUpdatedAt: string | null;
+  programId: string;
+  branchId: string;
+  startsAtLocal: string;
+  endsAtLocal: string;
+  deadlineAtLocal: string;
+  capacity: string;
+  seatsLeft: string;
+  priceOverrideIdr: string;
+  status: ClassSessionStatus;
+  isRegistrationOpen: boolean;
+}
+
+export type ConfirmActionState =
+  | { kind: 'archive_program'; item: AdminClassProgramItem }
+  | { kind: 'cancel_session'; item: AdminClassSessionItem }
+  | null;
+
+export type ClassRegistrationFormValues = z.infer<
+  typeof classRegistrationFormSchema
 >;
