@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
-import { MenuView } from '@/components/catalog/menu-view';
+import { MenuView } from './_components/menu-view';
 import {
   CATALOG_AVAILABILITY,
   CATALOG_COPY,

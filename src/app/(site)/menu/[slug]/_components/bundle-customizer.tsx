@@ -1,18 +1,16 @@
-import { AlertCircle, Check, Info } from 'lucide-react';
+import { AlertCircle, Info } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import {
-  BUNDLE_CUSTOMIZER_COPY,
-  CATALOG_AVAILABILITY_LABELS,
-} from '@/constants/catalog.constant';
+import { BUNDLE_CUSTOMIZER_COPY } from '@/constants/catalog.constant';
 import { formatIdr } from '@/features/catalog/pricing';
-import { cn } from '@/utils';
 import type {
   BundleValidationResult,
   FixedComponentDetail,
   ProductDetailVariant,
   SelectedChoiceDetail,
 } from '@/types/catalog';
+import { cn } from '@/utils';
+import { BundleOptionGroup } from './bundle-option-group';
 
 export interface BundleCustomizerProps {
   variant: ProductDetailVariant;
@@ -42,13 +40,20 @@ export function BundleCustomizer({
     ) ?? 0);
 
   const errors = validationResult?.errors ?? [];
+  const visibleErrors =
+    selectedCount >= 2
+      ? errors
+      : errors.filter(
+          (e) =>
+            e.code !== 'GROUP_SELECTION_COUNT_MISMATCH' &&
+            e.code !== 'INVALID_TOTAL_UNITS',
+        );
   const isGFVariant =
     variant.verifiedDietaryTags.some((t) => t.slug === 'gluten-free') ||
     variant.sku.includes('GF');
 
   return (
     <div className={cn('space-y-6', className)} data-testid="bundle-customizer">
-      {/* Header & Slices Counter */}
       <div className="border-burgundy/10 rounded-lg border bg-cream/50 p-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
@@ -79,7 +84,6 @@ export function BundleCustomizer({
         </div>
       </div>
 
-      {/* 1. Fixed Components (Cheese 3 + Choco 3 = 6 slices) */}
       <div className="space-y-3">
         <div className="flex items-baseline justify-between">
           <h4 className="text-foreground text-xs font-bold tracking-wider uppercase">
@@ -121,113 +125,22 @@ export function BundleCustomizer({
         </div>
       </div>
 
-      {/* 2. Selectable Option Groups (Group C & Group D) */}
       <div className="space-y-5">
         <h4 className="text-foreground text-xs font-bold tracking-wider uppercase">
           {BUNDLE_CUSTOMIZER_COPY.SELECTION_SECTION_TITLE}
         </h4>
 
-        {variant.optionGroups.map((group) => {
-          return (
-            <div key={group.id} className="space-y-2.5">
-              <div className="flex items-center justify-between">
-                <span className="text-burgundy text-xs font-semibold">
-                  {group.name}
-                </span>
-                <span className="text-muted-foreground text-[11px]">
-                  Pilih {group.minSelect} rasa (×{group.quantityPerSelection}{' '}
-                  {BUNDLE_CUSTOMIZER_COPY.SLICES_SUFFIX})
-                </span>
-              </div>
-
-              <div
-                role="radiogroup"
-                aria-label={group.name}
-                className="grid grid-cols-1 gap-2.5 sm:grid-cols-2"
-              >
-                {group.choices.map((choice) => {
-                  const isSelected = selectedChoiceIds.includes(choice.id);
-                  const isSoldOut =
-                    choice.componentVariant?.availabilityStatus === 'sold_out';
-                  const isNotOffered =
-                    choice.componentVariant?.isOfferedInBranch === false;
-                  const isDisabled =
-                    !choice.isActive || isSoldOut || isNotOffered;
-
-                  const hasPriceDelta = choice.priceDeltaIdr > 0;
-
-                  return (
-                    <button
-                      key={choice.id}
-                      type="button"
-                      role="radio"
-                      aria-checked={isSelected}
-                      disabled={isDisabled}
-                      onClick={() => onSelectChoice(group.id, choice.id)}
-                      className={cn(
-                        'relative flex flex-col items-start justify-between rounded-lg border p-3 text-left transition-all',
-                        isSelected
-                          ? 'border-burgundy bg-burgundy/5 ring-burgundy shadow-sm ring-1'
-                          : 'border-burgundy/15 hover:border-burgundy/40 bg-white hover:bg-cream/30',
-                        isDisabled &&
-                          'hover:border-burgundy/15 cursor-not-allowed bg-stone-100 opacity-50',
-                      )}
-                    >
-                      <div className="flex w-full items-start justify-between gap-2">
-                        <span className="text-foreground text-xs font-medium">
-                          {choice.label}
-                        </span>
-
-                        <div className="flex shrink-0 items-center gap-1.5">
-                          {isSelected ? (
-                            <span className="bg-burgundy flex h-4 w-4 items-center justify-center rounded-full text-cream">
-                              <Check size={10} strokeWidth={3} />
-                            </span>
-                          ) : null}
-                        </div>
-                      </div>
-
-                      <div className="mt-2 flex w-full flex-wrap items-center justify-between gap-1 text-[11px]">
-                        <span className="text-muted-foreground">
-                          {group.quantityPerSelection}{' '}
-                          {BUNDLE_CUSTOMIZER_COPY.SLICES_SUFFIX}
-                        </span>
-
-                        <div className="flex items-center gap-1">
-                          {isSoldOut ? (
-                            <Badge tone="danger" className="text-[10px]">
-                              {CATALOG_AVAILABILITY_LABELS.sold_out}
-                            </Badge>
-                          ) : hasPriceDelta ? (
-                            <Badge tone="accent" className="text-[10px]">
-                              +{formatIdr(choice.priceDeltaIdr)}
-                            </Badge>
-                          ) : (
-                            <span className="text-muted-foreground text-[10px]">
-                              Tanpa biaya tambahan
-                            </span>
-                          )}
-
-                          {isGFVariant &&
-                          choice.componentVariant?.verifiedDietaryTags?.some(
-                            (t) => t.slug === 'gluten-free',
-                          ) ? (
-                            <Badge tone="success" className="text-[10px]">
-                              GF
-                            </Badge>
-                          ) : null}
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
+        {variant.optionGroups.map((group) => (
+          <BundleOptionGroup
+            key={group.id}
+            group={group}
+            selectedChoiceIds={selectedChoiceIds}
+            isGFVariant={isGFVariant}
+            onSelectChoice={onSelectChoice}
+          />
+        ))}
       </div>
 
-      {/* 3. Validation Errors / Guidance Notice */}
       {selectedCount < 2 ? (
         <div className="border-burgundy/15 rounded-lg border bg-cream/40 p-3">
           <div className="flex items-center gap-2">
@@ -245,14 +158,7 @@ export function BundleCustomizer({
         </div>
       ) : null}
 
-      {(selectedCount >= 2
-        ? errors
-        : errors.filter(
-            (e) =>
-              e.code !== 'GROUP_SELECTION_COUNT_MISMATCH' &&
-              e.code !== 'INVALID_TOTAL_UNITS',
-          )
-      ).length > 0 ? (
+      {visibleErrors.length > 0 ? (
         <div
           role="alert"
           aria-live="polite"
@@ -269,14 +175,7 @@ export function BundleCustomizer({
                 Perhatian Konfigurasi Paket:
               </strong>
               <ul className="list-inside list-disc space-y-0.5 text-xs text-danger/90">
-                {(selectedCount >= 2
-                  ? errors
-                  : errors.filter(
-                      (e) =>
-                        e.code !== 'GROUP_SELECTION_COUNT_MISMATCH' &&
-                        e.code !== 'INVALID_TOTAL_UNITS',
-                    )
-                ).map((err, idx) => (
+                {visibleErrors.map((err, idx) => (
                   <li key={idx}>{err.message}</li>
                 ))}
               </ul>
@@ -285,7 +184,6 @@ export function BundleCustomizer({
         </div>
       ) : null}
 
-      {/* 4. Price & Slices Breakdown Summary */}
       {validationResult ? (
         <div className="border-burgundy/10 bg-warm-cream/30 space-y-2 rounded-lg border p-3.5">
           <div className="flex justify-between text-xs">

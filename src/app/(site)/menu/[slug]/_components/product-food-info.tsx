@@ -4,8 +4,8 @@ import {
   PRODUCT_ALLERGEN_PRESENCE_LABELS,
   PRODUCT_DETAIL_COPY,
 } from '@/constants/catalog.constant';
-import { cn } from '@/utils';
 import type { ProductDetail, ProductDetailVariant } from '@/types/catalog';
+import { cn } from '@/utils';
 
 interface ProductFoodInfoProps {
   product: ProductDetail;
@@ -27,7 +27,6 @@ export function ProductFoodInfo({
         {PRODUCT_DETAIL_COPY.FOOD_INFO_TITLE}
       </h2>
 
-      {/* Dietary claims per SKU */}
       <div className="product-food-info-section">
         <h3 className="product-food-info-subtitle">
           {PRODUCT_DETAIL_COPY.DIETARY_TITLE}
@@ -50,7 +49,6 @@ export function ProductFoodInfo({
         )}
       </div>
 
-      {/* Allergens per SKU */}
       <div className="product-food-info-section">
         <h3 className="product-food-info-subtitle">
           {PRODUCT_DETAIL_COPY.ALLERGEN_TITLE}
@@ -91,7 +89,6 @@ export function ProductFoodInfo({
         </div>
       </div>
 
-      {/* Bundle Recipe if applicable */}
       {selectedVariant?.bundleRecipe ? (
         <div className="product-food-info-section">
           <h3 className="product-food-info-subtitle">
@@ -113,7 +110,6 @@ export function ProductFoodInfo({
         </div>
       ) : null}
 
-      {/* Ingredients & Storage Instructions */}
       <div className="product-food-info-grid">
         <div className="product-food-info-section">
           <h3 className="product-food-info-subtitle">

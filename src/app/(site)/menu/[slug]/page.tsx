@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { connection } from 'next/server';
-import { ProductDetailView } from '@/components/catalog/product-detail-view';
-import { StructuredDataScript } from '@/components/seo/structured-data-script';
+import { ProductDetailView } from './_components/product-detail-view';
+import { StructuredDataScript } from '@/components/common/structured-data-script';
 import { getPublicEnvironment } from '@/config/environment.client';
 import {
   CATALOG_QUERY_PARAMS,

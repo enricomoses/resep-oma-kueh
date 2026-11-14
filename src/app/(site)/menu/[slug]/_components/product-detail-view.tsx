@@ -3,11 +3,11 @@
 import { ArrowLeft, HelpCircle } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
+import { ErrorState } from '@/components/common/feedback/error-state';
+import { MenuProductCard } from '@/components/common/commerce/menu-product-card';
 import { ActionLink } from '@/components/ui/action-link';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Feedback } from '@/components/ui/feedback';
 import { ROUTES } from '@/constants';
 import {
   CATALOG_COPY,
@@ -15,19 +15,18 @@ import {
   PRODUCT_DETAIL_COPY,
 } from '@/constants/catalog.constant';
 import { useBranches } from '@/hooks/use-branches';
-import { useProductDetail } from '@/hooks/use-catalog';
 import type { InitialCatalogSection } from '@/hooks/use-catalog';
+import { useProductDetail } from '@/hooks/use-catalog';
 import { useCartStore } from '@/stores/cart.store';
-import { preparedCartLinePayloadSchema } from '@/validations/catalog.schema';
-import { withBranch } from '@/utils/branch-url';
-import { cn } from '@/utils';
 import type {
   BundleBreakdownItem,
   PreparedCartLinePayload,
   ProductDetail,
   ProductDetailVariant,
 } from '@/types/catalog';
-import { MenuProductCard } from './menu-product-card';
+import { cn } from '@/utils';
+import { withBranch } from '@/utils/branch-url';
+import { preparedCartLinePayloadSchema } from '@/validations/catalog.schema';
 import { ProductFoodInfo } from './product-food-info';
 import { ProductGallery } from './product-gallery';
 import { ProductVariantPicker } from './product-variant-picker';
@@ -88,7 +87,6 @@ export function ProductDetailView({
   const [preparedPayload, setPreparedPayload] =
     useState<PreparedCartLinePayload | null>(null);
 
-  // Derive active selected variant
   const offeredVariants = product?.offeredVariants ?? [];
   const activeVariant: ProductDetailVariant | null =
     offeredVariants.find((v) => v.id === selectedVariantId) ||
@@ -154,20 +152,14 @@ export function ProductDetailView({
     return (
       <main id="konten" className={cn('product-detail-page', className)}>
         <div className="product-detail-container">
-          <Feedback
-            tone="error"
-            title={PRODUCT_DETAIL_COPY.ERROR_TITLE}
+          <ErrorState
             className="my-10"
-          >
-            <p className="mb-4">{PRODUCT_DETAIL_COPY.ERROR_BODY}</p>
-            <Button
-              onClick={() => detailQuery.refetch()}
-              variant="secondary"
-              size="sm"
-            >
-              {PRODUCT_DETAIL_COPY.RETRY_CTA}
-            </Button>
-          </Feedback>
+            title={PRODUCT_DETAIL_COPY.ERROR_TITLE}
+            message={PRODUCT_DETAIL_COPY.ERROR_BODY}
+            onRetry={() => void detailQuery.refetch()}
+            retryLabel={PRODUCT_DETAIL_COPY.RETRY_CTA}
+            announce={false}
+          />
         </div>
       </main>
     );
@@ -180,7 +172,6 @@ export function ProductDetailView({
   return (
     <main id="konten" className={cn('product-detail-page', className)}>
       <div className="product-detail-container">
-        {/* Navigation Breadcrumb / Back Link */}
         <nav
           aria-label="Navigasi ke menu"
           className="product-detail-nav-header"
@@ -194,7 +185,6 @@ export function ProductDetailView({
           </ActionLink>
         </nav>
 
-        {/* Product Heading & Badges */}
         <div className="product-detail-header">
           <span className="product-detail-category">
             {product.primaryCategory.name}
@@ -223,7 +213,6 @@ export function ProductDetailView({
           ) : null}
         </div>
 
-        {/* Main 2-Column Grid: Gallery (Left) & Picker (Right) */}
         <div className="product-detail-main-grid">
           <ProductGallery
             images={product.images}
@@ -243,12 +232,10 @@ export function ProductDetailView({
           />
         </div>
 
-        {/* Food Info, Dietary & Allergen Section */}
         <div className="mt-12">
           <ProductFoodInfo product={product} selectedVariant={activeVariant} />
         </div>
 
-        {/* FAQ Help Banner */}
         <Card className="product-detail-faq-banner">
           <div className="flex items-center gap-3">
             <HelpCircle
@@ -268,7 +255,6 @@ export function ProductDetailView({
           </ActionLink>
         </Card>
 
-        {/* Related Products Section */}
         {product.relatedProducts.length > 0 ? (
           <section
             aria-label={PRODUCT_DETAIL_COPY.RELATED_TITLE}

@@ -4,8 +4,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 afterEach(() => {
   cleanup();
 });
-import { BundleCustomizer } from '@/components/catalog/bundle-customizer';
-import { ProductVariantPicker } from '@/components/catalog/product-variant-picker';
+import { BundleCustomizer } from '@/app/(site)/menu/[slug]/_components/bundle-customizer';
+import { ProductVariantPicker } from '@/app/(site)/menu/[slug]/_components/product-variant-picker';
 import { validateBundleConfiguration } from '@/features/catalog/bundle';
 import type { ProductDetail, ProductDetailVariant } from '@/types/catalog';
 

@@ -7,7 +7,7 @@ import {
   waitFor,
 } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
-import { MenuView } from '@/components/catalog/menu-view';
+import { MenuView } from '@/app/(site)/menu/_components/menu-view';
 import {
   CATALOG_COPY,
   CATALOG_LIMITS,

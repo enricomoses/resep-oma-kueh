@@ -2,11 +2,11 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
-import { MediaPlaceholder } from '@/app/_components';
+import { MediaPlaceholder } from '@/components/common/media-placeholder';
 import { Badge } from '@/components/ui/badge';
 import { PRODUCT_DETAIL_COPY } from '@/constants/catalog.constant';
-import { cn } from '@/utils';
 import type { ProductDetailImage } from '@/types/catalog';
+import { cn } from '@/utils';
 
 interface ProductGalleryProps {
   images: ProductDetailImage[];
@@ -31,7 +31,6 @@ export function ProductGallery({
     () => new Set(),
   );
 
-  // When variant changes, reset user manual selection to let variant image take precedence
   if (prevVariantId !== selectedVariantId) {
     setPrevVariantId(selectedVariantId);
     setUserSelectedIndex(null);

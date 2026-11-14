@@ -6,7 +6,7 @@ import {
   waitFor,
 } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
-import { ProductDetailView } from '@/components/catalog/product-detail-view';
+import { ProductDetailView } from '@/app/(site)/menu/[slug]/_components/product-detail-view';
 import { PRODUCT_DETAIL_COPY } from '@/constants/catalog.constant';
 import { ApiClientError } from '@/lib/errors';
 import { ReactQueryProvider } from '@/providers';

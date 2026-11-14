@@ -1,4 +1,5 @@
 'use client';
+
 import { Button } from '@/components/ui/button';
 import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
@@ -12,8 +13,8 @@ import {
   CATALOG_SORT_LABELS,
   CATALOG_SORTS,
 } from '@/constants/catalog.constant';
-import { cn } from '@/utils';
 import type { PublicCategory } from '@/types/catalog';
+import { cn } from '@/utils';
 
 export interface MenuFilterState {
   searchDraft: string;

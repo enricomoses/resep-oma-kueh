@@ -1,28 +1,24 @@
 import { Info } from 'lucide-react';
-import { ActionLink } from '@/components/ui/action-link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Feedback } from '@/components/ui/feedback';
 import { Quantity } from '@/components/ui/quantity';
-import { CART_COPY } from '@/constants/cart.constant';
 import {
   CATALOG_AVAILABILITY_LABELS,
   CATALOG_COPY,
   PRODUCT_DETAIL_COPY,
 } from '@/constants/catalog.constant';
-import { ROUTES } from '@/constants/routes.constant';
 import { formatIdr } from '@/features/catalog/pricing';
 import { useProductConfigurator } from '@/hooks/use-product-configurator';
-import { withBranch } from '@/utils/branch-url';
-import { cn } from '@/utils';
 import type {
   BundleBreakdownItem,
   PreparedCartLinePayload,
   ProductDetail,
   ProductDetailVariant,
 } from '@/types/catalog';
+import { cn } from '@/utils';
 import { BundleCustomizer } from './bundle-customizer';
+import { ProductPreparedFeedback } from './product-prepared-feedback';
 
 interface PrepareCartBundleData {
   choiceIds: string[];
@@ -143,7 +139,6 @@ export function ProductVariantPicker({
         ) : null}
       </div>
 
-      {/* Variant Selection Buttons */}
       <div
         role="radiogroup"
         aria-label={PRODUCT_DETAIL_COPY.VARIANT_PICKER_LABEL}
@@ -179,10 +174,8 @@ export function ProductVariantPicker({
         })}
       </div>
 
-      {/* Selected Variant Pricing & Availability */}
       {selectedVariant ? (
         <div className="product-price-section">
-          {/* Bundle Customizer (R11) */}
           {isBundle ? (
             <div className="border-burgundy/10 my-5 border-y py-5">
               <BundleCustomizer
@@ -242,7 +235,6 @@ export function ProductVariantPicker({
             </div>
           </div>
 
-          {/* Unconfirmed stock warning */}
           {isUnconfirmed ? (
             <div className="product-warning-banner" role="note">
               <p className="text-burgundy text-xs leading-relaxed">
@@ -251,7 +243,6 @@ export function ProductVariantPicker({
             </div>
           ) : null}
 
-          {/* Sold out notice */}
           {isSoldOut ? (
             <div className="product-warning-banner" role="alert">
               <p className="text-xs leading-relaxed text-danger">
@@ -260,7 +251,6 @@ export function ProductVariantPicker({
             </div>
           ) : null}
 
-          {/* Quantity Controls & Subtotal */}
           <div className="product-qty-subtotal-grid">
             <div>
               <span className="text-foreground/80 mb-1.5 block text-xs font-medium">
@@ -286,12 +276,10 @@ export function ProductVariantPicker({
             </div>
           </div>
 
-          {/* Stock Caveat Note */}
           <p className="text-muted-foreground mt-2 text-xs leading-relaxed">
             {PRODUCT_DETAIL_COPY.STOCK_CAVEAT_NOTE}
           </p>
 
-          {/* CTA & Feedback */}
           <div className="mt-5 space-y-3">
             {isBundle ? (
               <Button
@@ -318,70 +306,10 @@ export function ProductVariantPicker({
               </Button>
             )}
 
-            {/* Prepared Cart Payload Feedback (Wiring to F12) */}
             {preparedPayload &&
             preparedPayload.variantId === selectedVariant.id &&
             preparedPayload.quantity === quantity ? (
-              <Feedback
-                tone="success"
-                title={PRODUCT_DETAIL_COPY.CTA_PREPARED_TITLE}
-                className="mt-3"
-              >
-                <div className="space-y-1 text-xs">
-                  <p>{PRODUCT_DETAIL_COPY.CTA_PREPARED_BODY}</p>
-                  <div className="border-burgundy/10 text-burgundy/90 mt-2 border-t pt-2 font-mono text-[11px]">
-                    <div>
-                      <strong>SKU:</strong> {preparedPayload.sku}
-                    </div>
-                    <div>
-                      <strong>Ukuran:</strong>{' '}
-                      {preparedPayload.sizeLabel || preparedPayload.variantName}
-                    </div>
-                    <div>
-                      <strong>Jumlah:</strong> {preparedPayload.quantity} unit
-                    </div>
-                    {preparedPayload.bundleSignature ? (
-                      <div>
-                        <strong>Signature:</strong>{' '}
-                        {preparedPayload.bundleSignature}
-                      </div>
-                    ) : null}
-                    <div>
-                      <strong>Subtotal:</strong>{' '}
-                      {formatIdr(preparedPayload.estimatedSubtotalIdr)}
-                    </div>
-                    {preparedPayload.bundleBreakdown &&
-                    preparedPayload.bundleBreakdown.length > 0 ? (
-                      <div className="mt-2 space-y-1 font-sans">
-                        <strong className="text-burgundy block font-semibold">
-                          Komposisi 12 Potong:
-                        </strong>
-                        <ul className="text-burgundy/90 list-inside list-disc space-y-0.5 text-[11px]">
-                          {preparedPayload.bundleBreakdown.map((item, idx) => (
-                            <li key={idx}>
-                              {item.slotOrGroup}: {item.label} ({item.quantity}{' '}
-                              potong)
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ) : null}
-                    <div className="mt-3">
-                      <ActionLink
-                        href={withBranch(
-                          ROUTES.CART,
-                          preparedPayload.branchCode,
-                        )}
-                        variant="secondary"
-                        prefetch={false}
-                        className="w-full text-center text-xs"
-                      >
-                        {CART_COPY.VIEW_CART}
-                      </ActionLink>
-                    </div>
-                  </div>
-                </div>
-              </Feedback>
+              <ProductPreparedFeedback payload={preparedPayload} />
             ) : null}
           </div>
         </div>
