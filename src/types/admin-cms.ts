@@ -1,3 +1,4 @@
+import type { PublicCmsKey } from '@/types/content';
 import type { z } from 'zod';
 
 import type {
@@ -41,3 +42,54 @@ export type CreateAdminTestimonialInput = z.infer<
 export type UpdateAdminTestimonialInput = z.infer<
   typeof updateAdminTestimonialInputSchema
 >;
+
+export interface InstagramItemDraft {
+  image_path: string;
+  alt: string;
+  href: string;
+  media_approved: boolean;
+  previewUrl: string | null;
+}
+
+export interface CmsDraftFormState {
+  key: PublicCmsKey;
+  expectedUpdatedAt: string | null;
+  email: string;
+  instagramUrl: string;
+  headline: string;
+  subcopy: string;
+  title: string;
+  body: string;
+  text: string;
+  valuesItems: string[];
+  imagePath: string;
+  imageAlt: string;
+  mediaApproved: boolean;
+  previewUrl: string | null;
+  instagramFeedUrl: string;
+  instagramItems: InstagramItemDraft[];
+}
+
+export interface TestimonialFormState {
+  id: string | null;
+  expectedUpdatedAt: string | null;
+  displayName: string;
+  quote: string;
+  rating: string;
+  sourceLabel: string;
+  sourceUrl: string;
+  consentAt: string;
+  consentReference: string;
+  sortOrder: string;
+  status: AdminPublishingStatus;
+}
+
+export interface FaqFormState {
+  id: string | null;
+  expectedUpdatedAt: string | null;
+  category: string;
+  question: string;
+  answer: string;
+  sortOrder: string;
+  status: AdminPublishingStatus;
+}
