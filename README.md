@@ -65,6 +65,7 @@ Workflow [.github/workflows/ci.yml](.github/workflows/ci.yml) menjalankan dua jo
 
 - [PRD](docs/prd.md) dan [execution guide](docs/execution-guide.md)
 - [Arsitektur aktual](docs/architecture.md)
+- [Panduan struktur folder & reuse komponen frontend](docs/frontend-structure.md)
 - [Fondasi visual dan API komponen](DESIGN.md)
 - [Cabang dan pengujian lokal](docs/branches.md)
 - [Database dan keamanan seed](docs/database.md)

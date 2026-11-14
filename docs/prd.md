@@ -1145,16 +1145,17 @@ Berikut struktur **konkret yang direkomendasikan**. Ini penggabungan pola fronte
 ```text
 resep-oma-kueh/
 ├── AGENTS.md                            # aturan agent spesifik proyek
+├── DESIGN.md                            # arah visual, tipografi, palet, dan token desain
 ├── README.md
 ├── docs/
 │   ├── prd.md                            # file ini; source of truth fitur
 │   ├── architecture.md                   # diagram, dependency boundaries
 │   ├── database.md                       # ERD dan migration changelog
-│   ├── api-contract.md                   # kontrak endpoint aktual
-│   ├── design-system.md                  # token visual dan aset resmi
+│   ├── frontend-structure.md             # panduan resmi struktur folder & reuse komponen
 │   ├── decisions.md                      # ADR / owner confirmations
 │   ├── execution-guide.md                # setup manual dan prompt F00–F26
 │   ├── implementation-status.md          # evidence Fxx/Rxx/Uxx/Axx
+│   ├── security.md                       # catatan keamanan dan checklist verifikasi
 │   └── deployment.md                     # runbook, backup, rollback
 ├── supabase/
 │   ├── config.toml
@@ -1188,79 +1189,109 @@ resep-oma-kueh/
 │   │   ├── loading.tsx
 │   │   ├── robots.ts
 │   │   ├── sitemap.ts
+│   │   ├── _components/demo-banner.tsx
 │   │   ├── (site)/
 │   │   │   ├── layout.tsx                 # public navbar/footer/chat widget
 │   │   │   ├── page.tsx                   # server thin page
 │   │   │   ├── _components/
-│   │   │   │   ├── index.ts
 │   │   │   │   ├── home-view.tsx
-│   │   │   │   ├── hero-section.tsx
-│   │   │   │   ├── shop-by-series.tsx
-│   │   │   │   ├── featured-bakes.tsx
-│   │   │   │   ├── story-preview.tsx
-│   │   │   │   ├── promotion-banner.tsx
-│   │   │   │   ├── baking-class-preview.tsx
-│   │   │   │   ├── testimonials-section.tsx
-│   │   │   │   └── locations-section.tsx
+│   │   │   │   ├── home-hero.tsx
+│   │   │   │   ├── shop-by-series-section.tsx
+│   │   │   │   ├── featured-bakes-section.tsx
+│   │   │   │   ├── current-treats-section.tsx
+│   │   │   │   ├── our-story-section.tsx
+│   │   │   │   ├── bake-with-oma-section.tsx
+│   │   │   │   ├── instagram-community-section.tsx
+│   │   │   │   └── find-us-section.tsx
 │   │   │   ├── about/
 │   │   │   │   ├── page.tsx
-│   │   │   │   └── _components/{index.ts,about-view.tsx,story-section.tsx}
+│   │   │   │   └── _components/about-view.tsx
 │   │   │   ├── menu/
 │   │   │   │   ├── page.tsx
 │   │   │   │   ├── loading.tsx
 │   │   │   │   ├── _components/
-│   │   │   │   │   ├── index.ts
 │   │   │   │   │   ├── menu-view.tsx
 │   │   │   │   │   ├── menu-filter-panel.tsx
-│   │   │   │   │   ├── menu-grid.tsx
+│   │   │   │   │   ├── menu-results-section.tsx
 │   │   │   │   │   └── menu-pagination.tsx
 │   │   │   │   └── [slug]/
 │   │   │   │       ├── page.tsx
 │   │   │   │       ├── not-found.tsx
 │   │   │   │       └── _components/
-│   │   │   │           ├── index.ts
 │   │   │   │           ├── product-detail-view.tsx
 │   │   │   │           ├── product-gallery.tsx
 │   │   │   │           ├── product-variant-picker.tsx
-│   │   │   │           └── bundle-customizer.tsx
+│   │   │   │           ├── product-food-info.tsx
+│   │   │   │           ├── product-prepared-feedback.tsx
+│   │   │   │           ├── bundle-customizer.tsx
+│   │   │   │           └── bundle-option-group.tsx
 │   │   │   ├── cart/
 │   │   │   │   ├── page.tsx
-│   │   │   │   └── _components/{index.ts,cart-view.tsx,cart-item.tsx,cart-summary.tsx}
+│   │   │   │   └── _components/
+│   │   │   │       ├── cart-view.tsx
+│   │   │   │       ├── cart-item-card.tsx
+│   │   │   │       ├── cart-summary.tsx
+│   │   │   │       ├── cart-conflict-badge.tsx
+│   │   │   │       └── cart-bundle-breakdown.tsx
 │   │   │   ├── checkout/
 │   │   │   │   ├── page.tsx
-│   │   │   │   └── _components/{index.ts,checkout-view.tsx,checkout-form.tsx,quote-preview.tsx}
+│   │   │   │   └── _components/
+│   │   │   │       ├── checkout-view.tsx
+│   │   │   │       ├── checkout-form-card.tsx
+│   │   │   │       ├── checkout-consultation-card.tsx
+│   │   │   │       ├── checkout-quote-review-card.tsx
+│   │   │   │       ├── checkout-quote-line-row.tsx
+│   │   │   │       └── checkout-sidebar-summary.tsx
 │   │   │   ├── classes/
 │   │   │   │   ├── page.tsx
-│   │   │   │   ├── _components/{index.ts,classes-view.tsx,class-card.tsx}
+│   │   │   │   ├── _components/{classes-view.tsx,class-program-card.tsx}
 │   │   │   │   └── [slug]/
 │   │   │   │       ├── page.tsx
-│   │   │   │       └── _components/{index.ts,class-detail-view.tsx,session-picker.tsx}
-│   │   │   ├── contact/{page.tsx,_components/{index.ts,contact-view.tsx}}
-│   │   │   ├── faq/{page.tsx,_components/{index.ts,faq-view.tsx}}
-│   │   │   ├── privacy/{page.tsx,_components/{index.ts,privacy-view.tsx}}
-│   │   │   └── ordering-policy/{page.tsx,_components/{index.ts,ordering-policy-view.tsx}}
+│   │   │   │       └── _components/
+│   │   │   │           ├── class-detail-view.tsx
+│   │   │   │           ├── class-session-list.tsx
+│   │   │   │           ├── class-registration-panel.tsx
+│   │   │   │           └── class-registration-handoff.tsx
+│   │   │   ├── contact/
+│   │   │   │   ├── page.tsx
+│   │   │   │   └── _components/
+│   │   │   │       ├── contact-view.tsx
+│   │   │   │       ├── contact-official-channels.tsx
+│   │   │   │       ├── contact-branch-card.tsx
+│   │   │   │       └── contact-b2b-card.tsx
+│   │   │   ├── faq/{page.tsx,_components/faq-view.tsx}
+│   │   │   ├── privacy/page.tsx           # komposisi common/content/legal-policy-view
+│   │   │   └── ordering-policy/page.tsx   # komposisi common/content/legal-policy-view
 │   │   ├── admin/
-│   │   │   ├── login/{page.tsx,_components/{index.ts,login-view.tsx,login-form.tsx}}
-│   │   │   ├── reset-password/{page.tsx,_components/{index.ts,reset-password-view.tsx}}
+│   │   │   ├── login/{page.tsx,_components/{admin-login-view,admin-login-form,admin-reset-request-form}.tsx}
+│   │   │   ├── reset-password/{page.tsx,_components/admin-reset-password-view.tsx}
 │   │   │   └── (dashboard)/
 │   │   │       ├── layout.tsx             # server requireAdmin guard
 │   │   │       ├── page.tsx
-│   │   │       ├── _components/{index.ts,admin-shell.tsx,admin-overview-view.tsx}
-│   │   │       ├── categories/{page.tsx,_components/}
+│   │   │       ├── _components/           # shared admin shell, section header & overview
+│   │   │       │   ├── admin-shell.tsx
+│   │   │       │   ├── admin-sidebar-nav.tsx
+│   │   │       │   ├── admin-identity-badges.tsx
+│   │   │       │   ├── admin-section-header.tsx
+│   │   │       │   ├── admin-forbidden-panel.tsx
+│   │   │       │   ├── admin-quick-actions-card.tsx
+│   │   │       │   └── admin-overview-view.tsx
+│   │   │       ├── categories/{page.tsx,_components/*.tsx}
 │   │   │       ├── products/
 │   │   │       │   ├── page.tsx
-│   │   │       │   ├── new/page.tsx
-│   │   │       │   ├── [id]/edit/page.tsx
-│   │   │       │   └── _components/{index.ts,products-view.tsx,product-editor.tsx,variant-editor.tsx}
-│   │   │       ├── availability/{page.tsx,_components/}
-│   │   │       ├── promotions/{page.tsx,_components/}
-│   │   │       ├── classes/{page.tsx,_components/}
-│   │   │       ├── testimonials/{page.tsx,_components/}
-│   │   │       ├── content/{page.tsx,_components/}
-│   │   │       ├── faqs/{page.tsx,_components/}
-│   │   │       └── locations/{page.tsx,_components/}
-│   │   ├── auth/callback/route.ts        # only if selected Auth flow needs it
+│   │   │       │   ├── _components/{admin-products-view,admin-product-list-section,admin-product-card,admin-product-filter-bar,admin-product-dialog,admin-product-dialog-fields}.tsx
+│   │   │       │   ├── new/{page.tsx,_components/{admin-product-create-view.tsx,admin-product-create-form.tsx}}
+│   │   │       │   └── [id]/edit/{page.tsx,_components/{admin-product-editor-view.tsx,admin-product-editor-header.tsx,...}}
+│   │   │       ├── availability/{page.tsx,_components/*.tsx}
+│   │   │       ├── promotions/{page.tsx,_components/*.tsx}
+│   │   │       ├── classes/{page.tsx,_components/*.tsx}
+│   │   │       ├── testimonials/{page.tsx,_components/*.tsx}
+│   │   │       ├── content/{page.tsx,_components/*.tsx}
+│   │   │       ├── faqs/{page.tsx,_components/*.tsx}
+│   │   │       └── locations/{page.tsx,_components/*.tsx}
+│   │   ├── auth/callback/route.ts
 │   │   └── api/
+│   │       ├── health/route.ts
 │   │       ├── auth/{login,logout,request-password-reset,update-password}/route.ts
 │   │       ├── categories/route.ts
 │   │       ├── content/route.ts
@@ -1268,49 +1299,71 @@ resep-oma-kueh/
 │   │       ├── catalog/route.ts
 │   │       ├── products/[slug]/route.ts
 │   │       ├── promotions/route.ts
-│   │       ├── classes/{route.ts,[slug]/route.ts}
+│   │       ├── classes/{route.ts,[slug]/route.ts,prepare-registration/route.ts}
 │   │       ├── faqs/route.ts
+│   │       ├── cart/validate/route.ts
 │   │       ├── checkout/prepare/route.ts
-│   │       ├── classes/prepare-registration/route.ts
 │   │       ├── chat/route.ts
 │   │       └── admin/
+│   │           ├── session/route.ts
+│   │           ├── overview/route.ts
 │   │           ├── categories/{route.ts,[id]/route.ts}
-│   │           ├── products/{route.ts,[id]/route.ts}
-│   │           ├── products/[id]/configuration/route.ts
-│   │           ├── products/[id]/variants/route.ts
-│   │           ├── variants/[id]/route.ts
-│   │           ├── availability/route.ts
-│   │           ├── availability/[branchId]/[variantId]/route.ts
-│   │           ├── promotions/{route.ts,[id]/route.ts}
-│   │           ├── classes/{route.ts,[id]/route.ts}
-│   │           ├── classes/[id]/sessions/route.ts
-│   │           ├── class-sessions/[id]/route.ts
-│   │           ├── branches/route.ts
-│   │           ├── branches/[id]/route.ts
-│   │           ├── branches/[id]/hours/route.ts
-│   │           ├── content/route.ts
-│   │           ├── content/[key]/route.ts
+│   │           ├── products/{route.ts,editor-bootstrap/route.ts,[id]/route.ts,[id]/configuration/route.ts}
+│   │           ├── availability/{route.ts,bulk/route.ts,[branchId]/[variantId]/route.ts}
+│   │           ├── promotions/{route.ts,shipping-banner/route.ts,[id]/route.ts}
+│   │           ├── classes/programs/{route.ts,[id]/route.ts}
+│   │           ├── classes/sessions/{route.ts,[id]/route.ts}
+│   │           ├── branches/{route.ts,[id]/route.ts,[id]/hours/route.ts}
+│   │           ├── content/{route.ts,[key]/route.ts}
 │   │           ├── faqs/{route.ts,[id]/route.ts}
 │   │           ├── testimonials/{route.ts,[id]/route.ts}
 │   │           └── media/upload/route.ts
 │   ├── components/
-│   │   ├── ui/
-│   │   │   ├── button/{index.ts,button.tsx}
-│   │   │   ├── card/{index.ts,card.tsx}
-│   │   │   ├── dialog/{index.ts,dialog.tsx}
-│   │   │   ├── drawer/{index.ts,drawer.tsx}
-│   │   │   ├── feedback/{index.ts,empty-state.tsx,error-state.tsx,spinner.tsx}
-│   │   │   └── index.ts
-│   │   ├── form/{index.ts,input.tsx,select.tsx,form-field.tsx,textarea.tsx}
-│   │   ├── layout/{index.ts,site-navbar.tsx,site-footer.tsx,admin-sidebar.tsx}
-│   │   ├── common/{index.ts,branch-selector.tsx,price-display.tsx,product-card.tsx}
-│   │   └── chatbot/
-│   │       ├── index.ts
-│   │       ├── chatbot-widget.tsx
-│   │       ├── chatbot-trigger.tsx
-│   │       ├── chatbot-message-list.tsx
-│   │       ├── chatbot-input.tsx
-│   │       └── chatbot-recommendation.tsx
+│   │   ├── ui/                        # primitif UI kustom (tanpa logic bisnis/API)
+│   │   │   ├── action-link.tsx
+│   │   │   ├── badge.tsx
+│   │   │   ├── button.tsx
+│   │   │   ├── card.tsx
+│   │   │   ├── dialog.tsx
+│   │   │   ├── drawer.tsx
+│   │   │   ├── feedback.tsx
+│   │   │   ├── form-field.tsx
+│   │   │   ├── input.tsx
+│   │   │   ├── modal-surface.tsx
+│   │   │   ├── quantity.tsx
+│   │   │   ├── select.tsx
+│   │   │   └── textarea.tsx
+│   │   └── common/                    # komponen global/lintas 2+ halaman & modul
+│   │       ├── branch/{branch-selector,branch-status-pill,no-branch-alert}.tsx
+│   │       ├── cards/{info-card,stat-card}.tsx
+│   │       ├── chat/
+│   │       │   ├── chat-slot.tsx
+│   │       │   ├── ask-oma-widget.tsx
+│   │       │   ├── ask-oma-composer.tsx
+│   │       │   ├── ask-oma-messages.tsx
+│   │       │   ├── ask-oma-quick-prompts.tsx
+│   │       │   └── ask-oma-recommendations.tsx
+│   │       ├── commerce/
+│   │       │   ├── menu-product-card.tsx
+│   │       │   ├── menu-product-card-media.tsx
+│   │       │   ├── order-totals-summary.tsx
+│   │       │   └── price-display.tsx
+│   │       ├── content/{legal-policy-view,what-they-say-section}.tsx
+│   │       ├── feedback/
+│   │       │   ├── confirm-dialog.tsx
+│   │       │   ├── empty-state.tsx
+│   │       │   ├── error-fallback-panel.tsx
+│   │       │   ├── error-state.tsx
+│   │       │   └── loading-state.tsx
+│   │       ├── layout/
+│   │       │   ├── cart-badge.tsx
+│   │       │   ├── page-header.tsx
+│   │       │   ├── section-header.tsx
+│   │       │   ├── site-footer.tsx
+│   │       │   ├── site-header.tsx
+│   │       │   └── site-nav.tsx
+│   │       ├── media-placeholder.tsx
+│   │       └── structured-data-script.tsx
 │   ├── config/
 │   │   ├── index.ts                     # safe browser config only
 │   │   ├── environment.client.ts
@@ -1353,61 +1406,26 @@ resep-oma-kueh/
 │   │       ├── prompts.server.ts
 │   │       ├── chat.server.ts
 │   │       └── response-policy.server.ts
-│   ├── hooks/
-│   │   ├── index.ts
-│   │   ├── queries/
-│   │   │   ├── index.ts
-│   │   │   ├── use-catalog.ts
-│   │   │   ├── use-product.ts
-│   │   │   ├── use-branches.ts
-│   │   │   ├── use-classes.ts
-│   │   │   └── use-admin-products.ts
-│   │   ├── use-product-configurator.ts
-│   │   ├── use-cart.ts
-│   │   ├── use-checkout-form.ts
-│   │   ├── use-branch-selector.ts
-│   │   ├── use-chatbot.ts
-│   │   └── use-reduced-motion.ts
+│   ├── hooks/                         # TanStack Query + controller view/form + mutation error helper
+│   │   ├── admin-mutation-error.ts
+│   │   ├── use-{branches,cart,catalog,chat,checkout,classes,content,promotions}.ts
+│   │   ├── use-{menu-filters,checkout-flow,class-registration-flow,product-configurator}.ts
+│   │   ├── use-admin-{auth,catalog,classes,cms,login-flow}.ts
+│   │   └── use-admin-*-manager.ts     # controller hooks (classes, products, editor, promotions, categories, availability, testimonials, faqs, content, locations)
 │   ├── lib/
 │   │   ├── axios/{index.ts,instance.ts,response-handler.ts}
-│   │   ├── supabase/
-│   │   │   ├── client.ts              # SSR browser auth client if needed
-│   │   │   ├── server.ts              # admin session per-request
-│   │   │   ├── proxy.ts               # cookie refresh/guard helper
-│   │   │   └── public-read.server.ts  # NO cookies/NO admin identity for chat
-│   │   ├── errors.ts
-│   │   ├── logger.server.ts
-│   │   └── response.ts
-│   ├── providers/{index.ts,react-query-provider.tsx}
-│   ├── services/                     # BROWSER/CLIENT SAFE ONLY
-│   │   ├── index.ts
-│   │   ├── catalog.service.ts
-│   │   ├── branches.service.ts
-│   │   ├── checkout.service.ts
-│   │   ├── classes.service.ts
-│   │   ├── chat.service.ts
-│   │   └── admin-products.service.ts
-│   ├── stores/{index.ts,cart-store.ts,ui-store.ts}
+│   │   ├── supabase/{client.ts,no-store-fetch.ts,proxy.ts,public-read.server.ts,server.ts}
+│   │   ├── {errors.ts,logger.server.ts,query-client.ts,request-body.server.ts,response.server.ts}
+│   ├── providers/{index.ts,branch-provider.tsx,react-query-provider.tsx}
+│   ├── services/                     # BROWSER/CLIENT SAFE ONLY (impor langsung per file)
+│   │   └── {admin-catalog,admin-classes,admin-cms,auth,branches,cart,catalog,chat,checkout,classes,content,promotion}.service.ts
+│   ├── stores/{branch.store.ts,cart.store.ts}
 │   ├── types/
 │   │   ├── index.ts                   # type-only exports, no runtime secrets
 │   │   ├── database.ts                # SUPABASE CLI-GENERATED: DO NOT EDIT
-│   │   ├── catalog.ts
-│   │   ├── branch.ts
-│   │   ├── cart.ts
-│   │   ├── checkout.ts
-│   │   ├── class.ts
-│   │   ├── admin.ts
-│   │   ├── chat.ts
-│   │   └── api.ts
-│   ├── utils/{index.ts,cn.ts,format-price.ts,date.ts,slug.ts,errors.ts}
-│   ├── validations/
-│   │   ├── index.ts
-│   │   ├── catalog.schema.ts
-│   │   ├── checkout.schema.ts
-│   │   ├── promotion.schema.ts
-│   │   ├── class.schema.ts
-│   │   ├── chat.schema.ts
-│   │   └── env.schema.ts
+│   │   └── {admin-catalog,admin-cms,api,auth,branch,cart,catalog,chat,checkout,classes,content,home,promotion}.ts
+│   ├── utils/{index.ts,cn.ts,currency.ts,admin-*.ts,auth-redirect.ts,branch-url.ts,bundle.ts,catalog-pricing.ts,chat.ts,checkout.ts,classes.ts,security-headers.ts,seo.ts,structured-data.ts}
+│   └── validations/{admin-catalog,admin-cms,api,auth,branch,cart,catalog,chat,checkout,classes,content,env,health,home,promotion}.schema.ts
 │   └── proxy.ts                       # Next 16 proxy; NO middleware.ts
 ├── tests/
 │   ├── unit/{pricing,cart,bundle,promotions,chat-policy}.test.ts
@@ -1442,23 +1460,33 @@ resep-oma-kueh/
 
 ### 16.2 Module ownership and imports
 
-| Location                 | Owns                                 | Must not do                               |
-| ------------------------ | ------------------------------------ | ----------------------------------------- |
-| `app/**/page.tsx`        | metadata, params, compose views      | heavy data logic, client state by default |
-| `_components/*-view.tsx` | route-level orchestration            | direct Axios/Supabase SDK                 |
-| `components/ui`          | reusable visual primitives           | business knowledge, query, secrets        |
-| `hooks/queries`          | TanStack query/mutation state        | direct Axios/Supabase/raw SQL             |
-| `hooks`                  | UI lifecycle, form, composition      | import `@/hooks` barrel within hooks      |
-| `services`               | browser HTTP typed client            | import React components, server-only      |
-| `features/*.server.ts`   | domain read/write rules, auth, price | React hooks, browser globals              |
-| `lib/supabase`           | infrastructure SDK/session           | domain price logic                        |
-| `constants`              | routes, keys, limits, copy           | network access                            |
-| `validations`            | Zod runtime contracts                | UI JSX or DB SDK                          |
-| `types`                  | TS contracts                         | runtime secrets/functions                 |
-| `utils`                  | pure format/transform helpers        | fetch, React state, SQL                   |
-| `stores`                 | client ephemeral/persist UI state    | keys/token/privileged decisions           |
+| Location                 | Owns                                                                                                                  | Must not do                                             |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `app/**/page.tsx`        | metadata, params, compose views                                                                                       | heavy data logic, client state by default               |
+| `_components/*-view.tsx` | route-level orchestration & composition                                                                               | long repeated inline JSX, Axios/DB SDK                  |
+| `_components/*.tsx`      | route-local atomic UI/section components (murni `.tsx`)                                                               | cross-module reuse, non-UI helper `.ts`, Axios/Supabase |
+| `components/ui`          | reusable visual primitives (incl. form controls)                                                                      | business knowledge, query, secrets                      |
+| `components/common`      | shared layout/blocks lintas 2+ routes (`branch/`, `cards/`, `chat/`, `commerce/`, `content/`, `feedback/`, `layout/`) | route-specific copy/state coupling                      |
+| `hooks`                  | TanStack query/mutation, controller view/form (`use-*-manager.ts`), error helpers                                     | import `@/hooks` barrel, direct Axios/Supabase          |
+| `services`               | browser HTTP typed client                                                                                             | import React components, server-only                    |
+| `features/*.server.ts`   | domain read/write rules, auth, price                                                                                  | React hooks, browser globals                            |
+| `lib/supabase`           | infrastructure SDK/session                                                                                            | domain price logic                                      |
+| `constants`              | routes, keys, limits, copy                                                                                            | network access                                          |
+| `validations`            | Zod runtime contracts                                                                                                 | UI JSX or DB SDK                                        |
+| `types`                  | TS contracts                                                                                                          | runtime secrets/functions                               |
+| `utils`                  | pure format/transform helpers                                                                                         | fetch, React state, SQL                                 |
+| `stores`                 | client ephemeral/persist UI state                                                                                     | keys/token/privileged decisions                         |
 
-**Import rule:** external packages first → `@/` alias for cross-folder → `./` for siblings; no chains `../../..`; type-only `import type`; no barrels that cross client/server boundary. Visual components named export, single main component/file, `interface XxxProps` sebelum komponen atau tipe domain di src/types, optional `className` passed and merged via `cn()`. Default exports only where required by Next.
+**Import rule:** external packages first → `@/` alias for cross-folder → `./` for siblings; no chains `../../..`; type-only `import type`; utamakan impor langsung per file (hindari barrel `index.ts` tak terpakai agar kompatibel dengan `knip` dan tidak pernah melintasi batas client/server). Visual components named export (`kebab-case` filename, `PascalCase` symbol), single main component/file, `interface XxxProps` sebelum komponen atau tipe domain di `src/types`, optional `className` passed and merged via `cn()`. Default exports only where required by Next.
+
+### 16.3 Aturan Penempatan & Pemecahan Komponen Frontend
+
+Referensi lengkap tersedia di [frontend-structure.md](./frontend-structure.md). Ringkasan aturan wajib saat membangun atau me-refactor UI:
+
+1. **Hanya dua folder tingkat atas di `src/components/`:** `src/components/ui/` (primitif UI murni tanpa logic bisnis/API, termasuk kontrol form) dan `src/components/common/` (komponen gabungan, layout global seperti header/footer/chat widget, serta blok domain yang dipakai ulang oleh **2+ halaman atau modul**, dikelompokkan rapi ke subfolder domain `branch/`, `cards/`, `chat/`, `commerce/`, `content/`, `feedback/`, `layout/`). Jangan menaruh komponen route-specific (misal `cart/`, `checkout/`, atau `*-view.tsx`) di `src/components/`.
+2. **Route-specific selalu di `src/app/**/_components/` dan murni `.tsx`:** seluruh `*-view.tsx` dan komponen lokal halaman wajib berada di `_components/` terdekat dengan route-nya (atau `_components/` parent terdekat bila dipakai oleh sub-route dalam modul yang sama, misalnya `admin/(dashboard)/products/_components/` atau `admin/(dashboard)/_components/`). Helper murni, tipe, schema Zod, dan controller hook diletakkan di `src/utils/`, `src/types/`, `src/validations/`, dan `src/hooks/`.
+3. **Reuse-first sebelum menulis JSX baru:** cek `src/components/ui/`, `src/components/common/`, dan `_components/` terdekat sebelum membuat komponen atau markup baru. Jika komponen lokal di `_components/` mulai dibutuhkan modul/halaman lain, promosikan ke `src/components/common/`.
+4. **Pecah hingga unit terkecil yang bermakna:** setiap bagian UI yang berulang atau non-trivial (page header, section header, branch pill/alert, stat/info card, confirm dialog, kartu produk, baris daftar, filter bar, form section, loading/empty/error state) harus diekstrak menjadi komponen kecil dengan satu tanggung jawab jelas. `*-view.tsx` cukup mengorkestrasi state/data dan menyusun komposisi komponen-komponen tersebut.
 
 ---
 
