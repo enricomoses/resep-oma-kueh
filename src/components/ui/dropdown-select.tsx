@@ -87,7 +87,9 @@ export function DropdownSelect({
     triggerRef.current?.focus();
   };
 
-  const handleTriggerKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+  const handleTriggerKeyDown = (
+    event: React.KeyboardEvent<HTMLButtonElement>,
+  ) => {
     if (disabled) return;
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
       event.preventDefault();
@@ -150,6 +152,7 @@ export function DropdownSelect({
           role="listbox"
           aria-label={ariaLabel}
           className="ui-dropdown-menu"
+          onMouseLeave={() => setActiveIndex(-1)}
         >
           {options.map((option) => {
             const isSelected = option.value === value;
@@ -170,6 +173,11 @@ export function DropdownSelect({
                   isActive && 'is-active',
                   option.disabled && 'is-disabled',
                 )}
+                onMouseEnter={() => {
+                  if (!option.disabled && enabledIdx >= 0) {
+                    setActiveIndex(enabledIdx);
+                  }
+                }}
                 onClick={() => handleSelect(option)}
               >
                 <span className="ui-dropdown-option-label">{option.label}</span>
