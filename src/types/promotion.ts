@@ -18,7 +18,7 @@ import type {
   saveAdminShippingBannerSchema,
 } from '@/validations/promotion.schema';
 
-export type PromotionDiscountType = z.infer<typeof promotionDiscountTypeSchema>;
+type PromotionDiscountType = z.infer<typeof promotionDiscountTypeSchema>;
 export type PromotionScope = z.infer<typeof promotionScopeSchema>;
 export type PromotionStatus = z.infer<typeof promotionStatusSchema>;
 export type PromotionClockState = z.infer<typeof promotionClockStateSchema>;
@@ -47,3 +47,36 @@ export type SaveAdminPromotionInput = z.infer<typeof saveAdminPromotionSchema>;
 export type SaveAdminShippingBannerInput = z.infer<
   typeof saveAdminShippingBannerSchema
 >;
+
+export interface PromotionFormState {
+  id: string | null;
+  expectedUpdatedAt: string | null;
+  title: string;
+  slug: string;
+  description: string;
+  discountType: PromotionDiscountType;
+  discountValue: string;
+  maxDiscountIdr: string;
+  minSpendIdr: string;
+  scope: PromotionScope;
+  startsAtLocal: string;
+  endsAtLocal: string;
+  priority: string;
+  status: PromotionStatus;
+  isEnabled: boolean;
+  bannerImagePath: string | null;
+  bannerDraftPath: string | null;
+  bannerPreviewUrl: string | null;
+  branchIds: string[];
+  categoryIds: string[];
+  productIds: string[];
+  variantIds: string[];
+}
+
+export interface ShippingBannerFormState {
+  title: string;
+  body: string;
+  status: 'draft' | 'published';
+  expectedUpdatedAt: string | null;
+  syncedUpdatedAt: string | null;
+}

@@ -2,7 +2,11 @@ import {
   PROMOTION_JAKARTA_OFFSET,
   PROMOTION_TIMEZONE,
 } from '@/constants/promotion.constant';
-import type { PromotionClockState } from '@/types/promotion';
+import type {
+  AdminPromotionItem,
+  PromotionClockState,
+  PromotionFormState,
+} from '@/types/promotion';
 import {
   calculateCandidateDiscountIdr,
   formatIdr,
@@ -153,4 +157,79 @@ export function buildPromotionPreviewExamples(input: {
       formattedSummary: `${formatIdr(lineGrossIdr)} - ${formatIdr(discountIdr)} = ${formatIdr(netSubtotalIdr)}`,
     };
   });
+}
+
+export function slugifyPromotionTitle(title: string): string {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 120);
+}
+
+export function createEmptyPromotionForm(): PromotionFormState {
+  const now = new Date();
+  const oneWeekLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+  return {
+    id: null,
+    expectedUpdatedAt: null,
+    title: '',
+    slug: '',
+    description: '',
+    discountType: 'percentage',
+    discountValue: '10',
+    maxDiscountIdr: '',
+    minSpendIdr: '0',
+    scope: 'all',
+    startsAtLocal: toJakartaDateTimeInputValue(now.toISOString()),
+    endsAtLocal: toJakartaDateTimeInputValue(oneWeekLater.toISOString()),
+    priority: '10',
+    status: 'draft',
+    isEnabled: false,
+    bannerImagePath: null,
+    bannerDraftPath: null,
+    bannerPreviewUrl: null,
+    branchIds: [],
+    categoryIds: [],
+    productIds: [],
+    variantIds: [],
+  };
+}
+
+export function mapPromotionItemToForm(
+  item: AdminPromotionItem,
+): PromotionFormState {
+  return {
+    id: item.id,
+    expectedUpdatedAt: item.updatedAt,
+    title: item.title,
+    slug: item.slug,
+    description: item.description ?? '',
+    discountType: item.discountType,
+    discountValue: String(item.discountValue),
+    maxDiscountIdr:
+      item.maxDiscountIdr === null ? '' : String(item.maxDiscountIdr),
+    minSpendIdr: String(item.minSpendIdr),
+    scope: item.scope,
+    startsAtLocal: toJakartaDateTimeInputValue(item.startsAt),
+    endsAtLocal: toJakartaDateTimeInputValue(item.endsAt),
+    priority: String(item.priority),
+    status: item.status,
+    isEnabled: item.isEnabled,
+    bannerImagePath:
+      item.bannerImagePath && item.bannerImagePath.startsWith('approved/')
+        ? item.bannerImagePath
+        : null,
+    bannerDraftPath: null,
+    bannerPreviewUrl: item.bannerImageUrl,
+    branchIds: [...item.branchIds],
+    categoryIds: [...item.categoryIds],
+    productIds: [...item.productIds],
+    variantIds: [...item.variantIds],
+  };
+}
+
+export function togglePromotionTargetId(list: string[], id: string): string[] {
+  return list.includes(id) ? list.filter((item) => item !== id) : [...list, id];
 }

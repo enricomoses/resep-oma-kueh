@@ -8,7 +8,7 @@ import {
 } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { AdminPromotionsView } from '@/components/admin/admin-promotions-view';
+import { AdminPromotionsView } from '@/app/admin/(dashboard)/promotions/_components/admin-promotions-view';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { QUERY_KEYS } from '@/constants/query-keys.constant';
 import type { AdminSessionProfile } from '@/types/auth';
