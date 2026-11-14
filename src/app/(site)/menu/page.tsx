@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
+import { Suspense } from 'react';
+import SiteLoading from '../loading';
 import { MenuView } from './_components/menu-view';
 import {
   CATALOG_COPY,
@@ -16,7 +18,9 @@ export const metadata: Metadata = buildPageMetadata({
   path: ROUTES.MENU,
 });
 
-export default async function MenuPage({ searchParams }: PageProps<'/menu'>) {
+async function MenuContent({
+  searchParams,
+}: Pick<PageProps<'/menu'>, 'searchParams'>) {
   await connection();
   const resolvedParams = await searchParams;
   const initialQueryInput = parseCatalogSearchParams(resolvedParams);
@@ -38,5 +42,13 @@ export default async function MenuPage({ searchParams }: PageProps<'/menu'>) {
         result: initialCatalogResult,
       }}
     />
+  );
+}
+
+export default function MenuPage({ searchParams }: PageProps<'/menu'>) {
+  return (
+    <Suspense fallback={<SiteLoading />}>
+      <MenuContent searchParams={searchParams} />
+    </Suspense>
   );
 }
