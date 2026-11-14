@@ -25,14 +25,14 @@ export const HOME_CMS_DEFAULTS = {
     headline: 'A little taste of home, in every bite.',
     subcopy:
       'Resep klasik penuh kehangatan, dibuat untuk menemani momen manis bersama keluarga.',
-    imageAlt:
-      'Ruang untuk foto bakery asli. Ini placeholder, bukan foto produk.',
+    imageUrl: '/images/hero-bakery.webp',
+    imageAlt: 'Koleksi kue dan roti hangat dari dapur Resep Oma Kueh.',
   },
   STORY: {
     title: 'Our Little Story',
     body: 'Resep Oma Kueh adalah bisnis keluarga asal Surabaya di bidang kuliner kue dan roti dengan konsep modern old-fashioned recipe yang menghadirkan kehangatan rumah di setiap gigitan.',
-    imageAlt:
-      'Ruang untuk foto cerita dapur Resep Oma Kueh. Ini placeholder DEMO.',
+    imageUrl: '/images/story-kitchen.webp',
+    imageAlt: 'Suasana dapur dan proses pembuatan kue Resep Oma Kueh.',
   },
   CUSTOM_BUSINESS: {
     title: 'Made for Your Business',
@@ -127,17 +127,20 @@ export const HOME_COPY = {
   COMMUNITY_CARDS: [
     {
       id: 'community-demo-1',
+      imageUrl: '/images/community-1.webp',
       label: 'Chiffon & Kue Klasik',
       caption:
         'Ruang kurasi foto komunitas resmi. Tidak mengambil feed otomatis tanpa izin.',
     },
     {
       id: 'community-demo-2',
+      imageUrl: '/images/community-2.webp',
       label: 'Roti Hangat & Seri Baru',
       caption: 'Dokumentasi produk asli diunggah melalui media terverifikasi.',
     },
     {
       id: 'community-demo-3',
+      imageUrl: '/images/community-3.webp',
       label: 'Momen ROK Baking Class',
       caption:
         'Foto kegiatan kelas hanya dipublikasikan dengan persetujuan peserta.',

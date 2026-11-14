@@ -6,7 +6,7 @@ import { ActionLink } from '@/components/ui/action-link';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { ROUTES } from '@/constants';
-import { HOME_COPY, HOME_SECTION_IDS } from '@/constants/home.constant';
+import { HOME_CMS_DEFAULTS, HOME_COPY, HOME_SECTION_IDS } from '@/constants/home.constant';
 import { cn } from '@/utils';
 import { withBranch } from '@/utils/branch-url';
 
@@ -31,6 +31,8 @@ export function OurStorySection({
   branchCode,
   className,
 }: OurStorySectionProps) {
+  const resolvedImageUrl = imageUrl ?? HOME_CMS_DEFAULTS.STORY.imageUrl;
+
   return (
     <section
       id={HOME_SECTION_IDS.STORY}
@@ -65,11 +67,11 @@ export function OurStorySection({
             <ArrowRight size={16} aria-hidden="true" />
           </ActionLink>
         </div>
-        {imageUrl ? (
+        {resolvedImageUrl ? (
           <figure className="media-placeholder overflow-hidden p-0">
             <div className="relative h-full min-h-60 w-full">
               <Image
-                src={imageUrl}
+                src={resolvedImageUrl}
                 alt={imageAlt}
                 fill
                 sizes="(max-width: 768px) 100vw, 480px"

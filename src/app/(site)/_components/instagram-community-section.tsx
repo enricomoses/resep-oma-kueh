@@ -84,10 +84,15 @@ export function InstagramCommunitySection({
             ))
           : HOME_COPY.COMMUNITY_CARDS.map((card) => (
               <Card key={card.id} className="home-community-card">
-                <MediaPlaceholder
-                  caption={card.caption}
-                  className="home-card-media"
-                />
+                <div className="relative h-48 w-full overflow-hidden rounded-[var(--radius-sm)] border border-[var(--border-sand)]">
+                  <Image
+                    src={card.imageUrl}
+                    alt={card.label}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 320px"
+                    className="object-cover"
+                  />
+                </div>
                 <h3>{card.label}</h3>
                 <p>{card.caption}</p>
               </Card>

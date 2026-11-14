@@ -5,7 +5,7 @@ import { MediaPlaceholder } from '@/components/common/media-placeholder';
 import { ActionLink } from '@/components/ui/action-link';
 import { Badge } from '@/components/ui/badge';
 import { ROUTES } from '@/constants';
-import { HOME_COPY, HOME_SECTION_IDS } from '@/constants/home.constant';
+import { HOME_CMS_DEFAULTS, HOME_COPY, HOME_SECTION_IDS } from '@/constants/home.constant';
 import { FOUNDATION_COPY } from '@/constants/ui.constant';
 import { cn } from '@/utils';
 import { withBranch } from '@/utils/branch-url';
@@ -27,6 +27,8 @@ export function HomeHero({
   branchCode,
   className,
 }: HomeHeroProps) {
+  const resolvedImageUrl = imageUrl ?? HOME_CMS_DEFAULTS.HERO.imageUrl;
+
   return (
     <section
       id={HOME_SECTION_IDS.HERO}
@@ -62,11 +64,11 @@ export function HomeHero({
           </ActionLink>
         </div>
       </div>
-      {imageUrl ? (
+      {resolvedImageUrl ? (
         <figure className="media-placeholder overflow-hidden p-0">
           <div className="relative h-full min-h-64 w-full">
             <Image
-              src={imageUrl}
+              src={resolvedImageUrl}
               alt={imageAlt}
               fill
               preload={true}
