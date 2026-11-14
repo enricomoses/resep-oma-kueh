@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
-import { CartView } from '@/components/cart/cart-view';
+import { CartView } from './_components/cart-view';
 import { CART_COPY } from '@/constants/cart.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { buildPageMetadata } from '@/utils/seo';

@@ -6,7 +6,7 @@ import {
   waitFor,
 } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { BranchSelector } from '@/components/site/branch-selector';
+import { BranchSelector } from '@/components/common/branch/branch-selector';
 import { SITE_COPY } from '@/constants/site.constant';
 import { ReactQueryProvider } from '@/providers';
 import { BranchProvider } from '@/providers/branch-provider';

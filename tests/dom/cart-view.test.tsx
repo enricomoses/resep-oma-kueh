@@ -1,7 +1,7 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { CartView } from '@/components/cart/cart-view';
+import { CartView } from '@/app/(site)/cart/_components/cart-view';
 import { CART_CONFLICTS, CART_COPY } from '@/constants/cart.constant';
 import { ReactQueryProvider } from '@/providers';
 import { BranchProvider } from '@/providers/branch-provider';
