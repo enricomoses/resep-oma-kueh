@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
-import { CheckoutView } from '@/components/checkout/checkout-view';
+import { CheckoutView } from './_components/checkout-view';
 import { CHECKOUT_COPY } from '@/constants/checkout.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { buildPageMetadata } from '@/utils/seo';

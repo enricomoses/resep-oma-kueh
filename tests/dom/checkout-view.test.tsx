@@ -7,7 +7,7 @@ import {
 } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { CheckoutView } from '@/components/checkout/checkout-view';
+import { CheckoutView } from '@/app/(site)/checkout/_components/checkout-view';
 import { CART_CONFLICTS } from '@/constants/cart.constant';
 import {
   CHECKOUT_COPY,
