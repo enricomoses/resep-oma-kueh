@@ -4,7 +4,7 @@ import { connection } from 'next/server';
 import {
   ClassesView,
   type InitialPublicClasses,
-} from '@/components/classes/classes-view';
+} from './_components/classes-view';
 import { CATALOG_QUERY_PARAMS } from '@/constants/catalog.constant';
 import { CLASSES_COPY } from '@/constants/classes.constant';
 import { ROUTES } from '@/constants/routes.constant';

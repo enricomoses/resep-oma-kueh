@@ -9,17 +9,15 @@ import {
 import type { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import {
-  type AdminClassBranchOption,
-  AdminClassesView,
-} from '@/components/admin/admin-classes-view';
-import { ClassDetailView } from '@/components/classes/class-detail-view';
-import { ClassesView } from '@/components/classes/classes-view';
+import { AdminClassesView } from '@/app/admin/(dashboard)/classes/_components/admin-classes-view';
+import { ClassDetailView } from '@/app/(site)/classes/[slug]/_components/class-detail-view';
+import { ClassesView } from '@/app/(site)/classes/_components/classes-view';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { CLASSES_COPY } from '@/constants/classes.constant';
 import type { AdminSessionProfile } from '@/types/auth';
 import type { PublicBranch } from '@/types/branch';
 import type {
+  AdminClassBranchOption,
   AdminClassProgramItem,
   AdminClassSessionItem,
   PublicClassProgram,

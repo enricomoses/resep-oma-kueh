@@ -5,8 +5,8 @@ import { connection } from 'next/server';
 import {
   ClassDetailView,
   type InitialPublicClassDetail,
-} from '@/components/classes/class-detail-view';
-import { StructuredDataScript } from '@/components/seo/structured-data-script';
+} from './_components/class-detail-view';
+import { StructuredDataScript } from '@/components/common/structured-data-script';
 import { getPublicEnvironment } from '@/config/environment.client';
 import { CATALOG_QUERY_PARAMS } from '@/constants/catalog.constant';
 import { CLASSES_COPY } from '@/constants/classes.constant';

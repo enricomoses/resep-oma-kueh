@@ -3,8 +3,7 @@
 import { ArrowLeft, CheckCircle2, Clock } from 'lucide-react';
 import Image from 'next/image';
 
-import { MediaPlaceholder } from '@/app/_components';
-import { ClassRegistrationPanel } from '@/components/classes/class-registration-panel';
+import { MediaPlaceholder } from '@/components/common/media-placeholder';
 import { ActionLink } from '@/components/ui/action-link';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
@@ -19,6 +18,7 @@ import { cn } from '@/utils';
 import { withBranch } from '@/utils/branch-url';
 import { formatClassAgeRange } from '@/utils/classes';
 import { formatIdr } from '@/utils/currency';
+import { ClassRegistrationPanel } from './class-registration-panel';
 
 export type InitialPublicClassDetail =
   | {
