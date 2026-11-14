@@ -40,6 +40,33 @@
 html {
   scrollbar-gutter: stable;
 }
+/* Slim custom scrollbar aligned with the bakery palette */
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--control-border) 65%, transparent) transparent;
+  }
+}
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--control-border) 60%, transparent);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--brand-burgundy);
+}
+::-webkit-scrollbar-thumb:active {
+  background: var(--brand-deep);
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
 body {
   background: var(--brand-cream);
   color: var(--brand-deep);
