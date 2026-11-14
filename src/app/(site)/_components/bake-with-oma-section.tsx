@@ -1,6 +1,8 @@
 import { ArrowRight, CalendarDays, MapPin, Users } from 'lucide-react';
 import Image from 'next/image';
-import { MediaPlaceholder } from '@/app/_components';
+
+import { MediaPlaceholder } from '@/components/common/media-placeholder';
+import { SectionHeader } from '@/components/common/layout/section-header';
 import { ActionLink } from '@/components/ui/action-link';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
@@ -8,10 +10,10 @@ import { Feedback } from '@/components/ui/feedback';
 import { ROUTES } from '@/constants';
 import { CLASSES_COPY } from '@/constants/classes.constant';
 import { HOME_COPY, HOME_SECTION_IDS } from '@/constants/home.constant';
-import { withBranch } from '@/utils/branch-url';
-import { cn } from '@/utils';
-import { formatIdr } from '@/utils/currency';
 import type { HomeSectionResult, HomeUpcomingSession } from '@/types/home';
+import { cn } from '@/utils';
+import { withBranch } from '@/utils/branch-url';
+import { formatIdr } from '@/utils/currency';
 
 const sessionDateFormatter = new Intl.DateTimeFormat('id-ID', {
   dateStyle: 'medium',
@@ -33,6 +35,7 @@ interface BakeWithOmaSectionProps {
   branchCode: string | null;
   className?: string;
 }
+
 export function BakeWithOmaSection({
   title,
   body,
@@ -55,21 +58,20 @@ export function BakeWithOmaSection({
       className={cn('home-section', className)}
       aria-labelledby="home-classes-title"
     >
-      <div className="home-section-header">
-        <div>
-          <h2 id="home-classes-title" className="editorial-heading">
-            {title}
-          </h2>
-          <p className="home-section-subtitle">{body}</p>
-        </div>
-        <ActionLink
-          href={withBranch(ROUTES.CLASSES, branchCode)}
-          variant="secondary"
-          prefetch={false}
-        >
-          {HOME_COPY.CLASSES_CTA}
-        </ActionLink>
-      </div>
+      <SectionHeader
+        titleId="home-classes-title"
+        title={title}
+        subtitle={body}
+        actions={
+          <ActionLink
+            href={withBranch(ROUTES.CLASSES, branchCode)}
+            variant="secondary"
+            prefetch={false}
+          >
+            {HOME_COPY.CLASSES_CTA}
+          </ActionLink>
+        }
+      />
       {upcomingClasses.status === 'error' ? (
         <Feedback tone="error" title={HOME_COPY.CLASSES_ERROR}>
           <div className="home-inline-actions">

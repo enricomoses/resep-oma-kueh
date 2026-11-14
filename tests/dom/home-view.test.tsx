@@ -6,7 +6,7 @@ import {
   waitFor,
 } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
-import { HomeView } from '@/components/home/home-view';
+import { HomeView } from '@/app/(site)/_components/home-view';
 import {
   HOME_CMS_DEFAULTS,
   HOME_COPY,

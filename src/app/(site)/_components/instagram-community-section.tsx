@@ -1,8 +1,10 @@
 import { ExternalLink, Globe } from 'lucide-react';
 import Image from 'next/image';
-import { MediaPlaceholder } from '@/app/_components';
-import { Card } from '@/components/ui/card';
+
+import { MediaPlaceholder } from '@/components/common/media-placeholder';
+import { SectionHeader } from '@/components/common/layout/section-header';
 import { buttonStyles } from '@/components/ui/button.styles';
+import { Card } from '@/components/ui/card';
 import { HOME_COPY, HOME_SECTION_IDS } from '@/constants/home.constant';
 import { cn } from '@/utils';
 
@@ -17,6 +19,7 @@ interface InstagramCommunitySectionProps {
   items?: readonly CuratedInstagramItem[];
   className?: string;
 }
+
 export function InstagramCommunitySection({
   instagramUrl,
   items,
@@ -30,26 +33,23 @@ export function InstagramCommunitySection({
       className={cn('home-section', className)}
       aria-labelledby="home-community-title"
     >
-      <div className="home-section-header">
-        <div>
-          <h2 id="home-community-title" className="editorial-heading">
-            {HOME_COPY.COMMUNITY_TITLE}
-          </h2>
-          <p className="home-section-subtitle">
-            {HOME_COPY.COMMUNITY_SUBTITLE}
-          </p>
-        </div>
-        <a
-          href={instagramUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={buttonStyles('secondary', 'md')}
-        >
-          <Globe size={18} aria-hidden="true" />
-          {HOME_COPY.COMMUNITY_CTA}
-          <ExternalLink size={16} aria-hidden="true" />
-        </a>
-      </div>
+      <SectionHeader
+        titleId="home-community-title"
+        title={HOME_COPY.COMMUNITY_TITLE}
+        subtitle={HOME_COPY.COMMUNITY_SUBTITLE}
+        actions={
+          <a
+            href={instagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={buttonStyles('secondary', 'md')}
+          >
+            <Globe size={18} aria-hidden="true" />
+            {HOME_COPY.COMMUNITY_CTA}
+            <ExternalLink size={16} aria-hidden="true" />
+          </a>
+        }
+      />
       <div className="home-community-grid">
         {curated
           ? curated.map((item, idx) => (

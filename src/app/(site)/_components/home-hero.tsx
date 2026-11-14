@@ -1,13 +1,14 @@
 import { ArrowRight, Sparkles } from 'lucide-react';
 import Image from 'next/image';
-import { MediaPlaceholder } from '@/app/_components';
+
+import { MediaPlaceholder } from '@/components/common/media-placeholder';
 import { ActionLink } from '@/components/ui/action-link';
 import { Badge } from '@/components/ui/badge';
 import { ROUTES } from '@/constants';
 import { HOME_COPY, HOME_SECTION_IDS } from '@/constants/home.constant';
 import { FOUNDATION_COPY } from '@/constants/ui.constant';
-import { withBranch } from '@/utils/branch-url';
 import { cn } from '@/utils';
+import { withBranch } from '@/utils/branch-url';
 
 interface HomeHeroProps {
   headline: string;
@@ -17,6 +18,7 @@ interface HomeHeroProps {
   branchCode: string | null;
   className?: string;
 }
+
 export function HomeHero({
   headline,
   subcopy,

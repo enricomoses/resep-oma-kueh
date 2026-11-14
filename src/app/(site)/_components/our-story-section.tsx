@@ -1,13 +1,14 @@
 import { ArrowRight, Building2 } from 'lucide-react';
 import Image from 'next/image';
-import { MediaPlaceholder } from '@/app/_components';
+
+import { MediaPlaceholder } from '@/components/common/media-placeholder';
 import { ActionLink } from '@/components/ui/action-link';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { ROUTES } from '@/constants';
 import { HOME_COPY, HOME_SECTION_IDS } from '@/constants/home.constant';
-import { withBranch } from '@/utils/branch-url';
 import { cn } from '@/utils';
+import { withBranch } from '@/utils/branch-url';
 
 interface OurStorySectionProps {
   title: string;
@@ -19,6 +20,7 @@ interface OurStorySectionProps {
   branchCode: string | null;
   className?: string;
 }
+
 export function OurStorySection({
   title,
   body,

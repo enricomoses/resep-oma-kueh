@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
-import { HomeView } from '@/components/home/home-view';
-import { StructuredDataScript } from '@/components/seo/structured-data-script';
+import { HomeView } from './_components/home-view';
+import { StructuredDataScript } from '@/components/common/structured-data-script';
 import { getPublicEnvironment } from '@/config/environment.client';
 import { APP, ROUTES } from '@/constants';
 import { FOUNDATION_COPY } from '@/constants/ui.constant';

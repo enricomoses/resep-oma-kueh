@@ -1,5 +1,7 @@
 import { ArrowRight } from 'lucide-react';
-import { MenuProductCardMedia } from '@/components/catalog/menu-product-card-media';
+
+import { MenuProductCardMedia } from '@/components/common/commerce/menu-product-card-media';
+import { SectionHeader } from '@/components/common/layout/section-header';
 import { ActionLink } from '@/components/ui/action-link';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
@@ -7,9 +9,9 @@ import { Feedback } from '@/components/ui/feedback';
 import { ROUTES } from '@/constants';
 import { HOME_COPY, HOME_SECTION_IDS } from '@/constants/home.constant';
 import { formatIdr } from '@/features/catalog/pricing';
-import { withBranch } from '@/utils/branch-url';
-import { cn } from '@/utils';
 import type { HomeFeaturedProduct, HomeSectionResult } from '@/types/home';
+import { cn } from '@/utils';
+import { withBranch } from '@/utils/branch-url';
 
 interface FeaturedBakesSectionProps {
   featuredProducts: HomeSectionResult<HomeFeaturedProduct[]>;
@@ -17,6 +19,7 @@ interface FeaturedBakesSectionProps {
   branchCode: string | null;
   className?: string;
 }
+
 export function FeaturedBakesSection({
   featuredProducts,
   selectedBranchId,
@@ -29,21 +32,20 @@ export function FeaturedBakesSection({
       className={cn('home-section', className)}
       aria-labelledby="home-featured-title"
     >
-      <div className="home-section-header">
-        <div>
-          <h2 id="home-featured-title" className="editorial-heading">
-            {HOME_COPY.FEATURED_TITLE}
-          </h2>
-          <p className="home-section-subtitle">{HOME_COPY.FEATURED_SUBTITLE}</p>
-        </div>
-        <ActionLink
-          href={withBranch(ROUTES.MENU, branchCode)}
-          variant="secondary"
-          prefetch={false}
-        >
-          {HOME_COPY.FEATURED_ALL_CTA}
-        </ActionLink>
-      </div>
+      <SectionHeader
+        titleId="home-featured-title"
+        title={HOME_COPY.FEATURED_TITLE}
+        subtitle={HOME_COPY.FEATURED_SUBTITLE}
+        actions={
+          <ActionLink
+            href={withBranch(ROUTES.MENU, branchCode)}
+            variant="secondary"
+            prefetch={false}
+          >
+            {HOME_COPY.FEATURED_ALL_CTA}
+          </ActionLink>
+        }
+      />
       {featuredProducts.status === 'error' ? (
         <Feedback tone="error" title={HOME_COPY.FEATURED_ERROR} />
       ) : featuredProducts.data.length === 0 ? (

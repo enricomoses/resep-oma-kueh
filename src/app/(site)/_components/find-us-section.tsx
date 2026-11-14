@@ -1,10 +1,12 @@
 import { CheckCircle2, ExternalLink, MapPin, Phone } from 'lucide-react';
+
+import { SectionHeader } from '@/components/common/layout/section-header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { HOME_COPY, HOME_SECTION_IDS } from '@/constants/home.constant';
-import { cn } from '@/utils';
 import type { PublicBranch } from '@/types/branch';
+import { cn } from '@/utils';
 
 interface ApprovedBranchContact {
   code: string;
@@ -21,6 +23,7 @@ interface FindUsSectionProps {
   onSelectBranch: (branch: PublicBranch) => void;
   className?: string;
 }
+
 export function FindUsSection({
   approvedBranches,
   activeBranches,
@@ -35,14 +38,11 @@ export function FindUsSection({
       className={cn('home-section', className)}
       aria-labelledby="home-find-us-title"
     >
-      <div className="home-section-header">
-        <div>
-          <h2 id="home-find-us-title" className="editorial-heading">
-            {HOME_COPY.FIND_US_TITLE}
-          </h2>
-          <p className="home-section-subtitle">{HOME_COPY.FIND_US_SUBTITLE}</p>
-        </div>
-      </div>
+      <SectionHeader
+        titleId="home-find-us-title"
+        title={HOME_COPY.FIND_US_TITLE}
+        subtitle={HOME_COPY.FIND_US_SUBTITLE}
+      />
       <div className="home-find-us-grid">
         {approvedBranches.map((fallback) => {
           const active = !isBranchesError

@@ -1,9 +1,12 @@
 'use client';
+
+import { WhatTheySaySection } from '@/components/common/content/what-they-say-section';
 import { HOME_CMS_DEFAULTS } from '@/constants/home.constant';
 import { SITE_COPY } from '@/constants/site.constant';
 import { useBranches } from '@/hooks/use-branches';
-import { cn } from '@/utils';
 import type { HomePageData } from '@/types/home';
+import { cn } from '@/utils';
+
 import { BakeWithOmaSection } from './bake-with-oma-section';
 import { CurrentTreatsSection } from './current-treats-section';
 import { FeaturedBakesSection } from './featured-bakes-section';
@@ -12,7 +15,6 @@ import { HomeHero } from './home-hero';
 import { InstagramCommunitySection } from './instagram-community-section';
 import { OurStorySection } from './our-story-section';
 import { ShopBySeriesSection } from './shop-by-series-section';
-import { WhatTheySaySection } from './what-they-say-section';
 
 interface ApprovedContacts {
   email: string;
@@ -30,6 +32,7 @@ interface HomeViewProps {
   contacts: ApprovedContacts;
   className?: string;
 }
+
 export function HomeView({ data, contacts, className }: HomeViewProps) {
   const { selected, code, items, isError, switchBranch } = useBranches();
   const branchCode = selected?.code ?? code;

@@ -1,5 +1,7 @@
 import { Tag } from 'lucide-react';
 import Image from 'next/image';
+
+import { SectionHeader } from '@/components/common/layout/section-header';
 import { Card } from '@/components/ui/card';
 import { Feedback } from '@/components/ui/feedback';
 import { HOME_COPY, HOME_SECTION_IDS } from '@/constants/home.constant';
@@ -28,6 +30,7 @@ interface CurrentTreatsSectionProps {
   shippingBanner?: PublicShippingBanner | null;
   className?: string;
 }
+
 export function CurrentTreatsSection({
   promotions,
   selectedBranchId,
@@ -51,14 +54,11 @@ export function CurrentTreatsSection({
       className={cn('home-section', className)}
       aria-labelledby="home-treats-title"
     >
-      <div className="home-section-header">
-        <div>
-          <h2 id="home-treats-title" className="editorial-heading">
-            {HOME_COPY.TREATS_TITLE}
-          </h2>
-          <p className="home-section-subtitle">{HOME_COPY.TREATS_SUBTITLE}</p>
-        </div>
-      </div>
+      <SectionHeader
+        titleId="home-treats-title"
+        title={HOME_COPY.TREATS_TITLE}
+        subtitle={HOME_COPY.TREATS_SUBTITLE}
+      />
       {shippingBanner ? (
         <Feedback tone="info" title={shippingBanner.title} className="mb-4">
           <p className="text-xs">{shippingBanner.body}</p>
