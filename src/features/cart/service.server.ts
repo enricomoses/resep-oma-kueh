@@ -2,14 +2,14 @@ import 'server-only';
 import { CART_CONFLICTS, CART_COPY } from '@/constants/cart.constant';
 import { readActiveBranches } from '@/features/branches/repository.server';
 import {
-  evaluateCartPromotions,
-  type CartPricingLineInput,
-  type PricingPromotionInput,
-} from '@/features/catalog/pricing';
-import {
   readActiveCatalogPromotions,
   readComponentVariantsByIds,
 } from '@/features/catalog/repository.server';
+import {
+  evaluateCartPromotions,
+  type CartPricingLineInput,
+  type PricingPromotionInput,
+} from '@/utils/catalog-pricing';
 import { cartValidationResponseSchema } from '@/validations/cart.schema';
 import type { BundleBreakdownItem } from '@/types/catalog';
 import type {

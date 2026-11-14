@@ -2,14 +2,13 @@ import { AlertCircle, Info } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { BUNDLE_CUSTOMIZER_COPY } from '@/constants/catalog.constant';
-import { formatIdr } from '@/features/catalog/pricing';
 import type {
   BundleValidationResult,
   FixedComponentDetail,
   ProductDetailVariant,
   SelectedChoiceDetail,
 } from '@/types/catalog';
-import { cn } from '@/utils';
+import { cn, formatIdr } from '@/utils';
 import { BundleOptionGroup } from './bundle-option-group';
 
 export interface BundleCustomizerProps {

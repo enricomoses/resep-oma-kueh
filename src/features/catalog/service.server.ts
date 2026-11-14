@@ -21,11 +21,11 @@ import type {
   PublicCategory,
   PublicCategoryDirectory,
 } from '@/types/catalog';
-import { computeVariantEffectivePrice } from './pricing';
-import type {
-  PricingPromotionInput,
-  VariantEffectivePriceResult,
-} from './pricing';
+import {
+  computeVariantEffectivePrice,
+  type PricingPromotionInput,
+  type VariantEffectivePriceResult,
+} from '@/utils/catalog-pricing';
 import {
   pickApprovedPrimaryProductImage,
   readActiveCatalogPromotions,

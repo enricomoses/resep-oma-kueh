@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   generateBundleSignature,
   validateBundleConfiguration,
-} from '@/features/catalog/bundle';
+} from '@/utils/bundle';
 import type {
   ProductDetailComponentVariantSummary,
   ProductDetailFixedComponent,

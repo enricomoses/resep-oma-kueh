@@ -3,8 +3,8 @@ import {
   CONTENT_DEFAULTS,
   PUBLIC_CMS_KEYS,
 } from '@/constants/content.constant';
+import { APPROVED_CONTACTS } from '@/constants/contacts.constant';
 import { HOME_CMS_DEFAULTS } from '@/constants/home.constant';
-import { APPROVED_CONTACTS } from '@/features/branches/contacts.server';
 import { readActiveBranches } from '@/features/branches/repository.server';
 import {
   cmsPayloadSchemasByKey,

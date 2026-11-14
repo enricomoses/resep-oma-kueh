@@ -6,8 +6,8 @@ afterEach(() => {
 });
 import { BundleCustomizer } from '@/app/(site)/menu/[slug]/_components/bundle-customizer';
 import { ProductVariantPicker } from '@/app/(site)/menu/[slug]/_components/product-variant-picker';
-import { validateBundleConfiguration } from '@/features/catalog/bundle';
 import type { ProductDetail, ProductDetailVariant } from '@/types/catalog';
+import { validateBundleConfiguration } from '@/utils/bundle';
 
 function createMockBundleVariant(
   overrides: Partial<ProductDetailVariant> = {},

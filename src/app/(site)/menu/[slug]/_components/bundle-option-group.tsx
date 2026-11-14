@@ -4,9 +4,8 @@ import {
   BUNDLE_CUSTOMIZER_COPY,
   CATALOG_AVAILABILITY_LABELS,
 } from '@/constants/catalog.constant';
-import { formatIdr } from '@/features/catalog/pricing';
 import type { ProductDetailOptionGroup } from '@/types/catalog';
-import { cn } from '@/utils';
+import { cn, formatIdr } from '@/utils';
 
 interface BundleOptionGroupProps {
   group: ProductDetailOptionGroup;

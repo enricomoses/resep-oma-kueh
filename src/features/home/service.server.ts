@@ -1,8 +1,6 @@
 import 'server-only';
 import { HOME_CMS_DEFAULTS, HOME_LIMITS } from '@/constants/home.constant';
 import { FOUNDATION_COPY } from '@/constants/ui.constant';
-import { computeVariantEffectivePrice } from '@/features/catalog/pricing';
-import type { PricingPromotionInput } from '@/features/catalog/pricing';
 import { pickApprovedPrimaryProductImage } from '@/features/catalog/repository.server';
 import { getCategories } from '@/features/catalog/service.server';
 import { resolvePublicClassCoverUrl } from '@/features/classes/repository.server';
@@ -11,6 +9,10 @@ import {
   resolvePublicBannerUrl,
 } from '@/features/promotions/repository.server';
 import { mapPublishedShippingBannerRow } from '@/features/promotions/service.server';
+import {
+  computeVariantEffectivePrice,
+  type PricingPromotionInput,
+} from '@/utils/catalog-pricing';
 import {
   computeEffectiveClassPriceIdr,
   evaluateClassSessionAvailability,

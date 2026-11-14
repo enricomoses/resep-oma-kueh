@@ -1,8 +1,8 @@
 import 'server-only';
 
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
+import { APPROVED_CONTACTS } from '@/constants/contacts.constant';
 import { AuthForbiddenError } from '@/features/auth/errors.server';
-import { APPROVED_CONTACTS } from '@/features/branches/contacts.server';
 import { createServerAuthClient } from '@/lib/supabase/server';
 import type {
   AdminBranchHourItem,

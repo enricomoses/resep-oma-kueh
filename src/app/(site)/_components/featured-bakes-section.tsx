@@ -8,9 +8,8 @@ import { Card } from '@/components/ui/card';
 import { Feedback } from '@/components/ui/feedback';
 import { ROUTES } from '@/constants';
 import { HOME_COPY, HOME_SECTION_IDS } from '@/constants/home.constant';
-import { formatIdr } from '@/features/catalog/pricing';
 import type { HomeFeaturedProduct, HomeSectionResult } from '@/types/home';
-import { cn } from '@/utils';
+import { cn, formatIdr } from '@/utils';
 import { withBranch } from '@/utils/branch-url';
 
 interface FeaturedBakesSectionProps {

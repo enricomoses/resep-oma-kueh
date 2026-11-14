@@ -3,8 +3,8 @@ import { Feedback } from '@/components/ui/feedback';
 import { CART_COPY } from '@/constants/cart.constant';
 import { PRODUCT_DETAIL_COPY } from '@/constants/catalog.constant';
 import { ROUTES } from '@/constants/routes.constant';
-import { formatIdr } from '@/features/catalog/pricing';
 import type { PreparedCartLinePayload } from '@/types/catalog';
+import { formatIdr } from '@/utils';
 import { withBranch } from '@/utils/branch-url';
 
 interface ProductPreparedFeedbackProps {

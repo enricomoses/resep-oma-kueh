@@ -7,9 +7,9 @@ import {
   CONTENT_DEFAULTS,
   PUBLIC_CMS_KEYS,
 } from '@/constants/content.constant';
+import { APPROVED_CONTACTS } from '@/constants/contacts.constant';
 import { HOME_CMS_DEFAULTS } from '@/constants/home.constant';
 import { AuthForbiddenError } from '@/features/auth/errors.server';
-import { APPROVED_CONTACTS } from '@/features/branches/contacts.server';
 import { createServerAuthClient } from '@/lib/supabase/server';
 import type { AdminCmsEntry, AdminCmsListResponse } from '@/types/admin-cms';
 import type { AdminSessionProfile } from '@/types/auth';

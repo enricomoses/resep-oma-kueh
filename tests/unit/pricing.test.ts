@@ -6,8 +6,8 @@ import {
   evaluateCartPromotions,
   formatIdr,
   isPromotionInActiveWindow,
-} from '@/features/catalog/pricing';
-import type { PricingPromotionInput } from '@/features/catalog/pricing';
+  type PricingPromotionInput,
+} from '@/utils/catalog-pricing';
 
 const SURABAYA_ID = 'f0400000-0000-4000-8000-000000000001';
 const BINTARO_ID = 'f0400000-0000-4000-8000-000000000002';

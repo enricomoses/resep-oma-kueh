@@ -7,11 +7,6 @@ import {
 import { readActiveBranches } from '@/features/branches/repository.server';
 import { readCartVariantsByIds } from '@/features/cart/repository.server';
 import {
-  evaluateCartPromotions,
-  type CartPricingLineInput,
-  type PricingPromotionInput,
-} from '@/features/catalog/pricing';
-import {
   readActiveCatalogPromotions,
   readComponentVariantsByIds,
 } from '@/features/catalog/repository.server';
@@ -21,6 +16,11 @@ import type {
   CheckoutPrepareRequest,
   CheckoutPrepareResponse,
 } from '@/types/checkout';
+import {
+  evaluateCartPromotions,
+  type CartPricingLineInput,
+  type PricingPromotionInput,
+} from '@/utils/catalog-pricing';
 import {
   buildWhatsAppUrl,
   composeWhatsAppMessage,
