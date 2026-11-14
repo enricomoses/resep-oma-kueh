@@ -340,4 +340,220 @@ describe('Cart Server Validation Tests', () => {
     expect(result.lines[1].conflict).toBe(CART_CONFLICTS.ARCHIVED);
     expect(result.hasBlockingConflicts).toBe(true);
   });
+
+  it('flags needs_owner_review, unverified bundles, unknown/inactive choices, and violated option groups', async () => {
+    const BUNDLE_UNVERIFIED_ID = 'f0400000-0000-4000-8000-000000000603';
+    const VARIANT_OPTIONS_ID = 'f0400000-0000-4000-8000-000000000604';
+    const VARIANT_UNREVIEWED_ID = 'f0400000-0000-4000-8000-000000000605';
+    const GROUP_ID = 'f0400000-0000-4000-8000-000000000801';
+    const ACTIVE_CHOICE_ID = 'f0400000-0000-4000-8000-000000000811';
+    const INACTIVE_CHOICE_ID = 'f0400000-0000-4000-8000-000000000812';
+    const UNKNOWN_CHOICE_ID = 'f0400000-0000-4000-8000-000000000899';
+
+    const extendedVariants = [
+      {
+        id: BUNDLE_UNVERIFIED_ID,
+        sku: 'DEMO-BUNDLE-UNVERIFIED',
+        name: 'Bundle Unverified',
+        size_label: '6 pcs',
+        base_price_idr: 100_000,
+        status: 'active',
+        max_quantity_per_order: 5,
+        bundle_recipe: null,
+        bundle_units_total: 6,
+        bundle_rules_verified: false,
+        products: {
+          id: 'f0400000-0000-4000-8000-000000000407',
+          name: 'Bundle Unverified',
+          slug: 'bundle-unverified',
+          product_type: 'bundle',
+          status: 'published',
+          needs_owner_review: false,
+          product_categories: [],
+          product_images: [],
+        },
+        branch_variant_offers: [
+          {
+            branch_id: SURABAYA_ID,
+            is_listed: true,
+            availability_status: 'available',
+            stock_quantity: 5,
+            price_override_idr: null,
+          },
+        ],
+        option_groups: [],
+        bundle_fixed_components: [],
+      },
+      {
+        id: VARIANT_OPTIONS_ID,
+        sku: 'DEMO-OPT-CHECK',
+        name: 'Variant With Required Options',
+        size_label: 'Medium',
+        base_price_idr: 90_000,
+        status: 'active',
+        max_quantity_per_order: 5,
+        bundle_recipe: null,
+        bundle_units_total: null,
+        bundle_rules_verified: false,
+        products: {
+          id: 'f0400000-0000-4000-8000-000000000408',
+          name: 'Variant Options',
+          slug: 'variant-options',
+          product_type: 'variants',
+          status: 'published',
+          needs_owner_review: false,
+          product_categories: [],
+          product_images: [],
+        },
+        branch_variant_offers: [
+          {
+            branch_id: SURABAYA_ID,
+            is_listed: true,
+            availability_status: 'available',
+            stock_quantity: 5,
+            price_override_idr: null,
+          },
+        ],
+        option_groups: [
+          {
+            id: GROUP_ID,
+            name: 'Pilih Topping',
+            min_select: 1,
+            max_select: 1,
+            quantity_per_selection: 1,
+            is_required: true,
+            sort_order: 0,
+            option_choices: [
+              {
+                id: ACTIVE_CHOICE_ID,
+                label: 'Keju',
+                price_delta_idr: 5_000,
+                component_variant_id: null,
+                is_active: true,
+                sort_order: 0,
+              },
+              {
+                id: INACTIVE_CHOICE_ID,
+                label: 'Meses Nonaktif',
+                price_delta_idr: 3_000,
+                component_variant_id: null,
+                is_active: false,
+                sort_order: 1,
+              },
+            ],
+          },
+        ],
+        bundle_fixed_components: [],
+      },
+      {
+        id: VARIANT_UNREVIEWED_ID,
+        sku: 'DEMO-UNREVIEWED',
+        name: 'Unreviewed Item',
+        size_label: 'Single',
+        base_price_idr: 40_000,
+        status: 'active',
+        max_quantity_per_order: 5,
+        bundle_recipe: null,
+        bundle_units_total: null,
+        bundle_rules_verified: false,
+        products: {
+          id: 'f0400000-0000-4000-8000-000000000409',
+          name: 'Unreviewed Item',
+          slug: 'unreviewed-item',
+          product_type: 'simple',
+          status: 'published',
+          needs_owner_review: true,
+          product_categories: [],
+          product_images: [],
+        },
+        branch_variant_offers: [
+          {
+            branch_id: SURABAYA_ID,
+            is_listed: true,
+            availability_status: 'available',
+            stock_quantity: 5,
+            price_override_idr: null,
+          },
+        ],
+        option_groups: [],
+        bundle_fixed_components: [],
+      },
+    ];
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn<typeof globalThis.fetch>(async (input) => {
+        const url = new URL(String(input));
+        if (url.pathname.includes('/rest/v1/branches')) {
+          return Response.json(branchesFixture);
+        }
+        if (url.pathname.includes('/rest/v1/product_variants')) {
+          return Response.json(extendedVariants);
+        }
+        return Response.json([]);
+      }),
+    );
+
+    const res = await validateCartItems({
+      branchId: SURABAYA_ID,
+      items: [
+        {
+          lineId: 'bundle-unverified',
+          variantId: BUNDLE_UNVERIFIED_ID,
+          choiceIds: [],
+          quantity: 1,
+        },
+        {
+          lineId: 'missing-required-option',
+          variantId: VARIANT_OPTIONS_ID,
+          choiceIds: [],
+          quantity: 1,
+        },
+        {
+          lineId: 'inactive-choice',
+          variantId: VARIANT_OPTIONS_ID,
+          choiceIds: [INACTIVE_CHOICE_ID],
+          quantity: 1,
+        },
+        {
+          lineId: 'unknown-choice',
+          variantId: VARIANT_OPTIONS_ID,
+          choiceIds: [UNKNOWN_CHOICE_ID],
+          quantity: 1,
+        },
+        {
+          lineId: 'valid-choice',
+          variantId: VARIANT_OPTIONS_ID,
+          choiceIds: [ACTIVE_CHOICE_ID],
+          quantity: 1,
+        },
+        {
+          lineId: 'unreviewed-product',
+          variantId: VARIANT_UNREVIEWED_ID,
+          choiceIds: [],
+          quantity: 1,
+        },
+      ],
+    });
+
+    const byId = new Map(res.lines.map((line) => [line.lineId, line]));
+    expect(byId.get('bundle-unverified')?.conflict).toBe(
+      CART_CONFLICTS.COMPONENT_UNAVAILABLE,
+    );
+    expect(byId.get('missing-required-option')?.conflict).toBe(
+      CART_CONFLICTS.COMPONENT_UNAVAILABLE,
+    );
+    expect(byId.get('inactive-choice')?.conflict).toBe(
+      CART_CONFLICTS.COMPONENT_UNAVAILABLE,
+    );
+    expect(byId.get('unknown-choice')?.conflict).toBe(
+      CART_CONFLICTS.COMPONENT_UNAVAILABLE,
+    );
+    expect(byId.get('valid-choice')?.conflict).toBe(CART_CONFLICTS.NONE);
+    expect(byId.get('valid-choice')?.effectiveUnitPriceIdr).toBe(95_000);
+    expect(byId.get('unreviewed-product')?.conflict).toBe(
+      CART_CONFLICTS.ARCHIVED,
+    );
+    expect(res.hasBlockingConflicts).toBe(true);
+  });
 });

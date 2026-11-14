@@ -695,3 +695,20 @@ it('enforces route handler contract for /api/products/[slug] (200, 400, 404, 503
   const errBody = await errRes.json();
   expect(errBody.error.code).toBe('UPSTREAM_ERROR');
 });
+
+it('avoids duplicate branches and promotions reads when loading relatedProducts inside getProductDetail', async () => {
+  const fetchMock = stubDetailSupabaseRest();
+  const detail = await getProductDetail({
+    slug: 'demo-coffee',
+    branch: 'surabaya',
+  });
+  expect(detail).not.toBeNull();
+
+  const tablesFetched = fetchMock.mock.calls.map(([input]) => {
+    const url = new URL(String(input));
+    return url.pathname.split('/').pop();
+  });
+
+  expect(tablesFetched.filter((t) => t === 'branches')).toHaveLength(1);
+  expect(tablesFetched.filter((t) => t === 'promotions')).toHaveLength(1);
+});

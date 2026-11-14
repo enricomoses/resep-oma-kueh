@@ -46,11 +46,7 @@ export const SITE_COPY = {
   EMAIL: 'Email resmi',
   INSTAGRAM: 'Instagram resmi',
   CART_EMPTY: 'Keranjang kosong · 0 item',
-  CART_PENDING: 'Keranjang tersedia pada tahap berikutnya.',
   CHAT: 'Ask Oma',
-  PREPARING: 'Halaman sedang disiapkan',
-  PREPARING_BODY:
-    'Navigasi ini sudah tersedia. Konten dan layanan halaman ini belum diaktifkan.',
   BACK_HOME: 'Kembali ke beranda',
   SWITCH_TITLE: 'Periksa perubahan cabang',
   SWITCH_BODY: 'Harga/ketersediaan mungkin berbeda. Periksa ulang keranjang?',

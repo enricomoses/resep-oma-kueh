@@ -3,80 +3,67 @@ import { CHECKOUT_COPY, CHECKOUT_LIMITS } from '@/constants/checkout.constant';
 import { ERROR_COPY } from '@/constants/copy.constant';
 import { CheckoutError } from '@/features/checkout/errors.server';
 import { prepareCheckoutQuote } from '@/features/checkout/service.server';
+import { logServerEvent } from '@/lib/logger.server';
+import { readBoundedUtf8Body } from '@/lib/request-body.server';
 import { apiErrorSchema, apiSuccessSchema } from '@/validations/api.schema';
 import {
   checkoutPrepareRequestSchema,
   checkoutPrepareResponseSchema,
 } from '@/validations/checkout.schema';
 
+const NO_STORE_HEADERS = {
+  'Cache-Control': 'no-store, no-cache, must-revalidate',
+};
+
 export async function POST(request: Request) {
+  const startedAt = Date.now();
   const requestId = crypto.randomUUID();
 
-  // 1. Enforce payload byte limit (32 KiB)
-  const contentLength = request.headers.get('content-length');
-  if (
-    contentLength &&
-    parseInt(contentLength, 10) > CHECKOUT_LIMITS.MAX_REQUEST_BYTES
-  ) {
+  // 1. Enforce streaming payload byte limit (32 KiB)
+  const bounded = await readBoundedUtf8Body(
+    request,
+    CHECKOUT_LIMITS.MAX_REQUEST_BYTES,
+  );
+  if (!bounded.ok) {
+    const isTooLarge = bounded.reason === 'too_large';
+    const status = isTooLarge ? 413 : 400;
+    const code = isTooLarge ? 'REQUEST_TOO_LARGE' : 'INVALID_REQUEST';
+    logServerEvent({
+      requestId,
+      route: '/api/checkout/prepare',
+      operation: 'prepare_quote',
+      status,
+      durationMs: Date.now() - startedAt,
+      errorCode: code,
+    });
     return NextResponse.json(
       apiErrorSchema.parse({
         ok: false,
         error: {
-          code: 'REQUEST_TOO_LARGE',
-          message: CHECKOUT_COPY.ERROR_TOO_LARGE,
+          code,
+          message: isTooLarge
+            ? CHECKOUT_COPY.ERROR_TOO_LARGE
+            : CHECKOUT_COPY.ERROR_INVALID_REQUEST,
         },
         requestId,
       }),
-      {
-        status: 413,
-        headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' },
-      },
-    );
-  }
-
-  let arrayBuffer: ArrayBuffer;
-  try {
-    arrayBuffer = await request.arrayBuffer();
-  } catch {
-    return NextResponse.json(
-      apiErrorSchema.parse({
-        ok: false,
-        error: {
-          code: 'INVALID_REQUEST',
-          message: CHECKOUT_COPY.ERROR_INVALID_REQUEST,
-        },
-        requestId,
-      }),
-      {
-        status: 400,
-        headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' },
-      },
-    );
-  }
-
-  if (arrayBuffer.byteLength > CHECKOUT_LIMITS.MAX_REQUEST_BYTES) {
-    return NextResponse.json(
-      apiErrorSchema.parse({
-        ok: false,
-        error: {
-          code: 'REQUEST_TOO_LARGE',
-          message: CHECKOUT_COPY.ERROR_TOO_LARGE,
-        },
-        requestId,
-      }),
-      {
-        status: 413,
-        headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' },
-      },
+      { status, headers: NO_STORE_HEADERS },
     );
   }
 
   // 2. Parse JSON body
-  const text = new TextDecoder('utf-8').decode(arrayBuffer);
   let body: unknown;
   try {
-    body = JSON.parse(text);
+    body = JSON.parse(bounded.text);
   } catch {
+    logServerEvent({
+      requestId,
+      route: '/api/checkout/prepare',
+      operation: 'prepare_quote',
+      status: 400,
+      durationMs: Date.now() - startedAt,
+      errorCode: 'INVALID_REQUEST',
+    });
     return NextResponse.json(
       apiErrorSchema.parse({
         ok: false,
@@ -86,10 +73,7 @@ export async function POST(request: Request) {
         },
         requestId,
       }),
-      {
-        status: 400,
-        headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' },
-      },
+      { status: 400, headers: NO_STORE_HEADERS },
     );
   }
 
@@ -105,6 +89,14 @@ export async function POST(request: Request) {
       fieldErrors[key].push(issue.message);
     }
 
+    logServerEvent({
+      requestId,
+      route: '/api/checkout/prepare',
+      operation: 'prepare_quote',
+      status: 422,
+      durationMs: Date.now() - startedAt,
+      errorCode: 'VALIDATION_ERROR',
+    });
     return NextResponse.json(
       apiErrorSchema.parse({
         ok: false,
@@ -117,7 +109,7 @@ export async function POST(request: Request) {
       }),
       {
         status: 422,
-        headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' },
+        headers: NO_STORE_HEADERS,
       },
     );
   }
@@ -137,14 +129,29 @@ export async function POST(request: Request) {
       requestId,
     });
 
+    logServerEvent({
+      requestId,
+      route: '/api/checkout/prepare',
+      operation: 'prepare_quote',
+      status: 200,
+      durationMs: Date.now() - startedAt,
+      branchId: result.branch.id,
+      count: result.lines.length,
+    });
     return NextResponse.json(successEnvelope, {
       status: 200,
-      headers: {
-        'Cache-Control': 'no-store, no-cache, must-revalidate',
-      },
+      headers: NO_STORE_HEADERS,
     });
   } catch (err) {
     if (err instanceof CheckoutError) {
+      logServerEvent({
+        requestId,
+        route: '/api/checkout/prepare',
+        operation: 'prepare_quote',
+        status: err.status,
+        durationMs: Date.now() - startedAt,
+        errorCode: err.code,
+      });
       return NextResponse.json(
         apiErrorSchema.parse({
           ok: false,
@@ -157,12 +164,20 @@ export async function POST(request: Request) {
         }),
         {
           status: err.status,
-          headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' },
+          headers: NO_STORE_HEADERS,
         },
       );
     }
 
     if (err instanceof Error && err.name === 'AbortError') {
+      logServerEvent({
+        requestId,
+        route: '/api/checkout/prepare',
+        operation: 'prepare_quote',
+        status: 504,
+        durationMs: Date.now() - startedAt,
+        errorCode: 'TIMEOUT',
+      });
       return NextResponse.json(
         apiErrorSchema.parse({
           ok: false,
@@ -174,11 +189,19 @@ export async function POST(request: Request) {
         }),
         {
           status: 504,
-          headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' },
+          headers: NO_STORE_HEADERS,
         },
       );
     }
 
+    logServerEvent({
+      requestId,
+      route: '/api/checkout/prepare',
+      operation: 'prepare_quote',
+      status: 503,
+      durationMs: Date.now() - startedAt,
+      errorCode: 'UPSTREAM_ERROR',
+    });
     return NextResponse.json(
       apiErrorSchema.parse({
         ok: false,
@@ -190,7 +213,7 @@ export async function POST(request: Request) {
       }),
       {
         status: 503,
-        headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' },
+        headers: NO_STORE_HEADERS,
       },
     );
   }

@@ -50,7 +50,7 @@ export function useCatalog(
   return useQuery({
     queryKey: QUERY_KEYS.CATALOG(normalizedKey),
     queryFn: ({ signal }) => readCatalog(params, signal),
-    staleTime: STALE_TIME.PUBLIC,
+    staleTime: params.branch ? STALE_TIME.BRANCH_OFFERS : STALE_TIME.PUBLIC,
     initialData:
       isInitialMatch && initial?.result.status === 'success'
         ? {
@@ -74,7 +74,7 @@ export function useProductDetail(
   return useQuery({
     queryKey: QUERY_KEYS.PRODUCT_DETAIL(slug, branch),
     queryFn: ({ signal }) => readProductDetail(slug, branch, signal),
-    staleTime: STALE_TIME.PUBLIC,
+    staleTime: branch ? STALE_TIME.BRANCH_OFFERS : STALE_TIME.PUBLIC,
     initialData: isInitialMatch
       ? {
           ok: true as const,

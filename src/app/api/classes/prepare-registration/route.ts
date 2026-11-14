@@ -4,6 +4,8 @@ import { CLASSES_COPY, CLASSES_LIMITS } from '@/constants/classes.constant';
 import { ERROR_COPY } from '@/constants/copy.constant';
 import { PublicClassError } from '@/features/classes/errors.server';
 import { prepareClassRegistration } from '@/features/classes/service.server';
+import { logServerEvent } from '@/lib/logger.server';
+import { readBoundedUtf8Body } from '@/lib/request-body.server';
 import { apiErrorSchema } from '@/validations/api.schema';
 import {
   prepareClassRegistrationRequestSchema,
@@ -15,61 +17,52 @@ const NO_STORE_HEADERS = {
 };
 
 export async function POST(request: Request) {
+  const startedAt = Date.now();
   const requestId = crypto.randomUUID();
 
-  const contentLength = request.headers.get('content-length');
-  if (
-    contentLength &&
-    Number.parseInt(contentLength, 10) > CLASSES_LIMITS.MAX_REQUEST_BYTES
-  ) {
+  const bounded = await readBoundedUtf8Body(
+    request,
+    CLASSES_LIMITS.MAX_REQUEST_BYTES,
+  );
+  if (!bounded.ok) {
+    const isTooLarge = bounded.reason === 'too_large';
+    const status = isTooLarge ? 413 : 400;
+    const code = isTooLarge ? 'REQUEST_TOO_LARGE' : 'INVALID_REQUEST';
+    logServerEvent({
+      requestId,
+      route: '/api/classes/prepare-registration',
+      operation: 'prepare_registration',
+      status,
+      durationMs: Date.now() - startedAt,
+      errorCode: code,
+    });
     return NextResponse.json(
       apiErrorSchema.parse({
         ok: false,
         error: {
-          code: 'REQUEST_TOO_LARGE',
-          message: CLASSES_COPY.WA_ERRORS.TOO_LARGE,
+          code,
+          message: isTooLarge
+            ? CLASSES_COPY.WA_ERRORS.TOO_LARGE
+            : CLASSES_COPY.WA_ERRORS.INVALID_REQUEST,
         },
         requestId,
       }),
-      { status: 413, headers: NO_STORE_HEADERS },
-    );
-  }
-
-  let arrayBuffer: ArrayBuffer;
-  try {
-    arrayBuffer = await request.arrayBuffer();
-  } catch {
-    return NextResponse.json(
-      apiErrorSchema.parse({
-        ok: false,
-        error: {
-          code: 'INVALID_REQUEST',
-          message: CLASSES_COPY.WA_ERRORS.INVALID_REQUEST,
-        },
-        requestId,
-      }),
-      { status: 400, headers: NO_STORE_HEADERS },
-    );
-  }
-
-  if (arrayBuffer.byteLength > CLASSES_LIMITS.MAX_REQUEST_BYTES) {
-    return NextResponse.json(
-      apiErrorSchema.parse({
-        ok: false,
-        error: {
-          code: 'REQUEST_TOO_LARGE',
-          message: CLASSES_COPY.WA_ERRORS.TOO_LARGE,
-        },
-        requestId,
-      }),
-      { status: 413, headers: NO_STORE_HEADERS },
+      { status, headers: NO_STORE_HEADERS },
     );
   }
 
   let rawBody: unknown;
   try {
-    rawBody = JSON.parse(new TextDecoder('utf-8').decode(arrayBuffer));
+    rawBody = JSON.parse(bounded.text);
   } catch {
+    logServerEvent({
+      requestId,
+      route: '/api/classes/prepare-registration',
+      operation: 'prepare_registration',
+      status: 400,
+      durationMs: Date.now() - startedAt,
+      errorCode: 'INVALID_REQUEST',
+    });
     return NextResponse.json(
       apiErrorSchema.parse({
         ok: false,
@@ -94,6 +87,14 @@ export async function POST(request: Request) {
       fieldErrors[key].push(issue.message);
     }
 
+    logServerEvent({
+      requestId,
+      route: '/api/classes/prepare-registration',
+      operation: 'prepare_registration',
+      status: 422,
+      durationMs: Date.now() - startedAt,
+      errorCode: 'VALIDATION_ERROR',
+    });
     return NextResponse.json(
       apiErrorSchema.parse({
         ok: false,
@@ -115,12 +116,30 @@ export async function POST(request: Request) {
       data,
       requestId,
     });
+    logServerEvent({
+      requestId,
+      route: '/api/classes/prepare-registration',
+      operation: 'prepare_registration',
+      status: 200,
+      durationMs: Date.now() - startedAt,
+      branchId: data.branchId,
+      branchCode: data.branchCode,
+      count: data.attendeeCount,
+    });
     return NextResponse.json(payload, {
       status: 200,
       headers: NO_STORE_HEADERS,
     });
   } catch (err) {
     if (err instanceof PublicClassError) {
+      logServerEvent({
+        requestId,
+        route: '/api/classes/prepare-registration',
+        operation: 'prepare_registration',
+        status: err.statusCode,
+        durationMs: Date.now() - startedAt,
+        errorCode: err.apiCode,
+      });
       return NextResponse.json(
         apiErrorSchema.parse({
           ok: false,
@@ -135,6 +154,14 @@ export async function POST(request: Request) {
       );
     }
 
+    logServerEvent({
+      requestId,
+      route: '/api/classes/prepare-registration',
+      operation: 'prepare_registration',
+      status: 503,
+      durationMs: Date.now() - startedAt,
+      errorCode: 'UPSTREAM_ERROR',
+    });
     return NextResponse.json(
       apiErrorSchema.parse({
         ok: false,

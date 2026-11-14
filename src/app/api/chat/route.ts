@@ -9,6 +9,8 @@ import {
   resolveChatRateLimitKey,
 } from '@/features/ai/rate-limit.server';
 import { apiErrorSchema, apiSuccessSchema } from '@/validations/api.schema';
+import { logServerEvent } from '@/lib/logger.server';
+import { readBoundedUtf8Body } from '@/lib/request-body.server';
 import {
   chatRequestSchema,
   chatResponseDataSchema,
@@ -20,90 +22,9 @@ const NO_STORE_HEADERS = {
 
 const chatSuccessResponseSchema = apiSuccessSchema(chatResponseDataSchema);
 
-async function readBoundedUtf8Body(
-  request: Request,
-  maxBytes: number,
-): Promise<
-  { ok: true; text: string } | { ok: false; reason: 'too_large' | 'read_error' }
-> {
-  if (!request.body) {
-    try {
-      const buffer = await request.arrayBuffer();
-      if (buffer.byteLength > maxBytes) {
-        return { ok: false, reason: 'too_large' };
-      }
-      return { ok: true, text: new TextDecoder('utf-8').decode(buffer) };
-    } catch {
-      return { ok: false, reason: 'read_error' };
-    }
-  }
-
-  const reader = request.body.getReader();
-  const chunks: Uint8Array[] = [];
-  let totalBytes = 0;
-
-  try {
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      if (!value) continue;
-      totalBytes += value.byteLength;
-      if (totalBytes > maxBytes) {
-        await reader.cancel().catch(() => {});
-        return { ok: false, reason: 'too_large' };
-      }
-      chunks.push(value);
-    }
-  } catch {
-    await reader.cancel().catch(() => {});
-    return { ok: false, reason: 'read_error' };
-  }
-
-  const combined = new Uint8Array(totalBytes);
-  let offset = 0;
-  for (const chunk of chunks) {
-    combined.set(chunk, offset);
-    offset += chunk.byteLength;
-  }
-
-  return { ok: true, text: new TextDecoder('utf-8').decode(combined) };
-}
-
-function logChatOutcome(params: {
-  requestId: string;
-  operation: string;
-  status: number;
-  durationMs: number;
-  itemCount: number;
-  hasBranch: boolean;
-  mode?: string;
-  fallbackReason?: string;
-}) {
-  // Never log message text, chat history, cookies, tokens, or customer PII.
-  console.info('[ask-oma-chat]', params);
-}
-
 export async function POST(request: Request) {
   const startedAt = Date.now();
   const requestId = crypto.randomUUID();
-
-  const contentLength = request.headers.get('content-length');
-  if (
-    contentLength &&
-    Number.parseInt(contentLength, 10) > CHAT_LIMITS.MAX_REQUEST_BYTES
-  ) {
-    return NextResponse.json(
-      apiErrorSchema.parse({
-        ok: false,
-        error: {
-          code: 'REQUEST_TOO_LARGE',
-          message: ERROR_COPY.REQUEST_TOO_LARGE,
-        },
-        requestId,
-      }),
-      { status: 413, headers: NO_STORE_HEADERS },
-    );
-  }
 
   const clientKey = resolveChatRateLimitKey(request);
   try {
@@ -113,13 +34,14 @@ export async function POST(request: Request) {
       err instanceof ChatServerError && err.retryAfterSeconds
         ? err.retryAfterSeconds
         : 60;
-    logChatOutcome({
+    logServerEvent({
       requestId,
+      route: '/api/chat',
       operation: 'rate_limit',
       status: 429,
       durationMs: Date.now() - startedAt,
-      itemCount: 0,
-      hasBranch: false,
+      count: 0,
+      errorCode: 'RATE_LIMITED',
     });
     return NextResponse.json(
       apiErrorSchema.parse({
@@ -152,6 +74,15 @@ export async function POST(request: Request) {
       bounded.reason === 'too_large'
         ? ERROR_COPY.REQUEST_TOO_LARGE
         : ERROR_COPY.INVALID_REQUEST;
+    logServerEvent({
+      requestId,
+      route: '/api/chat',
+      operation: 'ask_oma_chat',
+      status,
+      durationMs: Date.now() - startedAt,
+      count: 0,
+      errorCode: code,
+    });
     return NextResponse.json(
       apiErrorSchema.parse({
         ok: false,
@@ -166,6 +97,15 @@ export async function POST(request: Request) {
   try {
     jsonBody = JSON.parse(bounded.text);
   } catch {
+    logServerEvent({
+      requestId,
+      route: '/api/chat',
+      operation: 'ask_oma_chat',
+      status: 400,
+      durationMs: Date.now() - startedAt,
+      count: 0,
+      errorCode: 'INVALID_REQUEST',
+    });
     return NextResponse.json(
       apiErrorSchema.parse({
         ok: false,
@@ -190,6 +130,15 @@ export async function POST(request: Request) {
       fieldErrors[key].push(issue.message);
     }
 
+    logServerEvent({
+      requestId,
+      route: '/api/chat',
+      operation: 'ask_oma_chat',
+      status: 422,
+      durationMs: Date.now() - startedAt,
+      count: 0,
+      errorCode: 'VALIDATION_ERROR',
+    });
     return NextResponse.json(
       apiErrorSchema.parse({
         ok: false,
@@ -216,13 +165,14 @@ export async function POST(request: Request) {
       requestId,
     });
 
-    logChatOutcome({
+    logServerEvent({
       requestId,
+      route: '/api/chat',
       operation: data.operation,
       status: 200,
       durationMs: Date.now() - startedAt,
-      itemCount: data.items.length,
-      hasBranch: Boolean(parsed.data.branchId),
+      count: data.items.length,
+      branchId: parsed.data.branchId ?? null,
       mode: meta.mode,
       fallbackReason: meta.fallbackReason,
     });
@@ -241,13 +191,15 @@ export async function POST(request: Request) {
         ? { ...NO_STORE_HEADERS, 'Retry-After': String(err.retryAfterSeconds) }
         : NO_STORE_HEADERS;
 
-    logChatOutcome({
+    logServerEvent({
       requestId,
+      route: '/api/chat',
       operation: code.toLowerCase(),
       status,
       durationMs: Date.now() - startedAt,
-      itemCount: 0,
-      hasBranch: Boolean(parsed.data.branchId),
+      count: 0,
+      errorCode: code,
+      branchId: parsed.data.branchId ?? null,
     });
 
     return NextResponse.json(

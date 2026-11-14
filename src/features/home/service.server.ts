@@ -3,6 +3,7 @@ import { HOME_CMS_DEFAULTS, HOME_LIMITS } from '@/constants/home.constant';
 import { FOUNDATION_COPY } from '@/constants/ui.constant';
 import { computeVariantEffectivePrice } from '@/features/catalog/pricing';
 import type { PricingPromotionInput } from '@/features/catalog/pricing';
+import { pickApprovedPrimaryProductImage } from '@/features/catalog/repository.server';
 import { getCategories } from '@/features/catalog/service.server';
 import { resolvePublicClassCoverUrl } from '@/features/classes/repository.server';
 import {
@@ -254,7 +255,13 @@ export async function getHomeData(
             }))
         : [];
       return rows
-        .filter((row) => row.status === 'published' && row.is_featured)
+        .filter(
+          (row) =>
+            row.status === 'published' &&
+            row.is_featured &&
+            (row as { needs_owner_review?: boolean | null })
+              .needs_owner_review !== true,
+        )
         .map((row) => {
           const categoryLinks = Array.isArray(row.product_categories)
             ? row.product_categories
@@ -282,12 +289,10 @@ export async function getHomeData(
                 '',
             )
             .filter(Boolean);
-          const images = Array.isArray(row.product_images)
-            ? row.product_images
-            : [];
-          const primaryImage =
-            images.find((img) => img.is_primary && img.alt_text) ??
-            images.find((img) => Boolean(img.alt_text));
+          const { imageAlt, previewImageUrl } = pickApprovedPrimaryProductImage(
+            row.product_images,
+            FOUNDATION_COPY.MEDIA_CAPTION,
+          );
 
           const branchFromPriceIdr: Record<string, number> = {};
           const branchPromotions: Record<
@@ -367,7 +372,8 @@ export async function getHomeData(
             isBestSeller: row.is_best_seller,
             isNew: row.is_new,
             primaryCategory,
-            imageAlt: primaryImage?.alt_text ?? FOUNDATION_COPY.MEDIA_CAPTION,
+            imageAlt,
+            ...(previewImageUrl ? { imageUrl: previewImageUrl } : {}),
             ...(Object.keys(branchFromPriceIdr).length > 0
               ? { branchFromPriceIdr }
               : {}),

@@ -26,9 +26,10 @@ export async function readPublishedCatalogProducts(signal?: AbortSignal) {
   const { data, error } = await createPublicReadClient()
     .from('products')
     .select(
-      'id,name,slug,short_description,description,product_type,is_featured,is_best_seller,is_new,status,sort_order,created_at,product_categories(category_id,is_primary,categories(id,name,slug,status)),product_images(alt_text,is_primary,sort_order),product_variants(id,sku,name,size_label,base_price_idr,status,sort_order,is_default,branch_variant_offers(branch_id,is_listed,availability_status,stock_quantity,price_override_idr),option_groups(id,name,min_select,max_select,quantity_per_selection,is_required,sort_order,option_choices(id,label,price_delta_idr,is_active,sort_order)),variant_dietary_tags(dietary_tag_id,verification_status,verified_at,dietary_tags(id,slug,name)))',
+      'id,name,slug,short_description,description,product_type,is_featured,is_best_seller,is_new,needs_owner_review,status,sort_order,created_at,product_categories(category_id,is_primary,categories(id,name,slug,status)),product_images(is_approved,storage_bucket,storage_path,alt_text,is_primary,sort_order),product_variants(id,sku,name,size_label,base_price_idr,status,sort_order,is_default,branch_variant_offers(branch_id,is_listed,availability_status,stock_quantity,price_override_idr),option_groups(id,name,min_select,max_select,quantity_per_selection,is_required,sort_order,option_choices(id,label,price_delta_idr,is_active,sort_order)),variant_dietary_tags(dietary_tag_id,verification_status,verified_at,dietary_tags(id,slug,name)))',
     )
     .eq('status', 'published')
+    .eq('needs_owner_review', false)
     .retry(false)
     .order('sort_order')
     .order('id')
@@ -89,6 +90,58 @@ export async function readComponentVariantsByIds(
     .abortSignal(withDeadline(signal));
   if (error) throw new Error('Component variants read unavailable');
   return data ?? [];
+}
+
+export interface ProductImageMetadataRow {
+  alt_text?: string | null;
+  is_primary?: boolean | null;
+  sort_order?: number | null;
+  is_approved?: boolean | null;
+  storage_bucket?: string | null;
+  storage_path?: string | null;
+}
+
+export function pickApprovedPrimaryProductImage(
+  images: readonly ProductImageMetadataRow[] | null | undefined,
+  fallbackAlt: string,
+): { imageAlt: string; previewImageUrl: string | null } {
+  const list = Array.isArray(images) ? images : [];
+  const sorted = [...list].sort((a, b) => {
+    const aPrimary = a.is_primary ? 0 : 1;
+    const bPrimary = b.is_primary ? 0 : 1;
+    if (aPrimary !== bPrimary) return aPrimary - bPrimary;
+    return (a.sort_order ?? 0) - (b.sort_order ?? 0);
+  });
+
+  const approved = sorted.filter(
+    (img) =>
+      img.is_approved === true &&
+      typeof img.storage_bucket === 'string' &&
+      typeof img.storage_path === 'string' &&
+      Boolean(img.storage_path.trim()),
+  );
+
+  for (const img of approved) {
+    const url = resolvePublicProductImageUrl(
+      img.storage_bucket!,
+      img.storage_path!,
+    );
+    if (url) {
+      return {
+        imageAlt: img.alt_text?.trim() || fallbackAlt,
+        previewImageUrl: url,
+      };
+    }
+  }
+
+  const altOnly =
+    sorted.find((img) => img.is_primary && img.alt_text?.trim()) ??
+    sorted.find((img) => Boolean(img.alt_text?.trim()));
+
+  return {
+    imageAlt: altOnly?.alt_text?.trim() || fallbackAlt,
+    previewImageUrl: null,
+  };
 }
 
 export function resolvePublicProductImageUrl(

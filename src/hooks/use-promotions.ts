@@ -11,7 +11,7 @@ export function usePublicPromotions(
   return useQuery({
     queryKey: QUERY_KEYS.PROMOTIONS(branchCode),
     queryFn: ({ signal }) => fetchPublicPromotions(branchCode, signal),
-    staleTime: STALE_TIME.PUBLIC,
+    staleTime: STALE_TIME.BRANCH_OFFERS,
     enabled,
   });
 }

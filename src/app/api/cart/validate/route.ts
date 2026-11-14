@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
+import { CART_LIMITS } from '@/constants/cart.constant';
 import { ERROR_COPY } from '@/constants/copy.constant';
 import { validateCartItems } from '@/features/cart/service.server';
+import { logServerEvent } from '@/lib/logger.server';
+import { readBoundedUtf8Body } from '@/lib/request-body.server';
 import { createSuccessResponse } from '@/lib/response.server';
 import { apiErrorSchema } from '@/validations/api.schema';
 import {
@@ -9,12 +12,52 @@ import {
 } from '@/validations/cart.schema';
 
 export async function POST(request: Request) {
+  const startedAt = Date.now();
   const requestId = crypto.randomUUID();
+
+  const bounded = await readBoundedUtf8Body(
+    request,
+    CART_LIMITS.MAX_REQUEST_BYTES,
+  );
+  if (!bounded.ok) {
+    const isTooLarge = bounded.reason === 'too_large';
+    const status = isTooLarge ? 413 : 400;
+    const code = isTooLarge ? 'REQUEST_TOO_LARGE' : 'INVALID_REQUEST';
+    logServerEvent({
+      requestId,
+      route: '/api/cart/validate',
+      operation: 'validate_cart',
+      status,
+      durationMs: Date.now() - startedAt,
+      errorCode: code,
+    });
+    return NextResponse.json(
+      apiErrorSchema.parse({
+        ok: false,
+        error: {
+          code,
+          message: isTooLarge
+            ? ERROR_COPY.REQUEST_TOO_LARGE
+            : ERROR_COPY.INVALID_REQUEST,
+        },
+        requestId,
+      }),
+      { status, headers: { 'Cache-Control': 'no-store' } },
+    );
+  }
 
   let body: unknown;
   try {
-    body = await request.json();
+    body = JSON.parse(bounded.text);
   } catch {
+    logServerEvent({
+      requestId,
+      route: '/api/cart/validate',
+      operation: 'validate_cart',
+      status: 400,
+      durationMs: Date.now() - startedAt,
+      errorCode: 'INVALID_REQUEST',
+    });
     return NextResponse.json(
       apiErrorSchema.parse({
         ok: false,
@@ -27,6 +70,14 @@ export async function POST(request: Request) {
 
   const parsed = cartValidationRequestSchema.safeParse(body);
   if (!parsed.success) {
+    logServerEvent({
+      requestId,
+      route: '/api/cart/validate',
+      operation: 'validate_cart',
+      status: 422,
+      durationMs: Date.now() - startedAt,
+      errorCode: 'INVALID_REQUEST',
+    });
     return NextResponse.json(
       apiErrorSchema.parse({
         ok: false,
@@ -43,6 +94,15 @@ export async function POST(request: Request) {
       new Date(),
       request.signal,
     );
+    logServerEvent({
+      requestId,
+      route: '/api/cart/validate',
+      operation: 'validate_cart',
+      status: 200,
+      durationMs: Date.now() - startedAt,
+      branchId: result.branchId,
+      count: result.lines.length,
+    });
     return createSuccessResponse(
       cartValidationResponseSchema,
       result,
@@ -53,6 +113,14 @@ export async function POST(request: Request) {
       err instanceof Error &&
       err.message.toLowerCase().includes('not found')
     ) {
+      logServerEvent({
+        requestId,
+        route: '/api/cart/validate',
+        operation: 'validate_cart',
+        status: 404,
+        durationMs: Date.now() - startedAt,
+        errorCode: 'NOT_FOUND',
+      });
       return NextResponse.json(
         apiErrorSchema.parse({
           ok: false,
@@ -63,6 +131,14 @@ export async function POST(request: Request) {
       );
     }
 
+    logServerEvent({
+      requestId,
+      route: '/api/cart/validate',
+      operation: 'validate_cart',
+      status: 503,
+      durationMs: Date.now() - startedAt,
+      errorCode: 'UPSTREAM_ERROR',
+    });
     return NextResponse.json(
       apiErrorSchema.parse({
         ok: false,

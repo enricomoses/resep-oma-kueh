@@ -3,6 +3,7 @@ export const CART_LIMITS = {
   MAX_QTY_PER_LINE: 99,
   MAX_OPTIONS_PER_LINE: 12,
   MAX_STORAGE_KEY_LENGTH: 64,
+  MAX_REQUEST_BYTES: 32 * 1024,
 } as const;
 
 export const CART_STORAGE = {

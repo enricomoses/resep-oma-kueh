@@ -421,6 +421,7 @@ export function MenuView({
                       product={product}
                       hasBranchSelected={hasBranchSelected}
                       branchCode={activeBranch?.code ?? branchState.code}
+                      previewImageUrl={product.previewImageUrl ?? null}
                     />
                   ))}
                 </div>

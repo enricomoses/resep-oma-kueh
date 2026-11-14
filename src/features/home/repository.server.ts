@@ -33,9 +33,10 @@ export async function readFeaturedProducts(signal?: AbortSignal) {
   const { data, error } = await createPublicReadClient()
     .from('products')
     .select(
-      'id,name,slug,short_description,description,product_type,is_best_seller,is_new,is_featured,status,sort_order,product_categories(category_id,is_primary,categories(id,name,slug,status)),product_images(alt_text,is_primary,sort_order),product_variants(id,base_price_idr,status,sort_order,branch_variant_offers(branch_id,is_listed,availability_status,stock_quantity,price_override_idr),option_groups(id,min_select,max_select,is_required,option_choices(id,price_delta_idr,is_active)))',
+      'id,name,slug,short_description,description,product_type,is_best_seller,is_new,is_featured,needs_owner_review,status,sort_order,product_categories(category_id,is_primary,categories(id,name,slug,status)),product_images(is_approved,storage_bucket,storage_path,alt_text,is_primary,sort_order),product_variants(id,base_price_idr,status,sort_order,branch_variant_offers(branch_id,is_listed,availability_status,stock_quantity,price_override_idr),option_groups(id,min_select,max_select,is_required,option_choices(id,price_delta_idr,is_active)))',
     )
     .eq('status', 'published')
+    .eq('needs_owner_review', false)
     .eq('is_featured', true)
     .retry(false)
     .order('sort_order')

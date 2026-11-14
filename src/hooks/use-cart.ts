@@ -73,7 +73,7 @@ export function useCart() {
         signal,
       ),
     enabled: isValidationEnabled,
-    staleTime: STALE_TIME.PUBLIC,
+    staleTime: STALE_TIME.BRANCH_OFFERS,
     refetchOnWindowFocus: true,
   });
 

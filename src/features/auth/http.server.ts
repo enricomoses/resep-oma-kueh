@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import type { z } from 'zod';
 
 import { ERROR_COPY } from '@/constants/copy.constant';
+import { readBoundedUtf8Body } from '@/lib/request-body.server';
 import { apiErrorSchema, apiSuccessSchema } from '@/validations/api.schema';
 
 import {
@@ -107,25 +108,16 @@ export async function readBoundedJsonBody(
   request: Request,
   maxBytes: number,
 ): Promise<unknown> {
-  const contentLength = request.headers.get('content-length');
-  if (contentLength && Number.parseInt(contentLength, 10) > maxBytes) {
-    throw new AuthRequestTooLargeError();
-  }
-
-  let buffer: ArrayBuffer;
-  try {
-    buffer = await request.arrayBuffer();
-  } catch {
+  const bounded = await readBoundedUtf8Body(request, maxBytes);
+  if (!bounded.ok) {
+    if (bounded.reason === 'too_large') {
+      throw new AuthRequestTooLargeError();
+    }
     throw new AuthInvalidRequestError();
   }
 
-  if (buffer.byteLength > maxBytes) {
-    throw new AuthRequestTooLargeError();
-  }
-
   try {
-    const text = new TextDecoder('utf-8').decode(buffer);
-    return JSON.parse(text);
+    return JSON.parse(bounded.text);
   } catch {
     throw new AuthInvalidRequestError();
   }

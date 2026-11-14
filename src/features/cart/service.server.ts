@@ -158,7 +158,9 @@ export async function validateCartItems(
       !variant ||
       variant.status !== 'active' ||
       !product ||
-      product.status !== 'published'
+      product.status !== 'published' ||
+      (product as { needs_owner_review?: boolean | null })
+        .needs_owner_review === true
     ) {
       conflict = CART_CONFLICTS.ARCHIVED;
       conflictMessage = CART_COPY.CONFLICT_ARCHIVED;
@@ -187,46 +189,98 @@ export async function validateCartItems(
       }
     }
 
+    if (
+      conflict === CART_CONFLICTS.NONE &&
+      product?.product_type === 'bundle' &&
+      !variant?.bundle_rules_verified
+    ) {
+      conflict = CART_CONFLICTS.COMPONENT_UNAVAILABLE;
+      conflictMessage = CART_COPY.CONFLICT_COMPONENT_UNAVAILABLE;
+    }
+
     // Process options and bundle components
     const bundleBreakdown: BundleBreakdownItem[] = [];
     const choiceNames: string[] = [];
     const selectedOptionDeltasIdr: number[] = [];
 
-    if (variant && item.choiceIds.length > 0) {
-      const choiceIdSet = new Set(item.choiceIds);
+    if (variant) {
+      const optionChoiceLookup = new Map<
+        string,
+        {
+          group: NonNullable<typeof variant.option_groups>[number];
+          choice: NonNullable<
+            NonNullable<typeof variant.option_groups>[number]['option_choices']
+          >[number];
+        }
+      >();
+      const groupSelectionCounts = new Map<string, number>();
+
       for (const group of variant.option_groups ?? []) {
         for (const choice of group.option_choices ?? []) {
-          if (choiceIdSet.has(choice.id)) {
-            choiceNames.push(choice.label);
-            selectedOptionDeltasIdr.push(choice.price_delta_idr);
+          optionChoiceLookup.set(choice.id, { group, choice });
+        }
+      }
 
-            if (choice.component_variant_id) {
-              const comp = componentVariantMap.get(choice.component_variant_id);
-              const compOffer = comp?.branch_variant_offers?.find(
-                (o) => o.branch_id === branch.id && o.is_listed,
-              );
-              const compAvailable =
-                comp &&
-                comp.status === 'active' &&
-                compOffer &&
-                compOffer.availability_status !== 'sold_out' &&
-                (compOffer.stock_quantity === null ||
-                  compOffer.stock_quantity > 0);
+      for (const choiceId of new Set(item.choiceIds)) {
+        const matched = optionChoiceLookup.get(choiceId);
+        if (!matched || matched.choice.is_active === false) {
+          if (conflict === CART_CONFLICTS.NONE) {
+            conflict = CART_CONFLICTS.COMPONENT_UNAVAILABLE;
+            conflictMessage = CART_COPY.CONFLICT_COMPONENT_UNAVAILABLE;
+          }
+          continue;
+        }
 
-              if (!compAvailable && conflict === CART_CONFLICTS.NONE) {
-                conflict = CART_CONFLICTS.COMPONENT_UNAVAILABLE;
-                conflictMessage = CART_COPY.CONFLICT_COMPONENT_UNAVAILABLE;
-              }
+        const { group, choice } = matched;
+        groupSelectionCounts.set(
+          group.id,
+          (groupSelectionCounts.get(group.id) ?? 0) + 1,
+        );
+        choiceNames.push(choice.label);
+        selectedOptionDeltasIdr.push(choice.price_delta_idr);
 
-              bundleBreakdown.push({
-                slotOrGroup: group.name,
-                label: choice.label,
-                quantity: group.quantity_per_selection,
-                priceDeltaIdr: choice.price_delta_idr,
-                componentVariantId: choice.component_variant_id,
-                isFixed: false,
-              });
-            }
+        if (choice.component_variant_id) {
+          const comp = componentVariantMap.get(choice.component_variant_id);
+          const compOffer = comp?.branch_variant_offers?.find(
+            (o) => o.branch_id === branch.id && o.is_listed,
+          );
+          const compAvailable =
+            comp &&
+            comp.status === 'active' &&
+            compOffer &&
+            compOffer.availability_status !== 'sold_out' &&
+            (compOffer.stock_quantity === null || compOffer.stock_quantity > 0);
+
+          if (!compAvailable && conflict === CART_CONFLICTS.NONE) {
+            conflict = CART_CONFLICTS.COMPONENT_UNAVAILABLE;
+            conflictMessage = CART_COPY.CONFLICT_COMPONENT_UNAVAILABLE;
+          }
+
+          bundleBreakdown.push({
+            slotOrGroup: group.name,
+            label: choice.label,
+            quantity: group.quantity_per_selection,
+            priceDeltaIdr: choice.price_delta_idr,
+            componentVariantId: choice.component_variant_id,
+            isFixed: false,
+          });
+        }
+      }
+
+      if (conflict === CART_CONFLICTS.NONE) {
+        for (const group of variant.option_groups ?? []) {
+          const selectedCount = groupSelectionCounts.get(group.id) ?? 0;
+          const minRequired = Math.max(
+            group.min_select ?? 0,
+            group.is_required ? 1 : 0,
+          );
+          if (
+            selectedCount < minRequired ||
+            (group.max_select !== null && selectedCount > group.max_select)
+          ) {
+            conflict = CART_CONFLICTS.COMPONENT_UNAVAILABLE;
+            conflictMessage = CART_COPY.CONFLICT_COMPONENT_UNAVAILABLE;
+            break;
           }
         }
       }

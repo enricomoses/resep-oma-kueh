@@ -639,3 +639,53 @@ it('enforces BFF route handler HTTP 200/400/503 contracts and Cache-Control: no-
   expect(errorBody.ok).toBe(false);
   expect(errorBody.error.code).toBe('UPSTREAM_ERROR');
 });
+
+it('resolves approved previewImageUrl, hides unapproved media, and excludes needs_owner_review products in getCatalog', async () => {
+  const defaults = createDefaultFixtures();
+  const baseProduct = defaults.products[0];
+  stubSupabaseRest((table) => {
+    if (table !== 'products') return null;
+    return {
+      body: [
+        {
+          ...baseProduct,
+          needs_owner_review: false,
+          product_images: [
+            {
+              alt_text: 'Draft photo must not appear',
+              is_primary: true,
+              sort_order: 0,
+              is_approved: false,
+              storage_bucket: 'product-images',
+              storage_path: 'draft/hidden.webp',
+            },
+            {
+              alt_text: 'Approved Coffee Chiffon Photo',
+              is_primary: false,
+              sort_order: 1,
+              is_approved: true,
+              storage_bucket: 'product-images',
+              storage_path: 'approved/coffee-card.webp',
+            },
+          ],
+        },
+        {
+          ...baseProduct,
+          id: 'f0400000-0000-4000-8000-000000000498',
+          slug: 'demo-unreviewed-catalog',
+          name: 'DEMO — Unreviewed Catalog Item',
+          needs_owner_review: true,
+          product_images: [],
+        },
+      ],
+    };
+  });
+
+  const result = await getCatalog({ branch: 'surabaya' });
+  expect(result.items).toHaveLength(1);
+  expect(result.items[0]?.slug).toBe(baseProduct.slug);
+  expect(result.items[0]?.imageAlt).toBe('Approved Coffee Chiffon Photo');
+  expect(result.items[0]?.previewImageUrl).toContain(
+    '/storage/v1/object/public/product-images/approved/coffee-card.webp',
+  );
+});

@@ -127,6 +127,7 @@ export const homeFeaturedProductSchema = z
       .strict()
       .nullable(),
     imageAlt: plainTextLabelSchema,
+    imageUrl: z.url().max(2000).nullable().optional(),
     branchFromPriceIdr: z
       .record(z.string(), z.number().int().nonnegative())
       .optional(),

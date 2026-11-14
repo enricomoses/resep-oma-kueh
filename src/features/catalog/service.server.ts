@@ -27,6 +27,7 @@ import type {
   VariantEffectivePriceResult,
 } from './pricing';
 import {
+  pickApprovedPrimaryProductImage,
   readActiveCatalogPromotions,
   readComponentVariantsByIds,
   readPublishedCatalogProducts,
@@ -37,6 +38,11 @@ import {
 
 export interface GetCatalogOptions {
   now?: Date;
+}
+
+interface CatalogPreloadedData {
+  branches?: Awaited<ReturnType<typeof readActiveBranches>>;
+  promotionRows?: Awaited<ReturnType<typeof readActiveCatalogPromotions>>;
 }
 
 type AvailabilityStatus = 'available' | 'sold_out' | 'unconfirmed';
@@ -96,14 +102,27 @@ export async function getCatalog(
   options: GetCatalogOptions = {},
   signal?: AbortSignal,
 ): Promise<CatalogDirectory> {
+  return computeCatalogDirectory(input, options, {}, signal);
+}
+
+async function computeCatalogDirectory(
+  input: unknown = {},
+  options: GetCatalogOptions = {},
+  preloaded: CatalogPreloadedData = {},
+  signal?: AbortSignal,
+): Promise<CatalogDirectory> {
   const query = catalogQuerySchema.parse(input);
   const now = options.now ?? new Date();
 
   const [branches, categories, productRows, promotionRows] = await Promise.all([
-    readActiveBranches(signal),
+    preloaded.branches
+      ? Promise.resolve(preloaded.branches)
+      : readActiveBranches(signal),
     readPublishedCategories(signal),
     readPublishedCatalogProducts(signal),
-    readActiveCatalogPromotions(signal),
+    preloaded.promotionRows
+      ? Promise.resolve(preloaded.promotionRows)
+      : readActiveCatalogPromotions(signal),
   ]);
 
   const resolvedBranch = query.branch
@@ -211,6 +230,12 @@ export async function getCatalog(
   for (const row of productRows) {
     if (row.status !== 'published') continue;
     if (
+      (row as { needs_owner_review?: boolean | null }).needs_owner_review ===
+      true
+    ) {
+      continue;
+    }
+    if (
       row.product_type !== 'simple' &&
       row.product_type !== 'variants' &&
       row.product_type !== 'bundle'
@@ -288,11 +313,10 @@ export async function getCatalog(
       variantVerifiedTags.set(variant.id, verified);
     }
 
-    const images = Array.isArray(row.product_images) ? row.product_images : [];
-    const primaryImage =
-      images.find((img) => img.is_primary && img.alt_text) ??
-      images.find((img) => Boolean(img.alt_text));
-    const imageAlt = primaryImage?.alt_text ?? FOUNDATION_COPY.MEDIA_CAPTION;
+    const { imageAlt, previewImageUrl } = pickApprovedPrimaryProductImage(
+      row.product_images,
+      FOUNDATION_COPY.MEDIA_CAPTION,
+    );
 
     if (resolvedBranchId === null) {
       // No branch selected: filter variants by verified tag if requested, no branch price or offer status.
@@ -329,6 +353,7 @@ export async function getCatalog(
           slug: primaryCat.slug,
         },
         imageAlt,
+        ...(previewImageUrl ? { previewImageUrl } : {}),
         verifiedDietaryTags: [...dedupedTags.values()].sort((a, b) =>
           a.slug.localeCompare(b.slug),
         ),
@@ -488,6 +513,7 @@ export async function getCatalog(
         slug: primaryCat.slug,
       },
       imageAlt,
+      ...(previewImageUrl ? { previewImageUrl } : {}),
       verifiedDietaryTags: [...dedupedTags.values()].sort((a, b) =>
         a.slug.localeCompare(b.slug),
       ),
@@ -971,7 +997,7 @@ export async function getProductDetail(
   }
 
   // Fetch related products from the same primary category (excluding current product)
-  const relatedCatalog = await getCatalog(
+  const relatedCatalog = await computeCatalogDirectory(
     {
       branch: resolvedBranchCode ?? undefined,
       category: primaryCategory.slug,
@@ -980,6 +1006,7 @@ export async function getProductDetail(
       limit: CATALOG_LIMITS.MAX_RELATED_PRODUCTS + 2,
     },
     options,
+    { branches, promotionRows },
     signal,
   );
 

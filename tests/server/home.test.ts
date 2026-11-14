@@ -388,3 +388,100 @@ it('isolates per-section database failures without crashing other sections', asy
   expect(result.upcomingClasses).toEqual({ status: 'success', data: [] });
   expect(result.testimonials).toEqual({ status: 'success', data: [] });
 });
+
+it('resolves approved featured product imageUrl, suppresses unapproved media, and excludes needs_owner_review items', async () => {
+  stubSupabaseRest((table) => {
+    if (table === 'products') {
+      return {
+        body: [
+          {
+            id: 'f0400000-0000-4000-8000-000000000400',
+            name: 'DEMO — Featured With Approved Photo',
+            slug: 'demo-approved-photo',
+            short_description: null,
+            description: null,
+            product_type: 'simple',
+            is_best_seller: false,
+            is_new: false,
+            is_featured: true,
+            needs_owner_review: false,
+            status: 'published',
+            sort_order: 0,
+            product_categories: [
+              {
+                category_id: 'f0400000-0000-4000-8000-000000000200',
+                is_primary: true,
+                categories: {
+                  name: 'Chiffon',
+                  slug: 'chiffon',
+                  status: 'published',
+                },
+              },
+            ],
+            product_images: [
+              {
+                alt_text: 'Draft unapproved photo',
+                is_primary: true,
+                sort_order: 0,
+                is_approved: false,
+                storage_bucket: 'product-images',
+                storage_path: 'draft/unapproved.webp',
+              },
+              {
+                alt_text: 'Approved secondary photo',
+                is_primary: false,
+                sort_order: 1,
+                is_approved: true,
+                storage_bucket: 'product-images',
+                storage_path: 'approved/coffee-chiffon.webp',
+              },
+            ],
+            product_variants: [],
+          },
+          {
+            id: 'f0400000-0000-4000-8000-000000000499',
+            name: 'DEMO — Unreviewed Item',
+            slug: 'demo-unreviewed',
+            short_description: null,
+            description: null,
+            product_type: 'simple',
+            is_best_seller: false,
+            is_new: false,
+            is_featured: true,
+            needs_owner_review: true,
+            status: 'published',
+            sort_order: 1,
+            product_categories: [
+              {
+                category_id: 'f0400000-0000-4000-8000-000000000200',
+                is_primary: true,
+                categories: {
+                  name: 'Chiffon',
+                  slug: 'chiffon',
+                  status: 'published',
+                },
+              },
+            ],
+            product_images: [],
+            product_variants: [],
+          },
+        ],
+      };
+    }
+    return { body: [] };
+  });
+
+  const result = await getHomeData();
+  expect(result.featuredProducts.status).toBe('success');
+  if (result.featuredProducts.status !== 'success') {
+    throw new Error('Expected featuredProducts success');
+  }
+  expect(result.featuredProducts.data).toHaveLength(1);
+  expect(result.featuredProducts.data[0]?.slug).toBe('demo-approved-photo');
+  expect(result.featuredProducts.data[0]?.imageAlt).toBe(
+    'Approved secondary photo',
+  );
+  expect(result.featuredProducts.data[0]?.imageUrl).toContain(
+    '/storage/v1/object/public/product-images/approved/coffee-chiffon.webp',
+  );
+});

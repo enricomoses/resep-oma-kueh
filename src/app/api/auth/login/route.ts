@@ -8,13 +8,16 @@ import {
   readBoundedJsonBody,
 } from '@/features/auth/http.server';
 import { extractClientIpHash } from '@/features/auth/rate-limit.server';
+import { AuthError } from '@/features/auth/errors.server';
 import { loginAdmin } from '@/features/auth/service.server';
+import { logServerEvent } from '@/lib/logger.server';
 import {
   loginRequestSchema,
   loginResponseSchema,
 } from '@/validations/auth.schema';
 
 export async function POST(request: Request) {
+  const startedAt = Date.now();
   const requestId = crypto.randomUUID();
   const carrier = createCookieCarrierResponse();
 
@@ -29,6 +32,13 @@ export async function POST(request: Request) {
       ipHash: extractClientIpHash(request),
       carrier,
     });
+    logServerEvent({
+      requestId,
+      route: '/api/auth/login',
+      operation: 'admin_login',
+      status: 200,
+      durationMs: Date.now() - startedAt,
+    });
     return createAuthJsonSuccess(
       result,
       loginResponseSchema,
@@ -36,6 +46,16 @@ export async function POST(request: Request) {
       carrier,
     );
   } catch (err) {
+    const status = err instanceof AuthError ? err.status : 500;
+    const errorCode = err instanceof AuthError ? err.code : 'INTERNAL_ERROR';
+    logServerEvent({
+      requestId,
+      route: '/api/auth/login',
+      operation: 'admin_login',
+      status,
+      durationMs: Date.now() - startedAt,
+      errorCode,
+    });
     return createAuthJsonError(err, requestId, carrier);
   }
 }

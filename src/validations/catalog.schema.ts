@@ -144,6 +144,7 @@ export const catalogProductItemSchema = z
       .strict()
       .nullable(),
     imageAlt: plainTextLabelSchema,
+    previewImageUrl: z.url().max(2000).nullable().optional(),
     verifiedDietaryTags: z.array(catalogDietaryTagSchema).max(16),
     activeVariantCount: z.number().int().nonnegative(),
     offeredVariantCount: z.number().int().nonnegative(),

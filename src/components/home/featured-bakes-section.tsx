@@ -1,5 +1,5 @@
 import { ArrowRight } from 'lucide-react';
-import { MediaPlaceholder } from '@/app/_components';
+import { MenuProductCardMedia } from '@/components/catalog/menu-product-card-media';
 import { ActionLink } from '@/components/ui/action-link';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
@@ -51,9 +51,7 @@ export function FeaturedBakesSection({
       ) : (
         <div className="product-grid home-featured-grid">
           {featuredProducts.data.map((product) => {
-            const targetHref = product.primaryCategory
-              ? `${ROUTES.MENU}?category=${encodeURIComponent(product.primaryCategory.slug)}`
-              : ROUTES.MENU;
+            const targetHref = `${ROUTES.MENU}/${encodeURIComponent(product.slug)}`;
             const branchPrice =
               selectedBranchId && product.branchFromPriceIdr
                 ? product.branchFromPriceIdr[selectedBranchId]
@@ -64,8 +62,10 @@ export function FeaturedBakesSection({
                 : undefined;
             return (
               <Card key={product.id} className="home-featured-card">
-                <MediaPlaceholder
-                  caption={product.imageAlt}
+                <MenuProductCardMedia
+                  previewImageUrl={product.imageUrl ?? null}
+                  imageAlt={product.imageAlt}
+                  placeholderCaption={product.imageAlt}
                   className="home-card-media"
                 />
                 <div className="home-badge-row">
