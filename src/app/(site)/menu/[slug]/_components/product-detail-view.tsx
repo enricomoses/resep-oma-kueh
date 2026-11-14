@@ -15,11 +15,11 @@ import {
   PRODUCT_DETAIL_COPY,
 } from '@/constants/catalog.constant';
 import { useBranches } from '@/hooks/use-branches';
-import type { InitialCatalogSection } from '@/hooks/use-catalog';
 import { useProductDetail } from '@/hooks/use-catalog';
 import { useCartStore } from '@/stores/cart.store';
 import type {
   BundleBreakdownItem,
+  InitialCatalogSection,
   PreparedCartLinePayload,
   ProductDetail,
   ProductDetailVariant,

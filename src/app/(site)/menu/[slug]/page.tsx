@@ -11,18 +11,10 @@ import {
 import { ROUTES } from '@/constants/routes.constant';
 import { readPublishedProductBySlug } from '@/features/catalog/repository.server';
 import { getProductDetail } from '@/features/catalog/service.server';
-import type { InitialCatalogSection } from '@/hooks/use-catalog';
+import type { InitialCatalogSection, ProductDetail } from '@/types/catalog';
+import { firstSearchParam } from '@/utils/branch-url';
 import { buildPageMetadata } from '@/utils/seo';
 import { buildProductJsonLd } from '@/utils/structured-data';
-import type { ProductDetail } from '@/types/catalog';
-
-function firstParam(value: string | string[] | undefined): string | undefined {
-  if (typeof value === 'string') {
-    const trimmed = value.trim();
-    return trimmed.length > 0 ? trimmed : undefined;
-  }
-  return undefined;
-}
 
 export async function generateMetadata({
   params,
@@ -68,7 +60,7 @@ export default async function MenuDetailPage({
   await connection();
   const { slug } = await params;
   const resolvedParams = await searchParams;
-  const branch = firstParam(resolvedParams[CATALOG_QUERY_PARAMS.BRANCH]);
+  const branch = firstSearchParam(resolvedParams[CATALOG_QUERY_PARAMS.BRANCH]);
 
   let initialDetail: InitialCatalogSection<ProductDetail>;
 

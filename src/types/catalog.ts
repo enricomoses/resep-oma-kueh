@@ -47,6 +47,9 @@ export type PreparedCartLinePayload = z.infer<
   typeof preparedCartLinePayloadSchema
 >;
 
+export type InitialCatalogSection<T> =
+  { status: 'success'; data: T } | { status: 'error' };
+
 type BundleValidationErrorCode =
   | 'NOT_A_BUNDLE'
   | 'BUNDLE_NOT_VERIFIED'

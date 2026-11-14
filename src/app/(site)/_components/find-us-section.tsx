@@ -5,15 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { HOME_COPY, HOME_SECTION_IDS } from '@/constants/home.constant';
-import type { PublicBranch } from '@/types/branch';
+import type { ApprovedBranchContact, PublicBranch } from '@/types/branch';
 import { cn } from '@/utils';
-
-interface ApprovedBranchContact {
-  code: string;
-  name: string;
-  whatsappNumber: string;
-  address: string | null;
-}
 
 interface FindUsSectionProps {
   approvedBranches: readonly ApprovedBranchContact[];

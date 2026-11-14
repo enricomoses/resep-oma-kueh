@@ -4,22 +4,12 @@ import { ActionLink } from '@/components/ui/action-link';
 import { APP } from '@/constants';
 import { SITE_COPY, SITE_HELP } from '@/constants/site.constant';
 import { useBranches } from '@/hooks/use-branches';
+import type { ApprovedContacts } from '@/types/branch';
 import { cn } from '@/utils';
 import { withBranch } from '@/utils/branch-url';
 
-interface ContactDetails {
-  email: string;
-  instagramUrl: string;
-  branches: readonly {
-    code: string;
-    name: string;
-    whatsappNumber: string;
-    address: string | null;
-  }[];
-}
-
 interface SiteFooterProps {
-  contacts: ContactDetails;
+  contacts: ApprovedContacts;
   initialUnavailable: boolean;
   footerNote?: string | null;
   className?: string;

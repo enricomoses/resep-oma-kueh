@@ -13,23 +13,12 @@ import { ROUTES } from '@/constants/routes.constant';
 import { SITE_COPY } from '@/constants/site.constant';
 import { useBranches } from '@/hooks/use-branches';
 import { usePublicClassDetail } from '@/hooks/use-classes';
-import type { PublicClassProgram } from '@/types/classes';
+import type { InitialPublicClassDetail } from '@/types/classes';
 import { cn } from '@/utils';
 import { withBranch } from '@/utils/branch-url';
 import { formatClassAgeRange } from '@/utils/classes';
 import { formatIdr } from '@/utils/currency';
 import { ClassRegistrationPanel } from './class-registration-panel';
-
-export type InitialPublicClassDetail =
-  | {
-      status: 'success';
-      data: {
-        program: PublicClassProgram;
-        resolvedBranchId: string | null;
-        evaluatedAtUtc: string;
-      };
-    }
-  | { status: 'error' };
 
 interface ClassDetailViewProps {
   slug: string;

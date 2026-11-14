@@ -13,10 +13,10 @@ import {
   CATALOG_QUERY_PARAMS,
 } from '@/constants/catalog.constant';
 import { SITE_COPY } from '@/constants/site.constant';
-import type { InitialCatalogSection } from '@/hooks/use-catalog';
 import { useMenuFilters } from '@/hooks/use-menu-filters';
 import type {
   CatalogDirectory,
+  InitialCatalogSection,
   PublicCategoryDirectory,
 } from '@/types/catalog';
 import { cn } from '@/utils';

@@ -116,3 +116,17 @@ export type ConfirmActionState =
 export type ClassRegistrationFormValues = z.infer<
   typeof classRegistrationFormSchema
 >;
+
+export type InitialPublicClasses =
+  { status: 'success'; data: PublicClassesListData } | { status: 'error' };
+
+export type InitialPublicClassDetail =
+  | {
+      status: 'success';
+      data: {
+        program: PublicClassProgram;
+        resolvedBranchId: string | null;
+        evaluatedAtUtc: string;
+      };
+    }
+  | { status: 'error' };

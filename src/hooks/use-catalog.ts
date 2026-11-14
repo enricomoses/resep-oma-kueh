@@ -10,12 +10,10 @@ import {
 import type {
   CatalogDirectory,
   CatalogQueryInput,
+  InitialCatalogSection,
   ProductDetail,
   PublicCategoryDirectory,
 } from '@/types/catalog';
-
-export type InitialCatalogSection<T> =
-  { status: 'success'; data: T } | { status: 'error' };
 
 export function useCategories(
   initial?: InitialCatalogSection<PublicCategoryDirectory>,

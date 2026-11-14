@@ -13,47 +13,18 @@ import {
 import type {
   CatalogDirectory,
   CatalogQueryInput,
+  InitialCatalogSection,
   PublicCategoryDirectory,
 } from '@/types/catalog';
+import {
+  firstSearchParam,
+  parseCatalogEnumParam,
+  parseCatalogPositiveIntParam,
+  parseCatalogPriceParam,
+} from '@/utils/branch-url';
 
 import { useBranches } from './use-branches';
-import {
-  type InitialCatalogSection,
-  useCatalog,
-  useCategories,
-} from './use-catalog';
-
-function parseUrlEnum<T extends string>(
-  value: string | null,
-  allowed: readonly T[],
-): T | undefined {
-  if (!value) return undefined;
-  return allowed.includes(value as T) ? (value as T) : undefined;
-}
-
-function parseUrlPositiveInt(
-  value: string | null,
-  fallback: number,
-  max: number,
-): number {
-  if (!value || !/^\d+$/.test(value.trim())) return fallback;
-  const num = Number(value.trim());
-  if (!Number.isSafeInteger(num) || num < 1 || num > max) return fallback;
-  return num;
-}
-
-function parseUrlPrice(value: string | null): number | undefined {
-  if (!value || !/^\d+$/.test(value.trim())) return undefined;
-  const num = Number(value.trim());
-  if (
-    !Number.isSafeInteger(num) ||
-    num < 0 ||
-    num > CATALOG_LIMITS.MAX_UNIT_IDR
-  ) {
-    return undefined;
-  }
-  return num;
-}
+import { useCatalog, useCategories } from './use-catalog';
 
 interface UseMenuFiltersParams {
   initialCategories: InitialCatalogSection<PublicCategoryDirectory>;
@@ -75,8 +46,9 @@ export function useMenuFilters({
   const searchParams = useSearchParams();
   const branchState = useBranches();
 
-  const urlBranch =
-    searchParams.get(CATALOG_QUERY_PARAMS.BRANCH)?.trim() || undefined;
+  const urlBranch = firstSearchParam(
+    searchParams.get(CATALOG_QUERY_PARAMS.BRANCH),
+  );
   const matchedUrlBranch = urlBranch
     ? (branchState.items.find((b) => b.code === urlBranch) ?? null)
     : null;
@@ -88,30 +60,32 @@ export function useMenuFilters({
       initialCatalog.result.data.resolvedBranchId !== null &&
       initialCatalog.key.branch === (urlBranch ?? null));
 
-  const urlCategory =
-    searchParams.get(CATALOG_QUERY_PARAMS.CATEGORY)?.trim() || undefined;
-  const urlQ = searchParams.get(CATALOG_QUERY_PARAMS.Q)?.trim() || undefined;
-  const urlTag =
-    searchParams.get(CATALOG_QUERY_PARAMS.TAG)?.trim() || undefined;
-  const urlAvailability = parseUrlEnum(
+  const urlCategory = firstSearchParam(
+    searchParams.get(CATALOG_QUERY_PARAMS.CATEGORY),
+  );
+  const urlQ = firstSearchParam(searchParams.get(CATALOG_QUERY_PARAMS.Q));
+  const urlTag = firstSearchParam(searchParams.get(CATALOG_QUERY_PARAMS.TAG));
+  const urlAvailability = parseCatalogEnumParam(
     searchParams.get(CATALOG_QUERY_PARAMS.AVAILABILITY),
     CATALOG_AVAILABILITY,
   );
-  const urlMinPrice = parseUrlPrice(
+  const urlMinPrice = parseCatalogPriceParam(
     searchParams.get(CATALOG_QUERY_PARAMS.MIN_PRICE),
   );
-  const urlMaxPrice = parseUrlPrice(
+  const urlMaxPrice = parseCatalogPriceParam(
     searchParams.get(CATALOG_QUERY_PARAMS.MAX_PRICE),
   );
   const urlSort =
-    parseUrlEnum(searchParams.get(CATALOG_QUERY_PARAMS.SORT), CATALOG_SORTS) ??
-    'featured';
-  const urlPage = parseUrlPositiveInt(
+    parseCatalogEnumParam(
+      searchParams.get(CATALOG_QUERY_PARAMS.SORT),
+      CATALOG_SORTS,
+    ) ?? 'featured';
+  const urlPage = parseCatalogPositiveIntParam(
     searchParams.get(CATALOG_QUERY_PARAMS.PAGE),
     CATALOG_LIMITS.DEFAULT_PAGE,
     10_000,
   );
-  const urlLimit = parseUrlPositiveInt(
+  const urlLimit = parseCatalogPositiveIntParam(
     searchParams.get(CATALOG_QUERY_PARAMS.LIMIT),
     CATALOG_LIMITS.DEFAULT_LIMIT,
     CATALOG_LIMITS.MAX_LIMIT,

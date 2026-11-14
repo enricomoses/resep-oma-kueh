@@ -15,3 +15,16 @@ interface BranchSwitchRequest {
 export type BranchSwitchGuard = (
   request: BranchSwitchRequest,
 ) => boolean | Promise<boolean>;
+
+export interface ApprovedBranchContact {
+  code: string;
+  name: string;
+  whatsappNumber: string;
+  address: string | null;
+}
+
+export interface ApprovedContacts {
+  email: string;
+  instagramUrl: string;
+  branches: readonly ApprovedBranchContact[];
+}

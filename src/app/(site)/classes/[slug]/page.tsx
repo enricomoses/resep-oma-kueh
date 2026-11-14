@@ -2,10 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { connection } from 'next/server';
 
-import {
-  ClassDetailView,
-  type InitialPublicClassDetail,
-} from './_components/class-detail-view';
+import { ClassDetailView } from './_components/class-detail-view';
 import { StructuredDataScript } from '@/components/common/structured-data-script';
 import { getPublicEnvironment } from '@/config/environment.client';
 import { CATALOG_QUERY_PARAMS } from '@/constants/catalog.constant';
@@ -13,16 +10,10 @@ import { CLASSES_COPY } from '@/constants/classes.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { PublicClassNotFoundError } from '@/features/classes/errors.server';
 import { getPublicClassDetail } from '@/features/classes/service.server';
+import type { InitialPublicClassDetail } from '@/types/classes';
+import { firstSearchParam } from '@/utils/branch-url';
 import { buildPageMetadata } from '@/utils/seo';
 import { buildClassEventJsonLd } from '@/utils/structured-data';
-
-function firstParam(value: string | string[] | undefined): string | undefined {
-  if (typeof value === 'string') {
-    const trimmed = value.trim();
-    return trimmed.length > 0 ? trimmed : undefined;
-  }
-  return undefined;
-}
 
 export async function generateMetadata({
   params,
@@ -31,7 +22,7 @@ export async function generateMetadata({
   await connection();
   const { slug } = await params;
   const resolvedParams = await searchParams;
-  const branch = firstParam(resolvedParams[CATALOG_QUERY_PARAMS.BRANCH]);
+  const branch = firstSearchParam(resolvedParams[CATALOG_QUERY_PARAMS.BRANCH]);
 
   try {
     const detail = await getPublicClassDetail(slug, { branch });
@@ -59,7 +50,7 @@ export default async function ClassDetailPage({
   await connection();
   const { slug } = await params;
   const resolvedParams = await searchParams;
-  const branch = firstParam(resolvedParams[CATALOG_QUERY_PARAMS.BRANCH]);
+  const branch = firstSearchParam(resolvedParams[CATALOG_QUERY_PARAMS.BRANCH]);
 
   let initial: InitialPublicClassDetail;
   try {

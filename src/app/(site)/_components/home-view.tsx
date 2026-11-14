@@ -4,6 +4,7 @@ import { WhatTheySaySection } from '@/components/common/content/what-they-say-se
 import { HOME_CMS_DEFAULTS } from '@/constants/home.constant';
 import { SITE_COPY } from '@/constants/site.constant';
 import { useBranches } from '@/hooks/use-branches';
+import type { ApprovedContacts } from '@/types/branch';
 import type { HomePageData } from '@/types/home';
 import { cn } from '@/utils';
 
@@ -15,17 +16,6 @@ import { HomeHero } from './home-hero';
 import { InstagramCommunitySection } from './instagram-community-section';
 import { OurStorySection } from './our-story-section';
 import { ShopBySeriesSection } from './shop-by-series-section';
-
-interface ApprovedContacts {
-  email: string;
-  instagramUrl: string;
-  branches: readonly {
-    code: string;
-    name: string;
-    whatsappNumber: string;
-    address: string | null;
-  }[];
-}
 
 interface HomeViewProps {
   data: HomePageData;
