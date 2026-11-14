@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
-import { ContactView } from '@/components/content/contact-view';
-import { StructuredDataScript } from '@/components/seo/structured-data-script';
+import { ContactView } from './_components/contact-view';
+import { StructuredDataScript } from '@/components/common/structured-data-script';
 import { getPublicEnvironment } from '@/config/environment.client';
 import { PAGE_METADATA } from '@/constants/content.constant';
 import { ROUTES } from '@/constants/routes.constant';

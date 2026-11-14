@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
-import { AboutView } from '@/components/content/about-view';
+import { AboutView } from './_components/about-view';
 import { PAGE_METADATA } from '@/constants/content.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { getInitialPublicContent } from '@/features/content/service.server';

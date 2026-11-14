@@ -1,17 +1,20 @@
 'use client';
+
+import { ErrorState } from '@/components/common/feedback/error-state';
+import { InfoCard } from '@/components/common/cards/info-card';
+import { PageHeader } from '@/components/common/layout/page-header';
+import { SectionHeader } from '@/components/common/layout/section-header';
 import { ActionLink } from '@/components/ui/action-link';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Feedback } from '@/components/ui/feedback';
 import { CONTENT_COPY, CONTENT_DEFAULTS } from '@/constants/content.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { SITE_COPY } from '@/constants/site.constant';
 import { useBranches } from '@/hooks/use-branches';
 import { usePublicContent } from '@/hooks/use-content';
+import type { ContentInitial, PublicContentDirectory } from '@/types/content';
 import { cn } from '@/utils';
 import { withBranch } from '@/utils/branch-url';
-import type { ContentInitial, PublicContentDirectory } from '@/types/content';
 
 const ABOUT_KEYS = ['about.story', 'about.values'] as const;
 
@@ -56,19 +59,24 @@ export function AboutView({ initial, className }: AboutViewProps) {
         className="content-container content-section"
         aria-labelledby="about-hero-heading"
       >
-        <div className="content-header-block">
-          <div className="home-badge-row">
-            <Badge tone="accent">{CONTENT_COPY.ABOUT_EYEBROW}</Badge>
-            <Badge tone={storySource === 'published' ? 'success' : 'neutral'}>
-              {storySource === 'published'
-                ? CONTENT_COPY.SOURCE_PUBLISHED_BADGE
-                : CONTENT_COPY.SOURCE_TEMPLATE_BADGE}
-            </Badge>
-          </div>
-          <h1 id="about-hero-heading" className="editorial-display">
-            {storyTitle}
-          </h1>
-          <p className="editorial-lead">{storyBody}</p>
+        <PageHeader
+          className="content-header-block"
+          titleId="about-hero-heading"
+          titleClassName="editorial-display"
+          subtitleClassName="editorial-lead"
+          badges={
+            <div className="home-badge-row">
+              <Badge tone="accent">{CONTENT_COPY.ABOUT_EYEBROW}</Badge>
+              <Badge tone={storySource === 'published' ? 'success' : 'neutral'}>
+                {storySource === 'published'
+                  ? CONTENT_COPY.SOURCE_PUBLISHED_BADGE
+                  : CONTENT_COPY.SOURCE_TEMPLATE_BADGE}
+              </Badge>
+            </div>
+          }
+          title={storyTitle}
+          subtitle={storyBody}
+        >
           {hasTemplateSource ? (
             <p className="content-source-note">
               {CONTENT_COPY.SOURCE_TEMPLATE_NOTE}
@@ -96,25 +104,17 @@ export function AboutView({ initial, className }: AboutViewProps) {
               {CONTENT_COPY.ABOUT_CONTACT_CTA}
             </ActionLink>
           </div>
-        </div>
+        </PageHeader>
 
         {isError ? (
-          <div className="content-error-block">
-            <Feedback
-              tone="error"
-              title={CONTENT_COPY.UPSTREAM_ERROR_TITLE}
-              announce
-            >
-              <p>{CONTENT_COPY.UPSTREAM_ERROR_BODY}</p>
-            </Feedback>
-            <Button
-              variant="secondary"
-              loading={isFetching}
-              onClick={() => void refetch()}
-            >
-              {CONTENT_COPY.RETRY_BUTTON}
-            </Button>
-          </div>
+          <ErrorState
+            className="content-error-block"
+            title={CONTENT_COPY.UPSTREAM_ERROR_TITLE}
+            message={CONTENT_COPY.UPSTREAM_ERROR_BODY}
+            onRetry={() => void refetch()}
+            retryLabel={CONTENT_COPY.RETRY_BUTTON}
+            isRetrying={isFetching}
+          />
         ) : null}
       </section>
 
@@ -122,8 +122,11 @@ export function AboutView({ initial, className }: AboutViewProps) {
         className="content-container content-section"
         aria-labelledby="about-values-heading"
       >
-        <div className="home-section-header">
-          <div>
+        <SectionHeader
+          titleId="about-values-heading"
+          title={CONTENT_COPY.ABOUT_VALUES_TITLE}
+          subtitle={CONTENT_COPY.ABOUT_VALUES_SUBTITLE}
+          badges={
             <div className="home-badge-row">
               <Badge
                 tone={valuesSource === 'published' ? 'success' : 'neutral'}
@@ -133,14 +136,8 @@ export function AboutView({ initial, className }: AboutViewProps) {
                   : CONTENT_COPY.SOURCE_TEMPLATE_BADGE}
               </Badge>
             </div>
-            <h2 id="about-values-heading" className="editorial-heading">
-              {CONTENT_COPY.ABOUT_VALUES_TITLE}
-            </h2>
-            <p className="home-section-subtitle">
-              {CONTENT_COPY.ABOUT_VALUES_SUBTITLE}
-            </p>
-          </div>
-        </div>
+          }
+        />
         <div className="content-values-grid">
           {valuesList.map((value) => {
             const description =
@@ -149,10 +146,13 @@ export function AboutView({ initial, className }: AboutViewProps) {
               ] ??
               'Nilai dapur Resep Oma Kueh dalam menjaga mutu produk dan layanan.';
             return (
-              <Card key={value} tone="cream" className="content-value-card">
-                <h3>{value}</h3>
-                <p>{description}</p>
-              </Card>
+              <InfoCard
+                key={value}
+                tone="cream"
+                className="content-value-card"
+                title={value}
+                description={description}
+              />
             );
           })}
         </div>

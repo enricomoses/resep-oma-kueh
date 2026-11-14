@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
-import { FaqView } from '@/components/content/faq-view';
+import { FaqView } from './_components/faq-view';
 import { PAGE_METADATA } from '@/constants/content.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { getInitialPublicFaqs } from '@/features/content/service.server';

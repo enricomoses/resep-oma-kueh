@@ -6,10 +6,10 @@ import {
   waitFor,
 } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
-import { AboutView } from '@/components/content/about-view';
-import { ContactView } from '@/components/content/contact-view';
-import { FaqView } from '@/components/content/faq-view';
-import { LegalPolicyView } from '@/components/content/legal-policy-view';
+import { AboutView } from '@/app/(site)/about/_components/about-view';
+import { ContactView } from '@/app/(site)/contact/_components/contact-view';
+import { FaqView } from '@/app/(site)/faq/_components/faq-view';
+import { LegalPolicyView } from '@/components/common/content/legal-policy-view';
 import { CONTENT_COPY, CONTENT_DEFAULTS } from '@/constants/content.constant';
 import { BRANCH } from '@/constants/site.constant';
 import { ApiClientError } from '@/lib/errors';
