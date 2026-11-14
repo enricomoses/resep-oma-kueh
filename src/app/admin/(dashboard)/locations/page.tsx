@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
 
-import { AdminForbiddenPanel } from '@/components/admin/admin-forbidden-panel';
-import { AdminLocationsView } from '@/components/admin/admin-locations-view';
+import { AdminForbiddenPanel } from '../_components/admin-forbidden-panel';
+import { AdminLocationsView } from './_components/admin-locations-view';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { listAdminBranches } from '@/features/admin-catalog/branches.server';

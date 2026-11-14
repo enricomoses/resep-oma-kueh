@@ -3,6 +3,7 @@
 import { Clock, RotateCcw } from 'lucide-react';
 import { type FormEvent, useState } from 'react';
 
+import { AdminSectionHeader } from '@/app/admin/(dashboard)/_components/admin-section-header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -150,22 +151,26 @@ export function AdminBranchHoursEditor({
 
   return (
     <Card tone="surface" className={cn('admin-locations-panel', className)}>
-      <div className="admin-section-header">
-        <div>
-          <h3 className="admin-row-title">
+      <AdminSectionHeader
+        headingAs="h3"
+        titleClassName="admin-row-title"
+        title={
+          <>
             <Clock size={18} aria-hidden="true" />{' '}
             <span>Jam Operasional Mingguan ({branch.name})</span>
-          </h3>
-          <p className="admin-section-subtitle">
-            {ADMIN_CATALOG_COPY.LOCATIONS.UNKNOWN_HOURS_HINT}
-          </p>
-        </div>
-        <Badge tone={branch.readiness.hasVerifiedHours ? 'success' : 'neutral'}>
-          {branch.readiness.hasVerifiedHours
-            ? 'Sebagian/Semua Hari Terisi'
-            : 'Belum Dikonfirmasi'}
-        </Badge>
-      </div>
+          </>
+        }
+        description={ADMIN_CATALOG_COPY.LOCATIONS.UNKNOWN_HOURS_HINT}
+        actions={
+          <Badge
+            tone={branch.readiness.hasVerifiedHours ? 'success' : 'neutral'}
+          >
+            {branch.readiness.hasVerifiedHours
+              ? 'Sebagian/Semua Hari Terisi'
+              : 'Belum Dikonfirmasi'}
+          </Badge>
+        }
+      />
 
       {validationError ? (
         <Feedback tone="error" title={validationError} announce />
