@@ -31,7 +31,6 @@ export function AskOmaWidget({ className }: AskOmaWidgetProps) {
     branches,
     sendMessage,
     abortPending,
-    resetConversation,
   } = useChat();
 
   const [draft, setDraft] = useState('');
@@ -103,12 +102,7 @@ export function AskOmaWidget({ className }: AskOmaWidgetProps) {
         onChange={setDraft}
         onSubmit={handleSendDraft}
         onStop={abortPending}
-        onReset={() => {
-          setDraft('');
-          resetConversation();
-        }}
         isSending={isSending}
-        hasMessages={messages.length > 0}
         textareaRef={composerRef}
       />
     </>
@@ -116,32 +110,13 @@ export function AskOmaWidget({ className }: AskOmaWidgetProps) {
 
   return (
     <div className={cn('chat-widget-root', className)}>
-      <Button
-        ref={triggerRef}
-        type="button"
-        variant="primary"
-        size="md"
-        className="chat-trigger"
-        aria-expanded={isOpen}
-        aria-controls={isMobile ? undefined : panelId}
-        aria-haspopup={isMobile ? 'dialog' : undefined}
-        onClick={() => {
-          if (isOpen) {
-            closePanel();
-          } else {
-            setIsOpen(true);
-          }
-        }}
-      >
-        <MessageCircle size={18} aria-hidden="true" />
-        <span>{isOpen ? CHAT_COPY.TRIGGER_CLOSE : CHAT_COPY.TRIGGER_OPEN}</span>
-      </Button>
-
-      {isOpen && !isMobile ? (
+      {!isMobile ? (
         <section
           id={panelId}
           aria-label={CHAT_COPY.PANEL_LABEL}
-          className="chat-panel"
+          aria-hidden={!isOpen}
+          inert={!isOpen ? true : undefined}
+          className={cn('chat-panel', isOpen ? 'is-open' : 'is-closed')}
           onKeyDown={(event) => {
             if (event.key === 'Escape') {
               event.stopPropagation();
@@ -157,7 +132,6 @@ export function AskOmaWidget({ className }: AskOmaWidgetProps) {
                   {branchBadgeText}
                 </Badge>
               </div>
-              <p className="chat-panel-subtitle">{CHAT_COPY.SUBTITLE}</p>
             </div>
             <div className="chat-panel-header-actions">
               <Button
@@ -175,6 +149,31 @@ export function AskOmaWidget({ className }: AskOmaWidgetProps) {
           {content}
         </section>
       ) : null}
+
+      <Button
+        ref={triggerRef}
+        type="button"
+        variant="primary"
+        size="md"
+        className="chat-trigger"
+        aria-label={isOpen ? CHAT_COPY.TRIGGER_CLOSE : CHAT_COPY.TRIGGER_OPEN}
+        aria-expanded={isOpen}
+        aria-controls={isMobile ? undefined : panelId}
+        aria-haspopup={isMobile ? 'dialog' : undefined}
+        onClick={() => {
+          if (isOpen) {
+            closePanel();
+          } else {
+            setIsOpen(true);
+          }
+        }}
+      >
+        <span className="chat-trigger-icon" aria-hidden="true">
+          <MessageCircle size={18} className="chat-trigger-icon-chat" />
+          <X size={18} className="chat-trigger-icon-close" />
+        </span>
+        <span>{CHAT_COPY.TRIGGER_OPEN}</span>
+      </Button>
 
       {isMobile ? (
         <ModalSurface

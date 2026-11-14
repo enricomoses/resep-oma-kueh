@@ -180,11 +180,13 @@ describe('F22 AskOmaWidget DOM, keyboard/IME, abort/generation lock, branch chan
     fireEvent.keyDown(textarea, { key: 'Enter', shiftKey: false });
     expect(mockSendChat).toHaveBeenCalledTimes(1);
 
-    const submitBtn = screen.getByRole('button', {
-      name: CHAT_COPY.SENDING_CTA,
-    });
-    expect(submitBtn).toBeDisabled();
-    fireEvent.click(submitBtn);
+    expect(
+      screen.queryByRole('button', { name: CHAT_COPY.SEND_CTA }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: CHAT_COPY.STOP_CTA }),
+    ).toBeEnabled();
+    fireEvent.keyDown(textarea, { key: 'Enter', shiftKey: false });
     expect(mockSendChat).toHaveBeenCalledTimes(1);
 
     await act(async () => {
@@ -225,7 +227,7 @@ describe('F22 AskOmaWidget DOM, keyboard/IME, abort/generation lock, branch chan
 
     fireEvent.click(
       screen.getByRole('button', {
-        name: new RegExp(`^${CHAT_COPY.RESET_CTA}$`),
+        name: new RegExp(`^${CHAT_COPY.STOP_CTA}$`),
       }),
     );
     expect(capturedSignal?.aborted).toBe(true);

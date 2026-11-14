@@ -1,6 +1,8 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Feedback } from '@/components/ui/feedback';
@@ -23,6 +25,22 @@ interface AskOmaMessagesProps {
   onSelectQuickPrompt: (prompt: string) => void;
   onRetry: () => void;
   className?: string;
+}
+
+function AssistantBubble({ children }: { children: ReactNode }) {
+  return (
+    <div className="chat-message-row--assistant">
+      <Image
+        src="/images/oma.png"
+        alt=""
+        width={48}
+        height={48}
+        aria-hidden="true"
+        className="chat-oma-avatar"
+      />
+      <div className="chat-bubble chat-bubble--assistant">{children}</div>
+    </div>
+  );
 }
 
 export function AskOmaMessages({
@@ -51,7 +69,7 @@ export function AskOmaMessages({
       aria-live="polite"
       aria-relevant="additions"
     >
-      <div className="chat-bubble chat-bubble--assistant">
+      <AssistantBubble>
         <p className="chat-bubble-text">{CHAT_COPY.WELCOME}</p>
         {messages.length === 0 ? (
           <AskOmaQuickPrompts
@@ -62,7 +80,7 @@ export function AskOmaMessages({
             onSelect={onSelectQuickPrompt}
           />
         ) : null}
-      </div>
+      </AssistantBubble>
 
       {branchNotice ? (
         <p className="chat-status-banner" role="status">
@@ -70,39 +88,35 @@ export function AskOmaMessages({
         </p>
       ) : null}
 
-      {messages.map((msg) => (
-        <div
-          key={msg.id}
-          className={cn(
-            'chat-bubble',
-            msg.role === 'user'
-              ? 'chat-bubble--user'
-              : 'chat-bubble--assistant',
-          )}
-        >
-          <p className="chat-bubble-text">{msg.text}</p>
+      {messages.map((msg) =>
+        msg.role === 'user' ? (
+          <div key={msg.id} className="chat-bubble chat-bubble--user">
+            <p className="chat-bubble-text">{msg.text}</p>
+          </div>
+        ) : (
+          <AssistantBubble key={msg.id}>
+            <p className="chat-bubble-text">{msg.text}</p>
 
-          {msg.role === 'assistant' && msg.items && msg.items.length > 0 ? (
-            <AskOmaRecommendations items={msg.items} />
-          ) : null}
+            {msg.items && msg.items.length > 0 ? (
+              <AskOmaRecommendations items={msg.items} />
+            ) : null}
 
-          {msg.role === 'assistant' &&
-          msg.quickPrompts &&
-          msg.quickPrompts.length > 0 ? (
-            <AskOmaQuickPrompts
-              prompts={msg.quickPrompts}
-              ariaLabel="Saran lanjutan"
-              keyPrefix={msg.id}
-              disabled={isSending}
-              onSelect={onSelectQuickPrompt}
-            />
-          ) : null}
+            {msg.quickPrompts && msg.quickPrompts.length > 0 ? (
+              <AskOmaQuickPrompts
+                prompts={msg.quickPrompts}
+                ariaLabel="Saran lanjutan"
+                keyPrefix={msg.id}
+                disabled={isSending}
+                onSelect={onSelectQuickPrompt}
+              />
+            ) : null}
 
-          {msg.role === 'assistant' && msg.notice ? (
-            <p className="chat-bubble-notice">{msg.notice}</p>
-          ) : null}
-        </div>
-      ))}
+            {msg.notice ? (
+              <p className="chat-bubble-notice">{msg.notice}</p>
+            ) : null}
+          </AssistantBubble>
+        ),
+      )}
 
       {isSending ? (
         <p className="chat-status-banner" role="status">

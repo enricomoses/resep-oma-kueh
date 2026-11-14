@@ -1,20 +1,26 @@
 'use client';
 
-import { RotateCcw, Send, Square } from 'lucide-react';
-import type { KeyboardEvent, RefObject } from 'react';
+import { Send, Square } from 'lucide-react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  type KeyboardEvent,
+  type RefObject,
+} from 'react';
 
 import { Button } from '@/components/ui/button';
 import { CHAT_COPY, CHAT_LIMITS } from '@/constants/chat.constant';
 import { cn } from '@/utils';
+
+const MAX_TEXTAREA_HEIGHT_PX = 104;
 
 interface AskOmaComposerProps {
   value: string;
   onChange: (nextValue: string) => void;
   onSubmit: () => void;
   onStop: () => void;
-  onReset: () => void;
   isSending: boolean;
-  hasMessages: boolean;
   textareaRef?: RefObject<HTMLTextAreaElement | null>;
   className?: string;
 }
@@ -24,13 +30,29 @@ export function AskOmaComposer({
   onChange,
   onSubmit,
   onStop,
-  onReset,
   isSending,
-  hasMessages,
   textareaRef,
   className,
 }: AskOmaComposerProps) {
+  const localRef = useRef<HTMLTextAreaElement>(null);
   const canSend = !isSending && value.trim().length > 0;
+
+  const setRefs = useCallback(
+    (node: HTMLTextAreaElement | null) => {
+      localRef.current = node;
+      if (textareaRef) {
+        textareaRef.current = node;
+      }
+    },
+    [textareaRef],
+  );
+
+  useEffect(() => {
+    const el = localRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${Math.min(el.scrollHeight, MAX_TEXTAREA_HEIGHT_PX)}px`;
+  }, [value]);
 
   function handleKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
     if (
@@ -56,58 +78,49 @@ export function AskOmaComposer({
         }
       }}
     >
-      <label htmlFor="ask-oma-input" className="site-visually-hidden">
-        {CHAT_COPY.COMPOSER_LABEL}
-      </label>
-      <textarea
-        ref={textareaRef}
-        id="ask-oma-input"
-        className="ui-control chat-composer-textarea"
-        rows={2}
-        maxLength={CHAT_LIMITS.MAX_MESSAGE_LENGTH}
-        placeholder={CHAT_COPY.COMPOSER_PLACEHOLDER}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        onKeyDown={handleKeyDown}
-        aria-describedby="ask-oma-composer-hint"
-      />
-      <div className="chat-composer-footer">
-        <span id="ask-oma-composer-hint" className="chat-composer-hint">
-          {CHAT_COPY.COMPOSER_HINT} ({value.length}/
-          {CHAT_LIMITS.MAX_MESSAGE_LENGTH})
-        </span>
+      <div className="chat-composer-box">
+        <textarea
+          ref={setRefs}
+          id="ask-oma-input"
+          className="chat-composer-textarea"
+          rows={1}
+          maxLength={CHAT_LIMITS.MAX_MESSAGE_LENGTH}
+          placeholder={CHAT_COPY.COMPOSER_PLACEHOLDER}
+          aria-label={CHAT_COPY.COMPOSER_LABEL}
+          aria-describedby="ask-oma-composer-hint"
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          onKeyDown={handleKeyDown}
+        />
         <div className="chat-composer-actions">
           {isSending ? (
             <Button
               type="button"
               variant="secondary"
-              size="md"
+              size="sm"
+              className="chat-composer-send"
+              aria-label={CHAT_COPY.STOP_CTA}
               onClick={onStop}
             >
               <Square size={14} aria-hidden="true" />
-              {CHAT_COPY.STOP_CTA}
             </Button>
-          ) : null}
-
-          {hasMessages || isSending ? (
+          ) : (
             <Button
-              type="button"
-              variant="ghost"
-              size="md"
-              onClick={onReset}
-              aria-label={CHAT_COPY.RESET_CTA}
+              type="submit"
+              variant="primary"
+              size="sm"
+              className="chat-composer-send"
+              aria-label={CHAT_COPY.SEND_CTA}
+              disabled={!canSend}
             >
-              <RotateCcw size={14} aria-hidden="true" />
-              {CHAT_COPY.RESET_CTA}
+              <Send size={16} aria-hidden="true" />
             </Button>
-          ) : null}
-
-          <Button type="submit" variant="primary" size="md" disabled={!canSend}>
-            <Send size={14} aria-hidden="true" />
-            {isSending ? CHAT_COPY.SENDING_CTA : CHAT_COPY.SEND_CTA}
-          </Button>
+          )}
         </div>
       </div>
+      <p id="ask-oma-composer-hint" className="chat-composer-hint">
+        {CHAT_COPY.COMPOSER_HINT}
+      </p>
     </form>
   );
 }

@@ -54,7 +54,7 @@ export const CHAT_QUICK_PROMPTS = [
 ] as const;
 
 export const CHAT_COPY = {
-  TRIGGER_OPEN: 'Tanya Ask Oma',
+  TRIGGER_OPEN: 'Ask Oma',
   TRIGGER_CLOSE: 'Tutup Ask Oma',
   PANEL_LABEL: 'Asisten Katalog Ask Oma',
   MOBILE_TITLE: 'Ask Oma',
@@ -64,8 +64,8 @@ export const CHAT_COPY = {
   WELCOME:
     'Halo! Saya Ask Oma. Tanyakan tentang menu Resep Oma Kueh, rekomendasi budget, promo aktif, alamat & WhatsApp cabang, jadwal Baking Class, atau FAQ pemesanan.',
   COMPOSER_LABEL: 'Tulis pertanyaan Anda untuk Ask Oma',
-  COMPOSER_PLACEHOLDER: 'Contoh: Chiffon apa di bawah 20 ribu?',
-  COMPOSER_HINT: 'Tekan Enter untuk kirim, Shift+Enter untuk baris baru.',
+  COMPOSER_PLACEHOLDER: 'Tanyakan Pertanyaan Anda disini...',
+  COMPOSER_HINT: 'AI can make mistakes. Verify important information.',
   SEND_CTA: 'Kirim',
   SENDING_CTA: 'Memproses…',
   STOP_CTA: 'Hentikan',
