@@ -854,16 +854,14 @@ svg {
     outline-offset: 2px;
   }
   .site-footer {
-    padding-block: 3rem 2rem;
+    padding-block: 2rem 1.25rem;
     background: var(--brand-deep);
     color: var(--brand-cream);
   }
   .site-footer-heading {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 1rem;
-    padding-bottom: 2rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid rgba(255, 248, 240, 0.14);
   }
   .site-footer-heading h2 {
     font-family: var(--font-fraunces), serif;
@@ -872,41 +870,150 @@ svg {
   }
   .site-contact-grid {
     display: grid;
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: 2rem 2.5rem;
   }
-  .site-contact-grid section {
-    display: grid;
-    align-content: start;
-    gap: 0.75rem;
-    max-width: 40ch;
+  .site-contact-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.625rem;
   }
-  .site-contact-grid h3 {
-    font-weight: 700;
+  .site-contact-social-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    row-gap: 0.5rem;
+    column-gap: 1.75rem;
   }
-  .site-contact-grid p {
-    font-size: 0.9375rem;
-  }
-  .site-footer a {
-    color: var(--brand-cream);
-    text-decoration: underline;
-    min-height: 2.75rem;
+  .site-contact-title {
     display: inline-flex;
     align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    margin-bottom: 0.25rem;
+  }
+  .site-contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--brand-cream);
+    text-decoration: none;
+    min-height: 2.75rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
     overflow-wrap: anywhere;
+    opacity: 0.92;
+    transition: opacity 0.15s ease;
+  }
+  .site-contact-link span,
+  .site-contact-address-link span,
+  .site-footer-help-link span {
+    position: relative;
+  }
+  .site-contact-link span::after,
+  .site-contact-address-link span::after,
+  .site-footer-help-link span::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.12em;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 600ms ease;
+  }
+  .site-contact-link:hover,
+  .site-contact-link:focus-visible {
+    opacity: 1;
+  }
+  .site-contact-link:hover span::after,
+  .site-contact-link:focus-visible span::after,
+  .site-contact-address-link:hover span::after,
+  .site-contact-address-link:focus-visible span::after,
+  .site-footer .site-footer-help-link:hover span::after,
+  .site-footer .site-footer-help-link:focus-visible span::after {
+    transform: scaleX(1);
+  }
+  .site-contact-address {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: rgba(255, 248, 240, 0.78);
+    max-width: 34ch;
+  }
+  .site-contact-address-link {
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .site-contact-address-link:hover,
+  .site-contact-address-link:focus-visible {
+    color: var(--brand-cream);
+  }
+  .site-contact-icon {
+    flex-shrink: 0;
+    font-size: 1rem;
+  }
+  .site-contact-address .site-contact-icon {
+    margin-top: 0.2rem;
   }
   .site-footer :focus-visible {
     outline-color: var(--brand-cream);
   }
+  .site-footer a:hover,
+  .site-footer a:focus-visible {
+    text-decoration: none;
+  }
   .site-contact-note {
-    margin-bottom: 2rem;
+    margin-bottom: 1.75rem;
+    font-size: 0.9375rem;
+    color: rgba(255, 248, 240, 0.85);
+  }
+  .site-footer-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 2rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 248, 240, 0.14);
   }
   .site-footer-links {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem 2rem;
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--text-cocoa);
+    gap: 0.25rem 1.75rem;
+  }
+  .site-footer-help-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--brand-cream);
+    text-decoration: none;
+    min-height: 2.75rem;
+    font-size: 0.875rem;
+    opacity: 0.88;
+    transition: opacity 0.15s ease;
+  }
+  .site-footer .site-footer-help-link:hover,
+  .site-footer .site-footer-help-link:focus-visible {
+    color: var(--brand-cream);
+    opacity: 1;
+    text-decoration: none;
+  }
+  .site-footer-help-icon {
+    flex-shrink: 0;
+    font-size: 0.875rem;
+  }
+  .site-footer-copyright {
+    font-size: 0.8125rem;
+    color: rgba(255, 248, 240, 0.68);
   }
   .chat-slot {
     display: flex;
