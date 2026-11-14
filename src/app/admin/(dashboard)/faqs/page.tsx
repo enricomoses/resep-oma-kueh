@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
 
-import { AdminFaqsView } from '@/components/admin/admin-faqs-view';
-import { AdminForbiddenPanel } from '@/components/admin/admin-forbidden-panel';
+import { AdminFaqsView } from './_components/admin-faqs-view';
+import { AdminForbiddenPanel } from '../_components/admin-forbidden-panel';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { listAdminFaqs } from '@/features/admin-catalog/cms-faqs-testimonials.server';
