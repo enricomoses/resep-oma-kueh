@@ -4,7 +4,6 @@ import type { Dispatch, FormEvent, SetStateAction } from 'react';
 import { AdminSectionHeader } from '@/app/admin/(dashboard)/_components/admin-section-header';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Feedback } from '@/components/ui/feedback';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import type { AdminClassProgramItem, ProgramFormState } from '@/types/classes';
 
@@ -21,7 +20,6 @@ interface AdminClassProgramsSectionProps {
   slugTouched: boolean;
   setSlugTouched: (touched: boolean) => void;
   fieldErrors: Record<string, string[]>;
-  feedback: { tone: 'success' | 'error'; message: string } | null;
   isBusy: boolean;
   isUploading: boolean;
   onNewProgram: () => void;
@@ -44,7 +42,6 @@ export function AdminClassProgramsSection({
   slugTouched,
   setSlugTouched,
   fieldErrors,
-  feedback,
   isBusy,
   isUploading,
   onNewProgram,
@@ -78,10 +75,6 @@ export function AdminClassProgramsSection({
           ) : null
         }
       />
-
-      {feedback ? (
-        <Feedback tone={feedback.tone} title={feedback.message} announce />
-      ) : null}
 
       {isOwner && isEditorOpen ? (
         <AdminClassProgramForm

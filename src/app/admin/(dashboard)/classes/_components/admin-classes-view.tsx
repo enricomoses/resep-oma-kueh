@@ -121,7 +121,6 @@ export function AdminClassesView({
         slugTouched={mgr.slugTouched}
         setSlugTouched={mgr.setSlugTouched}
         fieldErrors={mgr.programFieldErrors}
-        feedback={mgr.programFeedback}
         isBusy={mgr.isProgramBusy}
         isUploading={mgr.isUploadingMedia}
         onNewProgram={mgr.openNewProgramForm}
@@ -149,7 +148,6 @@ export function AdminClassesView({
         isEditorOpen={mgr.isSessionEditorOpen}
         onCloseEditor={() => mgr.setIsSessionEditorOpen(false)}
         fieldErrors={mgr.sessionFieldErrors}
-        feedback={mgr.sessionFeedback}
         isBusy={mgr.isSessionBusy}
         onNewSession={mgr.openNewSessionForm}
         onEditSession={mgr.openEditSessionForm}

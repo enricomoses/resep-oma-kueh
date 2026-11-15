@@ -15,6 +15,7 @@ import {
   useUpdateAdminClassSession,
 } from '@/hooks/queries/use-admin-classes';
 import { extractAdminMutationError } from '@/lib/errors';
+import { notifyError, notifySuccess } from '@/lib/toast';
 import type { AdminSessionProfile } from '@/types/auth';
 import type {
   AdminClassBranchOption,
@@ -105,10 +106,6 @@ export function useAdminClassesManager({
   );
   const [isProgramEditorOpen, setIsProgramEditorOpen] = useState(false);
   const [slugTouched, setSlugTouched] = useState(false);
-  const [programFeedback, setProgramFeedback] = useState<{
-    tone: 'success' | 'error';
-    message: string;
-  } | null>(null);
   const [programFieldErrors, setProgramFieldErrors] = useState<
     Record<string, string[]>
   >({});
@@ -120,10 +117,6 @@ export function useAdminClassesManager({
     ),
   );
   const [isSessionEditorOpen, setIsSessionEditorOpen] = useState(false);
-  const [sessionFeedback, setSessionFeedback] = useState<{
-    tone: 'success' | 'error';
-    message: string;
-  } | null>(null);
   const [sessionFieldErrors, setSessionFieldErrors] = useState<
     Record<string, string[]>
   >({});
@@ -145,7 +138,6 @@ export function useAdminClassesManager({
     setProgramForm(createEmptyProgramForm());
     setSlugTouched(false);
     setProgramFieldErrors({});
-    setProgramFeedback(null);
     setIsProgramEditorOpen(true);
   }
 
@@ -153,7 +145,6 @@ export function useAdminClassesManager({
     setProgramForm(createProgramFormFromItem(item));
     setSlugTouched(true);
     setProgramFieldErrors({});
-    setProgramFeedback(null);
     setIsProgramEditorOpen(true);
   }
 
@@ -167,20 +158,17 @@ export function useAdminClassesManager({
       ),
     );
     setSessionFieldErrors({});
-    setSessionFeedback(null);
     setIsSessionEditorOpen(true);
   }
 
   function openEditSessionForm(item: AdminClassSessionItem) {
     setSessionForm(createSessionFormFromItem(item));
     setSessionFieldErrors({});
-    setSessionFeedback(null);
     setIsSessionEditorOpen(true);
   }
 
   async function handleUploadProgramCover(file: File | null) {
     if (!file) return;
-    setProgramFeedback(null);
     try {
       const response = await uploadMediaMutation.mutateAsync(file);
       setProgramForm((prev) => ({
@@ -189,18 +177,18 @@ export function useAdminClassesManager({
         clearCover: false,
         coverPreviewUrl: response.data.previewUrl,
       }));
+      notifySuccess('Foto sampul program kelas berhasil diunggah ke draf.');
     } catch (err) {
       const parsed = extractAdminMutationError(
         err,
         'Gagal mengunggah foto sampul program kelas.',
       );
-      setProgramFeedback({ tone: 'error', message: parsed.message });
+      notifyError(parsed.message);
     }
   }
 
   async function handleSaveProgram(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setProgramFeedback(null);
     setProgramFieldErrors({});
 
     const basePrice = Number(programForm.basePriceIdr);
@@ -240,10 +228,7 @@ export function useAdminClassesManager({
 
     if (Object.keys(localErrors).length > 0) {
       setProgramFieldErrors(localErrors);
-      setProgramFeedback({
-        tone: 'error',
-        message: 'Periksa kembali kolom program kelas yang ditandai.',
-      });
+      notifyError('Periksa kembali kolom program kelas yang ditandai.');
       return;
     }
 
@@ -274,10 +259,7 @@ export function useAdminClassesManager({
         };
         const result = await createProgramMutation.mutateAsync(payload);
         setProgramForm(createProgramFormFromItem(result.data.item));
-        setProgramFeedback({
-          tone: 'success',
-          message: `Program "${result.data.item.title}" berhasil dibuat.`,
-        });
+        notifySuccess(`Program "${result.data.item.title}" berhasil dibuat.`);
       } else {
         const payload: UpdateAdminClassProgramInput = {
           title: programForm.title.trim(),
@@ -303,10 +285,9 @@ export function useAdminClassesManager({
           payload,
         });
         setProgramForm(createProgramFormFromItem(result.data.item));
-        setProgramFeedback({
-          tone: 'success',
-          message: `Program "${result.data.item.title}" berhasil diperbarui.`,
-        });
+        notifySuccess(
+          `Program "${result.data.item.title}" berhasil diperbarui.`,
+        );
       }
     } catch (err) {
       const parsed = extractAdminMutationError(
@@ -314,13 +295,12 @@ export function useAdminClassesManager({
         'Gagal menyimpan perubahan program kelas.',
       );
       setProgramFieldErrors(parsed.fields);
-      setProgramFeedback({ tone: 'error', message: parsed.message });
+      notifyError(parsed.message);
     }
   }
 
   async function handleSaveSession(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSessionFeedback(null);
     setSessionFieldErrors({});
 
     const startsAtIso = fromJakartaDateTimeInputValue(
@@ -394,10 +374,7 @@ export function useAdminClassesManager({
 
     if (Object.keys(localErrors).length > 0 || !startsAtIso || !endsAtIso) {
       setSessionFieldErrors(localErrors);
-      setSessionFeedback({
-        tone: 'error',
-        message: 'Periksa kembali kolom jadwal atau kapasitas sesi.',
-      });
+      notifyError('Periksa kembali kolom jadwal atau kapasitas sesi.');
       return;
     }
 
@@ -417,10 +394,9 @@ export function useAdminClassesManager({
         };
         const result = await createSessionMutation.mutateAsync(payload);
         setSessionForm(createSessionFormFromItem(result.data.item));
-        setSessionFeedback({
-          tone: 'success',
-          message: `Sesi ${result.data.item.programTitle} (${result.data.item.branchName}) berhasil ditambahkan.`,
-        });
+        notifySuccess(
+          `Sesi ${result.data.item.programTitle} (${result.data.item.branchName}) berhasil ditambahkan.`,
+        );
       } else {
         const payload: UpdateAdminClassSessionInput = {
           startsAt: startsAtIso,
@@ -438,10 +414,7 @@ export function useAdminClassesManager({
           payload,
         });
         setSessionForm(createSessionFormFromItem(result.data.item));
-        setSessionFeedback({
-          tone: 'success',
-          message: 'Perubahan sesi kelas berhasil disimpan.',
-        });
+        notifySuccess('Perubahan sesi kelas berhasil disimpan.');
       }
     } catch (err) {
       const parsed = extractAdminMutationError(
@@ -449,12 +422,11 @@ export function useAdminClassesManager({
         'Gagal menyimpan perubahan sesi kelas.',
       );
       setSessionFieldErrors(parsed.fields);
-      setSessionFeedback({ tone: 'error', message: parsed.message });
+      notifyError(parsed.message);
     }
   }
 
   async function handleQuickMarkFull(item: AdminClassSessionItem) {
-    setSessionFeedback(null);
     try {
       await updateSessionMutation.mutateAsync({
         id: item.id,
@@ -464,16 +436,15 @@ export function useAdminClassesManager({
           expectedUpdatedAt: item.updatedAt,
         },
       });
-      setSessionFeedback({
-        tone: 'success',
-        message: `Sesi ${item.programTitle} (${item.branchName}) ditandai penuh dan pendaftaran ditutup.`,
-      });
+      notifySuccess(
+        `Sesi ${item.programTitle} (${item.branchName}) ditandai penuh dan pendaftaran ditutup.`,
+      );
     } catch (err) {
       const parsed = extractAdminMutationError(
         err,
         'Gagal menandai sesi sebagai penuh.',
       );
-      setSessionFeedback({ tone: 'error', message: parsed.message });
+      notifyError(parsed.message);
     }
   }
 
@@ -488,10 +459,9 @@ export function useAdminClassesManager({
           expectedUpdatedAt: target.updatedAt,
         });
         setConfirmAction(null);
-        setProgramFeedback({
-          tone: 'success',
-          message: `Program "${target.title}" telah diarsipkan dan pendaftaran sesinya ditutup.`,
-        });
+        notifySuccess(
+          `Program "${target.title}" telah diarsipkan dan pendaftaran sesinya ditutup.`,
+        );
         if (programForm.id === target.id) {
           setIsProgramEditorOpen(false);
         }
@@ -501,7 +471,7 @@ export function useAdminClassesManager({
           'Gagal mengarsipkan program.',
         );
         setConfirmAction(null);
-        setProgramFeedback({ tone: 'error', message: parsed.message });
+        notifyError(parsed.message);
       }
       return;
     }
@@ -513,10 +483,9 @@ export function useAdminClassesManager({
         expectedUpdatedAt: target.updatedAt,
       });
       setConfirmAction(null);
-      setSessionFeedback({
-        tone: 'success',
-        message: `Sesi ${target.programTitle} (${target.branchName}) telah dibatalkan.`,
-      });
+      notifySuccess(
+        `Sesi ${target.programTitle} (${target.branchName}) telah dibatalkan.`,
+      );
       if (sessionForm.id === target.id) {
         setIsSessionEditorOpen(false);
       }
@@ -526,7 +495,7 @@ export function useAdminClassesManager({
         'Gagal membatalkan sesi kelas.',
       );
       setConfirmAction(null);
-      setSessionFeedback({ tone: 'error', message: parsed.message });
+      notifyError(parsed.message);
     }
   }
 
@@ -552,7 +521,6 @@ export function useAdminClassesManager({
     setIsProgramEditorOpen,
     slugTouched,
     setSlugTouched,
-    programFeedback,
     programFieldErrors,
     isProgramBusy,
     isUploadingMedia: uploadMediaMutation.isPending,
@@ -560,7 +528,6 @@ export function useAdminClassesManager({
     setSessionForm,
     isSessionEditorOpen,
     setIsSessionEditorOpen,
-    sessionFeedback,
     sessionFieldErrors,
     isSessionBusy,
     confirmAction,

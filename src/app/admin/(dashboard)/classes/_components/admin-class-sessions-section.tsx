@@ -4,7 +4,6 @@ import type { Dispatch, FormEvent, SetStateAction } from 'react';
 import { AdminSectionHeader } from '@/app/admin/(dashboard)/_components/admin-section-header';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Feedback } from '@/components/ui/feedback';
 import { FormField } from '@/components/ui/form-field';
 import { Select } from '@/components/ui/select';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
@@ -34,7 +33,6 @@ interface AdminClassSessionsSectionProps {
   isEditorOpen: boolean;
   onCloseEditor: () => void;
   fieldErrors: Record<string, string[]>;
-  feedback: { tone: 'success' | 'error'; message: string } | null;
   isBusy: boolean;
   onNewSession: () => void;
   onEditSession: (item: AdminClassSessionItem) => void;
@@ -62,7 +60,6 @@ export function AdminClassSessionsSection({
   isEditorOpen,
   onCloseEditor,
   fieldErrors,
-  feedback,
   isBusy,
   onNewSession,
   onEditSession,
@@ -128,10 +125,6 @@ export function AdminClassSessionsSection({
           )}
         </FormField>
       </div>
-
-      {feedback ? (
-        <Feedback tone={feedback.tone} title={feedback.message} announce />
-      ) : null}
 
       {isEditorOpen ? (
         <AdminClassSessionForm
