@@ -9,7 +9,7 @@ import {
 } from '@/constants/chat.constant';
 import { useBranches } from '@/hooks/use-branches';
 import { ApiClientError } from '@/lib/errors';
-import { sendChatMessageRequest } from '@/services/chat.service';
+import { chatService } from '@/services/chat.service';
 import type { ChatItemLink, ChatOperation, ChatSourceType } from '@/types/chat';
 
 export interface ChatUiMessage {
@@ -169,7 +169,7 @@ export function useChat() {
       ]);
 
       try {
-        const res = await sendChatMessageRequest(
+        const res = await chatService.sendMessage(
           {
             message: boundedText,
             branchId: selectedBranchId ?? null,

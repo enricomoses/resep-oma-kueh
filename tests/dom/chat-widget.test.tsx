@@ -45,7 +45,9 @@ vi.mock('next/navigation', () => ({
 }));
 
 vi.mock('@/services/chat.service', () => ({
-  sendChatMessageRequest: (...args: unknown[]) => mockSendChat(...args),
+  chatService: {
+    sendMessage: (...args: unknown[]) => mockSendChat(...args),
+  },
 }));
 
 function installMatchMedia(matchesMobile: boolean) {
