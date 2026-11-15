@@ -1,7 +1,7 @@
 'use client';
 
 import { Upload } from 'lucide-react';
-import { type ChangeEvent, useState } from 'react';
+import type { ChangeEvent } from 'react';
 
 import { Feedback } from '@/components/ui/feedback';
 import {
@@ -10,6 +10,7 @@ import {
 } from '@/constants/admin-catalog.constant';
 import { useUploadAdminProductMedia } from '@/hooks/queries/use-admin-catalog';
 import { ApiClientError } from '@/lib/errors';
+import { notifyError, notifySuccess } from '@/lib/toast';
 import type {
   AdminConfigImage,
   AdminConfigVariant,
@@ -41,19 +42,16 @@ export function AdminProductImagesSection({
   className,
 }: AdminProductImagesSectionProps) {
   const uploadMutation = useUploadAdminProductMedia();
-  const [uploadError, setUploadError] = useState<string | null>(null);
-  const [uploadNotice, setUploadNotice] = useState<string | null>(null);
 
   async function handleFileSelect(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     event.target.value = '';
     if (!file) return;
 
-    setUploadError(null);
-    setUploadNotice(null);
-
     if (file.size > ADMIN_MEDIA_LIMITS.MAX_FILE_BYTES) {
-      setUploadError(ADMIN_CATALOG_COPY.MEDIA.ERRORS.FILE_TOO_LARGE);
+      notifyError(ADMIN_CATALOG_COPY.MEDIA.ERRORS.FILE_TOO_LARGE, {
+        toastId: 'admin-product-media-error',
+      });
       return;
     }
 
@@ -75,14 +73,16 @@ export function AdminProductImagesSection({
         ...previewUrlByImageId,
         [newImageId]: response.data.previewUrl,
       });
-      setUploadNotice(
+      notifySuccess(
         `Unggah berhasil ke bucket privat (${response.data.width}×${response.data.height}px, ${formatMediaBytes(response.data.byteSize)}). Lengkapi alt text lalu centang persetujuan untuk mempromosikan ke bucket publik.`,
+        { toastId: 'admin-product-media-uploaded', autoClose: 5500 },
       );
     } catch (err) {
-      setUploadError(
+      notifyError(
         err instanceof ApiClientError
           ? err.message
           : 'Gagal mengunggah berkas foto.',
+        { toastId: 'admin-product-media-error' },
       );
     }
   }
@@ -145,14 +145,6 @@ export function AdminProductImagesSection({
 
       {fieldErrors.images?.[0] ? (
         <Feedback tone="error" title={fieldErrors.images[0]} announce />
-      ) : null}
-
-      {uploadError ? (
-        <Feedback tone="error" title={uploadError} announce />
-      ) : null}
-
-      {uploadNotice ? (
-        <Feedback tone="success" title={uploadNotice} announce />
       ) : null}
 
       {images.length === 0 ? (

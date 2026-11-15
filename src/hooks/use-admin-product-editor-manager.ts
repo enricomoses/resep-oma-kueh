@@ -3,6 +3,7 @@
 import { type FormEvent, useMemo, useState } from 'react';
 
 import { extractAdminMutationError } from '@/lib/errors';
+import { notifyError, notifySuccess } from '@/lib/toast';
 import type {
   AdminCatalogStatus,
   AdminConfigImage,
@@ -80,7 +81,6 @@ export function useAdminProductEditorManager({
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [saveError, setSaveError] = useState<string | null>(null);
   const [isConflictError, setIsConflictError] = useState(false);
-  const [saveNotice, setSaveNotice] = useState<string | null>(null);
 
   const persistedVariantIds = useMemo(
     () => new Set(aggregate.variants.map((v) => v.id)),
@@ -199,7 +199,6 @@ export function useAdminProductEditorManager({
 
   async function submitConfiguration(targetStatus?: AdminCatalogStatus) {
     setSaveError(null);
-    setSaveNotice(null);
     setIsConflictError(false);
     setFieldErrors({});
 
@@ -215,9 +214,10 @@ export function useAdminProductEditorManager({
 
     if (Object.keys(localErrors).length > 0) {
       setFieldErrors(localErrors);
-      setSaveError(
-        'Konfigurasi produk belum valid. Periksa rincian kesalahan per baris di bawah.',
-      );
+      const message =
+        'Konfigurasi produk belum valid. Periksa rincian kesalahan per baris di bawah.';
+      setSaveError(message);
+      notifyError(message, { toastId: 'admin-product-editor-error' });
       return;
     }
 
@@ -227,10 +227,11 @@ export function useAdminProductEditorManager({
       setPreviewUrlsByImageId(
         buildInitialProductPreviewUrls(response.data.editor),
       );
-      setSaveNotice(
+      notifySuccess(
         targetStatus === 'published'
           ? 'Konfigurasi produk tersimpan atomik dan dipublikasikan ke katalog.'
           : 'Seluruh konfigurasi produk berhasil disimpan dalam satu transaksi.',
+        { toastId: 'admin-product-editor-saved' },
       );
     } catch (err) {
       const parsed = extractAdminMutationError(
@@ -240,6 +241,7 @@ export function useAdminProductEditorManager({
       setFieldErrors(parsed.fields);
       setSaveError(parsed.message);
       setIsConflictError(parsed.isConflict);
+      notifyError(parsed.message, { toastId: 'admin-product-editor-error' });
     }
   }
 
@@ -251,7 +253,9 @@ export function useAdminProductEditorManager({
     if (fresh.data) {
       setFormState(toProductEditorFormState(fresh.data));
       setPreviewUrlsByImageId(buildInitialProductPreviewUrls(fresh.data));
-      setSaveNotice('Data produk terbaru berhasil dimuat ulang.');
+      notifySuccess('Data produk terbaru berhasil dimuat ulang.', {
+        toastId: 'admin-product-editor-reloaded',
+      });
     }
   }
 
@@ -273,7 +277,6 @@ export function useAdminProductEditorManager({
     saveError,
     errorEntries,
     isConflictError,
-    saveNotice,
     isFetching: editorQuery.isFetching,
     isSaving: saveMutation.isPending,
     persistedVariantIds,

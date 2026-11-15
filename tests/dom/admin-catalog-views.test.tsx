@@ -25,6 +25,7 @@ import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { QUERY_KEYS } from '@/constants/query-keys.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { ApiClientError } from '@/lib/errors';
+import { ToastProvider } from '@/providers/toast-provider';
 import { adminCatalogService } from '@/services/admin-catalog.service';
 import type {
   AdminCategoryListResponse,
@@ -253,6 +254,12 @@ describe('AdminCategoriesView', () => {
     const client = createClient();
     const invalidateSpy = vi.spyOn(client, 'invalidateQueries');
 
+    vi.spyOn(adminCatalogService, 'getCategories').mockResolvedValue({
+      ok: true,
+      data: BASE_CATEGORIES,
+      requestId: 'req-cat-list',
+    });
+
     const createSpy = vi
       .spyOn(adminCatalogService, 'createCategory')
       .mockResolvedValue({
@@ -278,10 +285,12 @@ describe('AdminCategoriesView', () => {
 
     render(
       <QueryClientProvider client={client}>
-        <AdminCategoriesView
-          profile={OWNER_PROFILE}
-          initialCategories={BASE_CATEGORIES}
-        />
+        <ToastProvider>
+          <AdminCategoriesView
+            profile={OWNER_PROFILE}
+            initialCategories={BASE_CATEGORIES}
+          />
+        </ToastProvider>
       </QueryClientProvider>,
     );
 
@@ -307,6 +316,9 @@ describe('AdminCategoriesView', () => {
     await waitFor(() => {
       expect(createSpy).toHaveBeenCalledTimes(1);
     });
+    expect(
+      await screen.findByText('Kategori "Cookies Klasik" berhasil dibuat.'),
+    ).toBeInTheDocument();
 
     expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: QUERY_KEYS.ADMIN_ROOT,
@@ -384,6 +396,11 @@ describe('AdminCategoriesView', () => {
         expectedUpdatedAt: BASE_CATEGORIES.items[1].updatedAt,
       });
     });
+    expect(
+      await screen.findByText(
+        `Kategori "${BASE_CATEGORIES.items[1].name}" telah diarsipkan.`,
+      ),
+    ).toBeInTheDocument();
   });
 });
 
@@ -443,6 +460,12 @@ describe('AdminProductsView', () => {
       totalPages: 2,
     };
 
+    vi.spyOn(adminCatalogService, 'getCategories').mockResolvedValue({
+      ok: true,
+      data: BASE_CATEGORIES,
+      requestId: 'req-cat-list',
+    });
+
     const listSpy = vi
       .spyOn(adminCatalogService, 'getProducts')
       .mockImplementation(async (params) => ({
@@ -463,11 +486,13 @@ describe('AdminProductsView', () => {
 
     render(
       <QueryClientProvider client={client}>
-        <AdminProductsView
-          profile={OWNER_PROFILE}
-          initialProducts={page1Products}
-          initialCategories={BASE_CATEGORIES}
-        />
+        <ToastProvider>
+          <AdminProductsView
+            profile={OWNER_PROFILE}
+            initialProducts={page1Products}
+            initialCategories={BASE_CATEGORIES}
+          />
+        </ToastProvider>
       </QueryClientProvider>,
     );
 
@@ -530,5 +555,10 @@ describe('AdminProductsView', () => {
     await waitFor(() => {
       expect(screen.getByText(/Halaman 1 dari 2/i)).toBeTruthy();
     });
+    expect(
+      await screen.findByText(
+        'Produk "Item Terakhir Halaman 2" telah diarsipkan.',
+      ),
+    ).toBeInTheDocument();
   });
 });

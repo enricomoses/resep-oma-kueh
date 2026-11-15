@@ -12,6 +12,7 @@ import {
   useUpdateAdminProduct,
 } from '@/hooks/queries/use-admin-catalog';
 import { extractAdminMutationError } from '@/lib/errors';
+import { notifyError, notifySuccess } from '@/lib/toast';
 import type {
   AdminCatalogStatus,
   AdminCategoryListResponse,
@@ -102,10 +103,6 @@ export function useAdminProductsManager({
   const [formError, setFormError] = useState<string | null>(null);
   const [conflictBanner, setConflictBanner] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
-  const [actionBanner, setActionBanner] = useState<{
-    tone: 'success' | 'error';
-    message: string;
-  } | null>(null);
   const [archiveTarget, setArchiveTarget] = useState<AdminProductItem | null>(
     null,
   );
@@ -171,7 +168,6 @@ export function useAdminProductsManager({
     setFormError(null);
     setConflictBanner(null);
     setFieldErrors({});
-    setActionBanner(null);
 
     const parsedSortOrder = Number.parseInt(formState.sortOrder, 10);
 
@@ -202,10 +198,7 @@ export function useAdminProductsManager({
         await createMutation.mutateAsync(parsed.data);
         setFormOpen(false);
         setPage(1);
-        setActionBanner({
-          tone: 'success',
-          message: `Produk draf "${parsed.data.name}" berhasil dibuat.`,
-        });
+        notifySuccess(`Produk draf "${parsed.data.name}" berhasil dibuat.`);
       } catch (err) {
         applyMutationError(err);
       }
@@ -243,10 +236,7 @@ export function useAdminProductsManager({
         payload: parsed.data,
       });
       setFormOpen(false);
-      setActionBanner({
-        tone: 'success',
-        message: `Produk "${parsed.data.name}" berhasil diperbarui.`,
-      });
+      notifySuccess(`Produk "${parsed.data.name}" berhasil diperbarui.`);
     } catch (err) {
       applyMutationError(err);
     }
@@ -255,7 +245,6 @@ export function useAdminProductsManager({
   async function handleConfirmArchive() {
     if (!archiveTarget) return;
     setArchiveError(null);
-    setActionBanner(null);
 
     try {
       await archiveMutation.mutateAsync({
@@ -281,15 +270,15 @@ export function useAdminProductsManager({
         setPage(nextPage);
       }
 
-      setActionBanner({
-        tone: 'success',
-        message: `Produk "${archiveTarget.name}" telah diarsipkan.`,
-      });
+      notifySuccess(`Produk "${archiveTarget.name}" telah diarsipkan.`);
       setArchiveTarget(null);
     } catch (err) {
-      setArchiveError(
-        extractAdminMutationError(err, 'Gagal mengarsipkan produk.').message,
-      );
+      const message = extractAdminMutationError(
+        err,
+        'Gagal mengarsipkan produk.',
+      ).message;
+      setArchiveError(message);
+      notifyError(message);
     }
   }
 
@@ -324,7 +313,6 @@ export function useAdminProductsManager({
     formError,
     conflictBanner,
     fieldErrors,
-    actionBanner,
     archiveTarget,
     setArchiveTarget,
     archiveError,

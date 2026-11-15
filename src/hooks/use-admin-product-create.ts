@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { type FormEvent, useState } from 'react';
 
 import { extractAdminMutationError } from '@/lib/errors';
+import { notifyError, notifySuccess } from '@/lib/toast';
 import type { AdminProductType } from '@/types/admin-catalog';
 import {
   buildAdminProductEditRoute,
@@ -105,6 +106,7 @@ export function useAdminProductCreate() {
 
     try {
       const result = await createMutation.mutateAsync(validated.data);
+      notifySuccess(`Produk draf "${validated.data.name}" berhasil dibuat.`);
       router.push(buildAdminProductEditRoute(result.data.product.id));
     } catch (err) {
       const parsed = extractAdminMutationError(
@@ -113,6 +115,7 @@ export function useAdminProductCreate() {
       );
       setFieldErrors(parsed.fields);
       setFormError(parsed.message);
+      notifyError(parsed.message);
     }
   }
 

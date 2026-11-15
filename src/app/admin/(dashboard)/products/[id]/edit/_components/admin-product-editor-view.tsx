@@ -44,7 +44,6 @@ export function AdminProductEditorView({
     saveError,
     errorEntries,
     isConflictError,
-    saveNotice,
     isFetching,
     isSaving,
     persistedVariantIds,
@@ -74,10 +73,6 @@ export function AdminProductEditorView({
         isFetching={isFetching}
         onReloadLatest={() => void handleReloadLatest()}
       />
-
-      {saveNotice ? (
-        <Feedback tone="success" title={saveNotice} announce />
-      ) : null}
 
       {saveError ? (
         <Feedback tone="error" title={saveError} announce>

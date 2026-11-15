@@ -4,6 +4,7 @@ import { type FormEvent, useState } from 'react';
 
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { ApiClientError, extractAdminMutationError } from '@/lib/errors';
+import { notifyError, notifySuccess } from '@/lib/toast';
 import type {
   AdminCategoryItem,
   AdminCategoryListResponse,
@@ -63,10 +64,6 @@ export function useAdminCategoriesManager({
   const [formError, setFormError] = useState<string | null>(null);
   const [conflictBanner, setConflictBanner] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
-  const [actionBanner, setActionBanner] = useState<{
-    tone: 'success' | 'error';
-    message: string;
-  } | null>(null);
   const [archiveTarget, setArchiveTarget] = useState<AdminCategoryItem | null>(
     null,
   );
@@ -131,7 +128,6 @@ export function useAdminCategoriesManager({
     setFormError(null);
     setConflictBanner(null);
     setFieldErrors({});
-    setActionBanner(null);
 
     const parsedSortOrder = Number.parseInt(formState.sortOrder, 10);
     const parentId = formState.parentId.trim() || null;
@@ -161,10 +157,7 @@ export function useAdminCategoriesManager({
       try {
         await createMutation.mutateAsync(parsed.data);
         setFormOpen(false);
-        setActionBanner({
-          tone: 'success',
-          message: `Kategori "${parsed.data.name}" berhasil dibuat.`,
-        });
+        notifySuccess(`Kategori "${parsed.data.name}" berhasil dibuat.`);
       } catch (err) {
         applyMutationError(err);
       }
@@ -213,17 +206,13 @@ export function useAdminCategoriesManager({
         payload: parsed.data,
       });
       setFormOpen(false);
-      setActionBanner({
-        tone: 'success',
-        message: `Kategori "${parsed.data.name}" berhasil diperbarui.`,
-      });
+      notifySuccess(`Kategori "${parsed.data.name}" berhasil diperbarui.`);
     } catch (err) {
       applyMutationError(err);
     }
   }
 
   async function handleQuickPublish(category: AdminCategoryItem) {
-    setActionBanner(null);
     try {
       await updateMutation.mutateAsync({
         id: category.id,
@@ -236,39 +225,32 @@ export function useAdminCategoriesManager({
           expectedUpdatedAt: category.updatedAt,
         },
       });
-      setActionBanner({
-        tone: 'success',
-        message: `Kategori "${category.name}" sekarang terpublikasi.`,
-      });
+      notifySuccess(`Kategori "${category.name}" sekarang terpublikasi.`);
     } catch (err) {
-      setActionBanner({
-        tone: 'error',
-        message: extractAdminMutationError(
-          err,
-          'Gagal mempublikasikan kategori.',
-        ).message,
-      });
+      notifyError(
+        extractAdminMutationError(err, 'Gagal mempublikasikan kategori.')
+          .message,
+      );
     }
   }
 
   async function handleConfirmArchive() {
     if (!archiveTarget) return;
     setArchiveError(null);
-    setActionBanner(null);
     try {
       await archiveMutation.mutateAsync({
         id: archiveTarget.id,
         payload: { expectedUpdatedAt: archiveTarget.updatedAt },
       });
-      setActionBanner({
-        tone: 'success',
-        message: `Kategori "${archiveTarget.name}" telah diarsipkan.`,
-      });
+      notifySuccess(`Kategori "${archiveTarget.name}" telah diarsipkan.`);
       setArchiveTarget(null);
     } catch (err) {
-      setArchiveError(
-        extractAdminMutationError(err, 'Gagal mengarsipkan kategori.').message,
-      );
+      const message = extractAdminMutationError(
+        err,
+        'Gagal mengarsipkan kategori.',
+      ).message;
+      setArchiveError(message);
+      notifyError(message);
     }
   }
 
@@ -300,7 +282,6 @@ export function useAdminCategoriesManager({
     formError,
     conflictBanner,
     fieldErrors,
-    actionBanner,
     archiveTarget,
     setArchiveTarget,
     archiveError,

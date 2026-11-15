@@ -83,14 +83,6 @@ export function AdminProductsView({
         {ADMIN_CATALOG_COPY.PRODUCTS.NO_PRICE_NOTICE}
       </Feedback>
 
-      {mgr.actionBanner ? (
-        <Feedback
-          tone={mgr.actionBanner.tone}
-          title={mgr.actionBanner.message}
-          announce
-        />
-      ) : null}
-
       {mgr.listErrorMessage ? (
         <Feedback tone="error" title={mgr.listErrorMessage} announce />
       ) : null}

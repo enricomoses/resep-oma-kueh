@@ -40,7 +40,6 @@ export function AdminCategoriesView({
     formError,
     conflictBanner,
     fieldErrors,
-    actionBanner,
     archiveTarget,
     setArchiveTarget,
     archiveError,
@@ -90,14 +89,6 @@ export function AdminCategoriesView({
           </div>
         }
       />
-
-      {actionBanner ? (
-        <Feedback
-          tone={actionBanner.tone}
-          title={actionBanner.message}
-          announce
-        />
-      ) : null}
 
       {queryErrorMessage ? (
         <Feedback tone="error" title={queryErrorMessage} announce />
