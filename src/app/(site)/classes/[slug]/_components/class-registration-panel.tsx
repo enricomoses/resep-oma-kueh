@@ -168,7 +168,7 @@ export function ClassRegistrationPanel({
                 <span>{CLASSES_COPY.MANUAL_CONFIRM_LABEL}</span>
               </label>
               {flow.form.formState.errors.manualConfirmed?.message ? (
-                <p className="admin-field-error" role="alert">
+                <p className="ui-field-error" role="alert">
                   {flow.form.formState.errors.manualConfirmed.message}
                 </p>
               ) : null}
