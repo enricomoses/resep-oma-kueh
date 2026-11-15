@@ -15,8 +15,11 @@ import {
   entryToFormState,
 } from '@/utils/admin-cms';
 
-import { useUploadAdminProductMedia } from './use-admin-catalog';
-import { useAdminCmsEntries, useSaveAdminCmsEntry } from './use-admin-cms';
+import { useUploadAdminProductMedia } from '@/hooks/queries/use-admin-catalog';
+import {
+  useAdminCmsEntries,
+  useSaveAdminCmsEntry,
+} from '@/hooks/queries/use-admin-cms';
 
 interface UseAdminContentManagerOptions {
   profile: AdminSessionProfile;

@@ -17,7 +17,7 @@ import { AdminFaqsView } from '@/app/admin/(dashboard)/faqs/_components/admin-fa
 import { AdminTestimonialsView } from '@/app/admin/(dashboard)/testimonials/_components/admin-testimonials-view';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { ReactQueryProvider } from '@/providers/react-query-provider';
-import * as adminCmsService from '@/services/admin-cms.service';
+import { adminCmsService } from '@/services/admin-cms.service';
 import type {
   AdminCmsListResponse,
   AdminFaqListResponse,
@@ -119,13 +119,11 @@ const INITIAL_TESTIMONIALS: AdminTestimonialListResponse = {
 
 describe('F20 admin CMS, FAQ, and testimonial views', () => {
   it('renders CMS key switcher, shows release warnings for contacts and legal keys, and submits draft save', async () => {
-    const saveSpy = vi
-      .spyOn(adminCmsService, 'saveAdminCmsEntryRequest')
-      .mockResolvedValue({
-        ok: true,
-        requestId: 'req-1',
-        data: { item: INITIAL_CMS.items[2]! },
-      });
+    const saveSpy = vi.spyOn(adminCmsService, 'saveEntry').mockResolvedValue({
+      ok: true,
+      requestId: 'req-1',
+      data: { item: INITIAL_CMS.items[2]! },
+    });
 
     render(
       <ReactQueryProvider>
@@ -148,7 +146,7 @@ describe('F20 admin CMS, FAQ, and testimonial views', () => {
 
   it('renders FAQ list and opens soft archive confirmation dialog', async () => {
     const archiveSpy = vi
-      .spyOn(adminCmsService, 'archiveAdminFaqRequest')
+      .spyOn(adminCmsService, 'archiveFaq')
       .mockResolvedValue({
         ok: true,
         requestId: 'req-2',

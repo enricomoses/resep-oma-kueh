@@ -15,7 +15,7 @@ import {
   useArchiveAdminTestimonial,
   useCreateAdminTestimonial,
   useUpdateAdminTestimonial,
-} from './use-admin-cms';
+} from '@/hooks/queries/use-admin-cms';
 
 interface UseAdminTestimonialsManagerOptions {
   profile: AdminSessionProfile;

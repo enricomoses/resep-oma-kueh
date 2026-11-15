@@ -16,7 +16,7 @@ import {
   useArchiveAdminFaq,
   useCreateAdminFaq,
   useUpdateAdminFaq,
-} from './use-admin-cms';
+} from '@/hooks/queries/use-admin-cms';
 
 interface UseAdminFaqsManagerOptions {
   profile: AdminSessionProfile;
