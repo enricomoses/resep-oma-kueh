@@ -5,6 +5,7 @@ import { useRef, useState } from 'react';
 
 import { BRANCH, SITE_COPY } from '@/constants/site.constant';
 import { useBranchesQuery } from '@/hooks/queries/use-branches';
+import { notifyError, notifySuccess, notifyWarning } from '@/lib/toast';
 import {
   useBranchContext,
   useBranchPreference,
@@ -53,6 +54,9 @@ export function useBranches() {
     try {
       if (context.cartItemCount > 0 && !context.beforeBranchChange) {
         setNotice(SITE_COPY.SWITCH_BLOCKED);
+        notifyError(SITE_COPY.SWITCH_BLOCKED, {
+          toastId: 'branch-switch-notice',
+        });
         return;
       }
       if (
@@ -63,19 +67,31 @@ export function useBranches() {
         }))
       ) {
         setNotice(SITE_COPY.SWITCH_BLOCKED);
+        notifyError(SITE_COPY.SWITCH_BLOCKED, {
+          toastId: 'branch-switch-notice',
+        });
         return;
       }
       try {
         context.store.getState().setSelectedBranchId(next.id);
       } catch {
         setNotice(SITE_COPY.STORAGE_UNAVAILABLE);
+        notifyWarning(SITE_COPY.STORAGE_UNAVAILABLE, {
+          toastId: 'branch-storage-notice',
+        });
       }
       router.replace(withBranch(`${pathname}?${params}`, next.code), {
         scroll: false,
       });
       setPending(null);
+      notifySuccess(`Cabang aktif dialihkan ke ${next.name}.`, {
+        toastId: 'branch-switched',
+      });
     } catch {
       setNotice(SITE_COPY.SWITCH_BLOCKED);
+      notifyError(SITE_COPY.SWITCH_BLOCKED, {
+        toastId: 'branch-switch-notice',
+      });
     } finally {
       busy.current = false;
     }

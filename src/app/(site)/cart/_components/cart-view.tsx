@@ -17,6 +17,7 @@ import { ROUTES } from '@/constants/routes.constant';
 import { useBranches } from '@/hooks/use-branches';
 import { useCart } from '@/hooks/use-cart';
 import { usePublicPromotions } from '@/hooks/queries/use-promotions';
+import { notifyInfo, notifySuccess } from '@/lib/toast';
 import '@/styles/components/order-summary.css';
 import '@/styles/features/cart.css';
 import type { CartValidatedLine } from '@/types/cart';
@@ -148,7 +149,13 @@ export function CartView({ className }: CartViewProps) {
                   line={line}
                   branchCode={branchCode}
                   onUpdateQuantity={updateQuantity}
-                  onRemoveLine={removeLine}
+                  onRemoveLine={(lineId) => {
+                    removeLine(lineId);
+                    notifyInfo(
+                      `${line.productName} (${line.variantName}) dihapus dari keranjang.`,
+                      { toastId: 'cart-line-removed' },
+                    );
+                  }}
                 />
               ))}
             </div>
@@ -194,6 +201,9 @@ export function CartView({ className }: CartViewProps) {
           onConfirm={() => {
             clearCart();
             setClearDialogOpen(false);
+            notifySuccess('Keranjang berhasil dikosongkan.', {
+              toastId: 'cart-cleared',
+            });
           }}
         />
       </div>
