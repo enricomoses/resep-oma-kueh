@@ -8,6 +8,7 @@ import { Feedback } from '@/components/ui/feedback';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { useAdminProductEditorManager } from '@/hooks/use-admin-product-editor-manager';
 import type { AdminProductEditorAggregate } from '@/types/admin-catalog';
+import '@/styles/features/admin-product-editor.css';
 import type { AdminSessionProfile } from '@/types/auth';
 import { cn } from '@/utils';
 

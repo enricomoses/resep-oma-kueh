@@ -13,6 +13,7 @@ import {
   useAdminAvailabilityManager,
 } from '@/hooks/use-admin-availability-manager';
 import type { AdminAvailabilityListResponse } from '@/types/admin-catalog';
+import '@/styles/features/admin-availability.css';
 import type { AdminSessionProfile } from '@/types/auth';
 import { cn } from '@/utils';
 

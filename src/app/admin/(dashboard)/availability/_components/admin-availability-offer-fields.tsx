@@ -8,6 +8,7 @@ import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { ADMIN_BRANCH_LIMITS } from '@/constants/admin-catalog.constant';
+import '@/styles/components/stat-card.css';
 import type {
   AdminAvailabilityOfferItem,
   AdminOfferAvailabilityStatus,

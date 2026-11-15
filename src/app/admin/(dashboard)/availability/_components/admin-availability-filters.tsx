@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
+import '@/styles/components/stat-card.css';
 import type {
   AdminAvailabilityListResponse,
   AdminOfferAvailabilityStatus,

@@ -8,6 +8,7 @@ import { Feedback } from '@/components/ui/feedback';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { useAdminLocationsManager } from '@/hooks/use-admin-locations-manager';
 import type { AdminBranchesResponse } from '@/types/admin-catalog';
+import '@/styles/features/admin-locations.css';
 import type { AdminSessionProfile } from '@/types/auth';
 import { cn } from '@/utils';
 

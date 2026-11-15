@@ -1,0 +1,82 @@
+/* ==========================================================================
+   Admin Branch Locations, Readiness, Hours, & WhatsApp Preview
+   ========================================================================== */
+
+@layer components {
+  .admin-readiness-card,
+  .admin-locations-panel {
+    display: grid;
+    gap: 0.875rem;
+  }
+
+  .admin-readiness-badges {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .admin-readiness-branch-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .admin-locations-stack,
+  .admin-location-form,
+  .admin-hours-form,
+  .admin-hours-list {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .admin-wa-preview-box,
+  .admin-confirm-box,
+  .admin-fulfillment-box {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border: 1px solid var(--border-sand);
+    border-radius: var(--radius-sm);
+    background-color: var(--surface-cream);
+  }
+
+  .admin-wa-preview-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--brand-burgundy);
+    font-weight: 600;
+    word-break: break-all;
+  }
+
+  .admin-hours-row {
+    display: grid;
+    gap: 0.625rem;
+    padding: 0.75rem;
+    border: 1px solid var(--border-sand);
+    border-radius: var(--radius-sm);
+  }
+
+  .admin-hours-day-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .admin-hours-controls {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    align-items: end;
+  }
+
+  @media (min-width: 48rem) {
+    .admin-hours-controls {
+      grid-template-columns:
+        auto minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.3fr)
+        auto;
+    }
+  }
+}

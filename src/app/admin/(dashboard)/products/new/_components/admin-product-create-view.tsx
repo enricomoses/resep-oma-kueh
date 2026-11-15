@@ -7,6 +7,7 @@ import { ActionLink } from '@/components/ui/action-link';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { useAdminProductCreate } from '@/hooks/use-admin-product-create';
+import '@/styles/features/admin-product-editor.css';
 import { cn } from '@/utils';
 
 import { AdminProductCreateForm } from './admin-product-create-form';

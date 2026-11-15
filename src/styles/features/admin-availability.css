@@ -1,0 +1,73 @@
+/* ==========================================================================
+   Admin Branch Availability & Bulk Offer Controls
+   ========================================================================== */
+
+@layer components {
+  .admin-filter-card,
+  .admin-bulk-card,
+  .admin-availability-card {
+    display: grid;
+    gap: 0.875rem;
+  }
+
+  .admin-bulk-controls,
+  .admin-availability-controls-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    align-items: end;
+  }
+
+  @media (min-width: 48rem) {
+    .admin-filter-card .admin-filter-grid {
+      grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(0, 1fr));
+    }
+
+    .admin-bulk-controls {
+      grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    }
+
+    .admin-availability-controls-grid {
+      grid-template-columns: auto repeat(4, minmax(0, 1fr)) auto;
+    }
+  }
+
+  .admin-availability-card-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .admin-availability-title-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    min-width: 0;
+  }
+
+  .admin-availability-toggle-col,
+  .admin-availability-save-col,
+  .admin-staff-price-readonly,
+  .admin-staff-branch-pill {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .admin-bulk-failure-list {
+    margin: 0.5rem 0 0;
+    padding-left: 1.25rem;
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  .admin-pagination-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+}
