@@ -22,17 +22,19 @@ vi.mock('@/services/admin-catalog.service', async (importOriginal) => {
     await importOriginal<typeof import('@/services/admin-catalog.service')>();
   return {
     ...actual,
-    saveAdminProductConfigurationRequest: (...args: unknown[]) =>
-      saveMock(...args),
-    uploadAdminProductMediaRequest: (...args: unknown[]) => uploadMock(...args),
-    readAdminProductEditorRequest: vi.fn(async () => ({
-      ok: true,
-      data: {
-        product: baseAggregate.product,
-        editor: baseAggregate,
-      },
-      requestId: 'req-refetch',
-    })),
+    adminCatalogService: {
+      ...actual.adminCatalogService,
+      saveProductConfiguration: (...args: unknown[]) => saveMock(...args),
+      uploadMedia: (...args: unknown[]) => uploadMock(...args),
+      getProductEditor: vi.fn(async () => ({
+        ok: true,
+        data: {
+          product: baseAggregate.product,
+          editor: baseAggregate,
+        },
+        requestId: 'req-refetch',
+      })),
+    },
   };
 });
 

@@ -6,7 +6,7 @@ import { StatCard } from '@/components/common/cards/stat-card';
 import { Button } from '@/components/ui/button';
 import { Feedback } from '@/components/ui/feedback';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
-import { useAdminOverview } from '@/hooks/use-admin-catalog';
+import { useAdminOverview } from '@/hooks/queries/use-admin-catalog';
 import { ApiClientError } from '@/lib/errors';
 import type { AdminOverviewResponse } from '@/types/admin-catalog';
 import type { AdminSessionProfile } from '@/types/auth';

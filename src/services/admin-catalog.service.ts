@@ -14,6 +14,11 @@ import type {
   UpdateAdminProductInput,
   UpsertBranchAvailabilityInput,
 } from '@/types/admin-catalog';
+import type {
+  SaveAdminPromotionInput,
+  SaveAdminShippingBannerInput,
+} from '@/types/promotion';
+import { buildListParams } from '@/utils/api';
 import {
   adminAvailabilityListResponseSchema,
   adminAvailabilityUpsertResponseSchema,
@@ -29,375 +34,329 @@ import {
   adminProductListResponseSchema,
   adminSaveConfigurationResponseSchema,
 } from '@/validations/admin-catalog.schema';
-
-import type {
-  SaveAdminPromotionInput,
-  SaveAdminShippingBannerInput,
-} from '@/types/promotion';
 import {
   adminPromotionMutationResponseSchema,
   adminPromotionsListResponseSchema,
   adminShippingBannerMutationResponseSchema,
 } from '@/validations/promotion.schema';
 
-export function readAdminOverviewRequest(signal?: AbortSignal) {
-  return requestApi(
-    {
-      url: API_ENDPOINTS.ADMIN_OVERVIEW,
-      method: 'GET',
-      signal,
-    },
-    adminOverviewResponseSchema,
-  );
-}
-
-export function readAdminCategoriesRequest(signal?: AbortSignal) {
-  return requestApi(
-    {
-      url: API_ENDPOINTS.ADMIN_CATEGORIES,
-      method: 'GET',
-      signal,
-    },
-    adminCategoryListResponseSchema,
-  );
-}
-
-export function createAdminCategoryRequest(
-  payload: CreateAdminCategoryInput,
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: API_ENDPOINTS.ADMIN_CATEGORIES,
-      method: 'POST',
-      data: payload,
-      signal,
-    },
-    adminCategoryDetailResponseSchema,
-  );
-}
-
-export function updateAdminCategoryRequest(
-  id: string,
-  payload: UpdateAdminCategoryInput,
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: `${API_ENDPOINTS.ADMIN_CATEGORIES}/${encodeURIComponent(id)}`,
-      method: 'PATCH',
-      data: payload,
-      signal,
-    },
-    adminCategoryDetailResponseSchema,
-  );
-}
-
-export function archiveAdminCategoryRequest(
-  id: string,
-  payload: ArchiveAdminEntityInput,
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: `${API_ENDPOINTS.ADMIN_CATEGORIES}/${encodeURIComponent(id)}`,
-      method: 'DELETE',
-      data: payload,
-      signal,
-    },
-    adminCategoryDetailResponseSchema,
-  );
-}
-
-export function readAdminProductsRequest(
-  query: Partial<AdminProductQuery>,
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: API_ENDPOINTS.ADMIN_PRODUCTS,
-      method: 'GET',
-      params: {
-        q: query.q || undefined,
-        status: query.status || undefined,
-        categoryId: query.categoryId || undefined,
-        page: query.page,
-        limit: query.limit,
+/** Admin overview, catalog, branches, availability, promotions, and media upload service. */
+export const adminCatalogService = {
+  getOverview: (signal?: AbortSignal) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_OVERVIEW,
+        method: 'GET',
+        signal,
       },
-      signal,
-    },
-    adminProductListResponseSchema,
-  );
-}
+      adminOverviewResponseSchema,
+    ),
 
-export function readAdminProductDetailRequest(
-  id: string,
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: `${API_ENDPOINTS.ADMIN_PRODUCTS}/${encodeURIComponent(id)}`,
-      method: 'GET',
-      signal,
-    },
-    adminProductDetailResponseSchema,
-  );
-}
+  getCategories: (signal?: AbortSignal) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_CATEGORIES,
+        method: 'GET',
+        signal,
+      },
+      adminCategoryListResponseSchema,
+    ),
 
-export function createAdminProductRequest(
-  payload: CreateAdminProductInput,
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: API_ENDPOINTS.ADMIN_PRODUCTS,
-      method: 'POST',
-      data: payload,
-      signal,
-    },
-    adminProductDetailResponseSchema,
-  );
-}
+  createCategory: (payload: CreateAdminCategoryInput, signal?: AbortSignal) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_CATEGORIES,
+        method: 'POST',
+        data: payload,
+        signal,
+      },
+      adminCategoryDetailResponseSchema,
+    ),
 
-export function updateAdminProductRequest(
-  id: string,
-  payload: UpdateAdminProductInput,
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: `${API_ENDPOINTS.ADMIN_PRODUCTS}/${encodeURIComponent(id)}`,
-      method: 'PATCH',
-      data: payload,
-      signal,
-    },
-    adminProductDetailResponseSchema,
-  );
-}
+  updateCategory: (
+    id: string,
+    payload: UpdateAdminCategoryInput,
+    signal?: AbortSignal,
+  ) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_CATEGORY_DETAIL(id),
+        method: 'PATCH',
+        data: payload,
+        signal,
+      },
+      adminCategoryDetailResponseSchema,
+    ),
 
-export function archiveAdminProductRequest(
-  id: string,
-  payload: ArchiveAdminEntityInput,
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: `${API_ENDPOINTS.ADMIN_PRODUCTS}/${encodeURIComponent(id)}`,
-      method: 'DELETE',
-      data: payload,
-      signal,
-    },
-    adminProductDetailResponseSchema,
-  );
-}
+  archiveCategory: (
+    id: string,
+    payload: ArchiveAdminEntityInput,
+    signal?: AbortSignal,
+  ) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_CATEGORY_DETAIL(id),
+        method: 'DELETE',
+        data: payload,
+        signal,
+      },
+      adminCategoryDetailResponseSchema,
+    ),
 
-export function readAdminProductEditorRequest(
-  id: string,
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: `${API_ENDPOINTS.ADMIN_PRODUCTS}/${encodeURIComponent(id)}`,
-      method: 'GET',
-      params: { include: 'editor' },
-      signal,
-    },
-    adminProductDetailAggregateResponseSchema,
-  );
-}
+  getProducts: (query: Partial<AdminProductQuery>, signal?: AbortSignal) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_PRODUCTS,
+        method: 'GET',
+        params: buildListParams({
+          q: query.q,
+          status: query.status,
+          categoryId: query.categoryId,
+          page: query.page,
+          limit: query.limit,
+        }),
+        signal,
+      },
+      adminProductListResponseSchema,
+    ),
 
-export function saveAdminProductConfigurationRequest(
-  id: string,
-  payload: SaveProductConfigurationInput,
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: `${API_ENDPOINTS.ADMIN_PRODUCTS}/${encodeURIComponent(id)}/configuration`,
-      method: 'PUT',
-      data: payload,
-      signal,
-    },
-    adminSaveConfigurationResponseSchema,
-  );
-}
+  getProductDetail: (id: string, signal?: AbortSignal) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_PRODUCT_DETAIL(id),
+        method: 'GET',
+        signal,
+      },
+      adminProductDetailResponseSchema,
+    ),
 
-export function uploadAdminProductMediaRequest(
-  file: File,
-  signal?: AbortSignal,
-) {
-  const formData = new FormData();
-  formData.append('file', file);
-  return requestApi(
-    {
-      url: API_ENDPOINTS.ADMIN_MEDIA_UPLOAD,
-      method: 'POST',
-      data: formData,
-      signal,
-    },
-    adminMediaUploadResponseSchema,
-  );
-}
+  createProduct: (payload: CreateAdminProductInput, signal?: AbortSignal) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_PRODUCTS,
+        method: 'POST',
+        data: payload,
+        signal,
+      },
+      adminProductDetailResponseSchema,
+    ),
 
-export function readAdminBranchesRequest(signal?: AbortSignal) {
-  return requestApi(
-    {
-      url: API_ENDPOINTS.ADMIN_BRANCHES,
-      method: 'GET',
-      signal,
-    },
-    adminBranchesResponseSchema,
-  );
-}
+  updateProduct: (
+    id: string,
+    payload: UpdateAdminProductInput,
+    signal?: AbortSignal,
+  ) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_PRODUCT_DETAIL(id),
+        method: 'PATCH',
+        data: payload,
+        signal,
+      },
+      adminProductDetailResponseSchema,
+    ),
 
-export function updateAdminBranchRequest(
-  branchId: string,
-  payload: UpdateAdminBranchInput,
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: `${API_ENDPOINTS.ADMIN_BRANCHES}/${encodeURIComponent(branchId)}`,
-      method: 'PATCH',
-      data: payload,
-      signal,
-    },
-    adminBranchMutationResponseSchema,
-  );
-}
+  archiveProduct: (
+    id: string,
+    payload: ArchiveAdminEntityInput,
+    signal?: AbortSignal,
+  ) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_PRODUCT_DETAIL(id),
+        method: 'DELETE',
+        data: payload,
+        signal,
+      },
+      adminProductDetailResponseSchema,
+    ),
 
-export function replaceAdminBranchHoursRequest(
-  branchId: string,
-  payload: ReplaceBranchHoursInput,
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: `${API_ENDPOINTS.ADMIN_BRANCHES}/${encodeURIComponent(branchId)}/hours`,
-      method: 'PUT',
-      data: payload,
-      signal,
-    },
-    adminBranchMutationResponseSchema,
-  );
-}
+  getProductEditor: (id: string, signal?: AbortSignal) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_PRODUCT_DETAIL(id),
+        method: 'GET',
+        params: { include: 'editor' },
+        signal,
+      },
+      adminProductDetailAggregateResponseSchema,
+    ),
 
-export function readAdminAvailabilityRequest(
-  params: Partial<AdminAvailabilityQuery>,
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: API_ENDPOINTS.ADMIN_AVAILABILITY,
-      method: 'GET',
-      params,
-      signal,
-    },
-    adminAvailabilityListResponseSchema,
-  );
-}
+  saveProductConfiguration: (
+    id: string,
+    payload: SaveProductConfigurationInput,
+    signal?: AbortSignal,
+  ) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_PRODUCT_CONFIGURATION(id),
+        method: 'PUT',
+        data: payload,
+        signal,
+      },
+      adminSaveConfigurationResponseSchema,
+    ),
 
-export function upsertAdminAvailabilityRequest(
-  branchId: string,
-  variantId: string,
-  payload: UpsertBranchAvailabilityInput,
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: `${API_ENDPOINTS.ADMIN_AVAILABILITY}/${encodeURIComponent(branchId)}/${encodeURIComponent(variantId)}`,
-      method: 'PUT',
-      data: payload,
-      signal,
-    },
-    adminAvailabilityUpsertResponseSchema,
-  );
-}
+  uploadMedia: (file: File, signal?: AbortSignal) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_MEDIA_UPLOAD,
+        method: 'POST',
+        data: formData,
+        signal,
+      },
+      adminMediaUploadResponseSchema,
+    );
+  },
 
-export function bulkUpdateAdminAvailabilityRequest(
-  payload: BulkUpdateAvailabilityInput,
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: `${API_ENDPOINTS.ADMIN_AVAILABILITY}/bulk`,
-      method: 'POST',
-      data: payload,
-      signal,
-    },
-    adminBulkAvailabilityResponseSchema,
-  );
-}
+  getBranches: (signal?: AbortSignal) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_BRANCHES,
+        method: 'GET',
+        signal,
+      },
+      adminBranchesResponseSchema,
+    ),
 
-export function readAdminPromotionsRequest(signal?: AbortSignal) {
-  return requestApi(
-    {
-      url: API_ENDPOINTS.ADMIN_PROMOTIONS,
-      method: 'GET',
-      signal,
-    },
-    adminPromotionsListResponseSchema,
-  );
-}
+  updateBranch: (
+    branchId: string,
+    payload: UpdateAdminBranchInput,
+    signal?: AbortSignal,
+  ) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_BRANCH_DETAIL(branchId),
+        method: 'PATCH',
+        data: payload,
+        signal,
+      },
+      adminBranchMutationResponseSchema,
+    ),
 
-export function createAdminPromotionRequest(
-  payload: SaveAdminPromotionInput,
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: API_ENDPOINTS.ADMIN_PROMOTIONS,
-      method: 'POST',
-      data: payload,
-      signal,
-    },
-    adminPromotionMutationResponseSchema,
-  );
-}
+  replaceBranchHours: (
+    branchId: string,
+    payload: ReplaceBranchHoursInput,
+    signal?: AbortSignal,
+  ) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_BRANCH_HOURS(branchId),
+        method: 'PUT',
+        data: payload,
+        signal,
+      },
+      adminBranchMutationResponseSchema,
+    ),
 
-export function saveAdminPromotionRequest(
-  promotionId: string,
-  payload: SaveAdminPromotionInput,
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: `${API_ENDPOINTS.ADMIN_PROMOTIONS}/${encodeURIComponent(promotionId)}`,
-      method: 'PATCH',
-      data: payload,
-      signal,
-    },
-    adminPromotionMutationResponseSchema,
-  );
-}
+  getAvailability: (
+    params: Partial<AdminAvailabilityQuery>,
+    signal?: AbortSignal,
+  ) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_AVAILABILITY,
+        method: 'GET',
+        params: buildListParams(params),
+        signal,
+      },
+      adminAvailabilityListResponseSchema,
+    ),
 
-export function archiveAdminPromotionRequest(
-  promotionId: string,
-  payload: ArchiveAdminEntityInput,
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: `${API_ENDPOINTS.ADMIN_PROMOTIONS}/${encodeURIComponent(promotionId)}`,
-      method: 'DELETE',
-      data: payload,
-      signal,
-    },
-    adminPromotionMutationResponseSchema,
-  );
-}
+  upsertAvailability: (
+    branchId: string,
+    variantId: string,
+    payload: UpsertBranchAvailabilityInput,
+    signal?: AbortSignal,
+  ) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_AVAILABILITY_ITEM(branchId, variantId),
+        method: 'PUT',
+        data: payload,
+        signal,
+      },
+      adminAvailabilityUpsertResponseSchema,
+    ),
 
-export function saveAdminShippingBannerRequest(
-  payload: SaveAdminShippingBannerInput,
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: API_ENDPOINTS.ADMIN_PROMOTIONS_SHIPPING_BANNER,
-      method: 'PUT',
-      data: payload,
-      signal,
-    },
-    adminShippingBannerMutationResponseSchema,
-  );
-}
+  bulkUpdateAvailability: (
+    payload: BulkUpdateAvailabilityInput,
+    signal?: AbortSignal,
+  ) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_AVAILABILITY_BULK,
+        method: 'POST',
+        data: payload,
+        signal,
+      },
+      adminBulkAvailabilityResponseSchema,
+    ),
+
+  getPromotions: (signal?: AbortSignal) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_PROMOTIONS,
+        method: 'GET',
+        signal,
+      },
+      adminPromotionsListResponseSchema,
+    ),
+
+  createPromotion: (payload: SaveAdminPromotionInput, signal?: AbortSignal) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_PROMOTIONS,
+        method: 'POST',
+        data: payload,
+        signal,
+      },
+      adminPromotionMutationResponseSchema,
+    ),
+
+  savePromotion: (
+    promotionId: string,
+    payload: SaveAdminPromotionInput,
+    signal?: AbortSignal,
+  ) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_PROMOTION_DETAIL(promotionId),
+        method: 'PATCH',
+        data: payload,
+        signal,
+      },
+      adminPromotionMutationResponseSchema,
+    ),
+
+  archivePromotion: (
+    promotionId: string,
+    payload: ArchiveAdminEntityInput,
+    signal?: AbortSignal,
+  ) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_PROMOTION_DETAIL(promotionId),
+        method: 'DELETE',
+        data: payload,
+        signal,
+      },
+      adminPromotionMutationResponseSchema,
+    ),
+
+  saveShippingBanner: (
+    payload: SaveAdminShippingBannerInput,
+    signal?: AbortSignal,
+  ) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_PROMOTIONS_SHIPPING_BANNER,
+        method: 'PUT',
+        data: payload,
+        signal,
+      },
+      adminShippingBannerMutationResponseSchema,
+    ),
+};

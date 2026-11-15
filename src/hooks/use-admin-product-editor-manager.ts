@@ -22,7 +22,7 @@ import {
 import {
   useAdminProductEditor,
   useSaveAdminProductConfiguration,
-} from './use-admin-catalog';
+} from '@/hooks/queries/use-admin-catalog';
 
 interface UseAdminProductEditorManagerOptions {
   profile: AdminSessionProfile;

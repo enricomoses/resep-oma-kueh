@@ -25,7 +25,7 @@ import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { QUERY_KEYS } from '@/constants/query-keys.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { ApiClientError } from '@/lib/errors';
-import * as adminCatalogService from '@/services/admin-catalog.service';
+import { adminCatalogService } from '@/services/admin-catalog.service';
 import type {
   AdminCategoryListResponse,
   AdminOverviewResponse,
@@ -254,7 +254,7 @@ describe('AdminCategoriesView', () => {
     const invalidateSpy = vi.spyOn(client, 'invalidateQueries');
 
     const createSpy = vi
-      .spyOn(adminCatalogService, 'createAdminCategoryRequest')
+      .spyOn(adminCatalogService, 'createCategory')
       .mockResolvedValue({
         ok: true,
         data: {
@@ -322,10 +322,7 @@ describe('AdminCategoriesView', () => {
     });
 
     // Trigger stale 409 on edit
-    vi.spyOn(
-      adminCatalogService,
-      'updateAdminCategoryRequest',
-    ).mockRejectedValueOnce(
+    vi.spyOn(adminCatalogService, 'updateCategory').mockRejectedValueOnce(
       new ApiClientError({
         code: 'CONFLICT',
         status: 409,
@@ -359,7 +356,7 @@ describe('AdminCategoriesView', () => {
 
     // Require explicit archive dialog confirmation
     const archiveSpy = vi
-      .spyOn(adminCatalogService, 'archiveAdminCategoryRequest')
+      .spyOn(adminCatalogService, 'archiveCategory')
       .mockResolvedValue({
         ok: true,
         data: {
@@ -447,7 +444,7 @@ describe('AdminProductsView', () => {
     };
 
     const listSpy = vi
-      .spyOn(adminCatalogService, 'readAdminProductsRequest')
+      .spyOn(adminCatalogService, 'getProducts')
       .mockImplementation(async (params) => ({
         ok: true,
         data: params.page === 2 ? page2Products : page1Products,
@@ -455,7 +452,7 @@ describe('AdminProductsView', () => {
       }));
 
     const archiveSpy = vi
-      .spyOn(adminCatalogService, 'archiveAdminProductRequest')
+      .spyOn(adminCatalogService, 'archiveProduct')
       .mockResolvedValue({
         ok: true,
         data: {

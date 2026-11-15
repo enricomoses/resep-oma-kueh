@@ -10,7 +10,7 @@ import {
   useArchiveAdminProduct,
   useCreateAdminProduct,
   useUpdateAdminProduct,
-} from '@/hooks/use-admin-catalog';
+} from '@/hooks/queries/use-admin-catalog';
 import { extractAdminMutationError } from '@/lib/errors';
 import type {
   AdminCatalogStatus,

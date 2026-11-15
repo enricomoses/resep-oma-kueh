@@ -24,7 +24,7 @@ import {
   useArchiveAdminCategory,
   useCreateAdminCategory,
   useUpdateAdminCategory,
-} from './use-admin-catalog';
+} from '@/hooks/queries/use-admin-catalog';
 
 interface UseAdminCategoriesManagerOptions {
   profile: AdminSessionProfile;

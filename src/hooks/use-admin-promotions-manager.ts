@@ -25,7 +25,7 @@ import {
   useSaveAdminShippingBanner,
   useUpdateAdminPromotion,
   useUploadAdminProductMedia,
-} from './use-admin-catalog';
+} from '@/hooks/queries/use-admin-catalog';
 
 interface UseAdminPromotionsManagerOptions {
   profile: AdminSessionProfile;

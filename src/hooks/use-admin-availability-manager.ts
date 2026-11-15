@@ -17,7 +17,7 @@ import {
   useAdminAvailability,
   useBulkUpdateAdminAvailability,
   useUpsertAdminAvailability,
-} from './use-admin-catalog';
+} from '@/hooks/queries/use-admin-catalog';
 
 interface UseAdminAvailabilityManagerOptions {
   profile: AdminSessionProfile;

@@ -110,7 +110,10 @@ vi.mock('@/services/admin-catalog.service', async (importOriginal) => {
     await importOriginal<typeof import('@/services/admin-catalog.service')>();
   return {
     ...actual,
-    uploadAdminProductMediaRequest: vi.fn(),
+    adminCatalogService: {
+      ...actual.adminCatalogService,
+      uploadMedia: vi.fn(),
+    },
   };
 });
 

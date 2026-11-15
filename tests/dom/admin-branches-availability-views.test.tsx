@@ -42,16 +42,17 @@ vi.mock('@/services/admin-catalog.service', async (importOriginal) => {
     await importOriginal<typeof import('@/services/admin-catalog.service')>();
   return {
     ...actual,
-    readAdminBranchesRequest: (...args: unknown[]) => readBranchesMock(...args),
-    updateAdminBranchRequest: (...args: unknown[]) => updateBranchMock(...args),
-    replaceAdminBranchHoursRequest: (...args: unknown[]) =>
-      replaceHoursMock(...args),
-    readAdminAvailabilityRequest: (...args: unknown[]) =>
-      readAvailabilityMock(...args),
-    upsertAdminAvailabilityRequest: (...args: unknown[]) =>
-      upsertAvailabilityMock(...args),
-    bulkUpdateAdminAvailabilityRequest: (...args: unknown[]) =>
-      bulkAvailabilityMock(...args),
+    adminCatalogService: {
+      ...actual.adminCatalogService,
+      getBranches: (...args: unknown[]) => readBranchesMock(...args),
+      updateBranch: (...args: unknown[]) => updateBranchMock(...args),
+      replaceBranchHours: (...args: unknown[]) => replaceHoursMock(...args),
+      getAvailability: (...args: unknown[]) => readAvailabilityMock(...args),
+      upsertAvailability: (...args: unknown[]) =>
+        upsertAvailabilityMock(...args),
+      bulkUpdateAvailability: (...args: unknown[]) =>
+        bulkAvailabilityMock(...args),
+    },
   };
 });
 

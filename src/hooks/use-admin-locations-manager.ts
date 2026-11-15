@@ -14,7 +14,7 @@ import {
   useAdminBranches,
   useReplaceAdminBranchHours,
   useUpdateAdminBranch,
-} from './use-admin-catalog';
+} from '@/hooks/queries/use-admin-catalog';
 
 interface UseAdminLocationsManagerOptions {
   profile: AdminSessionProfile;

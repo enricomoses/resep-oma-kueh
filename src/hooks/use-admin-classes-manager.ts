@@ -3,7 +3,7 @@
 import { type FormEvent, useMemo, useState } from 'react';
 
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
-import { useUploadAdminProductMedia } from '@/hooks/use-admin-catalog';
+import { useUploadAdminProductMedia } from '@/hooks/queries/use-admin-catalog';
 import {
   useAdminClassPrograms,
   useAdminClassSessions,

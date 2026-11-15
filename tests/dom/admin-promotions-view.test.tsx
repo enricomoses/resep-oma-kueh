@@ -25,16 +25,15 @@ vi.mock('@/services/admin-catalog.service', async (importOriginal) => {
     await importOriginal<typeof import('@/services/admin-catalog.service')>();
   return {
     ...actual,
-    createAdminPromotionRequest: (...args: unknown[]) =>
-      createPromotionMock(...args),
-    saveAdminPromotionRequest: (...args: unknown[]) =>
-      savePromotionMock(...args),
-    archiveAdminPromotionRequest: (...args: unknown[]) =>
-      archivePromotionMock(...args),
-    saveAdminShippingBannerRequest: (...args: unknown[]) =>
-      saveShippingBannerMock(...args),
-    uploadAdminProductMediaRequest: (...args: unknown[]) =>
-      uploadMediaMock(...args),
+    adminCatalogService: {
+      ...actual.adminCatalogService,
+      createPromotion: (...args: unknown[]) => createPromotionMock(...args),
+      savePromotion: (...args: unknown[]) => savePromotionMock(...args),
+      archivePromotion: (...args: unknown[]) => archivePromotionMock(...args),
+      saveShippingBanner: (...args: unknown[]) =>
+        saveShippingBannerMock(...args),
+      uploadMedia: (...args: unknown[]) => uploadMediaMock(...args),
+    },
   };
 });
 

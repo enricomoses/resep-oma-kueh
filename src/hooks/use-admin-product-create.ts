@@ -11,7 +11,7 @@ import {
 } from '@/utils/admin-catalog';
 import { createAdminProductSchema } from '@/validations/admin-catalog.schema';
 
-import { useCreateAdminProduct } from './use-admin-catalog';
+import { useCreateAdminProduct } from '@/hooks/queries/use-admin-catalog';
 
 export interface ProductCreateFormState {
   name: string;

@@ -8,7 +8,7 @@ import {
   ADMIN_CATALOG_COPY,
   ADMIN_MEDIA_LIMITS,
 } from '@/constants/admin-catalog.constant';
-import { useUploadAdminProductMedia } from '@/hooks/use-admin-catalog';
+import { useUploadAdminProductMedia } from '@/hooks/queries/use-admin-catalog';
 import { ApiClientError } from '@/lib/errors';
 import type {
   AdminConfigImage,
