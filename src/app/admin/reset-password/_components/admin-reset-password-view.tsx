@@ -14,7 +14,7 @@ import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
 import { AUTH_COPY } from '@/constants/auth.constant';
 import { ROUTES } from '@/constants/routes.constant';
-import { useUpdatePassword } from '@/hooks/use-admin-auth';
+import { useUpdatePassword } from '@/hooks/queries/use-admin-auth';
 import { ApiClientError } from '@/lib/errors';
 import type {
   AdminSessionProfile,

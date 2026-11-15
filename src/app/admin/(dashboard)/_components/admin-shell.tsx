@@ -13,7 +13,7 @@ import { Feedback } from '@/components/ui/feedback';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { AUTH_COPY } from '@/constants/auth.constant';
 import { ROUTES } from '@/constants/routes.constant';
-import { useAdminLogout, useAdminSession } from '@/hooks/use-admin-auth';
+import { useAdminLogout, useAdminSession } from '@/hooks/queries/use-admin-auth';
 import { ApiClientError } from '@/lib/errors';
 import type { AdminSessionProfile } from '@/types/auth';
 import { cn } from '@/utils';

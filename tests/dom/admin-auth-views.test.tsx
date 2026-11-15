@@ -17,7 +17,7 @@ import { AUTH_COPY } from '@/constants/auth.constant';
 import { QUERY_KEYS } from '@/constants/query-keys.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { ApiClientError } from '@/lib/errors';
-import * as authService from '@/services/auth.service';
+import { authService } from '@/services/auth.service';
 import type { AdminSessionProfile } from '@/types/auth';
 
 const navigation = vi.hoisted(() => ({
@@ -120,7 +120,7 @@ describe('AdminLoginView', () => {
       requestId: 'reset-req-1',
     });
 
-    vi.spyOn(authService, 'loginAdminRequest').mockResolvedValue({
+    vi.spyOn(authService, 'login').mockResolvedValue({
       ok: true,
       data: {
         profile: OWNER_PROFILE,
@@ -180,7 +180,7 @@ describe('AdminLoginView', () => {
 
   it('surfaces API 403 error clearly when auth user lacks active admin profile', async () => {
     const client = createTestClient();
-    vi.spyOn(authService, 'loginAdminRequest').mockRejectedValue(
+    vi.spyOn(authService, 'login').mockRejectedValue(
       new ApiClientError({
         code: 'FORBIDDEN',
         status: 403,
@@ -228,7 +228,7 @@ describe('AdminResetPasswordView', () => {
     expect(screen.queryByLabelText(/Kata sandi baru/i)).toBeNull();
 
     const updateSpy = vi
-      .spyOn(authService, 'updateAdminPasswordRequest')
+      .spyOn(authService, 'updatePassword')
       .mockResolvedValue({
         ok: true,
         data: { updated: true, redirectTo: ROUTES.ADMIN },
@@ -292,7 +292,7 @@ describe('AdminGuardedShell and private query cache cleanup', () => {
     ];
     client.setQueryData(privateBranchDataKey, [{ sku: 'DEMO-1' }]);
 
-    vi.spyOn(authService, 'logoutAdminRequest').mockResolvedValue({
+    vi.spyOn(authService, 'logout').mockResolvedValue({
       ok: true,
       data: { loggedOut: true },
       requestId: 'logout-req-1',

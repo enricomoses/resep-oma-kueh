@@ -13,7 +13,10 @@ import {
   passwordResetRequestSchema,
 } from '@/validations/auth.schema';
 
-import { useAdminLogin, useRequestPasswordReset } from './use-admin-auth';
+import {
+  useAdminLogin,
+  useRequestPasswordReset,
+} from '@/hooks/queries/use-admin-auth';
 
 interface UseAdminLoginFlowOptions {
   nextPath: string;
