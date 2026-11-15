@@ -9,7 +9,7 @@ import { getPublicEnvironment } from '@/config';
 import { getServerEnvironment } from '@/config/environment.server';
 import { APP, ROUTES } from '@/constants';
 import { FOUNDATION_COPY } from '@/constants/ui.constant';
-import { ReactQueryProvider } from '@/providers';
+import { ReactQueryProvider, ToastProvider } from '@/providers';
 import { cn } from '@/utils';
 import { isNoIndexDeployment } from '@/utils/seo';
 
@@ -58,7 +58,9 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
     >
       <body className="flex min-h-full flex-col" suppressHydrationWarning>
         {getPublicEnvironment().NEXT_PUBLIC_DEMO_MODE ? <DemoBanner /> : null}
-        <ReactQueryProvider>{children}</ReactQueryProvider>
+        <ReactQueryProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );

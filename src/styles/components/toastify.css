@@ -1,0 +1,266 @@
+/* ==========================================================================
+   Bakery Toastify Theme — Resep Oma Kueh (Cream / Burgundy / Cocoa)
+   Loaded after react-toastify/dist/ReactToastify.css to preserve cascade.
+   ========================================================================== */
+
+.bakery-toast-container.Toastify__toast-container {
+  --toastify-toast-width: min(24.5rem, calc(100vw - 2rem));
+  --toastify-toast-min-height: 3.5rem;
+  --toastify-toast-padding: 0.875rem 2.75rem 0.875rem 0.9375rem;
+  --toastify-toast-bd-radius: var(--radius-card);
+  --toastify-font-family:
+    var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --toastify-z-index: 80;
+  --toastify-toast-background: var(--surface-white);
+  --toastify-color-light: var(--surface-white);
+  --toastify-color-dark: var(--surface-white);
+  --toastify-text-color-light: var(--brand-deep);
+  --toastify-text-color-dark: var(--brand-deep);
+  --toastify-color-info: var(--brand-burgundy);
+  --toastify-color-success: var(--success);
+  --toastify-color-warning: var(--accent-terracotta);
+  --toastify-color-error: var(--danger);
+  --toastify-color-progress-info: var(--brand-burgundy);
+  --toastify-color-progress-success: var(--success);
+  --toastify-color-progress-warning: var(--accent-terracotta);
+  --toastify-color-progress-error: var(--danger);
+  --toastify-color-progress-bgo: 0.14;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  padding: 0;
+  top: max(1.25rem, env(safe-area-inset-top));
+  right: max(1.25rem, env(safe-area-inset-right));
+  width: var(--toastify-toast-width);
+  pointer-events: none;
+}
+
+.bakery-toast-container .bakery-toast.Toastify__toast {
+  pointer-events: auto;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  width: 100%;
+  margin-bottom: 0;
+  padding: var(--toastify-toast-padding);
+  background: var(--surface-white);
+  color: var(--brand-deep);
+  border: 1px solid var(--border-sand);
+  border-left: 4px solid var(--brand-burgundy);
+  border-radius: var(--radius-card);
+  box-shadow:
+    0 14px 32px -12px rgba(101, 14, 32, 0.18),
+    0 4px 12px -4px rgba(101, 69, 59, 0.12);
+  font-family: var(--toastify-font-family);
+  font-size: 0.875rem;
+  line-height: 1.45;
+  font-weight: 500;
+}
+
+.bakery-toast-container .bakery-toast--success.Toastify__toast {
+  border-color: rgba(39, 115, 75, 0.3);
+  border-left: 4px solid var(--success);
+}
+
+.bakery-toast-container .bakery-toast--error.Toastify__toast {
+  border-color: rgba(161, 38, 54, 0.34);
+  border-left: 4px solid var(--danger);
+}
+
+.bakery-toast-container .bakery-toast--info.Toastify__toast {
+  border-color: var(--border-sand);
+  border-left: 4px solid var(--brand-burgundy);
+}
+
+.bakery-toast-container .bakery-toast--warning.Toastify__toast {
+  border-color: rgba(180, 70, 37, 0.34);
+  border-left: 4px solid var(--accent-terracotta);
+}
+
+.bakery-toast-container .Toastify__toast-icon {
+  margin-inline-end: 0;
+  margin-top: 0.0625rem;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bakery-toast-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand-cream);
+  color: var(--brand-burgundy);
+}
+
+.bakery-toast--success .bakery-toast-icon {
+  background: #e8f3ec;
+  color: var(--success);
+}
+
+.bakery-toast--error .bakery-toast-icon {
+  background: var(--accent-rose);
+  color: var(--danger);
+}
+
+.bakery-toast--info .bakery-toast-icon {
+  background: var(--brand-cream);
+  color: var(--brand-burgundy);
+}
+
+.bakery-toast--warning .bakery-toast-icon {
+  background: #fceee7;
+  color: var(--accent-terracotta);
+}
+
+.bakery-toast-container .Toastify__toast-body {
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  flex: 1;
+}
+
+.bakery-toast-content {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.bakery-toast-title {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--brand-deep);
+  overflow-wrap: anywhere;
+}
+
+.bakery-toast-desc {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--text-cocoa);
+  overflow-wrap: anywhere;
+}
+
+.bakery-toast-meta {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-cocoa);
+  overflow-wrap: anywhere;
+}
+
+.bakery-toast-actions {
+  margin-top: 0.375rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.bakery-toast-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.875rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  background: var(--brand-burgundy);
+  color: var(--brand-cream);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-decoration: none;
+  transition: background-color 150ms ease;
+}
+
+.bakery-toast-action:hover {
+  background: var(--brand-deep);
+  color: var(--brand-cream);
+}
+
+.bakery-toast-action:focus-visible {
+  outline: 2px solid var(--brand-burgundy);
+  outline-offset: 2px;
+}
+
+.bakery-toast-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-cocoa);
+  cursor: pointer;
+  z-index: 1;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease;
+}
+
+.bakery-toast-close:hover {
+  background: var(--brand-cream);
+  color: var(--brand-deep);
+  border-color: var(--border-sand);
+}
+
+.bakery-toast-close:focus-visible {
+  outline: 2px solid var(--brand-burgundy);
+  outline-offset: 2px;
+}
+
+.bakery-toast-container .Toastify__progress-bar--wrp {
+  height: 3px;
+}
+
+.bakery-toast-container .bakery-toast-progress.Toastify__progress-bar {
+  height: 3px;
+  opacity: 0.9;
+}
+
+@media only screen and (max-width: 480px) {
+  .bakery-toast-container.Toastify__toast-container {
+    width: calc(100vw - 1.5rem);
+    left: 0.75rem;
+    right: 0.75rem;
+    top: max(0.75rem, env(safe-area-inset-top));
+    margin: 0;
+    align-items: stretch;
+  }
+
+  .bakery-toast-container .bakery-toast.Toastify__toast {
+    width: 100%;
+    margin-bottom: 0;
+    border-radius: var(--radius-card);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bakery-toast-container .Toastify--animate,
+  .bakery-toast-container .Toastify--animate-icon,
+  .bakery-toast-container .Toastify__toast,
+  .bakery-toast-close,
+  .bakery-toast-action {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

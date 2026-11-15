@@ -1,4 +1,19 @@
 import '@testing-library/jest-dom/vitest';
+import { toast } from 'react-toastify';
+import { afterEach } from 'vitest';
+
+afterEach(() => {
+  toast.dismiss();
+  toast.clearWaitingQueue();
+});
+
+if (typeof globalThis.ResizeObserver === 'undefined') {
+  globalThis.ResizeObserver = class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+}
 
 if (typeof HTMLDialogElement !== 'undefined') {
   HTMLDialogElement.prototype.showModal =
