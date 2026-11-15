@@ -174,11 +174,7 @@ export function CheckoutQuoteReviewCard({
         />
       </div>
 
-      {copyStatus === 'copied' ? (
-        <Feedback tone="info" title={CHECKOUT_COPY.CTA_COPIED_MESSAGE} announce>
-          <p className="text-xs">{CHECKOUT_COPY.COPY_SUCCESS_NOTE}</p>
-        </Feedback>
-      ) : copyStatus === 'fallback' ? (
+      {copyStatus === 'fallback' ? (
         <Feedback tone="info" title="Salin Teks Secara Manual" announce>
           <p className="text-xs">{CHECKOUT_COPY.COPY_FALLBACK_NOTE}</p>
         </Feedback>
@@ -192,7 +188,7 @@ export function CheckoutQuoteReviewCard({
         >
           <p className="text-xs">{CHECKOUT_COPY.HANDOFF_LONG_URL_DESC}</p>
         </Feedback>
-      ) : handoffState === 'popup_blocked' || handoffState === 'ready' ? (
+      ) : handoffState === 'popup_blocked' ? (
         <Feedback
           tone="info"
           title={CHECKOUT_COPY.HANDOFF_READY_TITLE}

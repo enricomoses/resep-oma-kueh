@@ -6,6 +6,12 @@ import { useForm, useWatch } from 'react-hook-form';
 
 import { CHECKOUT_COPY, CHECKOUT_LIMITS } from '@/constants/checkout.constant';
 import { ApiClientError } from '@/lib/errors';
+import {
+  notifyError,
+  notifyInfo,
+  notifySuccess,
+  notifyWarning,
+} from '@/lib/toast';
 import type {
   CheckoutFormValues,
   CheckoutPrepareResponse,
@@ -199,6 +205,7 @@ export function useCheckoutFlow() {
         void refetchValidation();
       }
 
+      const errorMessage = error.message;
       setServerError({
         title:
           error.status === 409
@@ -206,9 +213,10 @@ export function useCheckoutFlow() {
             : error.status === 422
               ? CHECKOUT_COPY.ERROR_FORM_SUMMARY_TITLE
               : 'Gagal Memproses Checkout',
-        message: error.message,
+        message: errorMessage,
         fieldList,
       });
+      notifyError(errorMessage, { toastId: 'checkout-error' });
       return;
     }
 
@@ -217,6 +225,7 @@ export function useCheckoutFlow() {
       message: CHECKOUT_COPY.ERROR_UPSTREAM,
       fieldList: [],
     });
+    notifyError(CHECKOUT_COPY.ERROR_UPSTREAM, { toastId: 'checkout-error' });
   };
 
   const onPrepareQuote = async (values: CheckoutFormValues) => {
@@ -253,6 +262,9 @@ export function useCheckoutFlow() {
       acceptedSignatureRef.current = inputSignature;
       setReviewedQuote(response.data);
       setHandoffState('idle');
+      notifySuccess('Ringkasan pesanan siap diperiksa sebelum dikirim.', {
+        toastId: 'checkout-quote-ready',
+      });
     } catch (error: unknown) {
       applyApiError(error);
     } finally {
@@ -320,11 +332,18 @@ export function useCheckoutFlow() {
 
       if (latestQuote.requiresReview) {
         setHandoffState('idle');
+        notifyWarning(
+          'Harga atau promo berubah. Periksa kembali ringkasan pesanan.',
+          { toastId: 'checkout-quote-review' },
+        );
         return;
       }
 
       if (latestQuote.requiresCopy) {
         setHandoffState('requires_copy');
+        notifyInfo(CHECKOUT_COPY.HANDOFF_LONG_URL_TITLE, {
+          toastId: 'checkout-handoff',
+        });
         return;
       }
 
@@ -339,8 +358,14 @@ export function useCheckoutFlow() {
 
       if (!openedWindow) {
         setHandoffState('popup_blocked');
+        notifyInfo(CHECKOUT_COPY.HANDOFF_READY_TITLE, {
+          toastId: 'checkout-handoff',
+        });
       } else {
         setHandoffState('ready');
+        notifySuccess(CHECKOUT_COPY.HANDOFF_READY_TITLE, {
+          toastId: 'checkout-handoff',
+        });
       }
     } catch (error: unknown) {
       applyApiError(error);
@@ -361,8 +386,14 @@ export function useCheckoutFlow() {
       }
       await navigator.clipboard.writeText(reviewedQuote.messagePreview);
       setCopyStatus('copied');
+      notifySuccess(CHECKOUT_COPY.CTA_COPIED_MESSAGE, {
+        toastId: 'checkout-copy-wa',
+      });
     } catch {
       setCopyStatus('fallback');
+      notifyInfo(CHECKOUT_COPY.COPY_FALLBACK_NOTE, {
+        toastId: 'checkout-copy-wa',
+      });
       if (previewTextareaRef.current) {
         previewTextareaRef.current.focus();
         previewTextareaRef.current.select();
