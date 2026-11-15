@@ -17,6 +17,8 @@ import {
 } from '@/constants/checkout.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { useCheckoutFlow } from '@/hooks/use-checkout-flow';
+import '@/styles/components/order-summary.css';
+import '@/styles/features/checkout.css';
 import { cn } from '@/utils';
 import { withBranch } from '@/utils/branch-url';
 

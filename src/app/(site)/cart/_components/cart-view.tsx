@@ -17,6 +17,8 @@ import { ROUTES } from '@/constants/routes.constant';
 import { useBranches } from '@/hooks/use-branches';
 import { useCart } from '@/hooks/use-cart';
 import { usePublicPromotions } from '@/hooks/use-promotions';
+import '@/styles/components/order-summary.css';
+import '@/styles/features/cart.css';
 import type { CartValidatedLine } from '@/types/cart';
 import { cn } from '@/utils';
 import { withBranch } from '@/utils/branch-url';
