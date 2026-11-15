@@ -19,6 +19,7 @@ import type {
   InitialCatalogSection,
   PublicCategoryDirectory,
 } from '@/types/catalog';
+import '@/styles/features/menu.css';
 import { cn } from '@/utils';
 
 import { MenuFilterPanel } from './menu-filter-panel';

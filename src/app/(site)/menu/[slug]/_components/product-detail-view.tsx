@@ -24,6 +24,8 @@ import type {
   ProductDetail,
   ProductDetailVariant,
 } from '@/types/catalog';
+import '@/styles/components/product-card.css';
+import '@/styles/features/product-detail.css';
 import { cn } from '@/utils';
 import { withBranch } from '@/utils/branch-url';
 import { preparedCartLinePayloadSchema } from '@/validations/catalog.schema';
