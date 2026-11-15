@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 
 import { Button } from '@/components/ui/button';
+import { DatePicker } from '@/components/ui/date-picker';
 import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
 import { Quantity } from '@/components/ui/quantity';
@@ -100,4 +101,80 @@ it('renders Select with custom dropdown listbox and emits native change events',
   expect(handleChange.mock.calls[0]?.[0]?.target?.value).toBe('chiffon');
   expect(combobox).toHaveAttribute('aria-expanded', 'false');
   expect(combobox).toHaveTextContent('Chiffon Series');
+});
+
+it('renders DatePicker with exact month days (28 vs 29 in Feb) and bounds', () => {
+  const handleChange = vi.fn();
+  render(
+    <FormField id="order-date" label="Tanggal Pengambilan">
+      {(props) => (
+        <DatePicker
+          {...props}
+          defaultValue="2026-02-10"
+          min="2024-01-01"
+          max="2026-12-31"
+          onChange={handleChange}
+        />
+      )}
+    </FormField>,
+  );
+
+  const trigger = screen.getByLabelText('Tanggal Pengambilan');
+  expect(trigger).toHaveTextContent('10 Feb 2026');
+
+  fireEvent.click(trigger);
+  expect(
+    screen.getByRole('dialog', { name: 'Pemilih tanggal' }),
+  ).toBeInTheDocument();
+
+  // Feb 2026 (non-leap year) has 28 days only
+  expect(
+    screen.getByRole('button', { name: '28 Februari 2026' }),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: '29 Februari 2026' }),
+  ).not.toBeInTheDocument();
+
+  // Switch year to 2024 (leap year) via custom year dropdown -> Feb 29 appears
+  const yearCombo = screen.getByRole('combobox', { name: 'Pilih tahun' });
+  fireEvent.click(yearCombo);
+  fireEvent.click(screen.getByRole('option', { name: '2024' }));
+
+  const feb29Btn = screen.getByRole('button', { name: '29 Februari 2024' });
+  expect(feb29Btn).toBeEnabled();
+  fireEvent.click(feb29Btn);
+
+  expect(handleChange).toHaveBeenCalledTimes(1);
+  expect(handleChange.mock.calls[0]?.[0]?.target?.value).toBe('2024-02-29');
+  expect(trigger).toHaveTextContent('29 Feb 2024');
+});
+
+it('renders DatePicker in datetime mode and emits YYYY-MM-DDTHH:mm', () => {
+  const handleChange = vi.fn();
+  render(
+    <FormField id="session-start" label="Waktu Mulai">
+      {(props) => (
+        <DatePicker
+          {...props}
+          mode="datetime"
+          defaultValue="2026-11-16T09:00"
+          onChange={handleChange}
+        />
+      )}
+    </FormField>,
+  );
+
+  const trigger = screen.getByLabelText('Waktu Mulai');
+  expect(trigger).toHaveTextContent('16 Nov 2026, 09:00');
+
+  fireEvent.click(trigger);
+  const hourCombo = screen.getByRole('combobox', { name: 'Pilih jam' });
+  fireEvent.click(hourCombo);
+  fireEvent.click(screen.getByRole('option', { name: '14' }));
+
+  expect(handleChange).toHaveBeenCalled();
+  expect(handleChange.mock.calls[0]?.[0]?.target?.value).toBe(
+    '2026-11-16T14:00',
+  );
+  expect(trigger).toHaveTextContent('16 Nov 2026, 14:00');
 });
