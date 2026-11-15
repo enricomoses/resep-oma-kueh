@@ -1,0 +1,161 @@
+/* ==========================================================================
+   F08 — Editorial Content Pages (About, Contact, FAQ, Legal Policies)
+   ========================================================================== */
+
+@layer components {
+  .content-source-note {
+    font-size: 0.875rem;
+    color: var(--text-cocoa);
+    max-width: 62ch;
+  }
+
+  .content-values-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16.5rem), 1fr));
+    gap: 1.25rem;
+  }
+
+  .content-value-card {
+    display: grid;
+    align-content: start;
+    gap: 0.625rem;
+  }
+
+  .content-value-card h3,
+  .content-faq-card h3,
+  .content-branch-card h3,
+  .content-channel-card h3 {
+    font-size: 1.1875rem;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  .content-value-card p,
+  .content-faq-card p,
+  .content-card-desc,
+  .content-channel-card p {
+    color: var(--text-cocoa);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+
+  .content-team-card,
+  .content-b2b-card,
+  .content-legal-card {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .content-disclaimer-box {
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-sand);
+    background: var(--surface-cream);
+    color: var(--text-cocoa);
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  .content-branch-card {
+    display: grid;
+    align-content: space-between;
+    gap: 1.25rem;
+  }
+
+  .content-detail-list {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+  }
+
+  .content-detail-item {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  .content-detail-item dt {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--brand-burgundy);
+  }
+
+  .content-detail-item dd {
+    margin: 0;
+    color: var(--brand-deep);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+
+  .content-hours-list {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+    padding-left: 1.125rem;
+  }
+
+  .content-b2b-header {
+    display: grid;
+    justify-items: start;
+    gap: 0.75rem;
+    max-width: 62ch;
+  }
+
+  .content-b2b-controls {
+    display: grid;
+    gap: 1.25rem;
+    max-width: 42rem;
+  }
+
+  .content-channels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 1.25rem;
+  }
+
+  .content-channel-card {
+    display: grid;
+    gap: 0.625rem;
+  }
+
+  .content-channel-card h3 {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .content-faq-groups {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .content-faq-category-group {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .content-faq-list {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .content-faq-card {
+    display: grid;
+    gap: 0.625rem;
+  }
+
+  .content-legal-body {
+    display: grid;
+    gap: 1rem;
+    max-width: 68ch;
+  }
+
+  .content-legal-body p {
+    color: var(--text-cocoa);
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+}

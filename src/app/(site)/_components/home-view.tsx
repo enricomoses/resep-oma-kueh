@@ -4,6 +4,8 @@ import { WhatTheySaySection } from '@/components/common/content/what-they-say-se
 import { HOME_CMS_DEFAULTS } from '@/constants/home.constant';
 import { SITE_COPY } from '@/constants/site.constant';
 import { useBranches } from '@/hooks/use-branches';
+import '@/styles/components/page-sections.css';
+import '@/styles/features/home.css';
 import type { ApprovedContacts } from '@/types/branch';
 import type { HomePageData } from '@/types/home';
 import { cn } from '@/utils';

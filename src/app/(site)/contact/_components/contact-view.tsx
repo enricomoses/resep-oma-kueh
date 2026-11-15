@@ -8,6 +8,8 @@ import { Feedback } from '@/components/ui/feedback';
 import { CONTENT_COPY } from '@/constants/content.constant';
 import { SITE_COPY } from '@/constants/site.constant';
 import { useBranches } from '@/hooks/use-branches';
+import '@/styles/components/page-sections.css';
+import '@/styles/features/content.css';
 import type { ContactPageData } from '@/types/content';
 import { cn } from '@/utils';
 import { ContactB2bCard } from './contact-b2b-card';
