@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 
 import { extractAdminMutationError } from '@/lib/errors';
+import { notifyError, notifySuccess } from '@/lib/toast';
 import type { AdminSessionProfile } from '@/types/auth';
 import type {
   AdminPromotionItem,
@@ -56,7 +57,6 @@ export function useAdminPromotionsManager({
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isUploadingBanner, setIsUploadingBanner] = useState(false);
-  const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
   const [archiveTarget, setArchiveTarget] = useState<AdminPromotionItem | null>(
     null,
   );
@@ -69,7 +69,6 @@ export function useAdminPromotionsManager({
     syncedUpdatedAt: data?.shippingBanner.updatedAt ?? null,
   }));
   const [bannerError, setBannerError] = useState<string | null>(null);
-  const [bannerSuccess, setBannerSuccess] = useState<string | null>(null);
 
   if (
     data?.shippingBanner &&
@@ -152,11 +151,16 @@ export function useAdminPromotionsManager({
         bannerDraftPath: response.data.storagePath,
         bannerPreviewUrl: response.data.previewUrl,
       }));
+      notifySuccess('Banner promosi berhasil diunggah ke draf.', {
+        toastId: 'admin-promo-upload',
+      });
     } catch (err) {
-      setUploadError(
-        extractAdminMutationError(err, 'Gagal mengunggah banner promosi.')
-          .message,
-      );
+      const message = extractAdminMutationError(
+        err,
+        'Gagal mengunggah banner promosi.',
+      ).message;
+      setUploadError(message);
+      notifyError(message, { toastId: 'admin-promo-upload-error' });
     } finally {
       setIsUploadingBanner(false);
     }
@@ -165,12 +169,13 @@ export function useAdminPromotionsManager({
   async function handleSavePromotion() {
     setFormError(null);
     setFieldErrors({});
-    setFeedbackMsg(null);
 
     const startsAt = fromJakartaDateTimeInputValue(formState.startsAtLocal);
     const endsAt = fromJakartaDateTimeInputValue(formState.endsAtLocal);
     if (!startsAt || !endsAt) {
-      setFormError('Format tanggal/jam WIB tidak valid.');
+      const message = 'Format tanggal/jam WIB tidak valid.';
+      setFormError(message);
+      notifyError(message, { toastId: 'admin-promo-error' });
       return;
     }
 
@@ -187,13 +192,16 @@ export function useAdminPromotionsManager({
       !Number.isFinite(minSpendIdr) ||
       !Number.isFinite(priority)
     ) {
-      setFormError(
-        'Periksa kembali angka diskon, minimum belanja, dan prioritas.',
-      );
+      const message =
+        'Periksa kembali angka diskon, minimum belanja, dan prioritas.';
+      setFormError(message);
+      notifyError(message, { toastId: 'admin-promo-error' });
       return;
     }
     if (maxDiscountIdr !== null && !Number.isFinite(maxDiscountIdr)) {
-      setFormError('Batas diskon per baris harus berupa bilangan bulat.');
+      const message = 'Batas diskon per baris harus berupa bilangan bulat.';
+      setFormError(message);
+      notifyError(message, { toastId: 'admin-promo-error' });
       return;
     }
 
@@ -229,8 +237,9 @@ export function useAdminPromotionsManager({
         ? await updateMutation.mutateAsync({ id: formState.id, payload })
         : await createMutation.mutateAsync(payload);
 
-      setFeedbackMsg(
+      notifySuccess(
         `Promosi "${response.data.promotion.title}" berhasil disimpan.`,
+        { toastId: 'admin-promo-saved' },
       );
       setFormOpen(false);
     } catch (err) {
@@ -239,33 +248,36 @@ export function useAdminPromotionsManager({
       if (Object.keys(parsed.fields).length > 0) {
         setFieldErrors(parsed.fields);
       }
+      notifyError(parsed.message, { toastId: 'admin-promo-error' });
     }
   }
 
   async function handleConfirmArchive() {
     if (!archiveTarget) return;
     setFormError(null);
-    setFeedbackMsg(null);
     try {
       const response = await archiveMutation.mutateAsync({
         id: archiveTarget.id,
         expectedUpdatedAt: archiveTarget.updatedAt,
       });
-      setFeedbackMsg(
+      notifySuccess(
         `Promosi "${response.data.promotion.title}" berhasil diarsipkan dan dinonaktifkan.`,
+        { toastId: 'admin-promo-archived' },
       );
       setArchiveTarget(null);
     } catch (err) {
-      setFormError(
-        extractAdminMutationError(err, 'Gagal mengarsipkan promosi.').message,
-      );
+      const message = extractAdminMutationError(
+        err,
+        'Gagal mengarsipkan promosi.',
+      ).message;
+      setFormError(message);
+      notifyError(message, { toastId: 'admin-promo-error' });
       setArchiveTarget(null);
     }
   }
 
   async function handleSaveShippingBanner() {
     setBannerError(null);
-    setBannerSuccess(null);
     try {
       const response = await shippingBannerMutation.mutateAsync({
         expectedUpdatedAt: bannerForm.expectedUpdatedAt,
@@ -280,14 +292,16 @@ export function useAdminPromotionsManager({
         expectedUpdatedAt: response.data.shippingBanner.updatedAt,
         syncedUpdatedAt: response.data.shippingBanner.updatedAt,
       });
-      setBannerSuccess('Banner info pengiriman berhasil disimpan.');
+      notifySuccess('Banner info pengiriman berhasil disimpan.', {
+        toastId: 'admin-shipping-banner-saved',
+      });
     } catch (err) {
-      setBannerError(
-        extractAdminMutationError(
-          err,
-          'Gagal menyimpan banner info pengiriman.',
-        ).message,
-      );
+      const message = extractAdminMutationError(
+        err,
+        'Gagal menyimpan banner info pengiriman.',
+      ).message;
+      setBannerError(message);
+      notifyError(message, { toastId: 'admin-shipping-banner-error' });
     }
   }
 
@@ -308,13 +322,11 @@ export function useAdminPromotionsManager({
     fieldErrors,
     uploadError,
     isUploadingBanner,
-    feedbackMsg,
     archiveTarget,
     setArchiveTarget,
     bannerForm,
     setBannerForm,
     bannerError,
-    bannerSuccess,
     isSaving: createMutation.isPending || updateMutation.isPending,
     isArchiving: archiveMutation.isPending,
     isSavingBanner: shippingBannerMutation.isPending,

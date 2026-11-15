@@ -19,7 +19,6 @@ interface AdminShippingBannerCardProps {
   form: ShippingBannerFormState;
   setForm: Dispatch<SetStateAction<ShippingBannerFormState>>;
   error: string | null;
-  success: string | null;
   isSaving: boolean;
   onSave: () => void;
   className?: string;
@@ -29,7 +28,6 @@ export function AdminShippingBannerCard({
   form,
   setForm,
   error,
-  success,
   isSaving,
   onSave,
   className,
@@ -53,7 +51,6 @@ export function AdminShippingBannerCard({
       </div>
 
       {error ? <Feedback tone="error" title={error} announce /> : null}
-      {success ? <Feedback tone="success" title={success} announce /> : null}
 
       <div className="grid gap-4 md:grid-cols-2">
         <FormField id="shipping-banner-title" label="Judul Banner Info">

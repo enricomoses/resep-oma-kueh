@@ -46,13 +46,11 @@ export function AdminPromotionsView({
     fieldErrors,
     uploadError,
     isUploadingBanner,
-    feedbackMsg,
     archiveTarget,
     setArchiveTarget,
     bannerForm,
     setBannerForm,
     bannerError,
-    bannerSuccess,
     isSaving,
     isArchiving,
     isSavingBanner,
@@ -94,9 +92,6 @@ export function AdminPromotionsView({
         }
       />
 
-      {feedbackMsg ? (
-        <Feedback tone="success" title={feedbackMsg} announce />
-      ) : null}
       {formError && !formOpen ? (
         <Feedback tone="error" title={formError} announce />
       ) : null}
@@ -112,7 +107,6 @@ export function AdminPromotionsView({
         form={bannerForm}
         setForm={setBannerForm}
         error={bannerError}
-        success={bannerSuccess}
         isSaving={isSavingBanner}
         onSave={() => void handleSaveShippingBanner()}
       />
