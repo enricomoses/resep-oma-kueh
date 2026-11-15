@@ -99,12 +99,14 @@ describe('Branch Switch with Non-Empty Cart Tests', () => {
 
     // Wait for hydration and Surabaya selection
     await waitFor(() => {
-      expect(screen.getByRole('combobox')).toHaveValue(branchSurabaya.id);
+      expect(screen.getByRole('combobox')).toHaveTextContent(
+        branchSurabaya.name,
+      );
     });
-    const select = screen.getByRole('combobox');
 
-    // Change branch to Bintaro
-    fireEvent.change(select, { target: { value: branchBintaro.id } });
+    // Change branch to Bintaro via custom DropdownSelect
+    fireEvent.click(screen.getByRole('combobox'));
+    fireEvent.click(screen.getByRole('option', { name: branchBintaro.name }));
 
     // Confirmation dialog should open
     await waitFor(() => {
@@ -135,10 +137,12 @@ describe('Branch Switch with Non-Empty Cart Tests', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole('combobox')).toHaveValue(branchSurabaya.id);
+      expect(screen.getByRole('combobox')).toHaveTextContent(
+        branchSurabaya.name,
+      );
     });
-    const select = screen.getByRole('combobox');
-    fireEvent.change(select, { target: { value: branchBintaro.id } });
+    fireEvent.click(screen.getByRole('combobox'));
+    fireEvent.click(screen.getByRole('option', { name: branchBintaro.name }));
 
     await waitFor(() => {
       expect(screen.getByText(SITE_COPY.SWITCH_TITLE)).toBeInTheDocument();
@@ -178,10 +182,12 @@ describe('Branch Switch with Non-Empty Cart Tests', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole('combobox')).toHaveValue(branchSurabaya.id);
+      expect(screen.getByRole('combobox')).toHaveTextContent(
+        branchSurabaya.name,
+      );
     });
-    const select = screen.getByRole('combobox');
-    fireEvent.change(select, { target: { value: branchBintaro.id } });
+    fireEvent.click(screen.getByRole('combobox'));
+    fireEvent.click(screen.getByRole('option', { name: branchBintaro.name }));
 
     await waitFor(() => {
       expect(screen.getByText(SITE_COPY.SWITCH_TITLE)).toBeInTheDocument();
