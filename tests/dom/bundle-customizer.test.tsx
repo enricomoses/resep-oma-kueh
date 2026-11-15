@@ -285,7 +285,7 @@ describe('ProductVariantPicker Bundle Integration', () => {
     const product = createMockBundleProduct(variant);
     const onPrepareCart = vi.fn();
 
-    const { rerender } = render(
+    render(
       <ProductVariantPicker
         product={product}
         selectedVariant={variant}
@@ -294,7 +294,6 @@ describe('ProductVariantPicker Bundle Integration', () => {
         onChangeQuantity={vi.fn()}
         hasBranchSelected={true}
         onPrepareCart={onPrepareCart}
-        preparedPayload={null}
       />,
     );
 
@@ -327,42 +326,12 @@ describe('ProductVariantPicker Bundle Integration', () => {
     expect(callArg.choiceIds).toContain('choice-vanilla-id');
     expect(callArg.bundleSignature).toContain(variant.id);
     expect(callArg.bundleBreakdown).toHaveLength(4);
-    expect(callArg.unitPriceIdr).toBe(180_000);
-
-    // Rerender with prepared payload to verify feedback breakdown display
-    rerender(
-      <ProductVariantPicker
-        product={product}
-        selectedVariant={variant}
-        onSelectVariant={vi.fn()}
-        quantity={1}
-        onChangeQuantity={vi.fn()}
-        hasBranchSelected={true}
-        onPrepareCart={onPrepareCart}
-        preparedPayload={{
-          branchId: 'f0400000-0000-4000-8000-000000000001',
-          branchCode: 'surabaya',
-          productId: product.id,
-          productSlug: product.slug,
-          productName: product.name,
-          productType: 'bundle',
-          variantId: variant.id,
-          sku: variant.sku,
-          variantName: variant.name,
-          sizeLabel: variant.sizeLabel,
-          quantity: 1,
-          choiceIds: ['choice-pandan-id', 'choice-vanilla-id'],
-          bundleSignature: callArg.bundleSignature,
-          bundleBreakdown: callArg.bundleBreakdown,
-          estimatedUnitPriceIdr: 180_000,
-          estimatedSubtotalIdr: 180_000,
-        }}
-      />,
-    );
-
-    expect(screen.getByText(/Komposisi 12 Potong:/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/Pilihan varian siap untuk keranjang/i),
-    ).toBeInTheDocument();
+      callArg.bundleBreakdown.reduce(
+        (total: number, item: { quantity: number }) => total + item.quantity,
+        0,
+      ),
+    ).toBe(12);
+    expect(callArg.unitPriceIdr).toBe(180_000);
   });
 });

@@ -12,13 +12,11 @@ import {
 import { useProductConfigurator } from '@/hooks/use-product-configurator';
 import type {
   BundleBreakdownItem,
-  PreparedCartLinePayload,
   ProductDetail,
   ProductDetailVariant,
 } from '@/types/catalog';
 import { cn, formatIdr } from '@/utils';
 import { BundleCustomizer } from './bundle-customizer';
-import { ProductPreparedFeedback } from './product-prepared-feedback';
 
 interface PrepareCartBundleData {
   choiceIds: string[];
@@ -35,7 +33,6 @@ interface ProductVariantPickerProps {
   onChangeQuantity: (qty: number) => void;
   hasBranchSelected: boolean;
   onPrepareCart: (bundleData?: PrepareCartBundleData) => void;
-  preparedPayload: PreparedCartLinePayload | null;
   className?: string;
 }
 
@@ -47,7 +44,6 @@ export function ProductVariantPicker({
   onChangeQuantity,
   hasBranchSelected,
   onPrepareCart,
-  preparedPayload,
   className,
 }: ProductVariantPickerProps) {
   const isBundle = product.productType === 'bundle';
@@ -304,12 +300,6 @@ export function ProductVariantPicker({
                 {PRODUCT_DETAIL_COPY.CTA_PREPARE_CART}
               </Button>
             )}
-
-            {preparedPayload &&
-            preparedPayload.variantId === selectedVariant.id &&
-            preparedPayload.quantity === quantity ? (
-              <ProductPreparedFeedback payload={preparedPayload} />
-            ) : null}
           </div>
         </div>
       ) : null}

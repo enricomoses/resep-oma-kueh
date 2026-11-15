@@ -11,6 +11,7 @@ import { PRODUCT_DETAIL_COPY } from '@/constants/catalog.constant';
 import { ApiClientError } from '@/lib/errors';
 import { ReactQueryProvider } from '@/providers';
 import { BranchProvider } from '@/providers/branch-provider';
+import { ToastProvider } from '@/providers/toast-provider';
 import { branchesService } from '@/services/branches.service';
 import { catalogService } from '@/services/catalog.service';
 import type { PublicBranch } from '@/types/branch';
@@ -194,7 +195,7 @@ it('renders browse mode without branch: shows branch notice and disables CTA', (
   ).toBeDisabled();
 });
 
-it('renders variant picker with multiple sizes, updates pricing & food info, and prepares cart line payload', () => {
+it('renders variant picker with multiple sizes, updates pricing & food info, and prepares cart line payload', async () => {
   navigation.search = 'branch=surabaya';
   vi.spyOn(branchesService, 'getAll').mockResolvedValue({
     ok: true,
@@ -212,10 +213,12 @@ it('renders variant picker with multiple sizes, updates pricing & food info, and
           data: { items: [SURABAYA, BINTARO], resolvedBranchId: SURABAYA.id },
         }}
       >
-        <ProductDetailView
-          slug="demo-coffee"
-          initial={{ status: 'success', data: product }}
-        />
+        <ToastProvider>
+          <ProductDetailView
+            slug="demo-coffee"
+            initial={{ status: 'success', data: product }}
+          />
+        </ToastProvider>
       </BranchProvider>
     </ReactQueryProvider>,
   );
@@ -248,7 +251,7 @@ it('renders variant picker with multiple sizes, updates pricing & food info, and
   fireEvent.click(prepareButton);
 
   expect(
-    screen.getByText(PRODUCT_DETAIL_COPY.CTA_PREPARED_TITLE),
+    await screen.findByText(PRODUCT_DETAIL_COPY.CTA_PREPARED_TITLE),
   ).toBeInTheDocument();
   expect(screen.getByText(/DEMO-COFFEE-MINI/)).toBeInTheDocument();
   expect(screen.getByText(/2 unit/)).toBeInTheDocument();

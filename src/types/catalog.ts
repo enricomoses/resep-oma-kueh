@@ -5,7 +5,6 @@ import type {
   catalogDirectorySchema,
   catalogProductItemSchema,
   catalogQuerySchema,
-  preparedCartLinePayloadSchema,
   productDetailAllergenSchema,
   productDetailComponentVariantSummarySchema,
   productDetailFixedComponentSchema,
@@ -43,9 +42,6 @@ export type ProductDetailComponentVariantSummary = z.infer<
   typeof productDetailComponentVariantSummarySchema
 >;
 export type BundleBreakdownItem = z.infer<typeof bundleBreakdownItemSchema>;
-export type PreparedCartLinePayload = z.infer<
-  typeof preparedCartLinePayloadSchema
->;
 
 export type InitialCatalogSection<T> =
   { status: 'success'; data: T } | { status: 'error' };

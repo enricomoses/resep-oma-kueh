@@ -4,11 +4,13 @@ import { ArrowLeft, HelpCircle } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { ErrorState } from '@/components/common/feedback/error-state';
+import { ToastMessage } from '@/components/common/feedback/toast-message';
 import { MenuProductCard } from '@/components/common/commerce/menu-product-card';
 import { ActionLink } from '@/components/ui/action-link';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { ROUTES } from '@/constants';
+import { CART_COPY } from '@/constants/cart.constant';
 import {
   CATALOG_COPY,
   CATALOG_QUERY_PARAMS,
@@ -16,22 +18,25 @@ import {
 } from '@/constants/catalog.constant';
 import { useBranches } from '@/hooks/use-branches';
 import { useProductDetail } from '@/hooks/queries/use-catalog';
+import { dismissToast, notifyError, notifySuccess } from '@/lib/toast';
 import { useCartStore } from '@/stores/cart.store';
 import type {
   BundleBreakdownItem,
   InitialCatalogSection,
-  PreparedCartLinePayload,
   ProductDetail,
   ProductDetailVariant,
 } from '@/types/catalog';
 import '@/styles/components/product-card.css';
 import '@/styles/features/product-detail.css';
-import { cn } from '@/utils';
+import { cn, formatIdr } from '@/utils';
 import { withBranch } from '@/utils/branch-url';
 import { preparedCartLinePayloadSchema } from '@/validations/catalog.schema';
 import { ProductFoodInfo } from './product-food-info';
 import { ProductGallery } from './product-gallery';
 import { ProductVariantPicker } from './product-variant-picker';
+
+const CART_ADDED_TOAST_ID = 'cart-item-added';
+const CART_LIMIT_TOAST_ID = 'cart-limit-error';
 
 interface ProductDetailViewProps {
   slug: string;
@@ -85,8 +90,6 @@ export function ProductDetailView({
     null,
   );
   const [quantity, setQuantity] = useState<number>(1);
-  const [preparedPayload, setPreparedPayload] =
-    useState<PreparedCartLinePayload | null>(null);
 
   const offeredVariants = product?.offeredVariants ?? [];
   const activeVariant: ProductDetailVariant | null =
@@ -97,12 +100,10 @@ export function ProductDetailView({
 
   const handleSelectVariant = (variant: ProductDetailVariant) => {
     setSelectedVariantId(variant.id);
-    setPreparedPayload(null);
   };
 
   const handleQuantityChange = (newQty: number) => {
     setQuantity(newQty);
-    setPreparedPayload(null);
   };
 
   const handlePrepareCart = (bundleData?: {
@@ -137,16 +138,55 @@ export function ProductDetailView({
     };
 
     const parsed = preparedCartLinePayloadSchema.safeParse(rawPayload);
-    if (parsed.success) {
-      setPreparedPayload(parsed.data);
-      useCartStore.getState().addLine({
-        branchId: activeBranchId,
-        branchCode: activeBranchCode,
-        variantId: activeVariant.id,
-        choiceIds: bundleData?.choiceIds ?? [],
-        quantity,
-      });
+    if (!parsed.success) {
+      notifyError(
+        'Pilihan produk tidak valid. Periksa kembali varian dan jumlah pesanan.',
+        { toastId: CART_LIMIT_TOAST_ID },
+      );
+      return;
     }
+
+    const result = useCartStore.getState().addLine({
+      branchId: activeBranchId,
+      branchCode: activeBranchCode,
+      variantId: activeVariant.id,
+      choiceIds: bundleData?.choiceIds ?? [],
+      quantity,
+    });
+
+    if (!result.success) {
+      const errorMessage =
+        result.reason === 'max_lines_exceeded'
+          ? CART_COPY.LIMIT_LINES_EXCEEDED
+          : result.reason === 'max_quantity_exceeded'
+            ? CART_COPY.LIMIT_QTY_EXCEEDED
+            : 'Pilihan produk tidak valid. Periksa kembali varian dan jumlah pesanan.';
+      notifyError(errorMessage, { toastId: CART_LIMIT_TOAST_ID });
+      return;
+    }
+
+    const payload = parsed.data;
+    const bundleSummary =
+      payload.bundleBreakdown && payload.bundleBreakdown.length > 0
+        ? `Komposisi 12 Potong: ${payload.bundleBreakdown
+            .map(
+              (item) =>
+                `${item.slotOrGroup}: ${item.label} (${item.quantity} potong)`,
+            )
+            .join(', ')}`
+        : null;
+
+    notifySuccess(
+      <ToastMessage
+        title={PRODUCT_DETAIL_COPY.CTA_PREPARED_TITLE}
+        description={`${payload.productName} · ${payload.sizeLabel || payload.variantName} (${payload.quantity} unit) · ${formatIdr(payload.estimatedSubtotalIdr)}`}
+        meta={`SKU: ${payload.sku}${bundleSummary ? ` · ${bundleSummary}` : ''}`}
+        actionHref={withBranch(ROUTES.CART, payload.branchCode)}
+        actionLabel={CART_COPY.VIEW_CART}
+        onAction={() => dismissToast(CART_ADDED_TOAST_ID)}
+      />,
+      { toastId: CART_ADDED_TOAST_ID, autoClose: 6000 },
+    );
   };
 
   if ((initial.status === 'error' || detailQuery.isError) && !product) {
@@ -229,7 +269,6 @@ export function ProductDetailView({
             onChangeQuantity={handleQuantityChange}
             hasBranchSelected={hasBranchSelected}
             onPrepareCart={handlePrepareCart}
-            preparedPayload={preparedPayload}
           />
         </div>
 
