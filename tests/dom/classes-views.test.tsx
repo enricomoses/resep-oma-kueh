@@ -81,11 +81,13 @@ vi.mock('@/services/classes.service', async (importOriginal) => {
     await importOriginal<typeof import('@/services/classes.service')>();
   return {
     ...actual,
-    readPublicClassesRequest: (...args: unknown[]) => mockReadClasses(...args),
-    readPublicClassDetailRequest: (...args: unknown[]) =>
-      mockReadClassDetail(...args),
-    prepareClassRegistrationRequest: (...args: unknown[]) =>
-      mockPrepareRegistration(...args),
+    classesService: {
+      ...actual.classesService,
+      getAll: (...args: unknown[]) => mockReadClasses(...args),
+      getBySlug: (...args: unknown[]) => mockReadClassDetail(...args),
+      prepareRegistration: (...args: unknown[]) =>
+        mockPrepareRegistration(...args),
+    },
   };
 });
 

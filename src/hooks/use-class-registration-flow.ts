@@ -13,7 +13,7 @@ import type {
 } from '@/types/classes';
 import { classRegistrationFormSchema } from '@/validations/classes.schema';
 
-import { usePrepareClassRegistration } from './use-classes';
+import { usePrepareClassRegistration } from '@/hooks/queries/use-classes';
 
 interface UseClassRegistrationFlowParams {
   registerableSessions: readonly PublicClassSession[];

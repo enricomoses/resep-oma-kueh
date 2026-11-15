@@ -12,7 +12,7 @@ import { CLASSES_COPY } from '@/constants/classes.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { SITE_COPY } from '@/constants/site.constant';
 import { useBranches } from '@/hooks/use-branches';
-import { usePublicClasses } from '@/hooks/use-classes';
+import { usePublicClasses } from '@/hooks/queries/use-classes';
 import '@/styles/features/classes.css';
 import type { InitialPublicClasses } from '@/types/classes';
 import { cn } from '@/utils';
