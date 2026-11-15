@@ -8,6 +8,10 @@
     gap: 0;
   }
 
+  .home-main > .home-section {
+    padding-block: clamp(2rem, 3.5vw, 3rem) clamp(2.5rem, 4.5vw, 4rem);
+  }
+
   .foundation-hero {
     display: grid;
     align-items: center;
@@ -235,6 +239,65 @@
   .home-series-card-body {
     display: grid;
     gap: 0.5rem;
+  }
+
+  .home-series-card .home-series-card-link {
+    align-self: flex-end;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    text-decoration: none;
+  }
+
+  .home-series-card .home-series-card-link:hover,
+  .home-series-card .home-series-card-link:focus-visible {
+    color: var(--brand-deep);
+    text-decoration: none;
+  }
+
+  .home-series-card-link-label {
+    position: relative;
+  }
+
+  .home-series-card-link-label::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.12em;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 600ms ease;
+  }
+
+  .home-series-card-link-arrow {
+    flex-shrink: 0;
+    transition: transform var(--transition-fast);
+  }
+
+  .home-series-card
+    .home-series-card-link:hover
+    .home-series-card-link-label::after,
+  .home-series-card
+    .home-series-card-link:focus-visible
+    .home-series-card-link-label::after {
+    transform: scaleX(1);
+  }
+
+  .home-series-card .home-series-card-link:hover .home-series-card-link-arrow,
+  .home-series-card
+    .home-series-card-link:focus-visible
+    .home-series-card-link-arrow {
+    transform: translateX(0.25rem);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-series-card-link-label::after,
+    .home-series-card-link-arrow {
+      transition: none;
+    }
   }
 
   .home-series-card h3,
