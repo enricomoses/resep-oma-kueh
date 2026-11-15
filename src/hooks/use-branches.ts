@@ -1,16 +1,16 @@
 'use client';
-import { useQuery } from '@tanstack/react-query';
+
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useRef, useState } from 'react';
-import { QUERY_KEYS, STALE_TIME } from '@/constants/query-keys.constant';
+
 import { BRANCH, SITE_COPY } from '@/constants/site.constant';
+import { useBranchesQuery } from '@/hooks/queries/use-branches';
 import {
   useBranchContext,
   useBranchPreference,
 } from '@/providers/branch-provider';
-import { readBranches } from '@/services/branches.service';
-import { withBranch } from '@/utils/branch-url';
 import type { PublicBranch } from '@/types/branch';
+import { withBranch } from '@/utils/branch-url';
 
 export function useBranches() {
   const context = useBranchContext();
@@ -25,21 +25,10 @@ export function useBranches() {
       ? context.initial.data
       : undefined;
   const hasServerInitial = serverInitialData !== undefined;
-  const query = useQuery({
-    queryKey: QUERY_KEYS.BRANCHES(code),
-    queryFn: ({ signal }) => readBranches(code, signal),
-    staleTime: STALE_TIME.PUBLIC,
-    initialData: serverInitialData
-      ? {
-          ok: true as const,
-          data: serverInitialData,
-          requestId: 'server-initial',
-        }
-      : undefined,
-  });
+  const query = useBranchesQuery(code, serverInitialData);
   // Match SSR HTML on initial hydration render even when Suspense siblings resolve React Query first.
   const canExposeClientQuery = context.hydrated || hasServerInitial;
-  const data = canExposeClientQuery ? query.data?.data : undefined;
+  const data = canExposeClientQuery ? query.data : undefined;
   const items = data?.items ?? [];
   const selected =
     !canExposeClientQuery || query.isError

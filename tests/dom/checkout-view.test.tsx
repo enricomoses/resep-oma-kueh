@@ -16,7 +16,7 @@ import {
 import { ApiClientError } from '@/lib/errors';
 import { ReactQueryProvider } from '@/providers';
 import { BranchProvider } from '@/providers/branch-provider';
-import * as branchesService from '@/services/branches.service';
+import { branchesService } from '@/services/branches.service';
 import type { PublicBranch } from '@/types/branch';
 import type { CartValidatedLine } from '@/types/cart';
 import type { CheckoutPrepareResponse } from '@/types/checkout';
@@ -53,7 +53,7 @@ function renderWithProviders(
   ui: ReactNode,
   branch: PublicBranch = surabayaBranch,
 ) {
-  vi.spyOn(branchesService, 'readBranches').mockResolvedValue({
+  vi.spyOn(branchesService, 'getAll').mockResolvedValue({
     ok: true,
     data: { items: [branch], resolvedBranchId: branch.id },
     requestId: 'branch-test-req',

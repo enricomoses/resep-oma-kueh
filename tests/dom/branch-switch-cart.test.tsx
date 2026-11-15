@@ -41,14 +41,16 @@ vi.mock('next/navigation', () => ({
 }));
 
 vi.mock('@/services/branches.service', () => ({
-  readBranches: vi.fn().mockResolvedValue({
-    ok: true,
-    data: {
-      items: [branchSurabaya, branchBintaro],
-      resolvedBranchId: null,
-    },
-    requestId: 'test-branches',
-  }),
+  branchesService: {
+    getAll: vi.fn().mockResolvedValue({
+      ok: true,
+      data: {
+        items: [branchSurabaya, branchBintaro],
+        resolvedBranchId: null,
+      },
+      requestId: 'test-branches',
+    }),
+  },
 }));
 
 describe('Branch Switch with Non-Empty Cart Tests', () => {

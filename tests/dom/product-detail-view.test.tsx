@@ -11,7 +11,7 @@ import { PRODUCT_DETAIL_COPY } from '@/constants/catalog.constant';
 import { ApiClientError } from '@/lib/errors';
 import { ReactQueryProvider } from '@/providers';
 import { BranchProvider } from '@/providers/branch-provider';
-import * as branchesService from '@/services/branches.service';
+import { branchesService } from '@/services/branches.service';
 import * as catalogService from '@/services/catalog.service';
 import type { PublicBranch } from '@/types/branch';
 import type { ProductDetail } from '@/types/catalog';
@@ -196,7 +196,7 @@ it('renders browse mode without branch: shows branch notice and disables CTA', (
 
 it('renders variant picker with multiple sizes, updates pricing & food info, and prepares cart line payload', () => {
   navigation.search = 'branch=surabaya';
-  vi.spyOn(branchesService, 'readBranches').mockResolvedValue({
+  vi.spyOn(branchesService, 'getAll').mockResolvedValue({
     ok: true,
     data: { items: [SURABAYA, BINTARO], resolvedBranchId: SURABAYA.id },
     requestId: 'req-branch',

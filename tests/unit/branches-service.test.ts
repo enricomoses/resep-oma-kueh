@@ -1,6 +1,6 @@
 import { AxiosHeaders } from 'axios';
 import { afterEach, expect, it } from 'vitest';
-import { readBranches } from '@/services/branches.service';
+import { branchesService } from '@/services/branches.service';
 import { axiosInstance } from '@/lib/axios/instance';
 
 const adapter = axiosInstance.defaults.adapter;
@@ -25,11 +25,13 @@ it('passes branch code and AbortSignal to the BFF and retains the validated enve
       headers: new AxiosHeaders(),
     };
   };
-  expect((await readBranches('surabaya', controller.signal)).requestId).toBe(
-    'fixture-trace',
-  );
+  expect(
+    (await branchesService.getAll('surabaya', controller.signal)).requestId,
+  ).toBe('fixture-trace');
   controller.abort();
-  await expect(readBranches(null, controller.signal)).rejects.toMatchObject({
+  await expect(
+    branchesService.getAll(null, controller.signal),
+  ).rejects.toMatchObject({
     code: 'CANCELED',
   });
 });

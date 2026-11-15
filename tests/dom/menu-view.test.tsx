@@ -16,7 +16,7 @@ import {
 import { ApiClientError } from '@/lib/errors';
 import { ReactQueryProvider } from '@/providers';
 import { BranchProvider } from '@/providers/branch-provider';
-import * as branchesService from '@/services/branches.service';
+import { branchesService } from '@/services/branches.service';
 import * as catalogService from '@/services/catalog.service';
 import type { PublicBranch } from '@/types/branch';
 import type {
@@ -177,7 +177,7 @@ it('renders browse mode without final branch price or Add CTA when no branch is 
 
 it('displays computed branch starting price, promo badge, and branch-preserving detail link when branch is selected', () => {
   navigation.search = 'branch=bintaro';
-  vi.spyOn(branchesService, 'readBranches').mockResolvedValue({
+  vi.spyOn(branchesService, 'getAll').mockResolvedValue({
     ok: true,
     data: { items: [SURABAYA, BINTARO], resolvedBranchId: BINTARO.id },
     requestId: 'branch-bintaro',
@@ -241,7 +241,7 @@ it('displays computed branch starting price, promo badge, and branch-preserving 
 it('resets page to 1 when changing category filter and cleans up debounced search timer on unmount', () => {
   vi.useFakeTimers();
   navigation.search = 'branch=surabaya&page=2';
-  vi.spyOn(branchesService, 'readBranches').mockResolvedValue({
+  vi.spyOn(branchesService, 'getAll').mockResolvedValue({
     ok: true,
     data: { items: [SURABAYA, BINTARO], resolvedBranchId: SURABAYA.id },
     requestId: 'branch-surabaya',
