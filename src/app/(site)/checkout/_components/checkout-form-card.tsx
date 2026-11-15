@@ -7,6 +7,7 @@ import type { FieldErrors, UseFormRegister } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { DatePicker } from '@/components/ui/date-picker';
 import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
@@ -110,10 +111,9 @@ export function CheckoutFormCard({
             required
           >
             {(fieldProps) => (
-              <Input
+              <DatePicker
                 {...fieldProps}
                 {...register('requestedDate')}
-                type="date"
                 min={todayIso}
                 max={maxDateIso}
               />
