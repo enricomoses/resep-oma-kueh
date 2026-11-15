@@ -11,7 +11,7 @@ import { CONTENT_COPY, CONTENT_DEFAULTS } from '@/constants/content.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { SITE_COPY } from '@/constants/site.constant';
 import { useBranches } from '@/hooks/use-branches';
-import { usePublicContent } from '@/hooks/use-content';
+import { usePublicContent } from '@/hooks/queries/use-content';
 import '@/styles/components/page-sections.css';
 import '@/styles/features/content.css';
 import type { ContentInitial, PublicContentDirectory } from '@/types/content';

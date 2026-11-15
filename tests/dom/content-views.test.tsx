@@ -15,7 +15,7 @@ import { BRANCH } from '@/constants/site.constant';
 import { ApiClientError } from '@/lib/errors';
 import { ReactQueryProvider } from '@/providers';
 import { BranchProvider } from '@/providers/branch-provider';
-import * as contentService from '@/services/content.service';
+import { contentService } from '@/services/content.service';
 import type { PublicBranch } from '@/types/branch';
 import type { ContactPageData } from '@/types/content';
 
@@ -224,10 +224,10 @@ it('renders ContactView with Surabaya and Bintaro contacts, unconfirmed pending 
   });
 });
 
-it('renders FaqView empty and error states and supports client retry via readPublicFaqs', async () => {
+it('renders FaqView empty and error states and supports client retry via contentService.getFaqs', async () => {
   navigation.pathname = '/faq';
   const readFaqsSpy = vi
-    .spyOn(contentService, 'readPublicFaqs')
+    .spyOn(contentService, 'getFaqs')
     .mockRejectedValueOnce(
       new ApiClientError({ code: 'INVALID_RESPONSE', status: 503 }),
     )
