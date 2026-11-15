@@ -14,6 +14,7 @@ import { ClassDetailView } from '@/app/(site)/classes/[slug]/_components/class-d
 import { ClassesView } from '@/app/(site)/classes/_components/classes-view';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { CLASSES_COPY } from '@/constants/classes.constant';
+import { ToastProvider } from '@/providers/toast-provider';
 import type { AdminSessionProfile } from '@/types/auth';
 import type { PublicBranch } from '@/types/branch';
 import type {
@@ -125,7 +126,9 @@ function renderWithQuery(ui: ReactNode) {
     },
   });
   return render(
-    <QueryClientProvider client={client}>{ui}</QueryClientProvider>,
+    <QueryClientProvider client={client}>
+      <ToastProvider>{ui}</ToastProvider>
+    </QueryClientProvider>,
   );
 }
 

@@ -190,7 +190,7 @@ export function ClassRegistrationPanel({
           {flow.prepared ? (
             <ClassRegistrationHandoff
               prepared={flow.prepared}
-              copyFeedback={flow.copyFeedback}
+              isCopied={flow.isCopied}
               onCopyMessage={flow.handleCopyMessage}
             />
           ) : null}

@@ -6,6 +6,7 @@ import { useForm, useWatch } from 'react-hook-form';
 
 import { CLASSES_COPY, CLASSES_LIMITS } from '@/constants/classes.constant';
 import { ApiClientError } from '@/lib/errors';
+import { notifyError, notifySuccess } from '@/lib/toast';
 import type {
   ClassRegistrationFormValues,
   PrepareClassRegistrationResult,
@@ -32,11 +33,7 @@ export function useClassRegistrationFlow({
     result: PrepareClassRegistrationResult;
   } | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
-  const [copyFeedbackEntry, setCopyFeedbackEntry] = useState<{
-    key: string;
-    tone: 'success' | 'error';
-    text: string;
-  } | null>(null);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   const prepareMutation = usePrepareClassRegistration();
   const defaultSessionId = registerableSessions[0]?.id ?? '';
@@ -73,10 +70,7 @@ export function useClassRegistrationFlow({
     preparedEntry && preparedEntry.key === currentInputKey
       ? preparedEntry.result
       : null;
-  const copyFeedback =
-    copyFeedbackEntry && copyFeedbackEntry.key === currentInputKey
-      ? { tone: copyFeedbackEntry.tone, text: copyFeedbackEntry.text }
-      : null;
+  const isCopied = copiedKey === currentInputKey;
 
   useEffect(() => {
     if (
@@ -102,7 +96,7 @@ export function useClassRegistrationFlow({
   async function onSubmit(values: ClassRegistrationFormValues) {
     if (prepareMutation.isPending) return;
     setServerError(null);
-    setCopyFeedbackEntry(null);
+    setCopiedKey(null);
     const submitKey = `${values.sessionId}|${values.attendeeCount}|${values.adultContactName}|${branchCode ?? ''}`;
 
     try {
@@ -112,13 +106,17 @@ export function useClassRegistrationFlow({
         adultContactName: values.adultContactName.trim() || null,
       });
       setPreparedEntry({ key: submitKey, result });
+      notifySuccess('Pratinjau pesan pendaftaran WhatsApp siap dikirim.', {
+        toastId: 'class-wa-prepared',
+      });
     } catch (err) {
       setPreparedEntry(null);
-      if (err instanceof ApiClientError) {
-        setServerError(err.message);
-        return;
-      }
-      setServerError(CLASSES_COPY.WA_ERRORS.UPSTREAM_ERROR);
+      const message =
+        err instanceof ApiClientError
+          ? err.message
+          : CLASSES_COPY.WA_ERRORS.UPSTREAM_ERROR;
+      setServerError(message);
+      notifyError(message, { toastId: 'class-wa-error' });
     }
   }
 
@@ -129,17 +127,11 @@ export function useClassRegistrationFlow({
         throw new Error('Clipboard unavailable');
       }
       await navigator.clipboard.writeText(prepared.whatsappMessage);
-      setCopyFeedbackEntry({
-        key: currentInputKey,
-        tone: 'success',
-        text: CLASSES_COPY.COPY_SUCCESS,
-      });
+      setCopiedKey(currentInputKey);
+      notifySuccess(CLASSES_COPY.COPY_SUCCESS, { toastId: 'class-copy-wa' });
     } catch {
-      setCopyFeedbackEntry({
-        key: currentInputKey,
-        tone: 'error',
-        text: CLASSES_COPY.COPY_FAILURE,
-      });
+      setCopiedKey(null);
+      notifyError(CLASSES_COPY.COPY_FAILURE, { toastId: 'class-copy-wa' });
     }
   }
 
@@ -153,7 +145,7 @@ export function useClassRegistrationFlow({
     maxSeatsAllowed,
     prepared,
     serverError,
-    copyFeedback,
+    isCopied,
     isPending: prepareMutation.isPending,
     onSubmitForm: form.handleSubmit(onSubmit),
     handleCopyMessage: () => {

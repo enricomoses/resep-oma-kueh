@@ -11,14 +11,14 @@ import { formatIdr } from '@/utils/currency';
 
 interface ClassRegistrationHandoffProps {
   prepared: PrepareClassRegistrationResult;
-  copyFeedback: { tone: 'success' | 'error'; text: string } | null;
+  isCopied: boolean;
   onCopyMessage: () => void;
   className?: string;
 }
 
 export function ClassRegistrationHandoff({
   prepared,
-  copyFeedback,
+  isCopied,
   onCopyMessage,
   className,
 }: ClassRegistrationHandoffProps) {
@@ -46,10 +46,6 @@ export function ClassRegistrationHandoff({
         className="classes-wa-textarea"
       />
 
-      {copyFeedback ? (
-        <Feedback tone={copyFeedback.tone} title={copyFeedback.text} announce />
-      ) : null}
-
       <div className="classes-inline-actions">
         <a
           href={prepared.whatsappUrl}
@@ -61,7 +57,7 @@ export function ClassRegistrationHandoff({
           {CLASSES_COPY.OPEN_WHATSAPP_CTA}
         </a>
         <Button type="button" variant="secondary" onClick={onCopyMessage}>
-          {copyFeedback?.tone === 'success' ? (
+          {isCopied ? (
             <Check size={16} aria-hidden="true" />
           ) : (
             <Copy size={16} aria-hidden="true" />
