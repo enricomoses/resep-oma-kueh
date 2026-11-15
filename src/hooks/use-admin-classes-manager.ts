@@ -13,7 +13,7 @@ import {
   useCreateAdminClassSession,
   useUpdateAdminClassProgram,
   useUpdateAdminClassSession,
-} from '@/hooks/use-admin-classes';
+} from '@/hooks/queries/use-admin-classes';
 import { extractAdminMutationError } from '@/lib/errors';
 import type { AdminSessionProfile } from '@/types/auth';
 import type {

@@ -96,12 +96,12 @@ vi.mock('@/services/admin-classes.service', async (importOriginal) => {
     await importOriginal<typeof import('@/services/admin-classes.service')>();
   return {
     ...actual,
-    createAdminClassSessionRequest: (...args: unknown[]) =>
-      mockCreateSession(...args),
-    updateAdminClassSessionRequest: (...args: unknown[]) =>
-      mockUpdateSession(...args),
-    archiveAdminClassProgramRequest: (...args: unknown[]) =>
-      mockArchiveProgram(...args),
+    adminClassesService: {
+      ...actual.adminClassesService,
+      createSession: (...args: unknown[]) => mockCreateSession(...args),
+      updateSession: (...args: unknown[]) => mockUpdateSession(...args),
+      archiveProgram: (...args: unknown[]) => mockArchiveProgram(...args),
+    },
   };
 });
 

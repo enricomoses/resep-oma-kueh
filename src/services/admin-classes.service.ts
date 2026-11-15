@@ -7,6 +7,7 @@ import type {
   UpdateAdminClassProgramInput,
   UpdateAdminClassSessionInput,
 } from '@/types/classes';
+import { buildListParams } from '@/utils/api';
 import {
   adminClassProgramMutationDataSchema,
   adminClassProgramsDataSchema,
@@ -14,125 +15,117 @@ import {
   adminClassSessionsDataSchema,
 } from '@/validations/classes.schema';
 
-export function readAdminClassProgramsRequest(signal?: AbortSignal) {
-  return requestApi(
-    {
-      url: API_ENDPOINTS.ADMIN_CLASS_PROGRAMS,
-      method: 'GET',
-      signal,
-    },
-    adminClassProgramsDataSchema,
-  );
-}
-
-export function createAdminClassProgramRequest(
-  payload: CreateAdminClassProgramInput,
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: API_ENDPOINTS.ADMIN_CLASS_PROGRAMS,
-      method: 'POST',
-      data: payload,
-      signal,
-    },
-    adminClassProgramMutationDataSchema,
-  );
-}
-
-export function updateAdminClassProgramRequest(
-  id: string,
-  payload: UpdateAdminClassProgramInput,
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: `${API_ENDPOINTS.ADMIN_CLASS_PROGRAMS}/${encodeURIComponent(id)}`,
-      method: 'PATCH',
-      data: payload,
-      signal,
-    },
-    adminClassProgramMutationDataSchema,
-  );
-}
-
-export function archiveAdminClassProgramRequest(
-  id: string,
-  payload: AdminClassArchiveInput,
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: `${API_ENDPOINTS.ADMIN_CLASS_PROGRAMS}/${encodeURIComponent(id)}`,
-      method: 'DELETE',
-      data: payload,
-      signal,
-    },
-    adminClassProgramMutationDataSchema,
-  );
-}
-
-export function readAdminClassSessionsRequest(
-  params: { branchId?: string; programId?: string } = {},
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: API_ENDPOINTS.ADMIN_CLASS_SESSIONS,
-      method: 'GET',
-      params: {
-        ...(params.branchId ? { branchId: params.branchId } : {}),
-        ...(params.programId ? { programId: params.programId } : {}),
+/** Admin baking class programs and sessions CRUD service. */
+export const adminClassesService = {
+  getPrograms: (signal?: AbortSignal) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_CLASS_PROGRAMS,
+        method: 'GET',
+        signal,
       },
-      signal,
-    },
-    adminClassSessionsDataSchema,
-  );
-}
+      adminClassProgramsDataSchema,
+    ),
 
-export function createAdminClassSessionRequest(
-  payload: CreateAdminClassSessionInput,
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: API_ENDPOINTS.ADMIN_CLASS_SESSIONS,
-      method: 'POST',
-      data: payload,
-      signal,
-    },
-    adminClassSessionMutationDataSchema,
-  );
-}
+  createProgram: (
+    payload: CreateAdminClassProgramInput,
+    signal?: AbortSignal,
+  ) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_CLASS_PROGRAMS,
+        method: 'POST',
+        data: payload,
+        signal,
+      },
+      adminClassProgramMutationDataSchema,
+    ),
 
-export function updateAdminClassSessionRequest(
-  id: string,
-  payload: UpdateAdminClassSessionInput,
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: `${API_ENDPOINTS.ADMIN_CLASS_SESSIONS}/${encodeURIComponent(id)}`,
-      method: 'PATCH',
-      data: payload,
-      signal,
-    },
-    adminClassSessionMutationDataSchema,
-  );
-}
+  updateProgram: (
+    id: string,
+    payload: UpdateAdminClassProgramInput,
+    signal?: AbortSignal,
+  ) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_CLASS_PROGRAM_DETAIL(id),
+        method: 'PATCH',
+        data: payload,
+        signal,
+      },
+      adminClassProgramMutationDataSchema,
+    ),
 
-export function archiveAdminClassSessionRequest(
-  id: string,
-  payload: AdminClassArchiveInput,
-  signal?: AbortSignal,
-) {
-  return requestApi(
-    {
-      url: `${API_ENDPOINTS.ADMIN_CLASS_SESSIONS}/${encodeURIComponent(id)}`,
-      method: 'DELETE',
-      data: payload,
-      signal,
-    },
-    adminClassSessionMutationDataSchema,
-  );
-}
+  archiveProgram: (
+    id: string,
+    payload: AdminClassArchiveInput,
+    signal?: AbortSignal,
+  ) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_CLASS_PROGRAM_DETAIL(id),
+        method: 'DELETE',
+        data: payload,
+        signal,
+      },
+      adminClassProgramMutationDataSchema,
+    ),
+
+  getSessions: (
+    params: { branchId?: string; programId?: string } = {},
+    signal?: AbortSignal,
+  ) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_CLASS_SESSIONS,
+        method: 'GET',
+        params: buildListParams(params),
+        signal,
+      },
+      adminClassSessionsDataSchema,
+    ),
+
+  createSession: (
+    payload: CreateAdminClassSessionInput,
+    signal?: AbortSignal,
+  ) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_CLASS_SESSIONS,
+        method: 'POST',
+        data: payload,
+        signal,
+      },
+      adminClassSessionMutationDataSchema,
+    ),
+
+  updateSession: (
+    id: string,
+    payload: UpdateAdminClassSessionInput,
+    signal?: AbortSignal,
+  ) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_CLASS_SESSION_DETAIL(id),
+        method: 'PATCH',
+        data: payload,
+        signal,
+      },
+      adminClassSessionMutationDataSchema,
+    ),
+
+  archiveSession: (
+    id: string,
+    payload: AdminClassArchiveInput,
+    signal?: AbortSignal,
+  ) =>
+    requestApi(
+      {
+        url: API_ENDPOINTS.ADMIN_CLASS_SESSION_DETAIL(id),
+        method: 'DELETE',
+        data: payload,
+        signal,
+      },
+      adminClassSessionMutationDataSchema,
+    ),
+};
