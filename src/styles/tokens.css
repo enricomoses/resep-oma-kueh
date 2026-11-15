@@ -1,0 +1,83 @@
+/* ==========================================================================
+   Design Tokens & Tailwind v4 Theme Bridge
+   Single source of truth for colors, surfaces, typography, spacing, & radii.
+   Provisional PRD palette — not sampled from an approved original logo.
+   ========================================================================== */
+
+:root {
+  /* Brand & Ink Palette (checked by tests/unit/ui-tokens.test.ts) */
+  --brand-burgundy: #782b2c;
+  --brand-deep: #650e20;
+  --brand-cream: #fdf5e2;
+  --surface-white: #fffcf6;
+  --text-cocoa: #65453b;
+  --border-sand: #e9d6bb;
+  --control-border: #99715e;
+  --accent-terracotta: #b44625;
+  --accent-rose: #f5dadd;
+  --success: #27734b;
+  --danger: #a12636;
+  --modal-backdrop: #39151ab3;
+  --shadow-warm: #650e2014;
+
+  /* Extended Surface, Status, & Overlay Tokens */
+  --surface-paper: #fffaf2;
+  --surface-cream: #fdf8f0;
+  --surface-on-brand: #fffaf5;
+  --danger-bright: #dc2626;
+  --alert-warning-bg: #fffbeb;
+  --alert-warning-border: #fde68a;
+  --alert-conflict-bg: #fffbfa;
+  --alert-conflict-border: #fca5a5;
+  --backdrop-subtle: rgba(34, 15, 22, 0.25);
+  --shadow-dropdown: 0 10px 25px -5px rgba(74, 21, 37, 0.12);
+  --shadow-mobile-menu: 0 12px 24px -8px rgba(74, 21, 37, 0.14);
+  --footer-divider: rgba(255, 248, 240, 0.14);
+  --footer-text-muted: rgba(255, 248, 240, 0.85);
+  --footer-text-subtle: rgba(255, 248, 240, 0.78);
+  --footer-copyright: rgba(255, 248, 240, 0.68);
+  --sand-divider-subtle: rgba(233, 214, 187, 0.4);
+
+  /* Radii & Motion */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-card: 1rem;
+  --transition-fast: 150ms ease;
+
+  /* Typography & Layout Scale */
+  --space-section: clamp(3rem, 6vw, 7rem);
+  --type-display: clamp(2.75rem, 5.4vw, 5.5rem);
+  --type-heading: clamp(2rem, 3vw, 3rem);
+  --content-width: 78rem;
+  --gutter: 1.25rem;
+  --site-header-height: 4.5625rem;
+
+  color-scheme: light;
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --gutter: 1.5rem;
+  }
+}
+
+@media (min-width: 75rem) {
+  :root {
+    --gutter: 2.5rem;
+  }
+}
+
+@theme inline {
+  --color-brand: var(--brand-burgundy);
+  --color-brand-deep: var(--brand-deep);
+  --color-cream: var(--brand-cream);
+  --color-surface: var(--surface-white);
+  --color-ink: var(--brand-deep);
+  --color-ink-muted: var(--text-cocoa);
+  --color-sand: var(--border-sand);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  --font-sans: var(--font-jakarta);
+  --font-editorial: var(--font-fraunces);
+  --font-campaign: var(--font-barlow);
+}

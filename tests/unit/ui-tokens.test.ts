@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { expect, it } from 'vitest';
 
 const css = readFileSync(
-  new URL('../../src/app/globals.css', import.meta.url),
+  new URL('../../src/styles/tokens.css', import.meta.url),
   'utf8',
 );
 function luminance(token: string) {

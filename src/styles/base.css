@@ -1,0 +1,109 @@
+/* ==========================================================================
+   Base Document Styles & Resets
+   Wrapped in @layer base so component & utility layers always take precedence.
+   ========================================================================== */
+
+@layer base {
+  html {
+    scrollbar-gutter: stable;
+  }
+
+  @supports not selector(::-webkit-scrollbar) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: color-mix(
+          in srgb,
+          var(--control-border) 65%,
+          transparent
+        )
+        transparent;
+    }
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--control-border) 60%, transparent);
+    border-radius: 999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--brand-burgundy);
+  }
+
+  ::-webkit-scrollbar-thumb:active {
+    background: var(--brand-deep);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  body {
+    background: var(--brand-cream);
+    color: var(--brand-deep);
+    font-family: var(--font-jakarta), sans-serif;
+    font-size: 1rem;
+    line-height: 1.65;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--brand-burgundy);
+    color: var(--surface-white);
+  }
+
+  input,
+  select,
+  textarea {
+    caret-color: var(--brand-burgundy);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--brand-deep);
+    outline-offset: 4px;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button,
+  a {
+    touch-action: manipulation;
+  }
+
+  button:not(:disabled),
+  select:not(:disabled) {
+    cursor: pointer;
+  }
+
+  a {
+    text-underline-offset: 0.25em;
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
