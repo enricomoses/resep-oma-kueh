@@ -2,6 +2,7 @@
 
 import type { Dispatch, SetStateAction } from 'react';
 
+import { DatePicker } from '@/components/ui/date-picker';
 import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
@@ -29,9 +30,9 @@ export function AdminPromotionScheduleFields({
         error={fieldErrors.startsAt?.[0]}
       >
         {(fieldProps) => (
-          <Input
+          <DatePicker
             {...fieldProps}
-            type="datetime-local"
+            mode="datetime"
             value={formState.startsAtLocal}
             onChange={(e) =>
               onChange((prev) => ({
@@ -49,9 +50,9 @@ export function AdminPromotionScheduleFields({
         error={fieldErrors.endsAt?.[0]}
       >
         {(fieldProps) => (
-          <Input
+          <DatePicker
             {...fieldProps}
-            type="datetime-local"
+            mode="datetime"
             value={formState.endsAtLocal}
             onChange={(e) =>
               onChange((prev) => ({

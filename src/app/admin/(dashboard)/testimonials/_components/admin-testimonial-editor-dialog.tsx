@@ -3,6 +3,7 @@
 import type { FormEvent } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { DatePicker } from '@/components/ui/date-picker';
 import { Dialog } from '@/components/ui/dialog';
 import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
@@ -168,9 +169,8 @@ export function AdminTestimonialEditorDialog({
             error={getError('consentAt')}
           >
             {(fieldProps) => (
-              <Input
+              <DatePicker
                 {...fieldProps}
-                type="date"
                 value={form.consentAt}
                 onChange={(e) =>
                   onFormChange({ ...form, consentAt: e.target.value })

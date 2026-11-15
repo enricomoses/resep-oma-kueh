@@ -4,6 +4,7 @@ import { CalendarClock } from 'lucide-react';
 import type { Dispatch, FormEvent, SetStateAction } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { DatePicker } from '@/components/ui/date-picker';
 import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
@@ -121,9 +122,9 @@ export function AdminClassSessionForm({
           error={fieldErrors.startsAt?.[0]}
         >
           {(fieldProps) => (
-            <Input
+            <DatePicker
               {...fieldProps}
-              type="datetime-local"
+              mode="datetime"
               value={form.startsAtLocal}
               onChange={(event) =>
                 setForm((prev) => ({
@@ -141,9 +142,9 @@ export function AdminClassSessionForm({
           error={fieldErrors.endsAt?.[0]}
         >
           {(fieldProps) => (
-            <Input
+            <DatePicker
               {...fieldProps}
-              type="datetime-local"
+              mode="datetime"
               value={form.endsAtLocal}
               onChange={(event) =>
                 setForm((prev) => ({
@@ -161,9 +162,9 @@ export function AdminClassSessionForm({
           error={fieldErrors.registrationDeadlineAt?.[0]}
         >
           {(fieldProps) => (
-            <Input
+            <DatePicker
               {...fieldProps}
-              type="datetime-local"
+              mode="datetime"
               value={form.deadlineAtLocal}
               onChange={(event) =>
                 setForm((prev) => ({
