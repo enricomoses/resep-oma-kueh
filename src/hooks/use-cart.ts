@@ -1,11 +1,10 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
-import { QUERY_KEYS, STALE_TIME } from '@/constants/query-keys.constant';
-import { validateCart } from '@/services/cart.service';
-import { useCartStore } from '@/stores/cart.store';
+
+import { useCartValidationQuery } from '@/hooks/queries/use-cart';
 import type { AddLineInput, AddLineResult } from '@/stores/cart.store';
+import { useCartStore } from '@/stores/cart.store';
 import type { CartValidatedLine } from '@/types/cart';
 
 export function useCart() {
@@ -62,22 +61,14 @@ export function useCart() {
   const isValidationEnabled =
     hasHydrated && Boolean(branchId) && lines.length > 0;
 
-  const validationQuery = useQuery({
-    queryKey: QUERY_KEYS.CART_VALIDATE(branchId, linesSignature),
-    queryFn: ({ signal }) =>
-      validateCart(
-        {
-          branchId: branchId as string,
-          items: queryItems,
-        },
-        signal,
-      ),
+  const validationQuery = useCartValidationQuery({
+    branchId,
+    signature: linesSignature,
+    items: queryItems,
     enabled: isValidationEnabled,
-    staleTime: STALE_TIME.BRANCH_OFFERS,
-    refetchOnWindowFocus: true,
   });
 
-  const validatedData = validationQuery.data?.data;
+  const validatedData = validationQuery.data;
   const validatedLines: CartValidatedLine[] = validatedData?.lines ?? [];
   const estimatedSubtotalIdr = validatedData?.estimatedSubtotalIdr ?? 0;
   const totalDiscountIdr = validatedData?.totalDiscountIdr ?? 0;
