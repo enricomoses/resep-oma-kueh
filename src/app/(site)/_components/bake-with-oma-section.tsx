@@ -10,6 +10,7 @@ import { Feedback } from '@/components/ui/feedback';
 import { ROUTES } from '@/constants';
 import { CLASSES_COPY } from '@/constants/classes.constant';
 import { HOME_COPY, HOME_SECTION_IDS } from '@/constants/home.constant';
+import '@/styles/components/product-card.css';
 import type { HomeSectionResult, HomeUpcomingSession } from '@/types/home';
 import { cn } from '@/utils';
 import { withBranch } from '@/utils/branch-url';
@@ -110,7 +111,7 @@ export function BakeWithOmaSection({
           {visibleSessions.map((session) => (
             <Card key={session.id} className="home-class-card">
               {session.program.coverImageUrl ? (
-                <div className="home-card-media-frame">
+                <div className="home-card-media-box">
                   <Image
                     src={session.program.coverImageUrl}
                     alt={session.program.coverAlt}
