@@ -6,6 +6,7 @@ import {
   HelpCircle,
   LayoutDashboard,
   MapPin,
+  Megaphone,
   MessageSquareQuote,
   Package,
   ShieldCheck,
@@ -36,7 +37,7 @@ function getNavIcon(id: string) {
     case 'locations':
       return <MapPin size={18} aria-hidden="true" />;
     case 'promotions':
-      return <Tags size={18} aria-hidden="true" />;
+      return <Megaphone size={18} aria-hidden="true" />;
     case 'content':
       return <FileText size={18} aria-hidden="true" />;
     case 'faqs':
@@ -53,13 +54,16 @@ function getNavIcon(id: string) {
 interface AdminSidebarNavProps {
   role: AdminRole;
   pathname: string;
+  collapsed?: boolean;
   onNavigate?: () => void;
   className?: string;
 }
 
+/** Role-scoped admin navigation list supporting expanded and icon-only collapsed modes. */
 export function AdminSidebarNav({
   role,
   pathname,
+  collapsed = false,
   onNavigate,
   className,
 }: AdminSidebarNavProps) {
@@ -69,7 +73,11 @@ export function AdminSidebarNav({
 
   return (
     <nav
-      className={cn('admin-nav-list', className)}
+      className={cn(
+        'admin-nav-list',
+        collapsed && 'admin-nav-list--collapsed',
+        className,
+      )}
       aria-label={ADMIN_CATALOG_COPY.SHELL.NAV_LABEL}
     >
       {visibleNavItems.map((item) => {
@@ -84,25 +92,44 @@ export function AdminSidebarNav({
               key={item.id}
               href={item.href}
               aria-current={isCurrent ? 'page' : undefined}
+              title={collapsed ? item.label : undefined}
               className={cn(
                 'admin-nav-link',
+                collapsed && 'admin-nav-link--collapsed',
                 isCurrent && 'admin-nav-link--active',
               )}
               onClick={onNavigate}
             >
-              {getNavIcon(item.id)}
-              <span>{item.label}</span>
+              <span className="admin-nav-icon">{getNavIcon(item.id)}</span>
+              <span
+                className={cn('admin-nav-label', collapsed && 'admin-sr-only')}
+              >
+                {item.label}
+              </span>
             </Link>
           );
         }
 
         return (
-          <div key={item.id} className="admin-nav-upcoming">
+          <div
+            key={item.id}
+            className={cn(
+              'admin-nav-upcoming',
+              collapsed && 'admin-nav-upcoming--collapsed',
+            )}
+            title={collapsed ? item.label : undefined}
+          >
             <span className="admin-nav-upcoming-label">
-              {getNavIcon(item.id)}
-              <span>{item.label}</span>
+              <span className="admin-nav-icon">{getNavIcon(item.id)}</span>
+              <span
+                className={cn('admin-nav-label', collapsed && 'admin-sr-only')}
+              >
+                {item.label}
+              </span>
             </span>
-            <Badge tone="neutral">{item.stageTag}</Badge>
+            {!collapsed && item.stageTag ? (
+              <Badge tone="neutral">{item.stageTag}</Badge>
+            ) : null}
           </div>
         );
       })}

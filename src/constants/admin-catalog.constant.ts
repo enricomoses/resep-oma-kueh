@@ -171,7 +171,12 @@ export const ADMIN_NAV_ITEMS: readonly AdminNavItem[] = [
 
 export const ADMIN_CATALOG_COPY = {
   SHELL: {
-    BRAND_SUBTITLE: 'Panel Operasional Resep Oma Kueh',
+    BRAND_TITLE: 'Resep Oma Kueh',
+    BRAND_SUBTITLE: 'Panel Operasional',
+    NAV_SECTION_LABEL: 'Menu Navigasi',
+    COLLAPSE_SIDEBAR: 'Ciutkan sidebar',
+    EXPAND_SIDEBAR: 'Bentangkan sidebar',
+    PROFILE_LABEL: 'Profil admin aktif',
     OPEN_NAV: 'Buka menu admin',
     CLOSE_NAV: 'Tutup menu admin',
     NAV_LABEL: 'Navigasi panel admin',

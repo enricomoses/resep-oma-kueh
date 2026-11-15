@@ -12,6 +12,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AdminShell } from '@/app/admin/(dashboard)/_components/admin-shell';
 import { AdminLoginView } from '@/app/admin/login/_components/admin-login-view';
 import { AdminResetPasswordView } from '@/app/admin/reset-password/_components/admin-reset-password-view';
+import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { AUTH_COPY } from '@/constants/auth.constant';
 import { QUERY_KEYS } from '@/constants/query-keys.constant';
 import { ROUTES } from '@/constants/routes.constant';
@@ -61,6 +62,7 @@ function createTestClient() {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  window.localStorage.clear();
 });
 
 afterEach(() => {
@@ -317,5 +319,51 @@ describe('AdminGuardedShell and private query cache cleanup', () => {
 
     expect(client.getQueryData(sessionKey)).toBeUndefined();
     expect(client.getQueryData(privateBranchDataKey)).toBeUndefined();
+  });
+
+  it('omits F15 baseline eyebrow, renders admin profile card, and toggles sidebar collapse to icon-only rail', () => {
+    const client = createTestClient();
+
+    render(
+      <QueryClientProvider client={client}>
+        <AdminShell initialProfile={OWNER_PROFILE} />
+      </QueryClientProvider>,
+    );
+
+    expect(screen.queryByText(/Area Terproteksi/i)).toBeNull();
+    expect(screen.queryByText(/F15 Auth Baseline/i)).toBeNull();
+
+    const sidebarEl = screen.getByLabelText('Sidebar admin');
+    const sidebar = within(sidebarEl);
+
+    expect(sidebar.getByText('OO')).toBeTruthy();
+    expect(sidebar.getByText(OWNER_PROFILE.displayName)).toBeTruthy();
+    expect(sidebar.getByText('owner@example.invalid')).toBeTruthy();
+    expect(sidebar.getByText('Owner')).toBeTruthy();
+    expect(screen.queryByText(/Akses Global/i)).toBeNull();
+    expect(sidebarEl.querySelector('.admin-profile-status-dot')).toBeNull();
+    const brandImage = sidebarEl.querySelector('img');
+    expect(brandImage).not.toBeNull();
+    expect(brandImage?.getAttribute('src')).toContain('oma.png');
+
+    const collapseBtn = sidebar.getByRole('button', {
+      name: ADMIN_CATALOG_COPY.SHELL.COLLAPSE_SIDEBAR,
+    });
+    expect(collapseBtn).toHaveAttribute('aria-expanded', 'true');
+    expect(sidebarEl.className).not.toContain('admin-sidebar--collapsed');
+
+    fireEvent.click(collapseBtn);
+
+    const expandBtn = sidebar.getByRole('button', {
+      name: ADMIN_CATALOG_COPY.SHELL.EXPAND_SIDEBAR,
+    });
+    expect(expandBtn).toHaveAttribute('aria-expanded', 'false');
+    expect(sidebarEl.className).toContain('admin-sidebar--collapsed');
+    expect(
+      sidebar.getByRole('link', { name: /Kategori Menu/i }),
+    ).toHaveAttribute('title', 'Kategori Menu');
+
+    fireEvent.click(expandBtn);
+    expect(sidebarEl.className).not.toContain('admin-sidebar--collapsed');
   });
 });

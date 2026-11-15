@@ -99,11 +99,10 @@ export const AUTH_COPY = {
   ERROR_RECOVERY_SESSION:
     'Sesi pemulihan kata sandi tidak valid atau telah kedaluwarsa.',
   SHELL: {
-    EYEBROW: 'Area Terproteksi · F15 Auth Baseline',
     HEADING: 'Dasbor Admin Resep Oma Kueh',
     SUBTITLE:
       'Sesi server dan peran admin telah terverifikasi. Modul CRUD bisnis diaktifkan pada tahap F16–F20.',
-    ROLE_OWNER: 'Owner (Akses Global)',
+    ROLE_OWNER: 'Owner',
     ROLE_BRANCH_ADMIN: 'Admin Cabang',
     BRANCH_ALL: 'Semua cabang (Surabaya & Bintaro)',
     LOGOUT_BUTTON: 'Keluar',
