@@ -1,6 +1,7 @@
 import { Store } from 'lucide-react';
 
 import { cn } from '@/utils';
+import '@/styles/components/branch-ui.css';
 
 interface BranchStatusPillProps {
   label: string;

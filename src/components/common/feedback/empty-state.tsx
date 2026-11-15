@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 
 import { Card } from '@/components/ui/card';
 import { cn } from '@/utils';
+import '@/styles/components/feedback-states.css';
 
 interface EmptyStateProps {
   title: string;

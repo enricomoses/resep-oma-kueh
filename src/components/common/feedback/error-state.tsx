@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Feedback } from '@/components/ui/feedback';
 import { cn } from '@/utils';
+import '@/styles/components/feedback-states.css';
 
 interface ErrorStateProps {
   title: string;

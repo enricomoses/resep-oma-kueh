@@ -9,6 +9,7 @@ import {
   CATALOG_AVAILABILITY_LABELS,
   CATALOG_COPY,
 } from '@/constants/catalog.constant';
+import '@/styles/components/product-card.css';
 import type { CatalogProductItem } from '@/types/catalog';
 import { cn, formatIdr } from '@/utils';
 import { withBranch } from '@/utils/branch-url';

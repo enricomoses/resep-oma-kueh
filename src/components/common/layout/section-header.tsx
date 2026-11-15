@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 
 import { cn } from '@/utils';
+import '@/styles/components/page-sections.css';
 
 interface SectionHeaderProps {
   title: string;

@@ -10,6 +10,7 @@ import { CHAT_COPY } from '@/constants/chat.constant';
 import { UI_COPY } from '@/constants/ui.constant';
 import { useChat } from '@/hooks/use-chat';
 import { cn } from '@/utils';
+import '@/styles/components/ask-oma-widget.css';
 
 import { AskOmaComposer } from './ask-oma-composer';
 import { AskOmaMessages } from './ask-oma-messages';

@@ -1,0 +1,121 @@
+/* ==========================================================================
+   Shared Menu Product Card & Card Media
+   ========================================================================== */
+
+@layer components {
+  @media (min-width: 62rem) {
+    .menu-product-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .menu-product-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .menu-product-card-body {
+    display: grid;
+    gap: 0.5rem;
+    flex: 1;
+    align-content: start;
+  }
+
+  .menu-product-card-body h3 {
+    font-size: 1.1875rem;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--brand-deep);
+  }
+
+  .menu-product-description {
+    color: var(--text-cocoa);
+    font-size: 0.9375rem;
+    line-height: 1.55;
+  }
+
+  .menu-product-meta {
+    color: var(--text-cocoa);
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+
+  .menu-product-price-block {
+    display: grid;
+    gap: 0.25rem;
+    margin-top: 0.25rem;
+  }
+
+  .menu-product-price {
+    color: var(--brand-deep);
+    font-size: 0.9375rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .menu-product-price strong {
+    font-family: var(--font-barlow), sans-serif;
+    font-size: 1.375rem;
+    font-weight: 600;
+    color: var(--brand-burgundy);
+  }
+
+  .menu-product-price-original {
+    font-size: 0.8125rem;
+    color: var(--text-cocoa);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .menu-product-price-original span {
+    text-decoration: line-through;
+  }
+
+  .menu-product-sold-out-note {
+    font-size: 0.8125rem;
+    color: var(--danger);
+  }
+
+  .menu-product-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .home-card-media {
+    min-height: 12rem;
+    aspect-ratio: 4/3;
+    padding: 1.25rem;
+  }
+
+  .home-card-media .media-placeholder-mark {
+    font-size: clamp(2.5rem, 5vw, 3.75rem);
+  }
+
+  .home-card-media-box {
+    position: relative;
+    min-height: 12rem;
+    aspect-ratio: 4/3;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border-sand);
+    background-color: var(--surface-cream);
+  }
+
+  .home-card-media-img {
+    object-fit: cover;
+  }
+
+  .home-card-eyebrow {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--brand-burgundy);
+  }
+
+  .home-price-note {
+    font-size: 0.875rem;
+    color: var(--text-cocoa);
+  }
+}

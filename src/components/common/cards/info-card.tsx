@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 
 import { Card } from '@/components/ui/card';
 import { cn } from '@/utils';
+import '@/styles/components/page-sections.css';
 
 interface InfoCardProps {
   title: string;

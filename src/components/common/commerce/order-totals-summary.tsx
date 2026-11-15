@@ -1,5 +1,6 @@
 import { CART_COPY } from '@/constants/cart.constant';
 import { CHECKOUT_COPY } from '@/constants/checkout.constant';
+import '@/styles/components/order-summary.css';
 import { cn, formatIdr } from '@/utils';
 
 interface OrderTotalsSummaryProps {

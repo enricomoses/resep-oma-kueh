@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Feedback } from '@/components/ui/feedback';
 import { HOME_COPY, HOME_SECTION_IDS } from '@/constants/home.constant';
+import '@/styles/components/testimonials.css';
 import type { HomeSectionResult, HomeTestimonial } from '@/types/home';
 import { cn } from '@/utils';
 

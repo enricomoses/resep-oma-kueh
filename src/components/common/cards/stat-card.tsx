@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
+import '@/styles/components/stat-card.css';
 import { cn } from '@/utils';
 
 interface StatCardProps {
