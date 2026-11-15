@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
 import { Quantity } from '@/components/ui/quantity';
+import { Select } from '@/components/ui/select';
 
 afterEach(cleanup);
 
@@ -59,4 +60,44 @@ it('quantity enforces integer bounds and emits a controlled next value', () => {
   expect(() =>
     render(<Quantity label="invalid" value={1.5} max={2} onChange={change} />),
   ).toThrow(RangeError);
+});
+
+it('renders Select with custom dropdown listbox and emits native change events', () => {
+  const handleChange = vi.fn();
+  render(
+    <FormField id="category-select" label="Seri / Kategori">
+      {(props) => (
+        <Select {...props} defaultValue="all" onChange={handleChange}>
+          <option value="all">Semua seri</option>
+          <option value="chiffon">Chiffon Series</option>
+          <option value="bolu" disabled>
+            Bolu Jadul
+          </option>
+        </Select>
+      )}
+    </FormField>,
+  );
+
+  const combobox = screen.getByRole('combobox', { name: 'Seri / Kategori' });
+  expect(combobox).toHaveAttribute('aria-expanded', 'false');
+  expect(combobox).toHaveTextContent('Semua seri');
+
+  fireEvent.click(combobox);
+  expect(combobox).toHaveAttribute('aria-expanded', 'true');
+
+  const listbox = screen.getByRole('listbox');
+  expect(listbox).toBeInTheDocument();
+
+  const disabledOption = screen.getByRole('option', { name: 'Bolu Jadul' });
+  expect(disabledOption).toHaveAttribute('aria-disabled', 'true');
+  fireEvent.click(disabledOption);
+  expect(handleChange).not.toHaveBeenCalled();
+
+  const chiffonOption = screen.getByRole('option', { name: 'Chiffon Series' });
+  fireEvent.click(chiffonOption);
+
+  expect(handleChange).toHaveBeenCalledTimes(1);
+  expect(handleChange.mock.calls[0]?.[0]?.target?.value).toBe('chiffon');
+  expect(combobox).toHaveAttribute('aria-expanded', 'false');
+  expect(combobox).toHaveTextContent('Chiffon Series');
 });

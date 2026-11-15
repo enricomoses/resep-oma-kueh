@@ -211,7 +211,8 @@ it('renders ContactView with Surabaya and Bintaro contacts, unconfirmed pending 
     'Hampers lebaran kantor',
   );
 
-  fireEvent.change(b2bBranchSelect, { target: { value: 'bintaro' } });
+  fireEvent.click(b2bBranchSelect);
+  fireEvent.click(screen.getByRole('option', { name: /Bintaro/i }));
 
   await waitFor(() => {
     const bintaroCta = screen.getByRole('link', {

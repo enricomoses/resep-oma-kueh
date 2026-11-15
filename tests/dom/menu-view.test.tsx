@@ -274,9 +274,8 @@ it('resets page to 1 when changing category filter and cleans up debounced searc
   );
 
   const categorySelects = screen.getAllByLabelText(CATALOG_COPY.CATEGORY_LABEL);
-  fireEvent.change(categorySelects[0], {
-    target: { value: 'demo-chiffon-series' },
-  });
+  fireEvent.click(categorySelects[0]);
+  fireEvent.click(screen.getByRole('option', { name: /Chiffon Series/i }));
 
   // Changing filter resets page=2 to page 1 (omitted from URL)
   expect(navigation.replace).toHaveBeenCalledWith(

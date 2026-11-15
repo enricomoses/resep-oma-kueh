@@ -322,9 +322,11 @@ describe('CheckoutView DOM Tests (F14 / R14)', () => {
       ),
       { target: { value: 'Budi Santoso' } },
     );
-    fireEvent.change(
+    fireEvent.click(
       screen.getByLabelText(new RegExp(CHECKOUT_COPY.FIELD_METHOD_LABEL, 'i')),
-      { target: { value: 'pickup' } },
+    );
+    fireEvent.click(
+      screen.getByRole('option', { name: CHECKOUT_COPY.METHOD_PICKUP_LABEL }),
     );
     fireEvent.click(
       screen.getByLabelText(new RegExp(CHECKOUT_COPY.CONSENT_LABEL, 'i')),
@@ -421,9 +423,11 @@ describe('CheckoutView DOM Tests (F14 / R14)', () => {
       ),
       { target: { value: 'Siti Aminah' } },
     );
-    fireEvent.change(
+    fireEvent.click(
       screen.getByLabelText(new RegExp(CHECKOUT_COPY.FIELD_METHOD_LABEL, 'i')),
-      { target: { value: 'pickup' } },
+    );
+    fireEvent.click(
+      screen.getByRole('option', { name: CHECKOUT_COPY.METHOD_PICKUP_LABEL }),
     );
     fireEvent.click(
       screen.getByLabelText(new RegExp(CHECKOUT_COPY.CONSENT_LABEL, 'i')),
@@ -468,9 +472,11 @@ describe('CheckoutView DOM Tests (F14 / R14)', () => {
       ),
       { target: { value: 'Ibu Ratna' } },
     );
-    fireEvent.change(
+    fireEvent.click(
       screen.getByLabelText(new RegExp(CHECKOUT_COPY.FIELD_METHOD_LABEL, 'i')),
-      { target: { value: 'pickup' } },
+    );
+    fireEvent.click(
+      screen.getByRole('option', { name: CHECKOUT_COPY.METHOD_PICKUP_LABEL }),
     );
     fireEvent.click(
       screen.getByLabelText(new RegExp(CHECKOUT_COPY.CONSENT_LABEL, 'i')),
