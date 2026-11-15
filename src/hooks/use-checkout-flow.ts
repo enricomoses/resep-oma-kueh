@@ -13,10 +13,10 @@ import type {
 import { formatJakartaDateIso, formatWhatsappDigits } from '@/utils/checkout';
 import { checkoutFormSchema } from '@/validations/checkout.schema';
 
-import { useBranches } from './use-branches';
-import { useCart } from './use-cart';
 import { useCheckoutPrepare } from './use-checkout';
-import { usePublicPromotions } from './use-promotions';
+import { usePublicPromotions } from '@/hooks/queries/use-promotions';
+import { useBranches } from '@/hooks/use-branches';
+import { useCart } from '@/hooks/use-cart';
 
 /**
  * Coordinates checkout form validation, server quote verification, and WhatsApp handoff state.

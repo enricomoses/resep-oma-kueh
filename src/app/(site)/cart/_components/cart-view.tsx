@@ -16,7 +16,7 @@ import { CART_COPY } from '@/constants/cart.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { useBranches } from '@/hooks/use-branches';
 import { useCart } from '@/hooks/use-cart';
-import { usePublicPromotions } from '@/hooks/use-promotions';
+import { usePublicPromotions } from '@/hooks/queries/use-promotions';
 import '@/styles/components/order-summary.css';
 import '@/styles/features/cart.css';
 import type { CartValidatedLine } from '@/types/cart';
