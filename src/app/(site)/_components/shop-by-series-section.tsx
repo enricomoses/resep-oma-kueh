@@ -10,6 +10,8 @@ import type { HomeCategory, HomeSectionResult } from '@/types/home';
 import { cn } from '@/utils';
 import { withBranch } from '@/utils/branch-url';
 
+const MAX_SERIES_CARDS = 8;
+
 interface ShopBySeriesSectionProps {
   categories: HomeSectionResult<HomeCategory[]>;
   branchCode: string | null;
@@ -47,7 +49,7 @@ export function ShopBySeriesSection({
         <Feedback title={HOME_COPY.SERIES_EMPTY} />
       ) : (
         <div className="home-series-grid">
-          {categories.data.map((category) => (
+          {categories.data.slice(0, MAX_SERIES_CARDS).map((category) => (
             <Card key={category.id} className="home-series-card">
               <div className="home-series-card-body">
                 <h3>{category.name}</h3>
@@ -59,9 +61,16 @@ export function ShopBySeriesSection({
                   branchCode,
                 )}
                 prefetch={false}
+                className="home-series-card-link"
               >
-                {HOME_COPY.SERIES_CTA}
-                <ArrowRight size={16} aria-hidden="true" />
+                <span className="home-series-card-link-label">
+                  {HOME_COPY.SERIES_CTA}
+                </span>
+                <ArrowRight
+                  size={16}
+                  aria-hidden="true"
+                  className="home-series-card-link-arrow"
+                />
               </ActionLink>
             </Card>
           ))}
