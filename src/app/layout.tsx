@@ -56,7 +56,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
         'h-full antialiased',
       )}
     >
-      <body className="flex min-h-full flex-col">
+      <body className="flex min-h-full flex-col" suppressHydrationWarning>
         {getPublicEnvironment().NEXT_PUBLIC_DEMO_MODE ? <DemoBanner /> : null}
         <ReactQueryProvider>{children}</ReactQueryProvider>
       </body>
