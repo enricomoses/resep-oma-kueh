@@ -3,6 +3,7 @@
 import { type FormEvent, useMemo, useState } from 'react';
 
 import { extractAdminMutationError } from '@/lib/errors';
+import { notifyError, notifySuccess } from '@/lib/toast';
 import type { AdminSessionProfile } from '@/types/auth';
 import type {
   AdminFaqItem,
@@ -63,7 +64,6 @@ export function useAdminFaqsManager({
   const [archiveTarget, setArchiveTarget] = useState<AdminFaqItem | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const items = useMemo(() => faqsQuery.data?.items ?? [], [faqsQuery.data]);
   const visibleItems = useMemo(
@@ -92,7 +92,6 @@ export function useAdminFaqsManager({
     event.preventDefault();
     setActionError(null);
     setFieldErrors({});
-    setSuccessMessage(null);
 
     const parsedSortOrder = Number.parseInt(form.sortOrder, 10);
     const sortOrder = Number.isFinite(parsedSortOrder) ? parsedSortOrder : 0;
@@ -110,7 +109,9 @@ export function useAdminFaqsManager({
             expectedUpdatedAt: form.expectedUpdatedAt,
           },
         });
-        setSuccessMessage('FAQ berhasil diperbarui.');
+        notifySuccess('FAQ berhasil diperbarui.', {
+          toastId: 'admin-faq-saved',
+        });
       } else {
         await createMutation.mutateAsync({
           category: form.category.trim(),
@@ -119,7 +120,9 @@ export function useAdminFaqsManager({
           sortOrder,
           status: form.status,
         });
-        setSuccessMessage('FAQ baru berhasil dibuat.');
+        notifySuccess('FAQ baru berhasil dibuat.', {
+          toastId: 'admin-faq-saved',
+        });
       }
       setEditorOpen(false);
     } catch (err) {
@@ -128,6 +131,7 @@ export function useAdminFaqsManager({
       if (Object.keys(parsed.fields).length > 0) {
         setFieldErrors(parsed.fields);
       }
+      notifyError(parsed.message, { toastId: 'admin-faq-error' });
     }
   }
 
@@ -145,31 +149,38 @@ export function useAdminFaqsManager({
           expectedUpdatedAt: item.updatedAt,
         },
       });
-      setSuccessMessage('FAQ berhasil dipublikasikan.');
+      notifySuccess('FAQ berhasil dipublikasikan.', {
+        toastId: 'admin-faq-published',
+      });
     } catch (err) {
-      setActionError(
-        extractAdminMutationError(err, 'Gagal mempublikasikan FAQ.').message,
-      );
+      const message = extractAdminMutationError(
+        err,
+        'Gagal mempublikasikan FAQ.',
+      ).message;
+      setActionError(message);
+      notifyError(message, { toastId: 'admin-faq-error' });
     }
   }
 
   async function handleConfirmArchive() {
     if (!archiveTarget) return;
     setActionError(null);
-    setSuccessMessage(null);
     try {
       await archiveMutation.mutateAsync({
         faqId: archiveTarget.id,
         payload: { expectedUpdatedAt: archiveTarget.updatedAt },
       });
       setArchiveTarget(null);
-      setSuccessMessage(
-        'FAQ berhasil diarsipkan dan disembunyikan dari publik.',
-      );
+      notifySuccess('FAQ berhasil diarsipkan dan disembunyikan dari publik.', {
+        toastId: 'admin-faq-archived',
+      });
     } catch (err) {
-      setActionError(
-        extractAdminMutationError(err, 'Gagal mengarsipkan FAQ.').message,
-      );
+      const message = extractAdminMutationError(
+        err,
+        'Gagal mengarsipkan FAQ.',
+      ).message;
+      setActionError(message);
+      notifyError(message, { toastId: 'admin-faq-error' });
     }
   }
 
@@ -188,7 +199,6 @@ export function useAdminFaqsManager({
     setArchiveTarget,
     actionError,
     fieldErrors,
-    successMessage,
     isSaving: createMutation.isPending || updateMutation.isPending,
     isArchiving: archiveMutation.isPending,
     openCreate,

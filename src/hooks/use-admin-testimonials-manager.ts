@@ -3,6 +3,7 @@
 import { type FormEvent, useMemo, useState } from 'react';
 
 import { extractAdminMutationError } from '@/lib/errors';
+import { notifyError, notifySuccess } from '@/lib/toast';
 import type { AdminSessionProfile } from '@/types/auth';
 import type {
   AdminTestimonialItem,
@@ -75,7 +76,6 @@ export function useAdminTestimonialsManager({
     useState<AdminTestimonialItem | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const items = useMemo(() => query.data?.items ?? [], [query.data]);
   const publishedConsented = useMemo(
@@ -107,7 +107,6 @@ export function useAdminTestimonialsManager({
     event.preventDefault();
     setActionError(null);
     setFieldErrors({});
-    setSuccessMessage(null);
 
     const parsedRating =
       form.rating.trim().length > 0 ? Number.parseInt(form.rating, 10) : null;
@@ -139,10 +138,14 @@ export function useAdminTestimonialsManager({
             expectedUpdatedAt: form.expectedUpdatedAt,
           },
         });
-        setSuccessMessage('Testimoni berhasil diperbarui.');
+        notifySuccess('Testimoni berhasil diperbarui.', {
+          toastId: 'admin-testimonial-saved',
+        });
       } else {
         await createMutation.mutateAsync(payloadBase);
-        setSuccessMessage('Draf testimoni berhasil dibuat.');
+        notifySuccess('Draf testimoni berhasil dibuat.', {
+          toastId: 'admin-testimonial-saved',
+        });
       }
       setEditorOpen(false);
     } catch (err) {
@@ -154,6 +157,7 @@ export function useAdminTestimonialsManager({
       if (Object.keys(parsed.fields).length > 0) {
         setFieldErrors(parsed.fields);
       }
+      notifyError(parsed.message, { toastId: 'admin-testimonial-error' });
     }
   }
 
@@ -175,30 +179,38 @@ export function useAdminTestimonialsManager({
           expectedUpdatedAt: item.updatedAt,
         },
       });
-      setSuccessMessage('Testimoni berizin berhasil dipublikasikan.');
+      notifySuccess('Testimoni berizin berhasil dipublikasikan.', {
+        toastId: 'admin-testimonial-published',
+      });
     } catch (err) {
-      setActionError(
-        extractAdminMutationError(err, 'Gagal mempublikasikan testimoni.')
-          .message,
-      );
+      const message = extractAdminMutationError(
+        err,
+        'Gagal mempublikasikan testimoni.',
+      ).message;
+      setActionError(message);
+      notifyError(message, { toastId: 'admin-testimonial-error' });
     }
   }
 
   async function handleConfirmArchive() {
     if (!archiveTarget) return;
     setActionError(null);
-    setSuccessMessage(null);
     try {
       await archiveMutation.mutateAsync({
         testimonialId: archiveTarget.id,
         payload: { expectedUpdatedAt: archiveTarget.updatedAt },
       });
       setArchiveTarget(null);
-      setSuccessMessage('Testimoni berhasil diarsipkan.');
+      notifySuccess('Testimoni berhasil diarsipkan.', {
+        toastId: 'admin-testimonial-archived',
+      });
     } catch (err) {
-      setActionError(
-        extractAdminMutationError(err, 'Gagal mengarsipkan testimoni.').message,
-      );
+      const message = extractAdminMutationError(
+        err,
+        'Gagal mengarsipkan testimoni.',
+      ).message;
+      setActionError(message);
+      notifyError(message, { toastId: 'admin-testimonial-error' });
     }
   }
 
@@ -215,7 +227,6 @@ export function useAdminTestimonialsManager({
     setArchiveTarget,
     actionError,
     fieldErrors,
-    successMessage,
     isSaving: createMutation.isPending || updateMutation.isPending,
     isArchiving: archiveMutation.isPending,
     openCreate,

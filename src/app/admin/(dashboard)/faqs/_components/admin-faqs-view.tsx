@@ -48,7 +48,6 @@ export function AdminFaqsView({
     setArchiveTarget,
     actionError,
     fieldErrors,
-    successMessage,
     isSaving,
     isArchiving,
     openCreate,
@@ -98,9 +97,6 @@ export function AdminFaqsView({
 
       {actionError ? (
         <Feedback tone="error" title={actionError} announce />
-      ) : null}
-      {successMessage ? (
-        <Feedback tone="success" title={successMessage} announce />
       ) : null}
 
       <div className="admin-filter-row">

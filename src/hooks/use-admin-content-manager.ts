@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 
 import { extractAdminMutationError } from '@/lib/errors';
+import { notifyError, notifySuccess } from '@/lib/toast';
 import type {
   AdminCmsContentStatus,
   AdminCmsListResponse,
@@ -48,7 +49,6 @@ export function useAdminContentManager({
   );
   const [actionError, setActionError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const currentForm =
     formState && formState.key === activeEntry?.key
@@ -61,7 +61,6 @@ export function useAdminContentManager({
     setSelectedKey(key);
     setActionError(null);
     setFieldErrors({});
-    setSuccessMessage(null);
     const found = entries.find((item) => item.key === key);
     if (found) {
       setFormState(entryToFormState(found));
@@ -90,12 +89,16 @@ export function useAdminContentManager({
         previewUrl: response.data.previewUrl,
         mediaApproved: true,
       });
+      notifySuccess('Foto utama berhasil diunggah ke draf.', {
+        toastId: 'admin-cms-upload',
+      });
     } catch (err) {
       const parsed = extractAdminMutationError(
         err,
         'Gagal mengunggah berkas foto.',
       );
       setActionError(parsed.message);
+      notifyError(parsed.message, { toastId: 'admin-cms-error' });
     }
   }
 
@@ -120,12 +123,16 @@ export function useAdminContentManager({
         ...currentForm,
         instagramItems: next,
       });
+      notifySuccess('Foto Instagram berhasil diunggah ke draf.', {
+        toastId: 'admin-cms-upload',
+      });
     } catch (err) {
       const parsed = extractAdminMutationError(
         err,
         'Gagal mengunggah berkas foto Instagram.',
       );
       setActionError(parsed.message);
+      notifyError(parsed.message, { toastId: 'admin-cms-error' });
     }
   }
 
@@ -133,7 +140,6 @@ export function useAdminContentManager({
     if (!currentForm) return;
     setActionError(null);
     setFieldErrors({});
-    setSuccessMessage(null);
 
     try {
       const response = await saveMutation.mutateAsync({
@@ -145,10 +151,11 @@ export function useAdminContentManager({
         },
       });
       setFormState(entryToFormState(response.data.item));
-      setSuccessMessage(
+      notifySuccess(
         targetStatus === 'published'
           ? `Konten "${currentForm.key}" berhasil dipublikasikan.`
           : `Draf konten "${currentForm.key}" berhasil disimpan.`,
+        { toastId: 'admin-cms-saved' },
       );
     } catch (err) {
       const parsed = extractAdminMutationError(
@@ -157,6 +164,7 @@ export function useAdminContentManager({
       );
       setActionError(parsed.message);
       setFieldErrors(parsed.fields);
+      notifyError(parsed.message, { toastId: 'admin-cms-error' });
     }
   }
 
@@ -174,7 +182,6 @@ export function useAdminContentManager({
     isSaving: saveMutation.isPending,
     actionError,
     rootError: fieldErrors.root?.[0] ?? null,
-    successMessage,
     handleSelectKey,
     handleRefresh,
     handleMainImageUpload,

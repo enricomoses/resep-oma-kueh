@@ -43,7 +43,6 @@ export function AdminTestimonialsView({
     setArchiveTarget,
     actionError,
     fieldErrors,
-    successMessage,
     isSaving,
     isArchiving,
     openCreate,
@@ -98,9 +97,6 @@ export function AdminTestimonialsView({
 
       {actionError ? (
         <Feedback tone="error" title={actionError} announce />
-      ) : null}
-      {successMessage ? (
-        <Feedback tone="success" title={successMessage} announce />
       ) : null}
 
       <Card tone="cream" className="admin-subpanel">

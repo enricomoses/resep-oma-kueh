@@ -37,7 +37,6 @@ export function AdminContentView({
     isSaving,
     actionError,
     rootError,
-    successMessage,
     handleSelectKey,
     handleRefresh,
     handleMainImageUpload,
@@ -76,10 +75,6 @@ export function AdminContentView({
         <Feedback tone="error" title={actionError} announce>
           {rootError ? <p>{rootError}</p> : null}
         </Feedback>
-      ) : null}
-
-      {successMessage ? (
-        <Feedback tone="success" title={successMessage} announce />
       ) : null}
 
       <div className="admin-cms-layout">
