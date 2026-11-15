@@ -9,6 +9,7 @@ import { SiteFooter } from '@/components/common/layout/site-footer';
 import { ChatSlot } from '@/components/common/chat/chat-slot';
 import { SITE_COPY } from '@/constants/site.constant';
 import { getPublicEnvironment } from '@/config';
+import '@/styles/layouts/site-shell.css';
 
 interface SiteContentProps {
   children: ReactNode;

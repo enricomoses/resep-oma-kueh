@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import type { ReactNode } from 'react';
 
 import { AUTH_COPY } from '@/constants/auth.constant';
+import '@/styles/layouts/admin-auth.css';
 
 export const metadata: Metadata = {
   title: AUTH_COPY.ADMIN_META_TITLE,

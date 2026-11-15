@@ -1,0 +1,263 @@
+/* ==========================================================================
+   Admin Workspace Shared UI Patterns (Sections, Lists, Filters, Forms, Modals)
+   ========================================================================== */
+
+@layer components {
+  .admin-section {
+    max-width: 72rem;
+    margin: 0 auto;
+    display: grid;
+    gap: 1.25rem;
+    min-width: 0;
+  }
+
+  .admin-section-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .admin-section-title {
+    font-family: var(--font-fraunces), serif;
+    font-size: clamp(1.375rem, 2.5vw, 1.75rem);
+    font-weight: 600;
+    color: var(--brand-deep);
+  }
+
+  .admin-section-subtitle {
+    margin-top: 0.25rem;
+    font-size: 0.9375rem;
+    color: var(--text-cocoa);
+  }
+
+  .admin-inline-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .admin-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 1rem;
+  }
+
+  .admin-readiness-list {
+    margin: 0;
+    padding-left: 1rem;
+    display: grid;
+    gap: 0.375rem;
+    font-size: 0.875rem;
+  }
+
+  .admin-readiness-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .admin-quick-actions-card,
+  .admin-filter-bar,
+  .admin-empty-card,
+  .admin-forbidden-card {
+    display: grid;
+    gap: 0.75rem;
+    padding: 1.125rem;
+  }
+
+  .admin-subpanel,
+  .admin-entity-card {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .admin-card-title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--brand-deep);
+  }
+
+  .admin-forbidden-head {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    color: var(--brand-burgundy);
+  }
+
+  .admin-filter-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    align-items: end;
+  }
+
+  .admin-filter-bar .admin-filter-grid {
+    gap: 0.875rem;
+  }
+
+  @media (min-width: 48rem) {
+    .admin-filter-bar .admin-filter-grid {
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1fr);
+    }
+  }
+
+  .admin-list-stack {
+    display: grid;
+    gap: 0.875rem;
+  }
+
+  .admin-row-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    padding: 1rem 1.125rem;
+  }
+
+  @media (min-width: 48rem) {
+    .admin-row-card {
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+  }
+
+  .admin-row-main {
+    display: grid;
+    gap: 0.375rem;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .admin-row-title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .admin-row-title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--brand-deep);
+  }
+
+  .admin-row-meta,
+  .admin-row-subcopy,
+  .admin-empty-copy {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-cocoa);
+  }
+
+  .admin-row-desc {
+    font-size: 0.875rem;
+    color: var(--brand-deep);
+  }
+
+  .admin-wrap-text {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .admin-row-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .admin-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .admin-modal-form {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .admin-form {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .admin-form-grid {
+    display: grid;
+    gap: 0.875rem;
+  }
+
+  .admin-form-row-2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.875rem;
+  }
+
+  @media (min-width: 36rem) {
+    .admin-form-row-2 {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .admin-form-row-3 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.875rem;
+  }
+
+  @media (min-width: 48rem) {
+    .admin-form-row-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .admin-cards-grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  @media (min-width: 56.25rem) {
+    .admin-form-grid--two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .admin-cards-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .admin-checkbox-group {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .admin-checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--brand-deep);
+  }
+
+  .admin-field-error {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--brand-burgundy);
+  }
+
+  .admin-modal-actions,
+  .admin-dialog-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.625rem;
+    padding-top: 0.5rem;
+  }
+}

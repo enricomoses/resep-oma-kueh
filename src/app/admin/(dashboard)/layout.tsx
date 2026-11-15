@@ -4,6 +4,8 @@ import { connection } from 'next/server';
 import { AdminShell } from './_components/admin-shell';
 import { ROUTES } from '@/constants/routes.constant';
 import { requireAdminSession } from '@/features/auth/admin-guard.server';
+import '@/styles/layouts/admin-workspace.css';
+import '@/styles/features/admin-shared.css';
 
 interface AdminDashboardLayoutProps {
   children: ReactNode;
