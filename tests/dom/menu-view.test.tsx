@@ -17,7 +17,7 @@ import { ApiClientError } from '@/lib/errors';
 import { ReactQueryProvider } from '@/providers';
 import { BranchProvider } from '@/providers/branch-provider';
 import { branchesService } from '@/services/branches.service';
-import * as catalogService from '@/services/catalog.service';
+import { catalogService } from '@/services/catalog.service';
 import type { PublicBranch } from '@/types/branch';
 import type {
   CatalogDirectory,
@@ -296,12 +296,12 @@ it('resets page to 1 when changing category filter and cleans up debounced searc
 });
 
 it('distinguishes empty HTTP 200 catalog results from upstream error states', async () => {
-  vi.spyOn(catalogService, 'readCategories').mockResolvedValue({
+  vi.spyOn(catalogService, 'getCategories').mockResolvedValue({
     ok: true,
     data: CATEGORIES,
     requestId: 'cat-ok',
   });
-  vi.spyOn(catalogService, 'readCatalog').mockRejectedValue(
+  vi.spyOn(catalogService, 'getPaginated').mockRejectedValue(
     new ApiClientError({
       code: 'INVALID_RESPONSE',
       message: 'Upstream error',

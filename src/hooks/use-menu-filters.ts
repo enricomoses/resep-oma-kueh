@@ -23,8 +23,9 @@ import {
   parseCatalogPriceParam,
 } from '@/utils/branch-url';
 
+import { useCatalog, useCategories } from '@/hooks/queries/use-catalog';
+
 import { useBranches } from './use-branches';
-import { useCatalog, useCategories } from './use-catalog';
 
 interface UseMenuFiltersParams {
   initialCategories: InitialCatalogSection<PublicCategoryDirectory>;
@@ -187,12 +188,12 @@ export function useMenuFilters({
   const catalogQuery = useCatalog(queryParams, initialCatalog);
 
   const categories =
-    categoriesQuery.data?.data.items ??
+    categoriesQuery.data?.items ??
     (initialCategories.status === 'success'
       ? initialCategories.data.items
       : []);
 
-  const catalogData = catalogQuery.data?.data;
+  const catalogData = catalogQuery.data;
   const isCatalogError =
     catalogQuery.isError ||
     (!catalogData &&

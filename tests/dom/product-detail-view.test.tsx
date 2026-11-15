@@ -12,7 +12,7 @@ import { ApiClientError } from '@/lib/errors';
 import { ReactQueryProvider } from '@/providers';
 import { BranchProvider } from '@/providers/branch-provider';
 import { branchesService } from '@/services/branches.service';
-import * as catalogService from '@/services/catalog.service';
+import { catalogService } from '@/services/catalog.service';
 import type { PublicBranch } from '@/types/branch';
 import type { ProductDetail } from '@/types/catalog';
 
@@ -340,7 +340,7 @@ it('renders malicious copy safely as text and handles error retry state', async 
 
   // Test error state
   cleanup();
-  vi.spyOn(catalogService, 'readProductDetail').mockRejectedValue(
+  vi.spyOn(catalogService, 'getBySlug').mockRejectedValue(
     new ApiClientError({
       code: 'UPSTREAM_ERROR',
       message: 'Server error',

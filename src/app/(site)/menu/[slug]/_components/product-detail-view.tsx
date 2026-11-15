@@ -15,7 +15,7 @@ import {
   PRODUCT_DETAIL_COPY,
 } from '@/constants/catalog.constant';
 import { useBranches } from '@/hooks/use-branches';
-import { useProductDetail } from '@/hooks/use-catalog';
+import { useProductDetail } from '@/hooks/queries/use-catalog';
 import { useCartStore } from '@/stores/cart.store';
 import type {
   BundleBreakdownItem,
@@ -76,11 +76,10 @@ export function ProductDetailView({
   const detailQuery = useProductDetail(slug, activeBranchCode, initial);
 
   const product =
-    detailQuery.data?.ok && detailQuery.data.data
-      ? detailQuery.data.data
-      : isInitialBranchMatch && initial.status === 'success'
-        ? initial.data
-        : null;
+    detailQuery.data ??
+    (isInitialBranchMatch && initial.status === 'success'
+      ? initial.data
+      : null);
 
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(
     null,

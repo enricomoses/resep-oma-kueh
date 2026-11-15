@@ -4,7 +4,6 @@ export const API_ENDPOINTS = {
   BRANCHES: '/branches',
   CATEGORIES: '/categories',
   CATALOG: '/catalog',
-  PRODUCTS: '/products',
   PRODUCT_DETAIL: (slug: string) => `/products/${encodeURIComponent(slug)}`,
   PROMOTIONS: '/promotions',
   CLASSES: '/classes',

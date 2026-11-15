@@ -1,12 +1,11 @@
 'use client';
+
 import { useQuery } from '@tanstack/react-query';
+
 import { serializeCatalogQueryKey } from '@/constants/catalog.constant';
 import { QUERY_KEYS, STALE_TIME } from '@/constants/query-keys.constant';
-import {
-  readCatalog,
-  readCategories,
-  readProductDetail,
-} from '@/services/catalog.service';
+import { unwrapData } from '@/hooks/queries/query-helpers';
+import { catalogService } from '@/services/catalog.service';
 import type {
   CatalogDirectory,
   CatalogQueryInput,
@@ -15,24 +14,19 @@ import type {
   PublicCategoryDirectory,
 } from '@/types/catalog';
 
+/** Fetches public menu categories, hydrating from SSR data when available. */
 export function useCategories(
   initial?: InitialCatalogSection<PublicCategoryDirectory>,
 ) {
   return useQuery({
     queryKey: QUERY_KEYS.CATEGORIES,
-    queryFn: ({ signal }) => readCategories(signal),
+    queryFn: ({ signal }) => unwrapData(catalogService.getCategories(signal)),
     staleTime: STALE_TIME.PUBLIC,
-    initialData:
-      initial?.status === 'success'
-        ? {
-            ok: true as const,
-            data: initial.data,
-            requestId: 'server-initial-categories',
-          }
-        : undefined,
+    initialData: initial?.status === 'success' ? initial.data : undefined,
   });
 }
 
+/** Fetches filtered, branch-aware paginated menu catalog items. */
 export function useCatalog(
   params: CatalogQueryInput,
   initial?: {
@@ -47,19 +41,17 @@ export function useCatalog(
 
   return useQuery({
     queryKey: QUERY_KEYS.CATALOG(normalizedKey),
-    queryFn: ({ signal }) => readCatalog(params, signal),
+    queryFn: ({ signal }) =>
+      unwrapData(catalogService.getPaginated(params, signal)),
     staleTime: params.branch ? STALE_TIME.BRANCH_OFFERS : STALE_TIME.PUBLIC,
     initialData:
       isInitialMatch && initial?.result.status === 'success'
-        ? {
-            ok: true as const,
-            data: initial.result.data,
-            requestId: 'server-initial-catalog',
-          }
+        ? initial.result.data
         : undefined,
   });
 }
 
+/** Fetches full public product detail and branch-scoped variant offerings. */
 export function useProductDetail(
   slug: string,
   branch: string | null,
@@ -71,14 +63,9 @@ export function useProductDetail(
 
   return useQuery({
     queryKey: QUERY_KEYS.PRODUCT_DETAIL(slug, branch),
-    queryFn: ({ signal }) => readProductDetail(slug, branch, signal),
+    queryFn: ({ signal }) =>
+      unwrapData(catalogService.getBySlug(slug, branch, signal)),
     staleTime: branch ? STALE_TIME.BRANCH_OFFERS : STALE_TIME.PUBLIC,
-    initialData: isInitialMatch
-      ? {
-          ok: true as const,
-          data: initial.data,
-          requestId: `server-initial-product-${slug}`,
-        }
-      : undefined,
+    initialData: isInitialMatch ? initial.data : undefined,
   });
 }
