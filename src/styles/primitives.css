@@ -247,7 +247,8 @@
     opacity: 1;
   }
 
-  .ui-control[aria-invalid='true'] {
+  .ui-control[aria-invalid='true'],
+  .ui-control[data-invalid='true'] {
     border-color: var(--danger);
   }
 
@@ -264,6 +265,9 @@
 
   .ui-select-wrap {
     position: relative;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
   }
 
   .ui-select-native {
@@ -297,6 +301,7 @@
 
   .ui-field {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.5rem;
     min-width: 0;
   }
@@ -444,11 +449,15 @@
   .ui-dropdown {
     position: relative;
     display: inline-flex;
+    min-width: 0;
+    max-width: 100%;
   }
 
   .ui-dropdown--field {
     display: block;
     width: 100%;
+    min-width: 0;
+    max-width: 100%;
   }
 
   .ui-dropdown-field-trigger {
@@ -456,6 +465,9 @@
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     text-align: left;
     cursor: pointer;
     transition:
@@ -485,6 +497,8 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
+    min-width: 0;
+    max-width: 100%;
     min-height: 2.5rem;
     padding: 0.375rem 0.875rem;
     background: var(--surface-paper);
@@ -579,6 +593,7 @@
     min-width: 0;
     text-align: left;
     line-height: 1.4;
+    overflow-wrap: anywhere;
   }
 
   .ui-dropdown-option {
@@ -613,6 +628,297 @@
   .ui-dropdown-check {
     flex-shrink: 0;
     color: var(--brand-deep);
+  }
+
+  /* Custom Date & Datetime Picker */
+  .ui-date-picker {
+    position: relative;
+    width: 100%;
+  }
+
+  .ui-date-native {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none;
+    margin: 0;
+    border: 0;
+  }
+
+  .ui-date-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    text-align: left;
+    cursor: pointer;
+    transition:
+      border-color var(--transition-fast),
+      background-color var(--transition-fast);
+  }
+
+  .ui-date-trigger:hover:not(:disabled) {
+    border-color: var(--brand-deep);
+  }
+
+  .ui-date-trigger:focus-visible {
+    outline: 2px solid var(--brand-deep);
+    outline-offset: 2px;
+  }
+
+  .ui-date-trigger-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ui-date-trigger-text.is-placeholder {
+    color: var(--text-cocoa);
+  }
+
+  .ui-date-trigger-icon {
+    flex-shrink: 0;
+    color: var(--brand-deep);
+  }
+
+  .ui-date-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 59;
+    background: var(--backdrop-subtle);
+  }
+
+  .ui-date-popover {
+    position: fixed;
+    left: 1rem;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-inline: auto;
+    z-index: 60;
+    width: min(21.5rem, calc(100vw - 2rem));
+    max-height: calc(100dvh - 2rem);
+    overflow-y: auto;
+    padding: 0.875rem;
+    background: var(--surface-paper);
+    border: 1px solid var(--border-sand);
+    border-radius: 0.875rem;
+    box-shadow: var(--shadow-dropdown);
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  @media (min-width: 40rem) {
+    .ui-date-backdrop {
+      display: none;
+    }
+
+    .ui-date-popover {
+      position: absolute;
+      left: 0;
+      right: auto;
+      top: calc(100% + 0.5rem);
+      transform: none;
+      margin-inline: 0;
+      max-height: none;
+      overflow: visible;
+    }
+  }
+
+  .ui-date-header {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .ui-date-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 1px solid var(--border-sand);
+    border-radius: var(--radius-sm);
+    background: var(--surface-white);
+    color: var(--brand-deep);
+    cursor: pointer;
+    transition:
+      background-color var(--transition-fast),
+      border-color var(--transition-fast);
+  }
+
+  .ui-date-nav-btn:hover {
+    background: var(--accent-rose);
+    border-color: var(--brand-deep);
+  }
+
+  .ui-date-header-selects {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: 0.375rem;
+  }
+
+  .ui-date-header-selects .ui-dropdown-field-trigger,
+  .ui-date-time-select .ui-dropdown-field-trigger {
+    min-height: 2.25rem;
+    padding: 0.375rem 0.625rem;
+    font-size: 0.875rem;
+  }
+
+  .ui-date-header-selects .ui-dropdown-menu--field,
+  .ui-date-time-select .ui-dropdown-menu--field {
+    max-height: 12.5rem;
+    z-index: 65;
+  }
+
+  .ui-date-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.25rem;
+    text-align: center;
+  }
+
+  .ui-date-weekday {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-cocoa);
+    padding-block: 0.125rem;
+  }
+
+  .ui-date-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.25rem;
+  }
+
+  .ui-date-day-empty {
+    min-height: 2.25rem;
+  }
+
+  .ui-date-day {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.25rem;
+    width: 100%;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--brand-deep);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background-color 120ms ease,
+      border-color 120ms ease,
+      color 120ms ease;
+  }
+
+  .ui-date-day:hover:not(:disabled):not(.is-selected) {
+    background: var(--accent-rose);
+  }
+
+  .ui-date-day.is-today:not(.is-selected) {
+    border-color: var(--brand-burgundy);
+    font-weight: 700;
+  }
+
+  .ui-date-day.is-selected {
+    background: var(--brand-deep);
+    color: var(--surface-on-brand);
+    font-weight: 700;
+  }
+
+  .ui-date-day:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  .ui-date-time-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-top: 0.625rem;
+    border-top: 1px solid var(--border-sand);
+  }
+
+  .ui-date-time-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--brand-deep);
+  }
+
+  .ui-date-time-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .ui-date-time-select {
+    width: 4.5rem;
+  }
+
+  .ui-date-time-sep {
+    font-weight: 700;
+    color: var(--brand-deep);
+  }
+
+  .ui-date-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding-top: 0.625rem;
+    border-top: 1px solid var(--border-sand);
+  }
+
+  .ui-date-footer-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .ui-date-footer-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-height: 2rem;
+    padding: 0.25rem 0.625rem;
+    border: 1px solid var(--border-sand);
+    border-radius: var(--radius-sm);
+    background: var(--surface-white);
+    color: var(--brand-deep);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 120ms ease;
+  }
+
+  .ui-date-footer-btn:hover:not(:disabled) {
+    background: var(--accent-rose);
+  }
+
+  .ui-date-footer-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .ui-date-footer-btn--done {
+    background: var(--brand-deep);
+    border-color: var(--brand-deep);
+    color: var(--surface-on-brand);
+  }
+
+  .ui-date-footer-btn--done:hover:not(:disabled) {
+    background: var(--brand-burgundy);
   }
 
   .home-badge-row {
