@@ -35,7 +35,7 @@ vi.mock('@/hooks/use-cart', () => ({
 
 const mockMutateAsync = vi.fn();
 const mockUseCheckoutPrepare = vi.fn();
-vi.mock('@/hooks/use-checkout', () => ({
+vi.mock('@/hooks/queries/use-checkout', () => ({
   useCheckoutPrepare: () => mockUseCheckoutPrepare(),
 }));
 

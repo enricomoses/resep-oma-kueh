@@ -13,7 +13,7 @@ import type {
 import { formatJakartaDateIso, formatWhatsappDigits } from '@/utils/checkout';
 import { checkoutFormSchema } from '@/validations/checkout.schema';
 
-import { useCheckoutPrepare } from './use-checkout';
+import { useCheckoutPrepare } from '@/hooks/queries/use-checkout';
 import { usePublicPromotions } from '@/hooks/queries/use-promotions';
 import { useBranches } from '@/hooks/use-branches';
 import { useCart } from '@/hooks/use-cart';

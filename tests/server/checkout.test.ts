@@ -5,7 +5,7 @@ import {
   CheckoutTimeoutError,
 } from '@/features/checkout/errors.server';
 import { prepareCheckoutQuote } from '@/features/checkout/service.server';
-import { prepareCheckout } from '@/services/checkout.service';
+import { checkoutService } from '@/services/checkout.service';
 import type { CheckoutPrepareRequest } from '@/types/checkout';
 import { formatJakartaDateIso } from '@/utils/checkout';
 
@@ -755,10 +755,10 @@ describe('POST /api/checkout/prepare Server Tests (PRD §8, §15, §27.2–27.3)
     expect(result.quoteFingerprint).toBeDefined();
   });
 
-  it('exercises client browser service prepareCheckout', () => {
+  it('exercises client browser service checkoutService.prepare', () => {
     // Client service uses requestApi from lib/axios
-    // Verify prepareCheckout function signature and callability
-    expect(typeof prepareCheckout).toBe('function');
+    // Verify checkoutService.prepare method signature and callability
+    expect(typeof checkoutService.prepare).toBe('function');
   });
 
   it('verifies custom checkout error instances', () => {
