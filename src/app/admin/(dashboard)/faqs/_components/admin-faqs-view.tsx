@@ -14,6 +14,7 @@ import type {
   AdminFaqListResponse,
   AdminPublishingStatus,
 } from '@/types/admin-cms';
+import '@/styles/features/admin-cms.css';
 import type { AdminSessionProfile } from '@/types/auth';
 import { cn } from '@/utils';
 

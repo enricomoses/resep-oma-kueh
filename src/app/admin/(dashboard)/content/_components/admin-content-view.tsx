@@ -8,6 +8,7 @@ import { Feedback } from '@/components/ui/feedback';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { useAdminContentManager } from '@/hooks/use-admin-content-manager';
 import type { AdminCmsListResponse } from '@/types/admin-cms';
+import '@/styles/features/admin-cms.css';
 import type { AdminSessionProfile } from '@/types/auth';
 import { cn } from '@/utils';
 

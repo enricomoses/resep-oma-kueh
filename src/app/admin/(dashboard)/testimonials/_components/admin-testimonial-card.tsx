@@ -3,6 +3,7 @@ import { Archive, CheckCircle2, Edit3, MessageSquareQuote } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import '@/styles/components/testimonials.css';
 import type { AdminTestimonialItem } from '@/types/admin-cms';
 import { cn } from '@/utils';
 

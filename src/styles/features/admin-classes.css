@@ -1,0 +1,136 @@
+/* ==========================================================================
+   F21 — Admin Baking Classes Management
+   ========================================================================== */
+
+@layer components {
+  .admin-classes-notices,
+  .admin-classes-list,
+  .admin-classes-cover-fields,
+  .admin-classes-checkbox-group {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .admin-classes-form {
+    display: grid;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-sand);
+    background: var(--surface-cream);
+  }
+
+  .admin-classes-form-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .admin-form-grid-2,
+  .admin-form-grid-3,
+  .admin-form-grid-4 {
+    display: grid;
+    gap: 0.875rem;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  @media (min-width: 48rem) {
+    .admin-form-grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .admin-form-grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .admin-form-grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .admin-form-actions-end {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+  }
+
+  .admin-classes-cover-box {
+    display: grid;
+    gap: 1rem;
+    padding: 0.875rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-sand);
+    background: var(--surface-white);
+  }
+
+  @media (min-width: 48rem) {
+    .admin-classes-cover-box {
+      grid-template-columns: 12rem minmax(0, 1fr);
+      align-items: start;
+    }
+  }
+
+  .admin-classes-cover-preview {
+    display: grid;
+    place-items: center;
+  }
+
+  .admin-classes-cover-thumb {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-sand);
+    object-fit: cover;
+  }
+
+  .admin-classes-cover-empty {
+    width: 100%;
+    min-height: 7.5rem;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: 0.75rem;
+    font-size: 0.8125rem;
+    color: var(--text-cocoa);
+    border: 1px dashed var(--border-sand);
+    border-radius: var(--radius-sm);
+    background: var(--surface-cream);
+  }
+
+  .admin-upload-label {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--brand-burgundy);
+  }
+
+  .admin-classes-row-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-sand);
+    background: var(--surface-white);
+  }
+
+  .admin-classes-row-main {
+    display: grid;
+    gap: 0.35rem;
+    min-width: 0;
+    flex: 1 1 18rem;
+  }
+
+  .admin-classes-row-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+}

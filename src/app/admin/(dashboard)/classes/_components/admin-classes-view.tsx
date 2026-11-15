@@ -15,6 +15,7 @@ import type {
   AdminClassProgramsListData,
   AdminClassSessionsListData,
 } from '@/types/classes';
+import '@/styles/features/admin-classes.css';
 import { cn } from '@/utils';
 
 import { AdminClassProgramsSection } from './admin-class-programs-section';

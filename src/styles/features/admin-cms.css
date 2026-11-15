@@ -1,0 +1,78 @@
+/* ==========================================================================
+   Admin CMS Content & FAQ Filters
+   ========================================================================== */
+
+@layer components {
+  .admin-cms-layout {
+    display: grid;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  @media (min-width: 56.25rem) {
+    .admin-cms-layout {
+      grid-template-columns: minmax(17rem, 22rem) minmax(0, 1fr);
+    }
+  }
+
+  .admin-cms-nav-card,
+  .admin-cms-editor-card {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .admin-cms-key-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .admin-cms-key-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    text-align: left;
+    padding: 0.625rem 0.75rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-sand);
+    background: var(--surface-white);
+    cursor: pointer;
+  }
+
+  .admin-cms-key-btn--active {
+    border-color: var(--brand-burgundy);
+    background: var(--surface-cream);
+  }
+
+  .admin-cms-key-meta {
+    display: grid;
+    gap: 0.125rem;
+    min-width: 0;
+  }
+
+  .admin-cms-key-label {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--brand-deep);
+  }
+
+  .admin-cms-key-code {
+    font-size: 0.75rem;
+    color: var(--text-cocoa);
+    word-break: break-all;
+  }
+
+  .admin-cms-editor-stack,
+  .admin-cms-list-editor {
+    display: grid;
+    gap: 0.875rem;
+  }
+
+  .admin-filter-row {
+    max-width: 20rem;
+  }
+}
