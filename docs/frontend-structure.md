@@ -37,7 +37,9 @@ src/
 ├── config/                # Konfigurasi environment client & server (`server-only`)
 ├── constants/             # Nilai konstan, route, endpoint API, query keys, copy, limit
 ├── features/              # Domain & repository server-only (`*.server.ts` untuk RSC & BFF Route Handlers)
-├── hooks/                 # Custom React hooks (`use-*.ts`: TanStack Query & controller view/form)
+├── hooks/                 # Custom React hooks
+│   ├── queries/           # TanStack React Query hooks (`use-*.ts`, `query-helpers.ts`)
+│   └── use-*.ts           # Stateful controller / workflow / UI hooks (`use-cart.ts`, `use-branches.ts`, manager/flow hooks)
 ├── lib/                   # Transport Axios (`lib/axios/`), Supabase SSR/public-read, logger, error parser (`errors.ts`)
 ├── providers/             # React Context Providers (`ReactQueryProvider`, `BranchProvider`)
 ├── services/              # Layer komunikasi HTTP client ke BFF Route Handlers (`*.service.ts`)
@@ -139,7 +141,7 @@ Terapkan aturan ini setiap kali membuat atau mengubah kode frontend. Sebelum men
 4. **Komponen UI dipakai bersama di dalam satu segmen parent (misal beberapa sub-route `products/*` atau `admin/(dashboard)/*`)?** → `_components/` terdekat milik parent bersama
 5. **Komponen UI dipakai di 2+ halaman/modul berbeda?** → `src/components/common/<nama>.tsx`
 6. **Komponen primitif UI dasar?** → `src/components/ui/<nama>.tsx`
-7. **Panggil API baru?** → Tambah endpoint di `src/constants/endpoint.constant.ts`, service di `src/services/<modul>.service.ts`, hook di `src/hooks/use-<modul>.ts`
+7. **Panggil API baru?** → Tambah endpoint di `src/constants/endpoint.constant.ts`, service object di `src/services/<modul>.service.ts`, TanStack Query hook di `src/hooks/queries/use-<modul>.ts`
 8. **Validasi schema baru?** → `src/validations/<modul>.schema.ts`
 9. **Tipe data baru?** → `src/types/<modul>.ts`
 10. **Fungsi murni format/kalkulasi?** → `src/utils/<nama>.ts`
@@ -157,5 +159,6 @@ Terapkan aturan ini setiap kali membuat atau mengubah kode frontend. Sebelum men
   - Domain/repository server: `*.server.ts` (di `src/features/`)
   - Schema validasi Zod: `*.schema.ts` (di `src/validations/`)
   - Konstanta: `*.constant.ts` (di `src/constants/`)
-  - Hook: `use-*.ts` (di `src/hooks/`)
+  - Hook query/mutation TanStack: `use-*.ts` (di `src/hooks/queries/`)
+  - Hook controller/UI: `use-*.ts` (di `src/hooks/`)
   - Store Zustand: `*.store.ts` (di `src/stores/`)
