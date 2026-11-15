@@ -9,12 +9,15 @@ import { useState, useSyncExternalStore } from 'react';
 import { ActionLink } from '@/components/ui/action-link';
 import { Button } from '@/components/ui/button';
 import { Drawer } from '@/components/ui/drawer';
-import { Feedback } from '@/components/ui/feedback';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { AUTH_COPY } from '@/constants/auth.constant';
 import { ROUTES } from '@/constants/routes.constant';
-import { useAdminLogout, useAdminSession } from '@/hooks/queries/use-admin-auth';
+import {
+  useAdminLogout,
+  useAdminSession,
+} from '@/hooks/queries/use-admin-auth';
 import { ApiClientError } from '@/lib/errors';
+import { notifyError, notifySuccess } from '@/lib/toast';
 import type { AdminSessionProfile } from '@/types/auth';
 import { cn } from '@/utils';
 import { AdminIdentityBadges } from './admin-identity-badges';
@@ -80,7 +83,6 @@ export function AdminShell({
     getSidebarCollapsedSnapshot,
     getSidebarCollapsedServerSnapshot,
   );
-  const [logoutError, setLogoutError] = useState<string | null>(null);
   const [signedOut, setSignedOut] = useState(false);
 
   const sessionQuery = useAdminSession(signedOut ? null : initialProfile);
@@ -102,19 +104,21 @@ export function AdminShell({
       : `${activeProfile.branchName ?? 'Cabang Terkait'} (${activeProfile.branchCode ?? '-'})`;
 
   async function handleLogout() {
-    setLogoutError(null);
     setSignedOut(true);
     try {
       await logoutMutation.mutateAsync();
+      notifySuccess('Berhasil keluar dari sesi admin.', {
+        toastId: 'admin-logout',
+      });
       router.replace(ROUTES.ADMIN_LOGIN);
       router.refresh();
     } catch (err) {
       setSignedOut(false);
-      if (err instanceof ApiClientError) {
-        setLogoutError(err.message);
-        return;
-      }
-      setLogoutError(AUTH_COPY.ERROR_INVALID_REQUEST);
+      const message =
+        err instanceof ApiClientError
+          ? err.message
+          : AUTH_COPY.ERROR_INVALID_REQUEST;
+      notifyError(message, { toastId: 'admin-logout-error' });
     }
   }
 
@@ -251,12 +255,6 @@ export function AdminShell({
             </Button>
           </div>
         </header>
-
-        {logoutError ? (
-          <div className="admin-topbar-feedback">
-            <Feedback tone="error" title={logoutError} announce />
-          </div>
-        ) : null}
 
         <main className="admin-shell-main">{children}</main>
       </div>

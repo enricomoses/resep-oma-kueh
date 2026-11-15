@@ -466,10 +466,6 @@
     gap: 0.75rem;
   }
 
-  .admin-topbar-feedback {
-    padding: 0.75rem clamp(1rem, 3vw, 2rem) 0;
-  }
-
   .admin-drawer-content {
     display: grid;
     gap: 1rem;

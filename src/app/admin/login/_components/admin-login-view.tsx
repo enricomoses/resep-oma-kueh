@@ -29,7 +29,6 @@ export function AdminLoginView({
   const {
     mode,
     serverError,
-    resetMessage,
     loginForm,
     resetForm,
     isLoginSubmitting,
@@ -84,10 +83,6 @@ export function AdminLoginView({
 
           {serverError ? (
             <Feedback tone="error" title={serverError} announce />
-          ) : null}
-
-          {resetMessage ? (
-            <Feedback tone="success" title={resetMessage} announce />
           ) : null}
 
           {mode === 'login' ? (

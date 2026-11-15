@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 
 import { AUTH_COPY } from '@/constants/auth.constant';
 import { ApiClientError } from '@/lib/errors';
+import { notifySuccess } from '@/lib/toast';
 import type { LoginRequest, PasswordResetRequest } from '@/types/auth';
 import {
   loginRequestSchema,
@@ -27,7 +28,6 @@ export function useAdminLoginFlow({ nextPath }: UseAdminLoginFlowOptions) {
   const router = useRouter();
   const [mode, setMode] = useState<'login' | 'reset'>('login');
   const [serverError, setServerError] = useState<string | null>(null);
-  const [resetMessage, setResetMessage] = useState<string | null>(null);
 
   const loginMutation = useAdminLogin();
   const resetMutation = useRequestPasswordReset();
@@ -50,6 +50,9 @@ export function useAdminLoginFlow({ nextPath }: UseAdminLoginFlowOptions) {
         password: values.password,
         next: nextPath,
       });
+      notifySuccess('Berhasil masuk ke panel admin.', {
+        toastId: 'admin-login-success',
+      });
       router.replace(result.data.redirectTo);
       router.refresh();
     } catch (err) {
@@ -71,10 +74,11 @@ export function useAdminLoginFlow({ nextPath }: UseAdminLoginFlowOptions) {
 
   async function onSubmitReset(values: PasswordResetRequest) {
     setServerError(null);
-    setResetMessage(null);
     try {
       const result = await resetMutation.mutateAsync({ email: values.email });
-      setResetMessage(result.data.message);
+      notifySuccess(result.data.message, {
+        toastId: 'admin-reset-request',
+      });
     } catch (err) {
       if (err instanceof ApiClientError) {
         if (err.fieldErrors?.email?.[0]) {
@@ -89,14 +93,12 @@ export function useAdminLoginFlow({ nextPath }: UseAdminLoginFlowOptions) {
 
   function handleSwitchMode(targetMode: 'login' | 'reset') {
     setServerError(null);
-    setResetMessage(null);
     setMode(targetMode);
   }
 
   return {
     mode,
     serverError,
-    resetMessage,
     loginForm,
     resetForm,
     isLoginSubmitting:

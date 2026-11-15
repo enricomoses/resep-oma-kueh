@@ -16,6 +16,7 @@ import { AUTH_COPY } from '@/constants/auth.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { useUpdatePassword } from '@/hooks/queries/use-admin-auth';
 import { ApiClientError } from '@/lib/errors';
+import { notifyError, notifySuccess } from '@/lib/toast';
 import type {
   AdminSessionProfile,
   AuthErrorReason,
@@ -39,7 +40,6 @@ export function AdminResetPasswordView({
 }: AdminResetPasswordViewProps) {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
-  const [updatedSuccess, setUpdatedSuccess] = useState(false);
 
   const updateMutation = useUpdatePassword();
 
@@ -66,7 +66,9 @@ export function AdminResetPasswordView({
       const result = await updateMutation.mutateAsync({
         password: values.password,
       });
-      setUpdatedSuccess(true);
+      notifySuccess(AUTH_COPY.UPDATE_PASSWORD_SUCCESS, {
+        toastId: 'admin-password-updated',
+      });
       router.replace(result.data.redirectTo);
       router.refresh();
     } catch (err) {
@@ -75,9 +77,13 @@ export function AdminResetPasswordView({
           setError('password', { message: err.fieldErrors.password[0] });
         }
         setServerError(err.message);
+        notifyError(err.message, { toastId: 'admin-password-error' });
         return;
       }
       setServerError(AUTH_COPY.ERROR_RECOVERY_SESSION);
+      notifyError(AUTH_COPY.ERROR_RECOVERY_SESSION, {
+        toastId: 'admin-password-error',
+      });
     }
   }
 
@@ -126,14 +132,6 @@ export function AdminResetPasswordView({
 
               {serverError ? (
                 <Feedback tone="error" title={serverError} announce />
-              ) : null}
-
-              {updatedSuccess ? (
-                <Feedback
-                  tone="success"
-                  title={AUTH_COPY.UPDATE_PASSWORD_SUCCESS}
-                  announce
-                />
               ) : null}
 
               <form

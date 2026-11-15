@@ -17,6 +17,7 @@ import { AUTH_COPY } from '@/constants/auth.constant';
 import { QUERY_KEYS } from '@/constants/query-keys.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { ApiClientError } from '@/lib/errors';
+import { ToastProvider } from '@/providers/toast-provider';
 import { authService } from '@/services/auth.service';
 import type { AdminSessionProfile } from '@/types/auth';
 
@@ -131,7 +132,9 @@ describe('AdminLoginView', () => {
 
     render(
       <QueryClientProvider client={client}>
-        <AdminLoginView nextPath={ROUTES.ADMIN} />
+        <ToastProvider>
+          <AdminLoginView nextPath={ROUTES.ADMIN} />
+        </ToastProvider>
       </QueryClientProvider>,
     );
 
@@ -190,7 +193,9 @@ describe('AdminLoginView', () => {
 
     render(
       <QueryClientProvider client={client}>
-        <AdminLoginView nextPath={ROUTES.ADMIN} />
+        <ToastProvider>
+          <AdminLoginView nextPath={ROUTES.ADMIN} />
+        </ToastProvider>
       </QueryClientProvider>,
     );
 
