@@ -34,7 +34,6 @@ export function AdminLocationsView({
     selectedBranch,
     isRefreshing,
     loadErrorMessage,
-    actionBanner,
     profileServerError,
     profileFieldErrors,
     hoursServerError,
@@ -70,14 +69,6 @@ export function AdminLocationsView({
         branches={branches}
         bintaroAddressResolved={approvedContacts.bintaroAddressResolved}
       />
-
-      {actionBanner ? (
-        <Feedback
-          tone={actionBanner.tone}
-          title={actionBanner.message}
-          announce
-        />
-      ) : null}
 
       {loadErrorMessage ? (
         <Feedback tone="error" title={loadErrorMessage} announce />

@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import { ADMIN_BRANCH_LIMITS } from '@/constants/admin-catalog.constant';
 import { ApiClientError, extractAdminMutationError } from '@/lib/errors';
+import { notifyError, notifySuccess } from '@/lib/toast';
 import type {
   AdminAvailabilityListResponse,
   AdminAvailabilityOfferItem,
@@ -152,7 +153,9 @@ export function useAdminAvailabilityManager({
     setBulkResult(null);
 
     if (selectedItems.length === 0) {
-      setBulkError('Pilih minimal 1 SKU pada daftar untuk pembaruan massal.');
+      const msg = 'Pilih minimal 1 SKU pada daftar untuk pembaruan massal.';
+      setBulkError(msg);
+      notifyError(msg, { toastId: 'admin-avail-bulk-error' });
       return;
     }
 
@@ -164,7 +167,9 @@ export function useAdminAvailabilityManager({
       bulkStockText.trim() !== '' &&
       (parsedStock === null || Number.isNaN(parsedStock) || parsedStock < 0)
     ) {
-      setBulkError('Stok massal harus bilangan bulat >= 0 atau kosong.');
+      const msg = 'Stok massal harus bilangan bulat >= 0 atau kosong.';
+      setBulkError(msg);
+      notifyError(msg, { toastId: 'admin-avail-bulk-error' });
       return;
     }
 
@@ -179,15 +184,29 @@ export function useAdminAvailabilityManager({
           stockQuantity: parsedStock,
         })),
       });
-      setBulkResult(response.data);
       if (response.data.succeededCount > 0) {
         setSelectedKeys([]);
       }
+      if (response.data.failedCount > 0) {
+        setBulkResult(response.data);
+        notifyError(
+          `${response.data.succeededCount} dari ${response.data.totalCount} SKU berhasil diperbarui; ${response.data.failedCount} gagal.`,
+          { toastId: 'admin-avail-bulk' },
+        );
+      } else {
+        setBulkResult(null);
+        notifySuccess(
+          `${response.data.succeededCount} dari ${response.data.totalCount} SKU berhasil diperbarui.`,
+          { toastId: 'admin-avail-bulk' },
+        );
+      }
     } catch (error) {
-      setBulkError(
-        extractAdminMutationError(error, 'Pembaruan massal gagal dijalankan.')
-          .message,
-      );
+      const msg = extractAdminMutationError(
+        error,
+        'Pembaruan massal gagal dijalankan.',
+      ).message;
+      setBulkError(msg);
+      notifyError(msg, { toastId: 'admin-avail-bulk-error' });
     }
   }
 

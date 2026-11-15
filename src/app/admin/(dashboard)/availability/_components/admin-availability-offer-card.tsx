@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Feedback } from '@/components/ui/feedback';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { ApiClientError } from '@/lib/errors';
+import { notifyError, notifySuccess } from '@/lib/toast';
 import type {
   AdminAvailabilityOfferItem,
   AdminOfferAvailabilityStatus,
@@ -68,7 +69,6 @@ export function AdminAvailabilityOfferCard({
   );
   const [saving, setSaving] = useState(false);
   const [rowError, setRowError] = useState<string | null>(null);
-  const [rowSuccess, setRowSuccess] = useState<string | null>(null);
 
   const parsedStock =
     stockText.trim() === '' ? null : Number.parseInt(stockText.trim(), 10);
@@ -94,21 +94,27 @@ export function AdminAvailabilityOfferCard({
 
   async function handleSave() {
     setRowError(null);
-    setRowSuccess(null);
 
     if (
       stockText.trim() !== '' &&
       (Number.isNaN(parsedStock) || parsedStock! < 0)
     ) {
-      setRowError('Stok harus bilangan bulat non-negatif atau dikosongkan.');
+      const msg = 'Stok harus bilangan bulat non-negatif atau dikosongkan.';
+      setRowError(msg);
+      notifyError(msg, {
+        toastId: `avail-err-${offer.branchId}-${offer.variantId}`,
+      });
       return;
     }
 
     const stockQuantity = stockText.trim() === '' ? null : parsedStock;
     if (!isZeroStockStatusValid(stockQuantity, availabilityStatus)) {
-      setRowError(
-        ADMIN_CATALOG_COPY.AVAILABILITY.ERRORS.ZERO_STOCK_CONTRADICTION,
-      );
+      const msg =
+        ADMIN_CATALOG_COPY.AVAILABILITY.ERRORS.ZERO_STOCK_CONTRADICTION;
+      setRowError(msg);
+      notifyError(msg, {
+        toastId: `avail-err-${offer.branchId}-${offer.variantId}`,
+      });
       return;
     }
 
@@ -158,13 +164,19 @@ export function AdminAvailabilityOfferCard({
     setSaving(true);
     try {
       await onSaveRow(offer, parsed.data);
-      setRowSuccess('Tersimpan');
+      notifySuccess(
+        `Ketersediaan ${offer.productName} (${offer.variantLabel}) berhasil disimpan.`,
+        { toastId: `avail-ok-${offer.branchId}-${offer.variantId}` },
+      );
     } catch (error) {
-      if (error instanceof ApiClientError) {
-        setRowError(error.message);
-      } else {
-        setRowError('Gagal menyimpan pembaruan SKU cabang.');
-      }
+      const message =
+        error instanceof ApiClientError
+          ? error.message
+          : 'Gagal menyimpan pembaruan SKU cabang.';
+      setRowError(message);
+      notifyError(message, {
+        toastId: `avail-err-${offer.branchId}-${offer.variantId}`,
+      });
     } finally {
       setSaving(false);
     }
@@ -214,7 +226,6 @@ export function AdminAvailabilityOfferCard({
         overrideText={overrideText}
         isDirty={isDirty}
         saving={saving}
-        rowSuccess={rowSuccess}
         onIsListedChange={setIsListed}
         onStatusChange={setAvailabilityStatus}
         onStockTextChange={(nextVal) => {

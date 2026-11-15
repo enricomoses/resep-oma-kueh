@@ -139,23 +139,21 @@ export function AdminAvailabilityBulkCard({
 
       {bulkError ? <Feedback tone="error" title={bulkError} announce /> : null}
 
-      {bulkResult ? (
+      {bulkResult && bulkResult.failedCount > 0 ? (
         <Feedback
-          tone={bulkResult.failedCount > 0 ? 'error' : 'success'}
+          tone="error"
           title={`${bulkResult.succeededCount} dari ${bulkResult.totalCount} SKU berhasil diperbarui; ${bulkResult.failedCount} gagal.`}
           announce
         >
-          {bulkResult.failedCount > 0 ? (
-            <ul className="admin-bulk-failure-list">
-              {bulkResult.results
-                .filter((res) => !res.ok)
-                .map((res) => (
-                  <li key={`${res.branchId}:${res.variantId}`}>
-                    <code>{res.variantId}</code>: <span>{res.message}</span>
-                  </li>
-                ))}
-            </ul>
-          ) : null}
+          <ul className="admin-bulk-failure-list">
+            {bulkResult.results
+              .filter((res) => !res.ok)
+              .map((res) => (
+                <li key={`${res.branchId}:${res.variantId}`}>
+                  <code>{res.variantId}</code>: <span>{res.message}</span>
+                </li>
+              ))}
+          </ul>
         </Feedback>
       ) : null}
     </Card>

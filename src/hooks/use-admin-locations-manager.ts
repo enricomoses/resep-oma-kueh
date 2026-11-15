@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import { extractAdminMutationError } from '@/lib/errors';
+import { notifyError, notifySuccess } from '@/lib/toast';
 import type {
   AdminBranchesResponse,
   ReplaceBranchHoursInput,
@@ -36,10 +37,6 @@ export function useAdminLocationsManager({
   const [selectedBranchId, setSelectedBranchId] = useState<string>(
     branches[0]?.id ?? '',
   );
-  const [actionBanner, setActionBanner] = useState<{
-    tone: 'success' | 'error';
-    message: string;
-  } | null>(null);
   const [profileServerError, setProfileServerError] = useState<string | null>(
     null,
   );
@@ -65,7 +62,6 @@ export function useAdminLocationsManager({
     setProfileServerError(null);
     setProfileFieldErrors({});
     setHoursServerError(null);
-    setActionBanner(null);
   }
 
   async function handleRefresh() {
@@ -76,7 +72,6 @@ export function useAdminLocationsManager({
     if (!selectedBranch) {
       return;
     }
-    setActionBanner(null);
     setProfileServerError(null);
     setProfileFieldErrors({});
 
@@ -85,10 +80,10 @@ export function useAdminLocationsManager({
         branchId: selectedBranch.id,
         payload,
       });
-      setActionBanner({
-        tone: 'success',
-        message: `Pengaturan cabang ${response.data.branch.name} berhasil disimpan.`,
-      });
+      notifySuccess(
+        `Pengaturan cabang ${response.data.branch.name} berhasil disimpan.`,
+        { toastId: 'admin-location-saved' },
+      );
     } catch (error) {
       const parsed = extractAdminMutationError(
         error,
@@ -96,6 +91,7 @@ export function useAdminLocationsManager({
       );
       setProfileServerError(parsed.message);
       setProfileFieldErrors(parsed.fields);
+      notifyError(parsed.message, { toastId: 'admin-location-error' });
       if (parsed.isConflict) {
         void branchesQuery.refetch();
       }
@@ -106,7 +102,6 @@ export function useAdminLocationsManager({
     if (!selectedBranch) {
       return;
     }
-    setActionBanner(null);
     setHoursServerError(null);
 
     try {
@@ -114,16 +109,17 @@ export function useAdminLocationsManager({
         branchId: selectedBranch.id,
         payload,
       });
-      setActionBanner({
-        tone: 'success',
-        message: `Jam operasional ${response.data.branch.name} berhasil diperbarui.`,
-      });
+      notifySuccess(
+        `Jam operasional ${response.data.branch.name} berhasil diperbarui.`,
+        { toastId: 'admin-hours-saved' },
+      );
     } catch (error) {
       const parsed = extractAdminMutationError(
         error,
         'Gagal menyimpan jam operasional cabang.',
       );
       setHoursServerError(parsed.message);
+      notifyError(parsed.message, { toastId: 'admin-hours-error' });
       if (parsed.isConflict) {
         void branchesQuery.refetch();
       }
@@ -136,7 +132,6 @@ export function useAdminLocationsManager({
     selectedBranch,
     isRefreshing: branchesQuery.isFetching,
     loadErrorMessage,
-    actionBanner,
     profileServerError,
     profileFieldErrors,
     hoursServerError,

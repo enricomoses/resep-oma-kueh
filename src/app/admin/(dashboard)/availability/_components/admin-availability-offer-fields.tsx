@@ -2,7 +2,6 @@
 
 import { Save } from 'lucide-react';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
@@ -25,7 +24,6 @@ interface AdminAvailabilityOfferFieldsProps {
   overrideText: string;
   isDirty: boolean;
   saving: boolean;
-  rowSuccess: string | null;
   onIsListedChange: (checked: boolean) => void;
   onStatusChange: (status: AdminOfferAvailabilityStatus) => void;
   onStockTextChange: (nextVal: string) => void;
@@ -45,7 +43,6 @@ export function AdminAvailabilityOfferFields({
   overrideText,
   isDirty,
   saving,
-  rowSuccess,
   onIsListedChange,
   onStatusChange,
   onStockTextChange,
@@ -160,9 +157,6 @@ export function AdminAvailabilityOfferFields({
           <Save size={15} aria-hidden="true" />
           <span>Simpan Baris</span>
         </Button>
-        {rowSuccess && !isDirty ? (
-          <Badge tone="success">{rowSuccess}</Badge>
-        ) : null}
       </div>
     </div>
   );
