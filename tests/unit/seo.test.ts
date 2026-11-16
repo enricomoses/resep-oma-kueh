@@ -75,6 +75,12 @@ it('builds metadata with canonical URL, OG tags, consistent | titles, and noinde
   ).toBe(false);
   expect(
     isNoIndexDeployment({
+      siteUrl: 'https://resepomakueh.vercel.app',
+      demoMode: false,
+    }),
+  ).toBe(false);
+  expect(
+    isNoIndexDeployment({
       siteUrl: 'https://resep-oma-kueh-preview.vercel.app',
       demoMode: false,
     }),

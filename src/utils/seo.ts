@@ -26,6 +26,13 @@ export function isNoIndexDeployment(options?: NoIndexCheckOptions): boolean {
   try {
     const hostname = new URL(resolved.siteUrl).hostname.toLowerCase();
     if (
+      SEO_DEFAULTS.INDEXABLE_HOSTS.some(
+        (allowedHost) => hostname === allowedHost,
+      )
+    ) {
+      return false;
+    }
+    if (
       SEO_DEFAULTS.PREVIEW_HOST_SUFFIXES.some((suffix) =>
         hostname.endsWith(suffix),
       )

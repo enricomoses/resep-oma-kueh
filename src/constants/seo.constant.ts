@@ -18,7 +18,8 @@ export const SEO_DEFAULTS = {
     'baking class Surabaya',
     'baking class Bintaro',
   ],
-  PREVIEW_HOST_SUFFIXES: [] as readonly string[],
+  INDEXABLE_HOSTS: ['resepomakueh.vercel.app'],
+  PREVIEW_HOST_SUFFIXES: ['.vercel.app'],
   PREVIEW_HOST_PREFIXES: [
     'staging.',
     'staging-',
