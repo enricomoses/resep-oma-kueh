@@ -19,38 +19,45 @@
 
   .product-detail-header {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.5rem;
     margin-bottom: 2rem;
   }
 
   .product-detail-category {
+    min-width: 0;
     font-size: 0.8125rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--brand-burgundy);
+    overflow-wrap: anywhere;
   }
 
   .product-detail-title {
+    min-width: 0;
     font-family: var(--font-fraunces), serif;
     font-size: clamp(2rem, 3.5vw, 3rem);
     font-weight: 500;
     line-height: 1.15;
     color: var(--brand-deep);
-    overflow-wrap: break-word;
-    word-break: break-word;
+    overflow-wrap: anywhere;
   }
 
   .product-detail-desc {
+    min-width: 0;
+    width: 100%;
+    max-width: 65ch;
+    margin-top: 0.5rem;
     color: var(--text-cocoa);
     font-size: 1rem;
     line-height: 1.6;
-    max-width: 65ch;
-    margin-top: 0.5rem;
+    overflow-wrap: anywhere;
   }
 
   .product-detail-main-grid {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 2rem;
     align-items: start;
   }
@@ -145,48 +152,99 @@
 
   .product-picker-card {
     display: grid;
-    gap: 1.25rem;
-    padding: 1.5rem;
+    gap: 1rem;
+    padding: clamp(1.25rem, 2.5vw, 1.5rem);
   }
 
   .product-picker-header {
+    display: grid;
+    gap: 0.25rem;
     border-bottom: 1px solid var(--border-sand);
     padding-bottom: 0.75rem;
   }
 
   .product-picker-title {
-    font-size: 1.125rem;
-    font-weight: 700;
+    margin: 0;
+    font-family: var(--font-fraunces), serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.3;
     color: var(--brand-deep);
+  }
+
+  .product-picker-single-note {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: var(--text-cocoa);
   }
 
   .product-picker-notice {
     display: flex;
+    align-items: flex-start;
     gap: 0.75rem;
-    padding: 1rem;
-    border-radius: var(--radius-card);
-    background: var(--accent-rose);
+    padding: 0.875rem 1rem;
+    border-radius: var(--radius-md);
+    background: var(--surface-cream);
     border: 1px solid var(--border-sand);
+    border-left: 3px solid var(--brand-burgundy);
+  }
+
+  .product-picker-notice-icon {
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+    color: var(--brand-burgundy);
+  }
+
+  .product-picker-notice-body {
+    display: grid;
+    gap: 0.25rem;
+    min-width: 0;
+  }
+
+  .product-picker-notice-title {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--brand-deep);
+  }
+
+  .product-picker-notice-text {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--text-cocoa);
   }
 
   .product-variant-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
-    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr));
+    gap: 0.625rem;
   }
 
   .product-variant-btn {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding: 0.75rem 1rem;
+    justify-content: space-between;
+    gap: 0.25rem;
+    min-width: 0;
+    padding: 0.75rem 0.875rem;
     border: 1px solid var(--border-sand);
-    border-radius: var(--radius-card);
+    border-radius: var(--radius-md);
     background: var(--surface-white);
     color: var(--brand-deep);
     text-align: left;
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition:
+      border-color var(--transition-fast),
+      background-color var(--transition-fast),
+      box-shadow var(--transition-fast);
+  }
+
+  .product-variant-btn:hover:not(:disabled) {
+    border-color: var(--brand-burgundy);
+    background: var(--surface-cream);
   }
 
   .product-variant-btn:focus-visible {
@@ -194,86 +252,266 @@
     outline-offset: 2px;
   }
 
-  .product-variant-btn-active {
+  .product-variant-btn-active:not(:disabled) {
     border-color: var(--brand-burgundy);
-    background: var(--accent-rose);
-    box-shadow: 0 0 0 1px var(--brand-burgundy);
+    background: color-mix(
+      in srgb,
+      var(--accent-rose) 42%,
+      var(--surface-white)
+    );
+    box-shadow: inset 0 0 0 1px var(--brand-burgundy);
   }
 
   .product-variant-btn-disabled {
-    opacity: 0.5;
+    background: var(--surface-cream);
+    border-style: dashed;
+    color: var(--text-cocoa);
+    opacity: 0.65;
     cursor: not-allowed;
-    background: var(--border-sand);
+  }
+
+  .product-variant-btn-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .product-variant-btn-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  .product-variant-btn-check {
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+    color: var(--brand-burgundy);
+  }
+
+  .product-variant-btn-price {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.35;
+    color: var(--text-cocoa);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .product-variant-btn-active:not(:disabled) .product-variant-btn-price {
+    color: var(--brand-burgundy);
+    font-weight: 600;
   }
 
   .product-price-section {
     display: grid;
-    gap: 1.25rem;
+    gap: 1rem;
     padding-top: 1rem;
     border-top: 1px solid var(--border-sand);
   }
 
+  .product-bundle-section {
+    padding-block: 1rem;
+    border-block: 1px solid var(--border-sand);
+  }
+
   .product-price-row {
     display: flex;
-    align-items: flex-start;
+    flex-wrap: wrap;
+    align-items: center;
     justify-content: space-between;
-    gap: 1rem;
+    gap: 0.75rem 1rem;
+  }
+
+  .product-price-unit {
+    display: grid;
+    gap: 0.125rem;
+    min-width: 0;
+  }
+
+  .product-price-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-cocoa);
+  }
+
+  .product-price-value {
+    font-family: var(--font-fraunces), serif;
+    font-size: clamp(1.5rem, 2.5vw, 1.875rem);
+    font-weight: 600;
+    line-height: 1.15;
+    color: var(--brand-deep);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .product-price-gross {
+    font-size: 0.875rem;
+    color: var(--text-cocoa);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .product-price-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.375rem;
   }
 
   .product-warning-banner {
-    padding: 0.75rem 1rem;
-    border-radius: var(--radius-card);
-    background: var(--accent-rose);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.75rem 0.875rem;
+    border-radius: var(--radius-sm);
+    background: var(--surface-cream);
     border: 1px solid var(--border-sand);
+    border-left: 3px solid var(--brand-burgundy);
+    color: var(--brand-deep);
+  }
+
+  .product-warning-banner--danger {
+    background: var(--alert-conflict-bg);
+    border-color: var(--alert-conflict-border);
+    border-left: 3px solid var(--danger);
+    color: var(--danger);
+  }
+
+  .product-warning-icon {
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+  }
+
+  .product-warning-text {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.5;
   }
 
   .product-qty-subtotal-grid {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 1.5rem;
-    padding-block: 0.75rem;
+    gap: 0.875rem 1.25rem;
+    padding: 0.875rem 1rem;
+    border-radius: var(--radius-md);
+    background: var(--surface-cream);
+    border: 1px solid var(--border-sand);
+  }
+
+  .product-qty-block {
+    display: grid;
+    gap: 0.375rem;
+  }
+
+  .product-qty-label,
+  .product-subtotal-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-cocoa);
+  }
+
+  .product-qty-control {
+    background: var(--surface-white);
+  }
+
+  .product-subtotal-block {
+    display: grid;
+    gap: 0.125rem;
+    margin-inline-start: auto;
+    text-align: right;
+  }
+
+  .product-subtotal-value {
+    font-family: var(--font-fraunces), serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--brand-deep);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .product-stock-caveat {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--text-cocoa);
+  }
+
+  .product-picker-actions {
+    padding-top: 0.25rem;
+  }
+
+  .product-picker-cta {
+    width: 100%;
+  }
+
+  .product-detail-food-section {
+    margin-top: 2rem;
   }
 
   .product-food-info-card {
-    padding: 2rem;
+    padding: clamp(1.25rem, 2.5vw, 1.5rem);
     display: grid;
-    gap: 1.5rem;
+    gap: 1.125rem;
   }
 
   .product-food-info-title {
     font-family: var(--font-fraunces), serif;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 600;
+    line-height: 1.3;
     color: var(--brand-deep);
     border-bottom: 1px solid var(--border-sand);
-    padding-bottom: 0.75rem;
+    padding-bottom: 0.625rem;
   }
 
   .product-food-info-section {
     display: grid;
-    gap: 0.5rem;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    gap: 0.375rem;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .product-food-info-divider {
+    border-top: 1px solid var(--border-sand);
+    padding-top: 1rem;
   }
 
   .product-food-info-subtitle {
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
     font-weight: 700;
     color: var(--brand-burgundy);
   }
 
-  .product-food-dietary-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    list-style: none;
-    padding: 0;
+  .product-food-info-copy {
     margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: var(--text-cocoa);
   }
 
+  .product-food-bundle-fixed {
+    margin: 0.25rem 0 0;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--text-cocoa);
+  }
+
+  .product-food-bundle-fixed-label {
+    font-weight: 600;
+    color: var(--brand-deep);
+  }
+
+  .product-food-dietary-list,
   .product-food-allergen-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
+    gap: 0.5rem;
     list-style: none;
     padding: 0;
     margin: 0;
@@ -283,31 +521,59 @@
     display: inline-flex;
     align-items: center;
     gap: 0.375rem;
-    padding: 0.375rem 0.625rem;
-    background: var(--surface-white);
+    padding: 0.25rem 0.625rem;
+    background: var(--surface-cream);
     border: 1px solid var(--border-sand);
-    border-radius: var(--radius-card);
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+  }
+
+  .product-food-allergen-name {
+    font-weight: 600;
+    color: var(--brand-deep);
+  }
+
+  .product-food-allergen-presence {
+    color: var(--text-cocoa);
+    font-size: 0.75rem;
   }
 
   .product-food-allergen-caveat {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
     padding: 0.75rem 1rem;
-    border-radius: var(--radius-card);
-    background: var(--accent-rose);
+    border-radius: var(--radius-sm);
+    background: var(--surface-cream);
     border: 1px solid var(--border-sand);
-    margin-top: 0.5rem;
+    border-left: 3px solid var(--brand-burgundy);
+  }
+
+  .product-food-allergen-caveat-icon {
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+    color: var(--brand-burgundy);
+  }
+
+  .product-food-allergen-caveat-text {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.55;
+    color: var(--brand-deep);
   }
 
   .product-food-info-grid {
     display: grid;
-    gap: 1.5rem;
-    border-top: 1px solid var(--border-sand);
-    padding-top: 1.25rem;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem 1.75rem;
   }
 
   .product-food-info-empty {
+    margin: 0;
     font-size: 0.8125rem;
+    line-height: 1.55;
     color: var(--text-cocoa);
-    font-style: italic;
   }
 
   .product-detail-faq-banner {
@@ -345,12 +611,12 @@
 
   @media (min-width: 54rem) {
     .product-detail-main-grid {
-      grid-template-columns: 1fr 1.1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
       gap: 3rem;
     }
 
     .product-food-info-grid {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       gap: 2rem;
     }
   }

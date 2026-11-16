@@ -182,6 +182,62 @@
     text-decoration-thickness: 2px;
   }
 
+  .ui-link.ui-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .ui-link.ui-back-link:hover,
+  .ui-link.ui-back-link:focus-visible {
+    color: var(--brand-deep);
+    text-decoration: none;
+  }
+
+  .ui-back-link-label {
+    position: relative;
+  }
+
+  .ui-back-link-label::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.12em;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 600ms ease;
+  }
+
+  .ui-back-link-arrow {
+    flex-shrink: 0;
+    transition: transform var(--transition-fast);
+  }
+
+  .ui-link.ui-back-link:hover .ui-back-link-label::after,
+  .ui-link.ui-back-link:focus-visible .ui-back-link-label::after {
+    transform: scaleX(1);
+  }
+
+  .ui-link.ui-back-link:hover .ui-back-link-arrow,
+  .ui-link.ui-back-link:focus-visible .ui-back-link-arrow {
+    transform: translateX(-0.25rem);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ui-back-link-label::after,
+    .ui-back-link-arrow {
+      transition: none;
+    }
+  }
+
   /* Cards & Badges */
   .ui-card {
     min-width: 0;

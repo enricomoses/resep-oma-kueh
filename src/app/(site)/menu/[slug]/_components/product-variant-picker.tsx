@@ -1,4 +1,4 @@
-import { Info } from 'lucide-react';
+import { AlertCircle, Check, Info, ShoppingBag } from 'lucide-react';
 import { PriceDisplay } from '@/components/common/commerce/price-display';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -58,25 +58,23 @@ export function ProductVariantPicker({
       <Card className={cn('product-picker-card', className)}>
         <div className="product-picker-notice" role="alert">
           <Info
-            size={20}
-            className="text-burgundy mt-0.5 shrink-0"
+            size={18}
+            className="product-picker-notice-icon"
             aria-hidden="true"
           />
-          <div>
-            <h3 className="text-burgundy text-sm font-semibold">
+          <div className="product-picker-notice-body">
+            <h3 className="product-picker-notice-title">
               {PRODUCT_DETAIL_COPY.VARIANT_BRANCH_REQUIRED_TITLE}
             </h3>
-            <p className="text-muted-foreground mt-1 text-xs leading-relaxed">
+            <p className="product-picker-notice-text">
               {PRODUCT_DETAIL_COPY.VARIANT_BRANCH_REQUIRED_BODY}
             </p>
           </div>
         </div>
 
-        <div className="mt-6">
-          <Button disabled className="w-full">
-            {PRODUCT_DETAIL_COPY.CTA_BRANCH_REQUIRED}
-          </Button>
-        </div>
+        <Button disabled className="product-picker-cta">
+          {PRODUCT_DETAIL_COPY.CTA_BRANCH_REQUIRED}
+        </Button>
       </Card>
     );
   }
@@ -86,15 +84,15 @@ export function ProductVariantPicker({
       <Card className={cn('product-picker-card', className)}>
         <div className="product-picker-notice" role="alert">
           <Info
-            size={20}
-            className="text-burgundy mt-0.5 shrink-0"
+            size={18}
+            className="product-picker-notice-icon"
             aria-hidden="true"
           />
-          <div>
-            <h3 className="text-burgundy text-sm font-semibold">
+          <div className="product-picker-notice-body">
+            <h3 className="product-picker-notice-title">
               {PRODUCT_DETAIL_COPY.VARIANT_NONE_OFFERED_TITLE}
             </h3>
-            <p className="text-muted-foreground mt-1 text-xs leading-relaxed">
+            <p className="product-picker-notice-text">
               {PRODUCT_DETAIL_COPY.VARIANT_NONE_OFFERED_BODY}
             </p>
           </div>
@@ -129,7 +127,7 @@ export function ProductVariantPicker({
           {PRODUCT_DETAIL_COPY.VARIANT_SECTION_TITLE}
         </h2>
         {product.offeredVariants.length === 1 ? (
-          <p className="text-muted-foreground mt-1 text-xs">
+          <p className="product-picker-single-note">
             {PRODUCT_DETAIL_COPY.VARIANT_SINGLE_NOTE}
           </p>
         ) : null}
@@ -159,8 +157,17 @@ export function ProductVariantPicker({
                 isVariantSoldOut && 'product-variant-btn-disabled',
               )}
             >
-              <span className="text-sm font-semibold">{sizeText}</span>
-              <span className="mt-0.5 text-xs">
+              <span className="product-variant-btn-top">
+                <span className="product-variant-btn-label">{sizeText}</span>
+                {isSelected && !isVariantSoldOut ? (
+                  <Check
+                    size={14}
+                    aria-hidden="true"
+                    className="product-variant-btn-check"
+                  />
+                ) : null}
+              </span>
+              <span className="product-variant-btn-price">
                 {isVariantSoldOut
                   ? CATALOG_AVAILABILITY_LABELS.sold_out
                   : formatIdr(variant.effectivePriceIdr)}
@@ -173,7 +180,7 @@ export function ProductVariantPicker({
       {selectedVariant ? (
         <div className="product-price-section">
           {isBundle ? (
-            <div className="border-burgundy/10 my-5 border-y py-5">
+            <div className="product-bundle-section">
               <BundleCustomizer
                 variant={selectedVariant}
                 selectedChoiceIds={configurator.selectedChoiceIds}
@@ -184,22 +191,21 @@ export function ProductVariantPicker({
           ) : null}
 
           <div className="product-price-row">
-            <div>
-              <span className="text-muted-foreground block text-xs">
+            <div className="product-price-unit">
+              <span className="product-price-label">
                 {PRODUCT_DETAIL_COPY.PRICE_UNIT_LABEL}
               </span>
               <PriceDisplay
-                className="mt-0.5"
                 effectivePriceIdr={currentUnitPriceIdr}
                 grossPriceIdr={
                   hasPromoDiscount ? selectedVariant.unitGrossIdr : null
                 }
-                priceClassName="text-2xl"
-                grossClassName="text-muted-foreground text-sm"
+                priceClassName="product-price-value"
+                grossClassName="product-price-gross"
               />
             </div>
 
-            <div className="flex flex-col items-end gap-1">
+            <div className="product-price-badges">
               <Badge
                 tone={
                   selectedVariant.availabilityStatus === 'available'
@@ -232,23 +238,36 @@ export function ProductVariantPicker({
 
           {isUnconfirmed ? (
             <div className="product-warning-banner" role="note">
-              <p className="text-burgundy text-xs leading-relaxed">
+              <Info
+                size={16}
+                aria-hidden="true"
+                className="product-warning-icon"
+              />
+              <p className="product-warning-text">
                 {PRODUCT_DETAIL_COPY.UNCONFIRMED_STOCK_WARNING}
               </p>
             </div>
           ) : null}
 
           {isSoldOut ? (
-            <div className="product-warning-banner" role="alert">
-              <p className="text-xs leading-relaxed text-danger">
+            <div
+              className="product-warning-banner product-warning-banner--danger"
+              role="alert"
+            >
+              <AlertCircle
+                size={16}
+                aria-hidden="true"
+                className="product-warning-icon"
+              />
+              <p className="product-warning-text">
                 {PRODUCT_DETAIL_COPY.SOLD_OUT_WARNING}
               </p>
             </div>
           ) : null}
 
           <div className="product-qty-subtotal-grid">
-            <div>
-              <span className="text-foreground/80 mb-1.5 block text-xs font-medium">
+            <div className="product-qty-block">
+              <span className="product-qty-label">
                 {PRODUCT_DETAIL_COPY.QUANTITY_LABEL}
               </span>
               <Quantity
@@ -258,24 +277,25 @@ export function ProductVariantPicker({
                 onChange={onChangeQuantity}
                 label={PRODUCT_DETAIL_COPY.QUANTITY_LABEL}
                 disabled={isSoldOut}
+                className="product-qty-control"
               />
             </div>
 
-            <div className="text-right">
-              <span className="text-muted-foreground block text-xs">
+            <div className="product-subtotal-block">
+              <span className="product-subtotal-label">
                 {PRODUCT_DETAIL_COPY.PRICE_SUBTOTAL_LABEL}
               </span>
-              <span className="text-burgundy mt-1 block font-serif text-lg font-bold">
+              <span className="product-subtotal-value">
                 {formatIdr(subtotalIdr)}
               </span>
             </div>
           </div>
 
-          <p className="text-muted-foreground mt-2 text-xs leading-relaxed">
+          <p className="product-stock-caveat">
             {PRODUCT_DETAIL_COPY.STOCK_CAVEAT_NOTE}
           </p>
 
-          <div className="mt-5 space-y-3">
+          <div className="product-picker-actions">
             {isBundle ? (
               <Button
                 disabled={!configurator.isComplete || isSoldOut}
@@ -287,16 +307,28 @@ export function ProductVariantPicker({
                     unitPriceIdr: configurator.effectivePriceIdr,
                   })
                 }
-                className="w-full"
+                size="lg"
+                className="product-picker-cta"
               >
+                <ShoppingBag size={18} aria-hidden="true" />
                 {PRODUCT_DETAIL_COPY.CTA_PREPARE_CART}
               </Button>
             ) : isSoldOut ? (
-              <Button disabled variant="secondary" className="w-full">
+              <Button
+                disabled
+                variant="secondary"
+                size="lg"
+                className="product-picker-cta"
+              >
                 {PRODUCT_DETAIL_COPY.CTA_SOLD_OUT}
               </Button>
             ) : (
-              <Button onClick={() => onPrepareCart()} className="w-full">
+              <Button
+                onClick={() => onPrepareCart()}
+                size="lg"
+                className="product-picker-cta"
+              >
+                <ShoppingBag size={18} aria-hidden="true" />
                 {PRODUCT_DETAIL_COPY.CTA_PREPARE_CART}
               </Button>
             )}

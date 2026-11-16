@@ -1,11 +1,12 @@
 'use client';
 
-import { ArrowLeft, HelpCircle } from 'lucide-react';
+import { HelpCircle } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { ErrorState } from '@/components/common/feedback/error-state';
 import { ToastMessage } from '@/components/common/feedback/toast-message';
 import { MenuProductCard } from '@/components/common/commerce/menu-product-card';
+import { BackLink } from '@/components/common/layout/back-link';
 import { ActionLink } from '@/components/ui/action-link';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
@@ -217,13 +218,10 @@ export function ProductDetailView({
           aria-label="Navigasi ke menu"
           className="product-detail-nav-header"
         >
-          <ActionLink
+          <BackLink
             href={withBranch(ROUTES.MENU, activeBranchCode)}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase"
-          >
-            <ArrowLeft size={16} aria-hidden="true" />
-            <span>{PRODUCT_DETAIL_COPY.BACK_TO_MENU}</span>
-          </ActionLink>
+            label={PRODUCT_DETAIL_COPY.BACK_TO_MENU}
+          />
         </nav>
 
         <div className="product-detail-header">
@@ -272,7 +270,7 @@ export function ProductDetailView({
           />
         </div>
 
-        <div className="mt-12">
+        <div className="product-detail-food-section">
           <ProductFoodInfo product={product} selectedVariant={activeVariant} />
         </div>
 
@@ -309,13 +307,14 @@ export function ProductDetailView({
               </p>
             </div>
 
-            <div className="menu-product-grid">
+            <div className="product-grid">
               {product.relatedProducts.map((relProduct) => (
                 <MenuProductCard
                   key={relProduct.id}
                   product={relProduct}
                   hasBranchSelected={hasBranchSelected}
                   branchCode={activeBranchCode}
+                  previewImageUrl={relProduct.previewImageUrl ?? null}
                 />
               ))}
             </div>

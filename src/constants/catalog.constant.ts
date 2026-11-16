@@ -157,7 +157,7 @@ export const PRODUCT_DETAIL_COPY = {
     'Produk ini belum memiliki ukuran yang ditawarkan pada cabang terpilih. Silakan ganti cabang atau hubungi admin WhatsApp.',
   PRICE_UNIT_LABEL: 'Harga per unit',
   PRICE_ORIGINAL_LABEL: 'Harga normal',
-  PRICE_SUBTOTAL_LABEL: 'Estimasi subtotal baris',
+  PRICE_SUBTOTAL_LABEL: 'Estimasi subtotal',
   QUANTITY_LABEL: 'Jumlah pesanan',
   STOCK_CAVEAT_NOTE:
     'Ketersediaan stok, ongkos kirim, dan total akhir akan dikonfirmasi kembali oleh admin cabang melalui WhatsApp.',
