@@ -1,0 +1,132 @@
+/* ==========================================================================
+   Site Loader — first-visit Suspense fallback for the public site shell.
+   Oma's silhouette is drawn, held, then erased in a loop using only
+   stroke-dashoffset (normalised by pathLength="1"). No JS, no SVG filters:
+   the glow is a second, wider translucent stroke so each frame stays a
+   cheap repaint confined to the contained loader box.
+   ========================================================================== */
+
+@layer components {
+  .site-loader {
+    --loader-line: var(--brand-burgundy);
+    --loader-glow: var(--accent-terracotta);
+    --loader-blush: var(--accent-terracotta);
+    --loader-cycle: 4s;
+
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(
+      circle at 50% 46%,
+      var(--surface-paper) 0%,
+      var(--brand-cream) 42%,
+      color-mix(in srgb, var(--accent-rose) 55%, var(--brand-cream)) 100%
+    );
+    contain: strict;
+    animation: site-loader-in 360ms ease-out 120ms both;
+  }
+
+  .site-loader__art {
+    width: clamp(8.5rem, 26vw, 12.5rem);
+    height: auto;
+    aspect-ratio: 392 / 484;
+    overflow: visible;
+    contain: layout paint;
+  }
+
+  .oma-silhouette__stroke {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    /* Dash = whole path, gap = 2× path: offsets just beyond ±1 keep caps hidden. */
+    stroke-dasharray: 1 2;
+    stroke-dashoffset: 1.01;
+    animation: oma-stroke-draw var(--loader-cycle) linear infinite both;
+    animation-delay: var(--stroke-delay, 0s);
+  }
+
+  .oma-silhouette__line .oma-silhouette__stroke {
+    stroke: var(--loader-line);
+    stroke-width: 4.5;
+  }
+
+  .oma-silhouette__line .oma-silhouette__stroke--detail {
+    stroke-width: 3.25;
+    stroke-opacity: 0.72;
+  }
+
+  .oma-silhouette__line .oma-silhouette__stroke--accent {
+    stroke: var(--loader-blush);
+    stroke-width: 3.5;
+    stroke-opacity: 0.85;
+  }
+
+  .oma-silhouette__glow .oma-silhouette__stroke {
+    stroke: var(--loader-glow);
+    stroke-width: 13;
+    stroke-opacity: 0.18;
+  }
+
+  .oma-silhouette__glow .oma-silhouette__stroke--detail,
+  .oma-silhouette__glow .oma-silhouette__stroke--accent {
+    stroke-width: 10;
+    stroke-opacity: 0.08;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-loader {
+      animation: none;
+    }
+
+    .oma-silhouette__stroke {
+      animation: none;
+      stroke-dasharray: none;
+      stroke-dashoffset: 0;
+    }
+
+    .site-loader__art {
+      animation: site-loader-breathe 2.4s ease-in-out infinite alternate;
+    }
+  }
+}
+
+/* Draw (0→40%), hold the finished silhouette, erase forward (66→94%), rest. */
+@keyframes oma-stroke-draw {
+  0% {
+    stroke-dashoffset: 1.01;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  40%,
+  66% {
+    stroke-dashoffset: 0;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  94%,
+  100% {
+    stroke-dashoffset: -1.01;
+  }
+}
+
+@keyframes site-loader-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes site-loader-breathe {
+  from {
+    opacity: 0.55;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

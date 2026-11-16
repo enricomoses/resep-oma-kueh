@@ -7,6 +7,7 @@ import { BranchProvider } from '@/providers/branch-provider';
 import { SiteHeader } from '@/components/common/layout/site-header';
 import { SiteFooter } from '@/components/common/layout/site-footer';
 import { ChatSlot } from '@/components/common/chat/chat-slot';
+import { SiteLoader } from '@/app/(site)/_components/site-loader';
 import { SITE_COPY } from '@/constants/site.constant';
 import { getPublicEnvironment } from '@/config';
 import '@/styles/layouts/site-shell.css';
@@ -40,7 +41,7 @@ async function SiteContent({ children }: SiteContentProps) {
 }
 export default function SiteLayout({ children }: LayoutProps<'/'>) {
   return (
-    <Suspense fallback={<p role="status">{SITE_COPY.HYDRATING}</p>}>
+    <Suspense fallback={<SiteLoader label={SITE_COPY.HYDRATING} />}>
       <SiteContent>{children}</SiteContent>
     </Suspense>
   );
