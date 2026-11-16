@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
+import { Suspense } from 'react';
 import { FaqView } from './_components/faq-view';
+import SiteLoading from '../loading';
 import { PAGE_METADATA } from '@/constants/content.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { getInitialPublicFaqs } from '@/features/content/service.server';
@@ -12,8 +14,16 @@ export const metadata: Metadata = buildPageMetadata({
   path: ROUTES.FAQ,
 });
 
-export default async function FaqPage() {
+async function FaqContent() {
   await connection();
   const initial = await getInitialPublicFaqs();
   return <FaqView initial={initial} />;
+}
+
+export default function FaqPage() {
+  return (
+    <Suspense fallback={<SiteLoading />}>
+      <FaqContent />
+    </Suspense>
+  );
 }

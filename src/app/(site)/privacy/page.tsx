@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
+import { Suspense } from 'react';
+import SiteLoading from '../loading';
 import { LegalPolicyView } from '@/components/common/content/legal-policy-view';
 import { PAGE_METADATA } from '@/constants/content.constant';
 import { ROUTES } from '@/constants/routes.constant';
@@ -12,8 +14,16 @@ export const metadata: Metadata = buildPageMetadata({
   path: ROUTES.PRIVACY,
 });
 
-export default async function PrivacyPage() {
+async function PrivacyContent() {
   await connection();
   const initial = await getInitialPublicContent(['legal.privacy']);
   return <LegalPolicyView policyKey="legal.privacy" initial={initial} />;
+}
+
+export default function PrivacyPage() {
+  return (
+    <Suspense fallback={<SiteLoading />}>
+      <PrivacyContent />
+    </Suspense>
+  );
 }

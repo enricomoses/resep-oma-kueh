@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
+import { Suspense } from 'react';
 import { CheckoutView } from './_components/checkout-view';
+import SiteLoading from '../loading';
 import { CHECKOUT_COPY } from '@/constants/checkout.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { buildPageMetadata } from '@/utils/seo';
@@ -12,7 +14,15 @@ export const metadata: Metadata = buildPageMetadata({
   noIndex: true,
 });
 
-export default async function CheckoutPage() {
+async function CheckoutContent() {
   await connection();
   return <CheckoutView />;
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<SiteLoading />}>
+      <CheckoutContent />
+    </Suspense>
+  );
 }

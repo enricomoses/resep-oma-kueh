@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
+import { Suspense } from 'react';
 
 import { ClassesView } from './_components/classes-view';
+import SiteLoading from '../loading';
 import { CATALOG_QUERY_PARAMS } from '@/constants/catalog.constant';
 import { CLASSES_COPY } from '@/constants/classes.constant';
 import { ROUTES } from '@/constants/routes.constant';
@@ -16,9 +18,9 @@ export const metadata: Metadata = buildPageMetadata({
   path: ROUTES.CLASSES,
 });
 
-export default async function ClassesPage({
+async function ClassesContent({
   searchParams,
-}: PageProps<'/classes'>) {
+}: Pick<PageProps<'/classes'>, 'searchParams'>) {
   await connection();
   const resolvedParams = await searchParams;
   const branch = firstSearchParam(resolvedParams[CATALOG_QUERY_PARAMS.BRANCH]);
@@ -32,4 +34,12 @@ export default async function ClassesPage({
   }
 
   return <ClassesView initial={initial} />;
+}
+
+export default function ClassesPage({ searchParams }: PageProps<'/classes'>) {
+  return (
+    <Suspense fallback={<SiteLoading />}>
+      <ClassesContent searchParams={searchParams} />
+    </Suspense>
+  );
 }

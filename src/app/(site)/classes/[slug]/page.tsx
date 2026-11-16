@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { connection } from 'next/server';
+import { Suspense } from 'react';
 
 import { ClassDetailView } from './_components/class-detail-view';
+import SiteLoading from '../../loading';
 import { StructuredDataScript } from '@/components/common/structured-data-script';
 import { getPublicEnvironment } from '@/config/environment.client';
 import { CATALOG_QUERY_PARAMS } from '@/constants/catalog.constant';
@@ -43,10 +45,10 @@ export async function generateMetadata({
   }
 }
 
-export default async function ClassDetailPage({
+async function ClassDetailContent({
   params,
   searchParams,
-}: PageProps<'/classes/[slug]'>) {
+}: Pick<PageProps<'/classes/[slug]'>, 'params' | 'searchParams'>) {
   await connection();
   const { slug } = await params;
   const resolvedParams = await searchParams;
@@ -77,5 +79,16 @@ export default async function ClassDetailPage({
       <StructuredDataScript data={eventJsonLd} />
       <ClassDetailView slug={slug} initial={initial} />
     </>
+  );
+}
+
+export default function ClassDetailPage({
+  params,
+  searchParams,
+}: PageProps<'/classes/[slug]'>) {
+  return (
+    <Suspense fallback={<SiteLoading />}>
+      <ClassDetailContent params={params} searchParams={searchParams} />
+    </Suspense>
   );
 }

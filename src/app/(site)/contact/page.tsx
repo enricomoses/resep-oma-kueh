@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
+import { Suspense } from 'react';
 import { ContactView } from './_components/contact-view';
+import SiteLoading from '../loading';
 import { StructuredDataScript } from '@/components/common/structured-data-script';
 import { getPublicEnvironment } from '@/config/environment.client';
 import { PAGE_METADATA } from '@/constants/content.constant';
@@ -15,7 +17,7 @@ export const metadata: Metadata = buildPageMetadata({
   path: ROUTES.CONTACT,
 });
 
-export default async function ContactPage() {
+async function ContactContent() {
   await connection();
   const data = await getContactPageData();
   const bakeryJsonLd = buildBakeryJsonLd({
@@ -30,5 +32,13 @@ export default async function ContactPage() {
       <StructuredDataScript data={bakeryJsonLd} />
       <ContactView data={data} />
     </>
+  );
+}
+
+export default function ContactPage() {
+  return (
+    <Suspense fallback={<SiteLoading />}>
+      <ContactContent />
+    </Suspense>
   );
 }

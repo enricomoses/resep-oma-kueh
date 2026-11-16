@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { connection } from 'next/server';
+import { Suspense } from 'react';
 import { ProductDetailView } from './_components/product-detail-view';
+import SiteLoading from '../../loading';
 import { StructuredDataScript } from '@/components/common/structured-data-script';
 import { getPublicEnvironment } from '@/config/environment.client';
 import {
@@ -53,10 +55,10 @@ export async function generateMetadata({
   }
 }
 
-export default async function MenuDetailPage({
+async function MenuDetailContent({
   params,
   searchParams,
-}: PageProps<'/menu/[slug]'>) {
+}: Pick<PageProps<'/menu/[slug]'>, 'params' | 'searchParams'>) {
   await connection();
   const { slug } = await params;
   const resolvedParams = await searchParams;
@@ -95,5 +97,16 @@ export default async function MenuDetailPage({
       <StructuredDataScript data={productJsonLd} />
       <ProductDetailView slug={slug} initial={initialDetail} />
     </>
+  );
+}
+
+export default function MenuDetailPage({
+  params,
+  searchParams,
+}: PageProps<'/menu/[slug]'>) {
+  return (
+    <Suspense fallback={<SiteLoading />}>
+      <MenuDetailContent params={params} searchParams={searchParams} />
+    </Suspense>
   );
 }

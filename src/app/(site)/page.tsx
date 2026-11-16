@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
+import { Suspense } from 'react';
 import { HomeView } from './_components/home-view';
+import SiteLoading from './loading';
 import { StructuredDataScript } from '@/components/common/structured-data-script';
 import { getPublicEnvironment } from '@/config/environment.client';
 import { APP, ROUTES } from '@/constants';
@@ -17,7 +19,7 @@ export const metadata: Metadata = buildPageMetadata({
   path: ROUTES.HOME,
 });
 
-export default async function Home() {
+async function HomeContent() {
   await connection();
   const [data, initialBranches] = await Promise.all([
     getHomeData(),
@@ -42,5 +44,13 @@ export default async function Home() {
       <StructuredDataScript data={bakeryJsonLd} />
       <HomeView data={data} contacts={APPROVED_CONTACTS} />
     </>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<SiteLoading />}>
+      <HomeContent />
+    </Suspense>
   );
 }
