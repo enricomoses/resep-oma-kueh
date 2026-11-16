@@ -60,94 +60,135 @@ export function ContactBranchCard({
       : CONTENT_COPY.CONTACT_BINTARO_DESC;
 
   return (
-    <Card className={cn('content-branch-card', className)}>
-      <div className="home-branch-card-header">
-        <h3>Cabang {branch.name}</h3>
-        {isSelected ? (
-          <Badge tone="success">
-            <CheckCircle2 size={14} aria-hidden="true" />
-            Cabang Aktif
-          </Badge>
-        ) : null}
-      </div>
-      <p className="content-card-desc">{branchDescription}</p>
-
-      <dl className="content-detail-list">
-        <div className="content-detail-item">
-          <dt>
-            <Phone size={16} aria-hidden="true" />
-            <span>WhatsApp Resmi</span>
-          </dt>
-          <dd>
-            <a
-              href={`https://wa.me/${branch.whatsappNumber}`}
-              className="ui-link"
-            >
-              {CONTENT_COPY.CONTACT_WA_CTA_PREFIX} {branch.name} (+
-              {branch.whatsappNumber})
-            </a>
-          </dd>
+    <Card
+      className={cn(
+        'content-branch-card',
+        isSelected && 'is-active',
+        className,
+      )}
+    >
+      <header className="content-branch-header">
+        <div className="content-branch-header-top">
+          <h3 className="content-branch-title">Cabang {branch.name}</h3>
+          {isSelected ? (
+            <Badge tone="success">
+              <CheckCircle2 size={14} aria-hidden="true" />
+              Cabang Aktif
+            </Badge>
+          ) : null}
         </div>
+        <p className="content-branch-desc">{branchDescription}</p>
+      </header>
 
-        <div className="content-detail-item">
-          <dt>
-            <MapPin size={16} aria-hidden="true" />
-            <span>{CONTENT_COPY.CONTACT_ADDRESS_LABEL}</span>
-          </dt>
-          <dd>{branch.address ?? CONTENT_COPY.CONTACT_ADDRESS_PENDING}</dd>
-        </div>
-
-        <div className="content-detail-item">
-          <dt>
-            <ExternalLink size={16} aria-hidden="true" />
-            <span>{CONTENT_COPY.CONTACT_MAPS_LABEL}</span>
-          </dt>
-          <dd>
-            {branch.mapsUrl ? (
+      <dl className="content-branch-details">
+        <div className="content-branch-detail-row">
+          <span className="content-branch-detail-icon" aria-hidden="true">
+            <Phone size={16} />
+          </span>
+          <div className="content-branch-detail-body">
+            <dt className="content-branch-detail-label">WhatsApp Resmi</dt>
+            <dd className="content-branch-detail-value">
               <a
-                href={branch.mapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={`https://wa.me/${branch.whatsappNumber}`}
                 className="ui-link"
               >
-                {CONTENT_COPY.CONTACT_MAPS_CTA} {branch.name}
+                {CONTENT_COPY.CONTACT_WA_CTA_PREFIX} {branch.name} (+
+                {branch.whatsappNumber})
               </a>
-            ) : (
-              <span>{CONTENT_COPY.CONTACT_MAPS_PENDING}</span>
-            )}
-          </dd>
+            </dd>
+          </div>
         </div>
 
-        <div className="content-detail-item">
-          <dt>
-            <Clock size={16} aria-hidden="true" />
-            <span>{CONTENT_COPY.CONTACT_HOURS_LABEL}</span>
-          </dt>
-          <dd>
-            {branch.hours.length > 0 ? (
-              <ul className="content-hours-list">
-                {branch.hours.map((hour) => (
-                  <li key={hour.id}>{formatBranchHour(hour)}</li>
-                ))}
-              </ul>
-            ) : (
-              <span>{CONTENT_COPY.CONTACT_HOURS_PENDING}</span>
-            )}
-          </dd>
+        <div className="content-branch-detail-row">
+          <span className="content-branch-detail-icon" aria-hidden="true">
+            <MapPin size={16} />
+          </span>
+          <div className="content-branch-detail-body">
+            <dt className="content-branch-detail-label">
+              {CONTENT_COPY.CONTACT_ADDRESS_LABEL}
+            </dt>
+            <dd
+              className={cn(
+                'content-branch-detail-value',
+                !branch.address && 'is-muted',
+              )}
+            >
+              {branch.address ?? CONTENT_COPY.CONTACT_ADDRESS_PENDING}
+            </dd>
+          </div>
+        </div>
+
+        <div className="content-branch-detail-row">
+          <span className="content-branch-detail-icon" aria-hidden="true">
+            <ExternalLink size={16} />
+          </span>
+          <div className="content-branch-detail-body">
+            <dt className="content-branch-detail-label">
+              {CONTENT_COPY.CONTACT_MAPS_LABEL}
+            </dt>
+            <dd
+              className={cn(
+                'content-branch-detail-value',
+                !branch.mapsUrl && 'is-muted',
+              )}
+            >
+              {branch.mapsUrl ? (
+                <a
+                  href={branch.mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ui-link"
+                >
+                  {CONTENT_COPY.CONTACT_MAPS_CTA} {branch.name}
+                </a>
+              ) : (
+                <span>{CONTENT_COPY.CONTACT_MAPS_PENDING}</span>
+              )}
+            </dd>
+          </div>
+        </div>
+
+        <div className="content-branch-detail-row">
+          <span className="content-branch-detail-icon" aria-hidden="true">
+            <Clock size={16} />
+          </span>
+          <div className="content-branch-detail-body">
+            <dt className="content-branch-detail-label">
+              {CONTENT_COPY.CONTACT_HOURS_LABEL}
+            </dt>
+            <dd
+              className={cn(
+                'content-branch-detail-value',
+                branch.hours.length === 0 && 'is-muted',
+              )}
+            >
+              {branch.hours.length > 0 ? (
+                <ul className="content-hours-list">
+                  {branch.hours.map((hour) => (
+                    <li key={hour.id}>{formatBranchHour(hour)}</li>
+                  ))}
+                </ul>
+              ) : (
+                <span>{CONTENT_COPY.CONTACT_HOURS_PENDING}</span>
+              )}
+            </dd>
+          </div>
         </div>
       </dl>
 
       {branch.liveBranch ? (
-        <div className="home-branch-actions">
+        <div className="content-branch-footer">
           <Button
             variant={isSelected ? 'secondary' : 'primary'}
             disabled={isSelected}
+            className="w-full justify-center"
             onClick={() => {
               if (branch.liveBranch) {
                 onSelect(branch.liveBranch);
               }
             }}
           >
+            {isSelected ? <CheckCircle2 size={16} aria-hidden="true" /> : null}
             {isSelected
               ? `Cabang ${branch.name} Terpilih`
               : `Pilih Cabang ${branch.name}`}

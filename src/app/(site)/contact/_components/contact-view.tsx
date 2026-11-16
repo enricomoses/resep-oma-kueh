@@ -124,7 +124,6 @@ export function ContactView({ data, className }: ContactViewProps) {
         <ContactB2bCard
           title={data.customBusiness.title}
           body={data.customBusiness.body}
-          source={data.customBusiness.source}
           activeBranchCode={activeBranchCode}
           branches={resolvedBranches}
           selectedBranch={selectedB2bBranch}

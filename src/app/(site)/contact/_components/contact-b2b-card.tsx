@@ -1,13 +1,11 @@
 'use client';
 
 import { MessageCircle } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { CONTENT_COPY } from '@/constants/content.constant';
-import type { ContactPageData } from '@/types/content';
 import { cn } from '@/utils';
 import type { ResolvedContactBranch } from './contact-branch-card';
 
@@ -26,7 +24,6 @@ function buildB2bWhatsappUrl(
 interface ContactB2bCardProps {
   title: string;
   body: string;
-  source: ContactPageData['customBusiness']['source'];
   activeBranchCode: 'surabaya' | 'bintaro';
   branches: ResolvedContactBranch[];
   selectedBranch: ResolvedContactBranch;
@@ -39,7 +36,6 @@ interface ContactB2bCardProps {
 export function ContactB2bCard({
   title,
   body,
-  source,
   activeBranchCode,
   branches,
   selectedBranch,
@@ -55,20 +51,13 @@ export function ContactB2bCard({
   );
 
   return (
-    <Card tone="cream" className={cn('content-b2b-card', className)}>
-      <div className="content-b2b-header">
-        <div className="home-badge-row">
-          <Badge tone="accent">{CONTENT_COPY.CONTACT_B2B_BADGE}</Badge>
-          <Badge tone={source === 'published' ? 'success' : 'neutral'}>
-            {source === 'published'
-              ? CONTENT_COPY.SOURCE_PUBLISHED_BADGE
-              : CONTENT_COPY.SOURCE_TEMPLATE_BADGE}
-          </Badge>
-        </div>
-        <h2 id="contact-b2b-heading" className="editorial-heading">
+    <Card className={cn('content-b2b-card', className)}>
+      <div className="content-b2b-intro">
+        <h2 id="contact-b2b-heading" className="content-b2b-title">
           {title}
         </h2>
-        <p className="home-story-body">{body}</p>
+        <p className="content-b2b-desc">{body}</p>
+        <p className="content-b2b-note">{CONTENT_COPY.CONTACT_B2B_NOTE}</p>
       </div>
 
       <div className="content-b2b-controls">
@@ -98,7 +87,6 @@ export function ContactB2bCard({
         <FormField
           id="contact-b2b-topic"
           label={CONTENT_COPY.CONTACT_B2B_TOPIC_LABEL}
-          helper={CONTENT_COPY.CONTACT_B2B_NOTE}
         >
           {(fieldProps) => (
             <Input
@@ -112,8 +100,11 @@ export function ContactB2bCard({
           )}
         </FormField>
 
-        <div className="home-inline-actions">
-          <a href={b2bWhatsappHref} className="ui-button ui-button--primary">
+        <div className="content-b2b-actions">
+          <a
+            href={b2bWhatsappHref}
+            className="ui-button ui-button--primary w-full justify-center sm:w-auto"
+          >
             <MessageCircle size={18} aria-hidden="true" />
             {CONTENT_COPY.CONTACT_B2B_CTA_PREFIX} {selectedBranch.name}
           </a>
