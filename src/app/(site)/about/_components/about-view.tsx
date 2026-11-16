@@ -5,7 +5,6 @@ import { InfoCard } from '@/components/common/cards/info-card';
 import { PageHeader } from '@/components/common/layout/page-header';
 import { SectionHeader } from '@/components/common/layout/section-header';
 import { ActionLink } from '@/components/ui/action-link';
-import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { CONTENT_COPY, CONTENT_DEFAULTS } from '@/constants/content.constant';
 import { ROUTES } from '@/constants/routes.constant';
@@ -44,16 +43,11 @@ export function AboutView({ initial, className }: AboutViewProps) {
     storyEntry?.key === 'about.story'
       ? storyEntry.content.body
       : CONTENT_DEFAULTS.ABOUT_STORY.body;
-  const storySource = storyEntry?.source ?? 'template';
 
   const valuesList =
     valuesEntry?.key === 'about.values'
       ? valuesEntry.content.items
       : [...CONTENT_DEFAULTS.ABOUT_VALUES];
-  const valuesSource = valuesEntry?.source ?? 'template';
-
-  const hasTemplateSource =
-    storySource === 'template' || valuesSource === 'template';
 
   return (
     <main id={SITE_COPY.MAIN_ID} className={cn('content-page-main', className)}>
@@ -69,11 +63,6 @@ export function AboutView({ initial, className }: AboutViewProps) {
           title={storyTitle}
           subtitle={storyBody}
         >
-          {hasTemplateSource ? (
-            <p className="content-source-note">
-              {CONTENT_COPY.SOURCE_TEMPLATE_NOTE}
-            </p>
-          ) : null}
           <div className="home-hero-actions">
             <ActionLink
               href={withBranch(ROUTES.MENU, activeCode)}
@@ -87,13 +76,7 @@ export function AboutView({ initial, className }: AboutViewProps) {
               variant="secondary"
               prefetch={false}
             >
-              {CONTENT_COPY.ABOUT_JOIN_CLASS_CTA}
-            </ActionLink>
-            <ActionLink
-              href={withBranch(ROUTES.CONTACT, activeCode)}
-              prefetch={false}
-            >
-              {CONTENT_COPY.ABOUT_CONTACT_CTA}
+              Lihat Baking Class
             </ActionLink>
           </div>
         </PageHeader>
@@ -144,9 +127,6 @@ export function AboutView({ initial, className }: AboutViewProps) {
         aria-labelledby="about-team-heading"
       >
         <Card className="content-team-card">
-          <div className="home-badge-row">
-            <Badge tone="accent">{CONTENT_COPY.ABOUT_TEAM_BADGE}</Badge>
-          </div>
           <h2 id="about-team-heading" className="editorial-heading">
             {CONTENT_COPY.ABOUT_TEAM_TITLE}
           </h2>
