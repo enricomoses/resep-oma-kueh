@@ -1,4 +1,5 @@
-import { Globe, Mail } from 'lucide-react';
+import { Mail } from 'lucide-react';
+import { FaInstagram } from 'react-icons/fa';
 import { SectionHeader } from '@/components/common/layout/section-header';
 import { Card } from '@/components/ui/card';
 import { CONTENT_COPY } from '@/constants/content.constant';
@@ -28,28 +29,28 @@ export function ContactOfficialChannels({
         <Card className="content-channel-card">
           <h3>
             <Mail size={18} aria-hidden="true" />
-            <span>{CONTENT_COPY.CONTACT_EMAIL_LABEL}</span>
+            <span>Email</span>
           </h3>
           <p>
-            <a href={`mailto:${email}`} className="ui-link">
-              {email}
+            <a href={`mailto:${email}`} className="content-branch-link">
+              <span>{email}</span>
             </a>
           </p>
         </Card>
 
         <Card className="content-channel-card">
           <h3>
-            <Globe size={18} aria-hidden="true" />
-            <span>{CONTENT_COPY.CONTACT_INSTAGRAM_LABEL}</span>
+            <FaInstagram size={18} aria-hidden="true" />
+            <span>Instagram</span>
           </h3>
           <p>
             <a
               href={instagramUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="ui-link"
+              className="content-branch-link"
             >
-              @resepoma.kueh di Instagram
+              <span>@resepoma.kueh</span>
             </a>
           </p>
         </Card>

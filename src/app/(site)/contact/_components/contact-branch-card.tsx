@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircle2, Clock, ExternalLink, MapPin, Phone } from 'lucide-react';
+import { CheckCircle2, Clock, MapPin, Phone } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -18,6 +18,15 @@ const DAY_LABELS = [
   'Jumat',
   'Sabtu',
 ] as const;
+
+const BRANCH_OPERATIONAL_HOURS: Record<string, string> = {
+  surabaya: 'Setiap Hari, 08.00 WIB - 17.00 WIB',
+  bintaro: 'Senin - Sabtu, 08.00 WIB - 16.00 WIB',
+};
+
+function formatWhatsappDisplay(number: string): string {
+  return number.replace(/^62/, '0');
+}
 
 function formatBranchHour(hour: PublicBranchHour) {
   const day = DAY_LABELS[hour.dayOfWeek] ?? `Hari ${hour.dayOfWeek}`;
@@ -86,14 +95,16 @@ export function ContactBranchCard({
             <Phone size={16} />
           </span>
           <div className="content-branch-detail-body">
-            <dt className="content-branch-detail-label">WhatsApp Resmi</dt>
+            <dt className="content-branch-detail-label">WhatsApp</dt>
             <dd className="content-branch-detail-value">
               <a
                 href={`https://wa.me/${branch.whatsappNumber}`}
-                className="ui-link"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="content-branch-link"
+                aria-label={`Hubungi WhatsApp cabang ${branch.name}`}
               >
-                {CONTENT_COPY.CONTACT_WA_CTA_PREFIX} {branch.name} (+
-                {branch.whatsappNumber})
+                <span>{formatWhatsappDisplay(branch.whatsappNumber)}</span>
               </a>
             </dd>
           </div>
@@ -104,45 +115,24 @@ export function ContactBranchCard({
             <MapPin size={16} />
           </span>
           <div className="content-branch-detail-body">
-            <dt className="content-branch-detail-label">
-              {CONTENT_COPY.CONTACT_ADDRESS_LABEL}
-            </dt>
+            <dt className="content-branch-detail-label">Alamat</dt>
             <dd
               className={cn(
                 'content-branch-detail-value',
                 !branch.address && 'is-muted',
               )}
             >
-              {branch.address ?? CONTENT_COPY.CONTACT_ADDRESS_PENDING}
-            </dd>
-          </div>
-        </div>
-
-        <div className="content-branch-detail-row">
-          <span className="content-branch-detail-icon" aria-hidden="true">
-            <ExternalLink size={16} />
-          </span>
-          <div className="content-branch-detail-body">
-            <dt className="content-branch-detail-label">
-              {CONTENT_COPY.CONTACT_MAPS_LABEL}
-            </dt>
-            <dd
-              className={cn(
-                'content-branch-detail-value',
-                !branch.mapsUrl && 'is-muted',
-              )}
-            >
-              {branch.mapsUrl ? (
+              {branch.address && branch.mapsUrl ? (
                 <a
                   href={branch.mapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="ui-link"
+                  className="content-branch-link"
                 >
-                  {CONTENT_COPY.CONTACT_MAPS_CTA} {branch.name}
+                  <span>{branch.address}</span>
                 </a>
               ) : (
-                <span>{CONTENT_COPY.CONTACT_MAPS_PENDING}</span>
+                (branch.address ?? CONTENT_COPY.CONTACT_ADDRESS_PENDING)
               )}
             </dd>
           </div>
@@ -156,12 +146,7 @@ export function ContactBranchCard({
             <dt className="content-branch-detail-label">
               {CONTENT_COPY.CONTACT_HOURS_LABEL}
             </dt>
-            <dd
-              className={cn(
-                'content-branch-detail-value',
-                branch.hours.length === 0 && 'is-muted',
-              )}
-            >
+            <dd className="content-branch-detail-value">
               {branch.hours.length > 0 ? (
                 <ul className="content-hours-list">
                   {branch.hours.map((hour) => (
@@ -169,7 +154,10 @@ export function ContactBranchCard({
                   ))}
                 </ul>
               ) : (
-                <span>{CONTENT_COPY.CONTACT_HOURS_PENDING}</span>
+                <span>
+                  {BRANCH_OPERATIONAL_HOURS[branch.code] ??
+                    CONTENT_COPY.CONTACT_HOURS_PENDING}
+                </span>
               )}
             </dd>
           </div>

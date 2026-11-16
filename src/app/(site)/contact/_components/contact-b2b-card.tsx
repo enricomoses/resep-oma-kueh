@@ -77,7 +77,7 @@ export function ContactB2bCard({
             >
               {branches.map((branch) => (
                 <option key={branch.code} value={branch.code}>
-                  {branch.name} (+{branch.whatsappNumber})
+                  {branch.name} ({branch.whatsappNumber.replace(/^62/, '0')})
                 </option>
               ))}
             </Select>

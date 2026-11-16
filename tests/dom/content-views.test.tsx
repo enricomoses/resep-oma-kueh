@@ -183,12 +183,14 @@ it('renders ContactView with Surabaya and Bintaro contacts, unconfirmed pending 
   expect(
     screen.getByText(CONTENT_COPY.CONTACT_ADDRESS_PENDING),
   ).toBeInTheDocument();
+  expect(screen.getByText('081703384308')).toBeInTheDocument();
+  expect(screen.getByText('085119785194')).toBeInTheDocument();
   expect(
-    screen.getAllByText(CONTENT_COPY.CONTACT_MAPS_PENDING).length,
-  ).toBeGreaterThanOrEqual(2);
+    screen.getByText('Setiap Hari, 08.00 WIB - 17.00 WIB'),
+  ).toBeInTheDocument();
   expect(
-    screen.getAllByText(CONTENT_COPY.CONTACT_HOURS_PENDING).length,
-  ).toBeGreaterThanOrEqual(2);
+    screen.getByText('Senin - Sabtu, 08.00 WIB - 16.00 WIB'),
+  ).toBeInTheDocument();
 
   const b2bBranchSelect = screen.getByLabelText(
     CONTENT_COPY.CONTACT_B2B_BRANCH_LABEL,
