@@ -17,7 +17,7 @@
   --accent-rose: #f5dadd;
   --success: #27734b;
   --danger: #a12636;
-  --modal-backdrop: #39151ab3;
+  --modal-backdrop: rgba(24, 18, 16, 0.28);
   --shadow-warm: #650e2014;
 
   /* Extended Surface, Status, & Overlay Tokens */

@@ -24,18 +24,18 @@ export function OrderTotalsSummary({
     <dl className={cn('cart-summary-rows', className)}>
       <div className="cart-summary-row">
         <dt>{CART_COPY.SUBTOTAL}</dt>
-        <dd className="text-cocoa font-medium">{formatIdr(subtotalIdr)}</dd>
+        <dd className="cart-summary-value">{formatIdr(subtotalIdr)}</dd>
       </div>
 
       {discountIdr > 0 || showZeroDiscount ? (
         <div
           className={cn(
             'cart-summary-row',
-            !showZeroDiscount && 'text-burgundy',
+            !showZeroDiscount && 'cart-summary-row--discount',
           )}
         >
           <dt>{CART_COPY.DISCOUNT}</dt>
-          <dd className={showZeroDiscount ? 'font-medium' : 'font-semibold'}>
+          <dd className={showZeroDiscount ? 'cart-summary-value' : undefined}>
             {discountIdr > 0 ? `-${formatIdr(discountIdr)}` : formatIdr(0)}
           </dd>
         </div>
@@ -44,7 +44,7 @@ export function OrderTotalsSummary({
       {showShippingPending ? (
         <div className="cart-summary-row">
           <dt>Ongkos Kirim</dt>
-          <dd className="text-xs italic">
+          <dd className="cart-summary-shipping-pending">
             {CHECKOUT_COPY.SHIPPING_PENDING_LABEL}
           </dd>
         </div>

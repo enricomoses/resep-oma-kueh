@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight, ShoppingBag } from 'lucide-react';
+import { ArrowRight, Plus, ShoppingBag, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 import { BranchStatusPill } from '@/components/common/branch/branch-status-pill';
@@ -9,10 +9,12 @@ import { EmptyState } from '@/components/common/feedback/empty-state';
 import { ErrorState } from '@/components/common/feedback/error-state';
 import { LoadingState } from '@/components/common/feedback/loading-state';
 import { NoBranchAlert } from '@/components/common/branch/no-branch-alert';
+import { BackLink } from '@/components/common/layout/back-link';
 import { PageHeader } from '@/components/common/layout/page-header';
 import { ActionLink } from '@/components/ui/action-link';
 import { Button } from '@/components/ui/button';
 import { CART_COPY } from '@/constants/cart.constant';
+import { PRODUCT_DETAIL_COPY } from '@/constants/catalog.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { useBranches } from '@/hooks/use-branches';
 import { useCart } from '@/hooks/use-cart';
@@ -113,6 +115,14 @@ export function CartView({ className }: CartViewProps) {
   return (
     <main id="konten" className={cn('cart-page', className)}>
       <div className="cart-container">
+        <nav aria-label="Navigasi ke menu" className="cart-header-nav">
+          <BackLink
+            href={withBranch(ROUTES.MENU, branchCode)}
+            prefetch={false}
+            label={PRODUCT_DETAIL_COPY.BACK_TO_MENU}
+          />
+        </nav>
+
         <PageHeader
           className="cart-header"
           titleClassName="cart-title"
@@ -129,10 +139,7 @@ export function CartView({ className }: CartViewProps) {
           }
           alert={
             !selectedBranch ? (
-              <NoBranchAlert
-                message={CART_COPY.NO_BRANCH_WARNING}
-                className="mt-4"
-              />
+              <NoBranchAlert message={CART_COPY.NO_BRANCH_WARNING} />
             ) : null
           }
         />
@@ -142,7 +149,22 @@ export function CartView({ className }: CartViewProps) {
             className="cart-items-section"
             aria-label="Daftar Produk di Keranjang"
           >
-            <div className="space-y-4">
+            <div className="cart-items-toolbar">
+              <h2 className="cart-items-toolbar-title">
+                Daftar Produk ({validatedLines.length})
+              </h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setClearDialogOpen(true)}
+                className="cart-clear-btn"
+              >
+                <Trash2 size={14} aria-hidden="true" />
+                {CART_COPY.CLEAR_CART}
+              </Button>
+            </div>
+
+            <div className="cart-items-list">
               {validatedLines.map((line: CartValidatedLine) => (
                 <CartItemCard
                   key={line.lineId}
@@ -160,21 +182,16 @@ export function CartView({ className }: CartViewProps) {
               ))}
             </div>
 
-            <div className="mt-6 flex justify-between">
-              <Button
-                variant="secondary"
-                onClick={() => setClearDialogOpen(true)}
-                className="text-xs"
-              >
-                {CART_COPY.CLEAR_CART}
-              </Button>
+            <div className="cart-items-footer">
               <ActionLink
                 href={withBranch(ROUTES.MENU, branchCode)}
-                variant="ghost"
+                variant="secondary"
+                size="sm"
                 prefetch={false}
-                className="text-xs"
+                className="cart-add-more-link"
               >
-                + Tambah Produk Lain
+                <Plus size={15} aria-hidden="true" />
+                Tambah Produk Lain
               </ActionLink>
             </div>
           </section>

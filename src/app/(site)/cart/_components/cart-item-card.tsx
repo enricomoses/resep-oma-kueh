@@ -55,20 +55,31 @@ export function CartItemCard({
         </div>
 
         <div className="cart-item-details">
-          <div className="flex flex-wrap items-start justify-between gap-2">
-            <div>
+          <div className="cart-item-header">
+            <div className="cart-item-heading">
               <Link href={itemDetailHref} className="cart-item-product-name">
                 {line.productName}
               </Link>
               <p className="cart-item-variant-label">
                 {line.sizeLabel || line.variantName}
               </p>
+              <CartConflictBadge
+                conflict={line.conflict}
+                availabilityStatus={line.availabilityStatus}
+                className="cart-item-conflict-badge"
+              />
             </div>
 
-            <CartConflictBadge
-              conflict={line.conflict}
-              availabilityStatus={line.availabilityStatus}
-            />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onRemoveLine(line.lineId)}
+              className="cart-item-remove-btn"
+              aria-label={`Hapus ${line.productName} dari keranjang`}
+            >
+              <Trash2 size={14} aria-hidden="true" />
+              <span>{CART_COPY.REMOVE_ITEM}</span>
+            </Button>
           </div>
 
           <CartBundleBreakdown items={line.bundleBreakdown ?? []} />
@@ -78,31 +89,24 @@ export function CartItemCard({
               effectivePriceIdr={line.effectiveUnitPriceIdr}
               grossPriceIdr={line.unitGrossIdr}
               unitLabel="per unit"
+              className="cart-item-unit-price-block"
+              priceClassName="cart-item-unit-price"
+              grossClassName="cart-item-unit-gross"
             />
 
-            <div className="flex items-center gap-4">
+            <div className="cart-item-controls">
               <Quantity
                 value={line.quantity}
                 min={1}
                 max={99}
                 onChange={(newQty) => onUpdateQuantity(line.lineId, newQty)}
                 label={`Jumlah ${line.productName}`}
+                className="cart-item-quantity"
               />
 
-              <div className="text-right">
-                <span className="text-burgundy block font-serif text-base font-bold">
-                  {formatIdr(line.subtotalIdr)}
-                </span>
-                <Button
-                  variant="ghost"
-                  onClick={() => onRemoveLine(line.lineId)}
-                  className="cart-item-remove-btn"
-                  aria-label={`Hapus ${line.productName} dari keranjang`}
-                >
-                  <Trash2 size={14} aria-hidden="true" />
-                  <span>{CART_COPY.REMOVE_ITEM}</span>
-                </Button>
-              </div>
+              <span className="cart-item-subtotal">
+                {formatIdr(line.subtotalIdr)}
+              </span>
             </div>
           </div>
         </div>

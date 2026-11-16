@@ -16,11 +16,17 @@ export function CartBundleBreakdown({
 
   return (
     <div className={cn('cart-item-bundle-breakdown', className)}>
-      <p className="text-burgundy font-semibold">Komposisi Pilihan:</p>
-      <ul className="text-cocoa list-inside list-disc space-y-0.5 text-xs">
+      <p className="cart-item-bundle-title">Komposisi Pilihan</p>
+      <ul className="cart-item-bundle-list">
         {items.map((item, idx) => (
-          <li key={`${item.slotOrGroup}-${item.label}-${idx}`}>
-            {item.slotOrGroup}: {item.label} ({item.quantity} potong)
+          <li
+            key={`${item.slotOrGroup}-${item.label}-${idx}`}
+            className="cart-item-bundle-item"
+          >
+            <span className="cart-item-bundle-slot">{item.slotOrGroup}:</span>{' '}
+            <span>
+              {item.label} ({item.quantity} potong)
+            </span>
           </li>
         ))}
       </ul>

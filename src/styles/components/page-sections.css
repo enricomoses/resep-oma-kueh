@@ -27,6 +27,21 @@
     max-width: 66ch;
   }
 
+  .content-header-block--split {
+    max-width: none;
+    justify-items: stretch;
+    width: 100%;
+  }
+
+  .content-header-row--split {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem 1.5rem;
+    width: 100%;
+  }
+
   .content-feedback-banner {
     max-width: 66ch;
   }

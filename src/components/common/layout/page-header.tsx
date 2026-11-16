@@ -35,14 +35,15 @@ export function PageHeader({
   const Heading = headingAs;
 
   return (
-    <div className={cn('content-header-block', className)}>
+    <div
+      className={cn(
+        'content-header-block',
+        aside && 'content-header-block--split',
+        className,
+      )}
+    >
       {badges ? <div className="home-badge-row">{badges}</div> : null}
-      <div
-        className={cn(
-          aside && 'flex flex-wrap items-baseline justify-between gap-4',
-          rowClassName,
-        )}
-      >
+      <div className={cn(aside && 'content-header-row--split', rowClassName)}>
         <div>
           <Heading
             id={titleId}

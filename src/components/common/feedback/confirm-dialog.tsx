@@ -46,19 +46,20 @@ export function ConfirmDialog({
       onOpenChange={onOpenChange}
       title={title}
       description={description}
-      className={cn(className)}
+      className={cn('ui-confirm-dialog', className)}
     >
       {error ? <Feedback tone="error" title={error} announce /> : null}
       {children ?? null}
       <div
         className={cn(
-          'site-dialog-actions mt-6 flex justify-end gap-3',
+          'site-dialog-actions ui-confirm-dialog-actions',
           actionsClassName,
         )}
       >
         <Button
           type="button"
           variant="secondary"
+          size="sm"
           disabled={isLoading}
           onClick={() => onOpenChange(false)}
         >
@@ -67,6 +68,7 @@ export function ConfirmDialog({
         <Button
           type="button"
           variant={confirmVariant}
+          size="sm"
           loading={isLoading}
           loadingLabel={loadingLabel}
           onClick={onConfirm}

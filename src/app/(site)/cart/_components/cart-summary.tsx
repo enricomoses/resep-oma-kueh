@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Info } from 'lucide-react';
 
 import { OrderTotalsSummary } from '@/components/common/commerce/order-totals-summary';
 import { ActionLink } from '@/components/ui/action-link';
@@ -56,32 +56,38 @@ export function CartSummary({
           estimatedTotalIdr={estimatedTotalIdr}
         />
 
-        <p className="cart-price-caveat">{CART_COPY.PRICE_CAVEAT_NOTE}</p>
+        <div className="cart-price-caveat">
+          <Info
+            size={15}
+            aria-hidden="true"
+            className="cart-price-caveat-icon"
+          />
+          <p>{CART_COPY.PRICE_CAVEAT_NOTE}</p>
+        </div>
 
         {shippingBanner ? (
-          <Feedback tone="info" title={shippingBanner.title} className="mt-3">
+          <Feedback tone="info" title={shippingBanner.title}>
             <p className="text-xs">{shippingBanner.body}</p>
           </Feedback>
         ) : null}
 
-        <div className="mt-6">
-          {isCheckoutDisabled ? (
-            <Button disabled className="w-full justify-center">
-              {disabledLabel}
-              <ArrowRight size={18} aria-hidden="true" />
-            </Button>
-          ) : (
-            <ActionLink
-              href={withBranch(ROUTES.CHECKOUT, branchCode)}
-              variant="primary"
-              prefetch={false}
-              className="w-full justify-center"
-            >
-              {CART_COPY.CTA_CHECKOUT}
-              <ArrowRight size={18} aria-hidden="true" />
-            </ActionLink>
-          )}
-        </div>
+        {isCheckoutDisabled ? (
+          <Button disabled size="lg" className="cart-summary-cta">
+            {disabledLabel}
+            <ArrowRight size={18} aria-hidden="true" />
+          </Button>
+        ) : (
+          <ActionLink
+            href={withBranch(ROUTES.CHECKOUT, branchCode)}
+            variant="primary"
+            size="lg"
+            prefetch={false}
+            className="cart-summary-cta"
+          >
+            {CART_COPY.CTA_CHECKOUT}
+            <ArrowRight size={18} aria-hidden="true" />
+          </ActionLink>
+        )}
       </Card>
     </aside>
   );
