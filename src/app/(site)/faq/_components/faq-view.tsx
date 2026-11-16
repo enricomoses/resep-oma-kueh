@@ -1,11 +1,11 @@
 'use client';
 
+import { FaqAccordion } from '@/app/(site)/faq/_components/faq-accordion';
 import { ErrorState } from '@/components/common/feedback/error-state';
-import { InfoCard } from '@/components/common/cards/info-card';
 import { PageHeader } from '@/components/common/layout/page-header';
 import { SectionHeader } from '@/components/common/layout/section-header';
 import { ActionLink } from '@/components/ui/action-link';
-import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 import { Feedback } from '@/components/ui/feedback';
 import { CONTENT_COPY } from '@/constants/content.constant';
 import { ROUTES } from '@/constants/routes.constant';
@@ -29,17 +29,6 @@ export function FaqView({ initial, className }: FaqViewProps) {
   const { items, isError, isEmpty, isFetching, refetch } =
     usePublicFaqs(initial);
 
-  const groupedByCategory = items.reduce<Record<string, typeof items>>(
-    (accumulator, item) => {
-      const bucket = accumulator[item.category] ?? [];
-      bucket.push(item);
-      accumulator[item.category] = bucket;
-      return accumulator;
-    },
-    {},
-  );
-  const categories = Object.keys(groupedByCategory);
-
   return (
     <main id={SITE_COPY.MAIN_ID} className={cn('content-page-main', className)}>
       <section
@@ -51,11 +40,6 @@ export function FaqView({ initial, className }: FaqViewProps) {
           titleId="faq-hero-heading"
           titleClassName="editorial-display"
           subtitleClassName="editorial-lead"
-          badges={
-            <div className="home-badge-row">
-              <Badge tone="accent">{CONTENT_COPY.FAQ_EYEBROW}</Badge>
-            </div>
-          }
           title={CONTENT_COPY.FAQ_HEADING}
           subtitle={CONTENT_COPY.FAQ_SUBTITLE}
         />
@@ -70,16 +54,6 @@ export function FaqView({ initial, className }: FaqViewProps) {
             isRetrying={isFetching}
           />
         ) : null}
-      </section>
-
-      <section
-        className="content-container content-section"
-        aria-labelledby="faq-published-heading"
-      >
-        <SectionHeader
-          titleId="faq-published-heading"
-          title={CONTENT_COPY.FAQ_DB_SECTION_TITLE}
-        />
 
         {!isError && isEmpty ? (
           <Feedback title={CONTENT_COPY.FAQ_EMPTY_TITLE} announce>
@@ -87,27 +61,7 @@ export function FaqView({ initial, className }: FaqViewProps) {
           </Feedback>
         ) : null}
 
-        {!isError && categories.length > 0 ? (
-          <div className="content-faq-groups">
-            {categories.map((category) => (
-              <div key={category} className="content-faq-category-group">
-                <div className="home-badge-row">
-                  <Badge tone="neutral">{category}</Badge>
-                </div>
-                <div className="content-faq-list">
-                  {groupedByCategory[category]?.map((faq) => (
-                    <InfoCard
-                      key={faq.id}
-                      className="content-faq-card"
-                      title={faq.question}
-                      description={faq.answer}
-                    />
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : null}
+        {!isError && items.length > 0 ? <FaqAccordion items={items} /> : null}
       </section>
 
       <section
@@ -118,31 +72,23 @@ export function FaqView({ initial, className }: FaqViewProps) {
           titleId="faq-baseline-heading"
           title={CONTENT_COPY.FAQ_BASELINE_TITLE}
           subtitle={CONTENT_COPY.FAQ_BASELINE_NOTICE}
-          badges={
-            <div className="home-badge-row">
-              <Badge tone="accent">{CONTENT_COPY.FAQ_BASELINE_BADGE}</Badge>
-            </div>
-          }
         />
 
-        <div className="content-faq-list">
-          {CONTENT_COPY.FAQ_BASELINE_ITEMS.map((item) => (
-            <InfoCard
-              key={item.id}
-              tone="cream"
-              className="content-faq-card"
-              badges={
-                <div className="home-badge-row">
-                  <Badge tone="neutral">{item.category}</Badge>
-                </div>
-              }
-              title={item.question}
-              description={item.answer}
-            />
+        <div className="content-privacy-grid content-privacy-grid--3">
+          {CONTENT_COPY.FAQ_BASELINE_ITEMS.map((item, index) => (
+            <Card key={item.id} className="content-privacy-card">
+              <div className="content-privacy-card-header">
+                <span className="content-privacy-card-index" aria-hidden="true">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <h3 className="content-privacy-card-title">{item.question}</h3>
+              </div>
+              <p className="content-privacy-card-detail">{item.answer}</p>
+            </Card>
           ))}
         </div>
 
-        <div className="home-inline-actions">
+        <div className="content-legal-actions">
           <ActionLink
             href={withBranch(ROUTES.CONTACT, activeCode)}
             variant="primary"
