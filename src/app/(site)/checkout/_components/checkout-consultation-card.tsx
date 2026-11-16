@@ -3,7 +3,6 @@
 import { ArrowLeft, MessageCircle } from 'lucide-react';
 
 import { ActionLink } from '@/components/ui/action-link';
-import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { CHECKOUT_COPY } from '@/constants/checkout.constant';
 import { ROUTES } from '@/constants/routes.constant';
@@ -24,15 +23,21 @@ export function CheckoutConsultationCard({
   className,
 }: CheckoutConsultationCardProps) {
   return (
-    <Card tone="cream" className={cn('checkout-consultation-card', className)}>
-      <Badge tone="accent">Konsultasi Cabang</Badge>
-      <h2 className="checkout-section-title">
-        {CHECKOUT_COPY.FULFILLMENT_DISABLED_TITLE}
-      </h2>
-      <p className="checkout-section-desc">
-        {CHECKOUT_COPY.FULFILLMENT_DISABLED_BODY}
-      </p>
-      <div className="mt-4 flex flex-wrap gap-3">
+    <Card className={cn('checkout-consultation-card', className)}>
+      <div className="checkout-consultation-body">
+        <span className="checkout-consultation-eyebrow">
+          <MessageCircle size={14} aria-hidden="true" />
+          Konsultasi Cabang
+        </span>
+        <h2 className="checkout-consultation-title">
+          {CHECKOUT_COPY.FULFILLMENT_DISABLED_TITLE}
+        </h2>
+        <p className="checkout-consultation-desc">
+          {CHECKOUT_COPY.FULFILLMENT_DISABLED_BODY}
+        </p>
+      </div>
+
+      <div className="checkout-consultation-actions">
         {whatsappHref ? (
           <a
             href={whatsappHref}

@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Info } from 'lucide-react';
 
 import { OrderTotalsSummary } from '@/components/common/commerce/order-totals-summary';
 import { ActionLink } from '@/components/ui/action-link';
@@ -44,15 +44,15 @@ export function CheckoutSidebarSummary({
         <div className="checkout-sidebar-items">
           {validatedLines.map((line) => (
             <div key={line.lineId} className="checkout-sidebar-item">
-              <div className="flex justify-between gap-2 text-sm">
-                <span className="text-burgundy font-medium">
+              <div className="checkout-sidebar-item-row">
+                <span className="checkout-sidebar-item-name">
                   {line.productName} ({line.sizeLabel || line.variantName})
                 </span>
-                <span className="font-semibold">
+                <span className="checkout-sidebar-item-price">
                   {formatIdr(line.subtotalIdr)}
                 </span>
               </div>
-              <p className="text-cocoa text-xs">
+              <p className="checkout-sidebar-item-qty">
                 {line.quantity} × {formatIdr(line.effectiveUnitPriceIdr)}
               </p>
             </div>
@@ -64,23 +64,28 @@ export function CheckoutSidebarSummary({
           discountIdr={totalDiscountIdr}
           estimatedTotalIdr={estimatedTotalIdr}
           showShippingPending
-          className="mt-4 border-t border-[var(--border-sand)] pt-4"
+          className="checkout-sidebar-totals"
         />
 
-        <p className="cart-price-caveat">{CART_COPY.PRICE_CAVEAT_NOTE}</p>
-
-        <div className="mt-4">
-          <ActionLink
-            href={withBranch(ROUTES.CART, branchCode)}
-            variant="secondary"
-            size="sm"
-            prefetch={false}
-            className="w-full justify-center"
-          >
-            <ArrowLeft size={16} aria-hidden="true" />
-            {CHECKOUT_COPY.CTA_BACK_TO_CART}
-          </ActionLink>
+        <div className="cart-price-caveat">
+          <Info
+            size={15}
+            aria-hidden="true"
+            className="cart-price-caveat-icon"
+          />
+          <p>{CART_COPY.PRICE_CAVEAT_NOTE}</p>
         </div>
+
+        <ActionLink
+          href={withBranch(ROUTES.CART, branchCode)}
+          variant="secondary"
+          size="sm"
+          prefetch={false}
+          className="cart-summary-cta"
+        >
+          <ArrowLeft size={16} aria-hidden="true" />
+          {CHECKOUT_COPY.CTA_BACK_TO_CART}
+        </ActionLink>
       </Card>
     </aside>
   );

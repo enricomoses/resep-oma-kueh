@@ -7,6 +7,7 @@ import { NoBranchAlert } from '@/components/common/branch/no-branch-alert';
 import { EmptyState } from '@/components/common/feedback/empty-state';
 import { ErrorState } from '@/components/common/feedback/error-state';
 import { LoadingState } from '@/components/common/feedback/loading-state';
+import { BackLink } from '@/components/common/layout/back-link';
 import { PageHeader } from '@/components/common/layout/page-header';
 import { ActionLink } from '@/components/ui/action-link';
 import { Feedback } from '@/components/ui/feedback';
@@ -104,19 +105,17 @@ export function CheckoutView({ className }: CheckoutViewProps) {
     <main id="konten" className={cn('checkout-page', className)}>
       <div className="checkout-container">
         <div className="checkout-header">
-          <div className="mb-3">
-            <ActionLink
+          <nav
+            aria-label="Navigasi ke keranjang"
+            className="checkout-header-nav"
+          >
+            <BackLink
               href={withBranch(ROUTES.CART, flow.branchCode)}
-              variant="ghost"
-              size="sm"
+              label={CHECKOUT_COPY.CTA_BACK_TO_CART}
               prefetch={false}
-            >
-              <ArrowLeft size={16} aria-hidden="true" />
-              {CHECKOUT_COPY.CTA_BACK_TO_CART}
-            </ActionLink>
-          </div>
+            />
+          </nav>
           <PageHeader
-            className="mb-0"
             titleClassName="cart-title"
             subtitleClassName="cart-subtitle"
             title={CHECKOUT_COPY.PAGE_TITLE}
@@ -131,10 +130,7 @@ export function CheckoutView({ className }: CheckoutViewProps) {
             }
             alert={
               !flow.selectedBranch ? (
-                <NoBranchAlert
-                  message={CART_COPY.NO_BRANCH_WARNING}
-                  className="mt-4"
-                />
+                <NoBranchAlert message={CART_COPY.NO_BRANCH_WARNING} />
               ) : null
             }
           />
