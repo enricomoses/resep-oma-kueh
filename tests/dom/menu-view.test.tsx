@@ -165,7 +165,11 @@ it('renders browse mode without final branch price or Add CTA when no branch is 
     }),
   ).toBeInTheDocument();
   expect(screen.getByText('DEMO — Coffee Chiffon')).toBeInTheDocument();
-  expect(screen.getByText('Gluten-Free')).toBeInTheDocument();
+  expect(
+    screen
+      .getAllByText('Gluten-Free')
+      .some((el) => !el.closest('[aria-hidden="true"]')),
+  ).toBe(true);
   expect(
     screen.getByText(CATALOG_COPY.PRICE_BRANCH_REQUIRED),
   ).toBeInTheDocument();
@@ -231,8 +235,10 @@ it('displays computed branch starting price, promo badge, and branch-preserving 
   expect(screen.getByText('Rp14.000')).toBeInTheDocument();
   expect(screen.getByText('Rp16.000')).toBeInTheDocument();
   expect(
-    screen.getByText(/DEMO — current at reference clock/),
-  ).toBeInTheDocument();
+    screen
+      .getAllByText(/DEMO — current at reference clock/)
+      .some((el) => !el.closest('[aria-hidden="true"]')),
+  ).toBe(true);
   expect(
     screen.getByRole('link', { name: CATALOG_COPY.CTA_VIEW_OPTIONS }),
   ).toHaveAttribute('href', '/menu/demo-coffee?branch=bintaro');

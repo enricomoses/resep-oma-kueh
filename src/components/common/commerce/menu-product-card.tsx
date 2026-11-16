@@ -1,8 +1,9 @@
 import { ArrowRight } from 'lucide-react';
 
 import { MenuProductCardMedia } from '@/components/common/commerce/menu-product-card-media';
+import { ProductBadgeRow } from '@/components/common/commerce/product-badge-row';
+import type { ProductBadgeItem } from '@/components/common/commerce/product-badge-row';
 import { ActionLink } from '@/components/ui/action-link';
-import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { ROUTES } from '@/constants';
 import {
@@ -38,12 +39,82 @@ export function MenuProductCard({
     product.fromPriceIdr !== null &&
     product.fromPriceIdr < product.baseFromPriceIdr;
 
-  const availabilityTone =
+  const availabilityTone: ProductBadgeItem['tone'] =
     product.availabilityStatus === 'available'
       ? 'success'
       : product.availabilityStatus === 'sold_out'
         ? 'danger'
         : 'accent';
+
+  const badges: ProductBadgeItem[] = [
+    ...(product.isFeatured
+      ? [
+          {
+            id: 'featured',
+            label: CATALOG_COPY.BADGE_FEATURED,
+            tone: 'accent' as const,
+          },
+        ]
+      : []),
+    ...(product.isBestSeller
+      ? [
+          {
+            id: 'best-seller',
+            label: CATALOG_COPY.BADGE_BEST_SELLER,
+            tone: 'success' as const,
+          },
+        ]
+      : []),
+    ...(product.isNew
+      ? [
+          {
+            id: 'new',
+            label: CATALOG_COPY.BADGE_NEW,
+            tone: 'neutral' as const,
+          },
+        ]
+      : []),
+    ...(product.productType === 'bundle'
+      ? [
+          {
+            id: 'bundle',
+            label: CATALOG_COPY.BADGE_BUNDLE,
+            tone: 'neutral' as const,
+          },
+        ]
+      : []),
+    ...(hasBranchSelected && product.availabilityStatus
+      ? [
+          {
+            id: 'availability',
+            label: CATALOG_AVAILABILITY_LABELS[product.availabilityStatus],
+            tone: availabilityTone,
+          },
+        ]
+      : []),
+    ...(product.appliedPromotion
+      ? [
+          {
+            id: 'applied-promo',
+            label: `${CATALOG_COPY.BADGE_PROMO_APPLIED}: ${product.appliedPromotion.title}`,
+            tone: 'accent' as const,
+          },
+        ]
+      : product.conditionalPromotion
+        ? [
+            {
+              id: 'conditional-promo',
+              label: `${CATALOG_COPY.BADGE_PROMO_CONDITIONAL}: ${product.conditionalPromotion.title}`,
+              tone: 'neutral' as const,
+            },
+          ]
+        : []),
+    ...product.verifiedDietaryTags.map((tag) => ({
+      id: `diet-${tag.slug}`,
+      label: tag.name,
+      tone: 'neutral' as const,
+    })),
+  ];
 
   return (
     <Card className={cn('menu-product-card', className)}>
@@ -53,45 +124,12 @@ export function MenuProductCard({
         placeholderCaption={product.imageAlt}
       />
 
-      <div className="home-badge-row">
-        {product.isFeatured ? (
-          <Badge tone="accent">{CATALOG_COPY.BADGE_FEATURED}</Badge>
-        ) : null}
-        {product.isBestSeller ? (
-          <Badge tone="success">{CATALOG_COPY.BADGE_BEST_SELLER}</Badge>
-        ) : null}
-        {product.isNew ? (
-          <Badge tone="neutral">{CATALOG_COPY.BADGE_NEW}</Badge>
-        ) : null}
-        {product.productType === 'bundle' ? (
-          <Badge tone="neutral">{CATALOG_COPY.BADGE_BUNDLE}</Badge>
-        ) : null}
-        {hasBranchSelected && product.availabilityStatus ? (
-          <Badge tone={availabilityTone}>
-            {CATALOG_AVAILABILITY_LABELS[product.availabilityStatus]}
-          </Badge>
-        ) : null}
-        {product.appliedPromotion ? (
-          <Badge tone="accent">
-            {CATALOG_COPY.BADGE_PROMO_APPLIED}: {product.appliedPromotion.title}
-          </Badge>
-        ) : product.conditionalPromotion ? (
-          <Badge tone="neutral">
-            {CATALOG_COPY.BADGE_PROMO_CONDITIONAL}:{' '}
-            {product.conditionalPromotion.title}
-          </Badge>
-        ) : null}
-        {product.verifiedDietaryTags.map((tag) => (
-          <Badge key={tag.slug} tone="neutral">
-            {tag.name}
-          </Badge>
-        ))}
-      </div>
+      <ProductBadgeRow items={badges} />
 
       <div className="menu-product-card-body">
-        {product.primaryCategory ? (
-          <p className="home-card-eyebrow">{product.primaryCategory.name}</p>
-        ) : null}
+        <p className="home-card-eyebrow" aria-hidden={!product.primaryCategory}>
+          {product.primaryCategory?.name ?? ''}
+        </p>
         <h3>{product.name}</h3>
         {(product.shortDescription ?? product.description) ? (
           <p className="menu-product-description">
@@ -99,36 +137,38 @@ export function MenuProductCard({
           </p>
         ) : null}
 
-        <p className="menu-product-meta">
-          {hasBranchSelected
-            ? product.offeredVariantCount
-            : product.activeVariantCount}{' '}
-          {CATALOG_COPY.VARIANT_COUNT_SUFFIX}
-        </p>
-
-        {hasBranchSelected && product.fromPriceIdr !== null ? (
-          <div className="menu-product-price-block">
-            <p className="menu-product-price">
-              <span>{CATALOG_COPY.PRICE_FROM_PREFIX}</span>{' '}
-              <strong>{formatIdr(product.fromPriceIdr)}</strong>
-            </p>
-            {hasPromoDiscount && product.baseFromPriceIdr !== null ? (
-              <p className="menu-product-price-original">
-                {CATALOG_COPY.PRICE_ORIGINAL_PREFIX}{' '}
-                <span>{formatIdr(product.baseFromPriceIdr)}</span>
-              </p>
-            ) : null}
-            {product.availabilityStatus === 'sold_out' ? (
-              <p className="menu-product-sold-out-note">
-                {CATALOG_COPY.PRICE_SOLD_OUT_NOTE}
-              </p>
-            ) : null}
-          </div>
-        ) : (
-          <p className="home-price-note">
-            {CATALOG_COPY.PRICE_BRANCH_REQUIRED}
+        <div className="menu-product-card-pricing">
+          <p className="menu-product-meta">
+            {hasBranchSelected
+              ? product.offeredVariantCount
+              : product.activeVariantCount}{' '}
+            {CATALOG_COPY.VARIANT_COUNT_SUFFIX}
           </p>
-        )}
+
+          {hasBranchSelected && product.fromPriceIdr !== null ? (
+            <div className="menu-product-price-block">
+              <p className="menu-product-price">
+                <span>{CATALOG_COPY.PRICE_FROM_PREFIX}</span>{' '}
+                <strong>{formatIdr(product.fromPriceIdr)}</strong>
+              </p>
+              {hasPromoDiscount && product.baseFromPriceIdr !== null ? (
+                <p className="menu-product-price-original">
+                  {CATALOG_COPY.PRICE_ORIGINAL_PREFIX}{' '}
+                  <span>{formatIdr(product.baseFromPriceIdr)}</span>
+                </p>
+              ) : null}
+              {product.availabilityStatus === 'sold_out' ? (
+                <p className="menu-product-sold-out-note">
+                  {CATALOG_COPY.PRICE_SOLD_OUT_NOTE}
+                </p>
+              ) : null}
+            </div>
+          ) : (
+            <p className="home-price-note">
+              {CATALOG_COPY.PRICE_BRANCH_REQUIRED}
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="menu-product-card-actions">

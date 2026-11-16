@@ -54,11 +54,14 @@
 
   .menu-sidebar-desktop {
     display: none;
+    min-width: 0;
   }
 
   .menu-filter-card {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.25rem;
+    min-width: 0;
   }
 
   .menu-filter-heading {
@@ -69,12 +72,16 @@
 
   .menu-filter-panel {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.25rem;
+    min-width: 0;
   }
 
   .menu-price-filter-group {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.875rem;
+    min-width: 0;
     padding: 1rem;
     border-radius: var(--radius-md);
     border: 1px solid var(--border-sand);
@@ -115,7 +122,9 @@
 
   .menu-mobile-drawer-body {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.25rem;
+    min-width: 0;
   }
 
   @media (min-width: 62rem) {
