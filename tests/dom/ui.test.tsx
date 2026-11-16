@@ -1,6 +1,9 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 
+import { Tag } from 'lucide-react';
+
+import { EmptyState } from '@/components/common/feedback/empty-state';
 import { Button } from '@/components/ui/button';
 import { DatePicker } from '@/components/ui/date-picker';
 import { FormField } from '@/components/ui/form-field';
@@ -177,4 +180,50 @@ it('renders DatePicker in datetime mode and emits YYYY-MM-DDTHH:mm', () => {
     '2026-11-16T14:00',
   );
   expect(trigger).toHaveTextContent('16 Nov 2026, 14:00');
+});
+
+it('renders EmptyState centered with fallback/custom icon, heading level, size, and announce status', () => {
+  const view = render(
+    <EmptyState
+      title="Belum ada promo aktif pada periode atau cabang ini."
+      description="Pantau kembali penawaran terbaru dari cabang pilihan."
+      headingAs="h3"
+      announce
+      action={<Button variant="secondary">Lihat Menu</Button>}
+    />,
+  );
+
+  const statusCard = screen.getByRole('status');
+  expect(statusCard).toHaveClass('empty-state');
+  expect(
+    statusCard.querySelector('.empty-state-icon-wrap svg'),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('heading', {
+      level: 3,
+      name: 'Belum ada promo aktif pada periode atau cabang ini.',
+    }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText('Pantau kembali penawaran terbaru dari cabang pilihan.'),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: 'Lihat Menu' }),
+  ).toBeInTheDocument();
+
+  view.rerender(
+    <EmptyState
+      size="lg"
+      tone="cream"
+      headingAs="h1"
+      icon={<Tag data-testid="custom-empty-icon" size={24} />}
+      title="Keranjang Masih Kosong"
+    />,
+  );
+
+  const card = screen
+    .getByRole('heading', { level: 1, name: 'Keranjang Masih Kosong' })
+    .closest('article');
+  expect(card).toHaveClass('empty-state', 'empty-state--lg', 'ui-card--cream');
+  expect(screen.getByTestId('custom-empty-icon')).toBeInTheDocument();
 });
