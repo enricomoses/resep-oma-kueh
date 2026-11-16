@@ -1,4 +1,4 @@
-import { CheckCircle2, ExternalLink, MapPin, Phone } from 'lucide-react';
+import { CheckCircle2, Clock, MapPin, Phone } from 'lucide-react';
 
 import { SectionHeader } from '@/components/common/layout/section-header';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +15,17 @@ interface FindUsSectionProps {
   isBranchesError: boolean;
   onSelectBranch: (branch: PublicBranch) => void;
   className?: string;
+}
+
+const BRANCH_OPERATIONAL_HOURS: Record<string, string> = {
+  surabaya: 'Setiap Hari, 08.00 WIB - 17.00 WIB',
+  sby: 'Setiap Hari, 08.00 WIB - 17.00 WIB',
+  bintaro: 'Senin - Sabtu, 08.00 WIB - 16.00 WIB',
+  btr: 'Senin - Sabtu, 08.00 WIB - 16.00 WIB',
+};
+
+function formatWhatsappDisplay(number: string): string {
+  return number.replace(/^62/, '0');
 }
 
 export function FindUsSection({
@@ -47,6 +58,9 @@ export function FindUsSection({
             active?.whatsappNumber ?? fallback.whatsappNumber;
           const address = active ? active.address : fallback.address;
           const mapsUrl = active?.mapsUrl ?? null;
+          const operationalHours =
+            BRANCH_OPERATIONAL_HOURS[fallback.code.toLowerCase()] ??
+            HOME_COPY.FIND_US_HOURS_PENDING;
 
           return (
             <Card key={fallback.code} className="home-branch-card">
@@ -60,21 +74,38 @@ export function FindUsSection({
                 ) : null}
               </div>
               <p className="home-branch-detail">
-                <MapPin size={16} aria-hidden="true" />
-                <span>{address ?? HOME_COPY.FIND_US_ADDRESS_PENDING}</span>
+                {address && mapsUrl ? (
+                  <a
+                    href={mapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="home-branch-link"
+                  >
+                    <MapPin size={16} aria-hidden="true" />
+                    <span>{address}</span>
+                  </a>
+                ) : (
+                  <>
+                    <MapPin size={16} aria-hidden="true" />
+                    <span>{address ?? HOME_COPY.FIND_US_ADDRESS_PENDING}</span>
+                  </>
+                )}
               </p>
               <p className="home-branch-detail">
-                <Phone size={16} aria-hidden="true" />
                 <a
                   href={`https://wa.me/${whatsappNumber}`}
-                  className="ui-link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="home-branch-link"
                   aria-label={`Hubungi WhatsApp cabang ${name}`}
                 >
-                  +{whatsappNumber}
+                  <Phone size={16} aria-hidden="true" />
+                  <span>{formatWhatsappDisplay(whatsappNumber)}</span>
                 </a>
               </p>
-              <p className="home-price-note">
-                {HOME_COPY.FIND_US_HOURS_PENDING}
+              <p className="home-branch-detail">
+                <Clock size={16} aria-hidden="true" />
+                <span>{operationalHours}</span>
               </p>
               <div className="home-branch-actions">
                 {active ? (
@@ -87,17 +118,6 @@ export function FindUsSection({
                       ? `${HOME_COPY.FIND_US_SELECTED} (${name})`
                       : `${HOME_COPY.FIND_US_SELECT_CTA} ${name}`}
                   </Button>
-                ) : null}
-                {mapsUrl ? (
-                  <a
-                    href={mapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="ui-link"
-                  >
-                    {HOME_COPY.FIND_US_MAPS_CTA}
-                    <ExternalLink size={14} aria-hidden="true" />
-                  </a>
                 ) : null}
               </div>
             </Card>
