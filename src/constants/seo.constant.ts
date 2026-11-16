@@ -3,9 +3,22 @@ import { ROUTES } from '@/constants/routes.constant';
 export const SEO_DEFAULTS = {
   LOCALE: 'id_ID',
   LANGUAGE: 'id',
+  DEFAULT_OG_IMAGE: '/images/hero-bakery.webp',
   DEFAULT_DESCRIPTION:
     'Resep Oma Kueh menghadirkan kue klasik dengan sentuhan modern di Surabaya dan Bintaro, serta kelas memanggang ROK Baking Class.',
-  PREVIEW_HOST_SUFFIXES: ['.vercel.app'],
+  KEYWORDS: [
+    'Resep Oma Kueh',
+    'toko kue Surabaya',
+    'toko kue Bintaro',
+    'chiffon cake',
+    'lapis surabaya',
+    'kue klasik',
+    'roti artisanal',
+    'ROK Baking Class',
+    'baking class Surabaya',
+    'baking class Bintaro',
+  ],
+  PREVIEW_HOST_SUFFIXES: [] as readonly string[],
   PREVIEW_HOST_PREFIXES: [
     'staging.',
     'staging-',
@@ -13,6 +26,7 @@ export const SEO_DEFAULTS = {
     'preview-',
     'deploy-preview-',
   ],
+  PREVIEW_HOST_SUBSTRINGS: ['-preview.', '-git-'],
 } as const;
 
 export const ROBOTS_DISALLOW_PATHS = [

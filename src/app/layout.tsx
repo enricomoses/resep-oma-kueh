@@ -8,6 +8,7 @@ import {
 import { getPublicEnvironment } from '@/config';
 import { getServerEnvironment } from '@/config/environment.server';
 import { APP, ROUTES } from '@/constants';
+import { SEO_DEFAULTS } from '@/constants/seo.constant';
 import { FOUNDATION_COPY } from '@/constants/ui.constant';
 import { ReactQueryProvider, ToastProvider } from '@/providers';
 import { cn } from '@/utils';
@@ -36,12 +37,52 @@ const barlow = Barlow_Condensed({
   preload: false,
 });
 
+const publicEnv = getPublicEnvironment();
+const isNoIndex = isNoIndexDeployment({
+  siteUrl: publicEnv.NEXT_PUBLIC_SITE_URL,
+  demoMode: publicEnv.NEXT_PUBLIC_DEMO_MODE,
+});
+
 export const metadata: Metadata = {
-  metadataBase: new URL(getPublicEnvironment().NEXT_PUBLIC_SITE_URL),
-  title: APP.NAME,
+  metadataBase: new URL(publicEnv.NEXT_PUBLIC_SITE_URL),
+  applicationName: APP.NAME,
+  title: {
+    default: APP.NAME,
+    template: `%s | ${APP.NAME}`,
+  },
   alternates: { canonical: ROUTES.HOME },
   description: FOUNDATION_COPY.META,
-  robots: isNoIndexDeployment() ? { index: false, follow: false } : undefined,
+  keywords: [...SEO_DEFAULTS.KEYWORDS],
+  authors: [{ name: APP.NAME }],
+  creator: APP.NAME,
+  publisher: APP.NAME,
+  openGraph: {
+    type: 'website',
+    locale: SEO_DEFAULTS.LOCALE,
+    siteName: APP.NAME,
+    title: APP.NAME,
+    description: FOUNDATION_COPY.META,
+    images: [{ url: SEO_DEFAULTS.DEFAULT_OG_IMAGE, alt: APP.NAME }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: APP.NAME,
+    description: FOUNDATION_COPY.META,
+    images: [SEO_DEFAULTS.DEFAULT_OG_IMAGE],
+  },
+  robots: isNoIndex
+    ? { index: false, follow: false }
+    : {
+        index: true,
+        follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          'max-image-preview': 'large',
+          'max-snippet': -1,
+          'max-video-preview': -1,
+        },
+      },
 };
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {

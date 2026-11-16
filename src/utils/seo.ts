@@ -19,6 +19,10 @@ export function isNoIndexDeployment(options?: NoIndexCheckOptions): boolean {
     return true;
   }
 
+  if (process.env.VERCEL_ENV === 'preview') {
+    return true;
+  }
+
   try {
     const hostname = new URL(resolved.siteUrl).hostname.toLowerCase();
     if (
@@ -31,6 +35,13 @@ export function isNoIndexDeployment(options?: NoIndexCheckOptions): boolean {
     if (
       SEO_DEFAULTS.PREVIEW_HOST_PREFIXES.some((prefix) =>
         hostname.startsWith(prefix),
+      )
+    ) {
+      return true;
+    }
+    if (
+      SEO_DEFAULTS.PREVIEW_HOST_SUBSTRINGS.some((part) =>
+        hostname.includes(part),
       )
     ) {
       return true;
@@ -63,6 +74,54 @@ export interface BuildPageMetadataInput {
   demoMode?: boolean;
 }
 
+function resolveOgImageUrl(
+  siteUrl: string,
+  imageUrl?: string | null,
+): string | null {
+  const candidate = imageUrl?.trim();
+  if (candidate) {
+    if (/^https?:\/\//i.test(candidate)) {
+      return candidate;
+    }
+    if (candidate.startsWith('/')) {
+      return resolveCanonicalUrl(siteUrl, candidate);
+    }
+  }
+
+  return resolveCanonicalUrl(siteUrl, SEO_DEFAULTS.DEFAULT_OG_IMAGE);
+}
+
+function formatMetadataTitles(
+  title: string,
+  path: string,
+): {
+  documentTitle: Metadata['title'];
+  socialTitle: string;
+} {
+  if (path === ROUTES.HOME || title.trim() === APP.NAME) {
+    return {
+      documentTitle: { absolute: APP.NAME },
+      socialTitle: APP.NAME,
+    };
+  }
+
+  const baseTitle = title
+    .replace(new RegExp(`\\s*\\|\\s*${APP.NAME}$`, 'i'), '')
+    .trim();
+
+  if (!baseTitle) {
+    return {
+      documentTitle: { absolute: APP.NAME },
+      socialTitle: APP.NAME,
+    };
+  }
+
+  return {
+    documentTitle: baseTitle,
+    socialTitle: `${baseTitle} | ${APP.NAME}`,
+  };
+}
+
 export function buildPageMetadata({
   title,
   description,
@@ -82,20 +141,20 @@ export function buildPageMetadata({
         };
   const canonicalUrl = resolveCanonicalUrl(env.siteUrl, path);
   const effectiveNoIndex = noIndex || isNoIndexDeployment(env);
-
-  const validImage =
-    imageUrl && /^https?:\/\//i.test(imageUrl)
-      ? [{ url: imageUrl }]
-      : undefined;
+  const { documentTitle, socialTitle } = formatMetadataTitles(title, path);
+  const resolvedImageUrl = resolveOgImageUrl(env.siteUrl, imageUrl);
+  const validImage = resolvedImageUrl
+    ? [{ url: resolvedImageUrl, alt: socialTitle }]
+    : undefined;
 
   return {
-    title,
+    title: documentTitle,
     description,
     alternates: {
       canonical: canonicalUrl,
     },
     openGraph: {
-      title,
+      title: socialTitle,
       description,
       url: canonicalUrl,
       siteName: APP.NAME,
@@ -105,7 +164,7 @@ export function buildPageMetadata({
     },
     twitter: {
       card: validImage ? 'summary_large_image' : 'summary',
-      title,
+      title: socialTitle,
       description,
       ...(validImage ? { images: validImage.map((img) => img.url) } : {}),
     },
