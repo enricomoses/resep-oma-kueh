@@ -50,9 +50,6 @@ export function ClassesView({ initial, className }: ClassesViewProps) {
         subtitle={CLASSES_COPY.SUBTITLE}
         subtitleClassName="classes-subtitle"
       >
-        <p className="classes-policy-note">
-          {CLASSES_COPY.NO_FALSE_DATES_NOTE}
-        </p>
         {selected ? (
           <Badge tone="success">
             <MapPin size={14} aria-hidden="true" />
@@ -64,8 +61,6 @@ export function ClassesView({ initial, className }: ClassesViewProps) {
           </Badge>
         )}
       </PageHeader>
-
-      <Feedback tone="info" title={CLASSES_COPY.CAPACITY_DISCLAIMER} />
 
       {query.isError || (!data && initial.status === 'error') ? (
         <Feedback tone="error" title={CLASSES_COPY.ERROR_LOAD}>
