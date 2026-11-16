@@ -6,7 +6,11 @@ import { ActionLink } from '@/components/ui/action-link';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { ROUTES } from '@/constants';
-import { HOME_CMS_DEFAULTS, HOME_COPY, HOME_SECTION_IDS } from '@/constants/home.constant';
+import {
+  HOME_CMS_DEFAULTS,
+  HOME_COPY,
+  HOME_SECTION_IDS,
+} from '@/constants/home.constant';
 import { cn } from '@/utils';
 import { withBranch } from '@/utils/branch-url';
 

@@ -238,7 +238,25 @@
 
   .home-series-card-body {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.5rem;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .home-series-card-body h3 {
+    min-height: 2.7em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .home-series-card-body p {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .home-series-card .home-series-card-link {
@@ -313,7 +331,7 @@
   }
 
   .home-series-card p,
-  .home-featured-card-body p,
+  .home-featured-card-body > p:not(.home-card-eyebrow),
   .home-treat-card p,
   .home-class-card-body p,
   .home-class-empty-card p,
@@ -332,7 +350,36 @@
     gap: 1rem;
   }
 
-  .home-featured-card-body,
+  .home-featured-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .home-featured-card-body h3 {
+    min-height: 2.7em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .home-featured-card-body > p:not(.home-card-eyebrow):not(.home-price-note) {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .home-featured-card-body > .menu-product-price-block,
+  .home-featured-card-body > .home-price-note {
+    margin-top: auto;
+    padding-top: 0.25rem;
+  }
+
   .home-class-card-body {
     display: grid;
     gap: 0.5rem;
