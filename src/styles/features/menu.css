@@ -11,7 +11,7 @@
   .menu-header-section {
     display: grid;
     gap: 1.5rem;
-    padding-block: var(--space-section) 2rem;
+    padding-block: var(--space-page-top) 1.5rem;
   }
 
   .menu-branch-notice-card {

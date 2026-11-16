@@ -66,16 +66,6 @@ export function AboutView({ initial, className }: AboutViewProps) {
           titleId="about-hero-heading"
           titleClassName="editorial-display"
           subtitleClassName="editorial-lead"
-          badges={
-            <div className="home-badge-row">
-              <Badge tone="accent">{CONTENT_COPY.ABOUT_EYEBROW}</Badge>
-              <Badge tone={storySource === 'published' ? 'success' : 'neutral'}>
-                {storySource === 'published'
-                  ? CONTENT_COPY.SOURCE_PUBLISHED_BADGE
-                  : CONTENT_COPY.SOURCE_TEMPLATE_BADGE}
-              </Badge>
-            </div>
-          }
           title={storyTitle}
           subtitle={storyBody}
         >
@@ -128,17 +118,6 @@ export function AboutView({ initial, className }: AboutViewProps) {
           titleId="about-values-heading"
           title={CONTENT_COPY.ABOUT_VALUES_TITLE}
           subtitle={CONTENT_COPY.ABOUT_VALUES_SUBTITLE}
-          badges={
-            <div className="home-badge-row">
-              <Badge
-                tone={valuesSource === 'published' ? 'success' : 'neutral'}
-              >
-                {valuesSource === 'published'
-                  ? CONTENT_COPY.SOURCE_PUBLISHED_BADGE
-                  : CONTENT_COPY.SOURCE_TEMPLATE_BADGE}
-              </Badge>
-            </div>
-          }
         />
         <div className="content-values-grid">
           {valuesList.map((value) => {

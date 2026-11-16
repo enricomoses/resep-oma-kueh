@@ -10,13 +10,14 @@
 
   .content-section {
     display: grid;
-    gap: 2rem;
+    gap: 1.75rem;
     padding-block: var(--space-section);
     border-top: 1px solid var(--border-sand);
   }
 
   .content-section:first-child {
     border-top: 0;
+    padding-block: var(--space-page-top) clamp(1.5rem, 2.5vw, 2.25rem);
   }
 
   .content-header-block {

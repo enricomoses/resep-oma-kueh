@@ -45,7 +45,6 @@ export function ClassesView({ initial, className }: ClassesViewProps) {
     >
       <PageHeader
         className="classes-hero-header"
-        badges={<Badge tone="accent">{CLASSES_COPY.EYEBROW}</Badge>}
         title={CLASSES_COPY.TITLE}
         titleClassName="editorial-heading"
         subtitle={CLASSES_COPY.SUBTITLE}

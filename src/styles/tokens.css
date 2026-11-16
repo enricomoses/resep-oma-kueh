@@ -45,7 +45,8 @@
   --transition-fast: 150ms ease;
 
   /* Typography & Layout Scale */
-  --space-section: clamp(3rem, 6vw, 7rem);
+  --space-page-top: clamp(1.25rem, 2.5vw, 2rem);
+  --space-section: clamp(2rem, 3.5vw, 3rem);
   --type-display: clamp(2.75rem, 5.4vw, 5.5rem);
   --type-heading: clamp(2rem, 3vw, 3rem);
   --content-width: 78rem;

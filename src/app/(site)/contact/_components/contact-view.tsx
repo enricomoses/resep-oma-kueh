@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { PageHeader } from '@/components/common/layout/page-header';
 import { SectionHeader } from '@/components/common/layout/section-header';
-import { Badge } from '@/components/ui/badge';
 import { Feedback } from '@/components/ui/feedback';
 import { CONTENT_COPY } from '@/constants/content.constant';
 import { SITE_COPY } from '@/constants/site.constant';
@@ -78,11 +77,6 @@ export function ContactView({ data, className }: ContactViewProps) {
           titleId="contact-hero-heading"
           titleClassName="editorial-display"
           subtitleClassName="editorial-lead"
-          badges={
-            <div className="home-badge-row">
-              <Badge tone="accent">{CONTENT_COPY.CONTACT_EYEBROW}</Badge>
-            </div>
-          }
           title={CONTENT_COPY.CONTACT_HEADING}
           subtitle={CONTENT_COPY.CONTACT_SUBTITLE}
         />

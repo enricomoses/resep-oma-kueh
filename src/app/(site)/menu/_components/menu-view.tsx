@@ -3,7 +3,6 @@
 import { SlidersHorizontal } from 'lucide-react';
 
 import { PageHeader } from '@/components/common/layout/page-header';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Drawer } from '@/components/ui/drawer';
@@ -88,7 +87,6 @@ export function MenuView({
           titleId="menu-title"
           titleClassName="editorial-display"
           subtitleClassName="editorial-lead"
-          badges={<Badge tone="accent">{CATALOG_COPY.EYEBROW}</Badge>}
           title={CATALOG_COPY.TITLE}
           subtitle={CATALOG_COPY.SUBTITLE}
         />
