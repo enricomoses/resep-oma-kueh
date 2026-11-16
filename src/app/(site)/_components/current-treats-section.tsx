@@ -1,28 +1,14 @@
 import { Tag } from 'lucide-react';
-import Image from 'next/image';
 
 import { EmptyState } from '@/components/common/feedback/empty-state';
 import { SectionHeader } from '@/components/common/layout/section-header';
-import { Card } from '@/components/ui/card';
 import { Feedback } from '@/components/ui/feedback';
 import { HOME_COPY, HOME_SECTION_IDS } from '@/constants/home.constant';
 import type { HomePromotion, HomeSectionResult } from '@/types/home';
 import type { PublicShippingBanner } from '@/types/promotion';
 import { cn } from '@/utils';
-import { formatJakartaDateTimeDisplay } from '@/utils/admin-promotions';
 
-const rupiahFormatter = new Intl.NumberFormat('id-ID', {
-  style: 'currency',
-  currency: 'IDR',
-  maximumFractionDigits: 0,
-});
-
-function formatDiscountLabel(promotion: HomePromotion) {
-  if (promotion.discountType === 'percentage') {
-    return `Diskon ${promotion.discountValue}%`;
-  }
-  return `Potongan ${rupiahFormatter.format(promotion.discountValue)}`;
-}
+import { TreatCard } from './treat-card';
 
 interface CurrentTreatsSectionProps {
   promotions: HomeSectionResult<HomePromotion[]>;
@@ -76,42 +62,11 @@ export function CurrentTreatsSection({
       ) : (
         <div className="home-treats-grid">
           {visiblePromotions.map((promotion) => (
-            <Card key={promotion.id} className="home-treat-card">
-              {promotion.bannerImageUrl ? (
-                <div className="relative mb-3 h-36 w-full overflow-hidden rounded-[var(--radius-sm)] border border-[var(--border-sand)]">
-                  <Image
-                    src={promotion.bannerImageUrl}
-                    alt={`Banner promosi ${promotion.title}`}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 380px"
-                    unoptimized
-                    className="object-cover"
-                  />
-                </div>
-              ) : null}
-              <div className="home-treat-header">
-                <span className="home-campaign-pill">
-                  <Tag size={14} aria-hidden="true" />
-                  {HOME_COPY.TREATS_BADGE}
-                </span>
-                <span className="home-campaign-value">
-                  {formatDiscountLabel(promotion)}
-                </span>
-              </div>
-              <h3>{promotion.title}</h3>
-              {promotion.description ? <p>{promotion.description}</p> : null}
-              <p className="text-muted-foreground text-xs">
-                {formatJakartaDateTimeDisplay(promotion.startsAt)} –{' '}
-                {formatJakartaDateTimeDisplay(promotion.endsAt)}
-              </p>
-              <p className="home-price-note">
-                {promotion.branchIds.length === 0
-                  ? HOME_COPY.TREATS_ALL_BRANCHES
-                  : selectedBranchName
-                    ? `${HOME_COPY.TREATS_SCOPED_BRANCH}: ${selectedBranchName}`
-                    : HOME_COPY.TREATS_SCOPED_BRANCH}
-              </p>
-            </Card>
+            <TreatCard
+              key={promotion.id}
+              promotion={promotion}
+              selectedBranchName={selectedBranchName}
+            />
           ))}
         </div>
       )}
