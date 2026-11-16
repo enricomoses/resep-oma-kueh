@@ -60,6 +60,10 @@ export function buildContentSecurityPolicy({
   if (supabaseOrigin.wsOrigin) {
     connectSources.add(supabaseOrigin.wsOrigin);
   }
+  if (!isProduction) {
+    connectSources.add('ws://localhost:*');
+    connectSources.add('ws://127.0.0.1:*');
+  }
 
   const scriptSources = isProduction
     ? ["'self'", "'unsafe-inline'"]
