@@ -24,8 +24,19 @@
     display: grid;
     gap: 1rem;
     padding: clamp(1.25rem, 2.5vw, 1.5rem);
-    position: sticky;
-    top: calc(var(--site-header-height) + 1.5rem);
+  }
+
+  @media (min-width: 64rem) {
+    .cart-summary-section {
+      position: sticky;
+      top: calc(var(--site-header-height) + 1.5rem);
+    }
+
+    .cart-summary-card {
+      max-height: calc(100dvh - var(--site-header-height) - 2.5rem);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
   }
 
   .cart-summary-title {

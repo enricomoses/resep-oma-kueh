@@ -25,10 +25,6 @@ export function CheckoutConsultationCard({
   return (
     <Card className={cn('checkout-consultation-card', className)}>
       <div className="checkout-consultation-body">
-        <span className="checkout-consultation-eyebrow">
-          <MessageCircle size={14} aria-hidden="true" />
-          Konsultasi Cabang
-        </span>
         <h2 className="checkout-consultation-title">
           {CHECKOUT_COPY.FULFILLMENT_DISABLED_TITLE}
         </h2>

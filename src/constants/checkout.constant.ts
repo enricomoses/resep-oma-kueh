@@ -16,6 +16,25 @@ export const CHECKOUT_LIMITS = {
 
 export const FULFILLMENT_METHODS = ['delivery', 'pickup'] as const;
 
+const OPENING_HOUR_MINUTES = 8 * 60; // 08:00 WIB
+const CLOSING_HOUR_MINUTES = 17 * 60; // 17:00 WIB
+const TIME_SLOT_STEP_MINUTES = 30;
+
+export const CHECKOUT_TIME_SLOTS: readonly string[] = Array.from(
+  {
+    length:
+      Math.floor(
+        (CLOSING_HOUR_MINUTES - OPENING_HOUR_MINUTES) / TIME_SLOT_STEP_MINUTES,
+      ) + 1,
+  },
+  (_, index) => {
+    const totalMinutes = OPENING_HOUR_MINUTES + index * TIME_SLOT_STEP_MINUTES;
+    const hours = String(Math.floor(totalMinutes / 60)).padStart(2, '0');
+    const minutes = String(totalMinutes % 60).padStart(2, '0');
+    return `${hours}:${minutes} WIB`;
+  },
+);
+
 export const CHECKOUT_WARNING_CODES = {
   MANUAL_CONFIRMATION_REQUIRED: 'MANUAL_CONFIRMATION_REQUIRED',
   PRICE_CHANGED: 'PRICE_CHANGED',
@@ -30,21 +49,16 @@ export const CHECKOUT_COPY = {
   FORM_SECTION_DESC:
     'Data pemesan hanya digunakan sementara untuk menyusun pesan WhatsApp dan tidak disimpan di perangkat Anda.',
   FIELD_CUSTOMER_NAME_LABEL: 'Nama Pemesan',
-  FIELD_CUSTOMER_NAME_PLACEHOLDER: 'Contoh: Ibu Ratna',
-  FIELD_CUSTOMER_NAME_HELPER: 'Masukkan 2 hingga 80 karakter.',
+  FIELD_CUSTOMER_NAME_PLACEHOLDER: 'Nama lengkap pemesan',
   FIELD_METHOD_LABEL: 'Metode Penerimaan',
   FIELD_DATE_LABEL: 'Tanggal Diinginkan',
-  FIELD_DATE_HELPER: 'Pilih tanggal hari ini hingga 90 hari ke depan (WIB).',
-  FIELD_TIME_WINDOW_LABEL: 'Preferensi Waktu (Opsional)',
-  FIELD_TIME_WINDOW_PLACEHOLDER: 'Contoh: Pagi (09:00 - 12:00)',
+  FIELD_TIME_WINDOW_LABEL: 'Preferensi Waktu',
+  FIELD_TIME_WINDOW_PLACEHOLDER: 'Fleksibel — konfirmasi admin',
   FIELD_ADDRESS_LABEL: 'Alamat Pengiriman Lengkap',
   FIELD_ADDRESS_PLACEHOLDER:
     'Nama jalan, nomor rumah, RT/RW, kelurahan, kecamatan, dan patokan lokasi',
-  FIELD_ADDRESS_HELPER:
-    'Wajib diisi untuk metode Delivery (minimal 5 karakter).',
-  FIELD_NOTE_LABEL: 'Catatan Pesanan (Opsional)',
-  FIELD_NOTE_PLACEHOLDER:
-    'Contoh: Tulisan kartu ucapan atau instruksi khusus kurir',
+  FIELD_NOTE_LABEL: 'Catatan Pesanan',
+  FIELD_NOTE_PLACEHOLDER: 'Tulisan kartu ucapan atau instruksi khusus kurir',
   CONSENT_LABEL:
     'Saya memahami pesanan dan biaya akhir harus dikonfirmasi admin melalui WhatsApp.',
   CONSENT_POLICY_NOTE_PREFIX: 'Dengan melanjutkan, Anda memahami ',

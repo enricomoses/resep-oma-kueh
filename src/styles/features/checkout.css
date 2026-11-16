@@ -62,19 +62,6 @@
     max-width: 62ch;
   }
 
-  .checkout-consultation-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-    padding: 0.25rem 0.75rem;
-    border-radius: 999px;
-    background: var(--accent-rose);
-    color: var(--brand-deep);
-    font-size: 0.75rem;
-    font-weight: 600;
-    line-height: 1.4;
-  }
-
   .checkout-consultation-title {
     margin: 0;
     font-family: var(--font-fraunces), serif;
@@ -125,43 +112,67 @@
 
   .checkout-form {
     display: grid;
-    gap: 1.25rem;
+    gap: 1.125rem;
   }
 
   .checkout-form-row-2 {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 1.125rem;
   }
 
   @media (min-width: 40rem) {
     .checkout-form-row-2 {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem 1.25rem;
     }
   }
 
-  .checkout-consent-box {
+  .checkout-textarea--address {
+    min-height: 5.5rem;
+  }
+
+  .checkout-textarea--note {
+    min-height: 4.25rem;
+  }
+
+  .checkout-form-footer {
     display: grid;
-    gap: 0.5rem;
-    padding: 1rem 1.25rem;
-    border-radius: var(--radius-card);
-    border: 1px solid var(--border-sand);
-    background-color: var(--brand-cream);
+    gap: 1.125rem;
+    margin-top: 0.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border-sand);
+  }
+
+  .checkout-consent-block {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: 0.75rem;
+  }
+
+  .checkout-consent-copy {
+    display: grid;
+    gap: 0.3125rem;
+    min-width: 0;
   }
 
   .checkout-consent-label {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
     font-weight: 600;
+    line-height: 1.45;
     color: var(--brand-deep);
     cursor: pointer;
   }
 
+  .checkout-consent-label .ui-field-required {
+    margin-left: 0.25rem;
+  }
+
   .checkout-consent-checkbox {
-    width: 1.125rem;
-    height: 1.125rem;
+    width: 1.0625rem;
+    height: 1.0625rem;
     margin-top: 0.1875rem;
     flex-shrink: 0;
     accent-color: var(--brand-burgundy);
@@ -169,9 +180,9 @@
   }
 
   .checkout-consent-policy {
+    margin: 0;
     font-size: 0.8125rem;
     color: var(--text-cocoa);
-    padding-left: 1.875rem;
     line-height: 1.5;
   }
 
@@ -180,7 +191,6 @@
     flex-wrap: wrap;
     justify-content: flex-end;
     gap: 0.75rem;
-    padding-top: 0.5rem;
   }
 
   .checkout-quote-lines {
