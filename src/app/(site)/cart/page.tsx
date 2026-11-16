@@ -8,7 +8,7 @@ import { ROUTES } from '@/constants/routes.constant';
 import { buildPageMetadata } from '@/utils/seo';
 
 export const metadata: Metadata = buildPageMetadata({
-  title: `${CART_COPY.PAGE_TITLE} · Resep Oma Kueh`,
+  title: `${CART_COPY.PAGE_TITLE} | Resep Oma Kueh`,
   description: CART_COPY.PAGE_DESCRIPTION,
   path: ROUTES.CART,
   noIndex: true,

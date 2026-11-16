@@ -1,7 +1,16 @@
+import type { Metadata } from 'next';
 import { ActionLink } from '@/components/ui/action-link';
 import { Card } from '@/components/ui/card';
 import { ROUTES } from '@/constants/routes.constant';
 import { BOUNDARY_COPY } from '@/constants/seo.constant';
+
+export const metadata: Metadata = {
+  title: BOUNDARY_COPY.NOT_FOUND_TITLE,
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function NotFound() {
   return (

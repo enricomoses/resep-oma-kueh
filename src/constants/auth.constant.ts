@@ -21,9 +21,9 @@ export const AUTH_ERROR_REASONS = [
 ] as const;
 
 export const AUTH_COPY = {
-  LOGIN_META_TITLE: 'Masuk Admin — Resep Oma Kueh',
-  RESET_META_TITLE: 'Atur Ulang Kata Sandi Admin — Resep Oma Kueh',
-  ADMIN_META_TITLE: 'Dasbor Admin — Resep Oma Kueh',
+  LOGIN_META_TITLE: 'Masuk Admin | Resep Oma Kueh',
+  RESET_META_TITLE: 'Atur Ulang Kata Sandi Admin | Resep Oma Kueh',
+  ADMIN_META_TITLE: 'Dasbor Admin | Resep Oma Kueh',
   LOGIN_HEADING: 'Portal Admin Resep Oma Kueh',
   LOGIN_SUBTITLE:
     'Masuk dengan email dan kata sandi admin yang telah didaftarkan.',

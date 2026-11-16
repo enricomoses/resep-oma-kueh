@@ -22,27 +22,27 @@ export const CONTENT_LIMITS = {
 
 export const PAGE_METADATA = {
   ABOUT: {
-    title: 'Tentang Oma — Resep Oma Kueh',
+    title: 'Tentang Oma | Resep Oma Kueh',
     description:
       'Kisah keluarga Resep Oma Kueh asal Surabaya, nilai brand, dan profil tim bakers–food scientist dengan konsep modern old-fashioned recipe.',
   },
   CONTACT: {
-    title: 'Kontak & Konsultasi Bisnis — Resep Oma Kueh',
+    title: 'Contact | Resep Oma Kueh',
     description:
       'Hubungi WhatsApp cabang Surabaya dan Bintaro, email resmi, Instagram, alamat terkonfirmasi, serta konsultasi custom cake dan bread bisnis.',
   },
   FAQ: {
-    title: 'FAQ Pemesanan & Kelas — Resep Oma Kueh',
+    title: 'FAQ Pemesanan & Kelas | Resep Oma Kueh',
     description:
       'Pertanyaan umum mengenai konfirmasi pesanan via WhatsApp, ketersediaan stok cabang, penyimpanan produk, dan pendaftaran ROK Baking Class.',
   },
   PRIVACY: {
-    title: 'Kebijakan Privasi — Resep Oma Kueh',
+    title: 'Kebijakan Privasi | Resep Oma Kueh',
     description:
       'Penjelasan penyimpanan preferensi cabang dan keranjang lokal di browser, pemrosesan kutipan checkout sementara di server, dan handoff WhatsApp.',
   },
   ORDERING_POLICY: {
-    title: 'Kebijakan Pemesanan — Resep Oma Kueh',
+    title: 'Kebijakan Pemesanan | Resep Oma Kueh',
     description:
       'Ketentuan konfirmasi manual stok, ongkos kirim, metode pembayaran, dan total akhir melalui admin WhatsApp cabang Resep Oma Kueh.',
   },
@@ -65,7 +65,7 @@ export const CONTENT_DEFAULTS = {
     body: 'Tim Resep Oma Kueh terbuka untuk diskusi custom cake dan bread sesuai kebutuhan kafe, hampers, atau acara bisnis melalui WhatsApp cabang pilihan.',
   },
   FOOTER_NOTE: {
-    text: 'Data demo — bukan katalog pemesanan aktif.',
+    text: 'Kue klasik dengan sentuhan modern dari dapur Surabaya & Bintaro. Konfirmasi pesanan melalui WhatsApp cabang resmi.',
   },
   LEGAL_PRIVACY: {
     title: 'Kebijakan Privasi',
