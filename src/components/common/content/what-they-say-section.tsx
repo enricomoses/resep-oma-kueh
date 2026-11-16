@@ -1,5 +1,6 @@
 import { MessageSquareQuote, Star } from 'lucide-react';
 
+import { EmptyState } from '@/components/common/feedback/empty-state';
 import { SectionHeader } from '@/components/common/layout/section-header';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
@@ -42,7 +43,17 @@ export function WhatTheySaySection({
       {testimonials.status === 'error' ? (
         <Feedback tone="error" title={HOME_COPY.TESTIMONIALS_ERROR} />
       ) : testimonials.data.length === 0 ? (
-        <Feedback title={HOME_COPY.TESTIMONIALS_EMPTY} />
+        <EmptyState
+          icon={
+            <MessageSquareQuote
+              size={24}
+              strokeWidth={1.65}
+              aria-hidden="true"
+            />
+          }
+          title={HOME_COPY.TESTIMONIALS_EMPTY}
+          headingAs="h3"
+        />
       ) : (
         <div className="home-testimonials-grid">
           {testimonials.data.map((testimonial) => (

@@ -1,5 +1,6 @@
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, LayoutGrid } from 'lucide-react';
 
+import { EmptyState } from '@/components/common/feedback/empty-state';
 import { SectionHeader } from '@/components/common/layout/section-header';
 import { ActionLink } from '@/components/ui/action-link';
 import { Card } from '@/components/ui/card';
@@ -46,7 +47,11 @@ export function ShopBySeriesSection({
       {categories.status === 'error' ? (
         <Feedback tone="error" title={HOME_COPY.SERIES_ERROR} />
       ) : categories.data.length === 0 ? (
-        <Feedback title={HOME_COPY.SERIES_EMPTY} />
+        <EmptyState
+          icon={<LayoutGrid size={24} strokeWidth={1.65} aria-hidden="true" />}
+          title={HOME_COPY.SERIES_EMPTY}
+          headingAs="h3"
+        />
       ) : (
         <div className="home-series-grid">
           {categories.data.slice(0, MAX_SERIES_CARDS).map((category) => (

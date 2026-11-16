@@ -1,6 +1,7 @@
 import { Tag } from 'lucide-react';
 import Image from 'next/image';
 
+import { EmptyState } from '@/components/common/feedback/empty-state';
 import { SectionHeader } from '@/components/common/layout/section-header';
 import { Card } from '@/components/ui/card';
 import { Feedback } from '@/components/ui/feedback';
@@ -67,7 +68,11 @@ export function CurrentTreatsSection({
       {promotions.status === 'error' ? (
         <Feedback tone="error" title={HOME_COPY.TREATS_ERROR} />
       ) : visiblePromotions.length === 0 ? (
-        <Feedback title={HOME_COPY.TREATS_EMPTY} />
+        <EmptyState
+          icon={<Tag size={24} strokeWidth={1.65} aria-hidden="true" />}
+          title={HOME_COPY.TREATS_EMPTY}
+          headingAs="h3"
+        />
       ) : (
         <div className="home-treats-grid">
           {visiblePromotions.map((promotion) => (

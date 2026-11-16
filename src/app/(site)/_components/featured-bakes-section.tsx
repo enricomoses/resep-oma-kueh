@@ -1,8 +1,9 @@
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, CakeSlice } from 'lucide-react';
 
 import { MenuProductCardMedia } from '@/components/common/commerce/menu-product-card-media';
 import { ProductBadgeRow } from '@/components/common/commerce/product-badge-row';
 import type { ProductBadgeItem } from '@/components/common/commerce/product-badge-row';
+import { EmptyState } from '@/components/common/feedback/empty-state';
 import { SectionHeader } from '@/components/common/layout/section-header';
 import { ActionLink } from '@/components/ui/action-link';
 import { Card } from '@/components/ui/card';
@@ -49,7 +50,11 @@ export function FeaturedBakesSection({
       {featuredProducts.status === 'error' ? (
         <Feedback tone="error" title={HOME_COPY.FEATURED_ERROR} />
       ) : featuredProducts.data.length === 0 ? (
-        <Feedback title={HOME_COPY.FEATURED_EMPTY} />
+        <EmptyState
+          icon={<CakeSlice size={24} strokeWidth={1.65} aria-hidden="true" />}
+          title={HOME_COPY.FEATURED_EMPTY}
+          headingAs="h3"
+        />
       ) : (
         <div className="product-grid home-featured-grid">
           {featuredProducts.data.map((product) => {

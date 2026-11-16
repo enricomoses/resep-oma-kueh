@@ -1,20 +1,17 @@
 import { ArrowRight, CalendarDays, MapPin, Users } from 'lucide-react';
-import Image from 'next/image';
 
-import { MediaPlaceholder } from '@/components/common/media-placeholder';
+import { BakingClassCard } from '@/components/common/classes/baking-class-card';
+import type { ProductBadgeItem } from '@/components/common/commerce/product-badge-row';
+import { EmptyState } from '@/components/common/feedback/empty-state';
 import { SectionHeader } from '@/components/common/layout/section-header';
 import { ActionLink } from '@/components/ui/action-link';
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
 import { Feedback } from '@/components/ui/feedback';
 import { ROUTES } from '@/constants';
 import { CLASSES_COPY } from '@/constants/classes.constant';
 import { HOME_COPY, HOME_SECTION_IDS } from '@/constants/home.constant';
-import '@/styles/components/product-card.css';
 import type { HomeSectionResult, HomeUpcomingSession } from '@/types/home';
 import { cn } from '@/utils';
 import { withBranch } from '@/utils/branch-url';
-import { formatIdr } from '@/utils/currency';
 
 const sessionDateFormatter = new Intl.DateTimeFormat('id-ID', {
   dateStyle: 'medium',
@@ -85,88 +82,77 @@ export function BakeWithOmaSection({
           </div>
         </Feedback>
       ) : visibleSessions.length === 0 ? (
-        <Card className="home-class-empty-card">
-          <h3>{HOME_COPY.CLASSES_EMPTY}</h3>
-          <p>{HOME_COPY.CLASSES_EMPTY_NOTE}</p>
-          <div className="home-inline-actions">
-            <ActionLink
-              href={withBranch(ROUTES.CONTACT, branchCode)}
-              variant="primary"
-              prefetch={false}
-            >
-              {HOME_COPY.CLASSES_CONTACT_CTA}
-              <ArrowRight size={16} aria-hidden="true" />
-            </ActionLink>
-            <ActionLink
-              href={withBranch(ROUTES.CLASSES, branchCode)}
-              variant="secondary"
-              prefetch={false}
-            >
-              {HOME_COPY.CLASSES_CTA}
-            </ActionLink>
-          </div>
-        </Card>
-      ) : (
-        <div className="home-classes-grid">
-          {visibleSessions.map((session) => (
-            <Card key={session.id} className="home-class-card">
-              {session.program.coverImageUrl ? (
-                <div className="home-card-media-box">
-                  <Image
-                    src={session.program.coverImageUrl}
-                    alt={session.program.coverAlt}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 420px"
-                    className="home-card-media-img"
-                  />
-                </div>
-              ) : (
-                <MediaPlaceholder
-                  caption={session.program.coverAlt}
-                  className="home-card-media"
-                />
-              )}
-              <div className="home-badge-row">
-                <Badge tone="accent">
-                  <MapPin size={14} aria-hidden="true" />
-                  {session.branch.name}
-                </Badge>
-                <Badge tone="success">
-                  <Users size={14} aria-hidden="true" />
-                  {session.seatsLeft !== null
-                    ? `${HOME_COPY.CLASSES_SEATS_PREFIX} ${session.seatsLeft}`
-                    : HOME_COPY.CLASSES_SEATS_OPEN}
-                </Badge>
-              </div>
-              <div className="home-class-card-body">
-                <h3>{session.program.title}</h3>
-                <p>
-                  {session.program.shortDescription ??
-                    session.program.description}
-                </p>
-                <p className="home-class-schedule">
-                  <CalendarDays size={16} aria-hidden="true" />
-                  <span>{formatSessionStart(session.startsAt)}</span>
-                </p>
-                {session.effectivePriceIdr ? (
-                  <p className="home-class-price">
-                    Mulai {formatIdr(session.effectivePriceIdr)}
-                  </p>
-                ) : null}
-              </div>
+        <EmptyState
+          icon={
+            <CalendarDays size={24} strokeWidth={1.65} aria-hidden="true" />
+          }
+          title={HOME_COPY.CLASSES_EMPTY}
+          description={HOME_COPY.CLASSES_EMPTY_NOTE}
+          headingAs="h3"
+          action={
+            <>
               <ActionLink
+                href={withBranch(ROUTES.CONTACT, branchCode)}
+                variant="primary"
+                prefetch={false}
+              >
+                {HOME_COPY.CLASSES_CONTACT_CTA}
+                <ArrowRight size={16} aria-hidden="true" />
+              </ActionLink>
+              <ActionLink
+                href={withBranch(ROUTES.CLASSES, branchCode)}
+                variant="secondary"
+                prefetch={false}
+              >
+                {HOME_COPY.CLASSES_CTA}
+              </ActionLink>
+            </>
+          }
+        />
+      ) : (
+        <div className="product-grid home-classes-grid">
+          {visibleSessions.map((session) => {
+            const badges: ProductBadgeItem[] = [
+              {
+                id: 'branch',
+                label: session.branch.name,
+                icon: <MapPin size={13} aria-hidden="true" />,
+                tone: 'accent',
+              },
+              {
+                id: 'seats',
+                label:
+                  session.seatsLeft !== null
+                    ? `${HOME_COPY.CLASSES_SEATS_PREFIX} ${session.seatsLeft}`
+                    : HOME_COPY.CLASSES_SEATS_OPEN,
+                icon: <Users size={13} aria-hidden="true" />,
+                tone: 'success',
+              },
+            ];
+
+            return (
+              <BakingClassCard
+                key={session.id}
+                title={session.program.title}
+                titleAs="h3"
+                description={
+                  session.program.shortDescription ??
+                  session.program.description
+                }
+                coverImageUrl={session.program.coverImageUrl ?? null}
+                coverAlt={session.program.coverAlt}
+                badges={badges}
+                scheduleText={formatSessionStart(session.startsAt)}
+                priceIdr={session.effectivePriceIdr ?? null}
                 href={withBranch(
                   `${ROUTES.CLASSES}/${session.program.slug}`,
                   branchCode ?? session.branch.code,
                 )}
-                variant="secondary"
-                prefetch={false}
-              >
-                {CLASSES_COPY.DETAIL_CTA}
-                <ArrowRight size={16} aria-hidden="true" />
-              </ActionLink>
-            </Card>
-          ))}
+                ctaLabel={CLASSES_COPY.DETAIL_CTA}
+                ctaVariant="secondary"
+              />
+            );
+          })}
         </div>
       )}
     </section>
