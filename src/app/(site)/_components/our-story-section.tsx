@@ -1,4 +1,4 @@
-import { ArrowRight, Building2 } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 
 import { MediaPlaceholder } from '@/components/common/media-placeholder';
@@ -49,18 +49,20 @@ export function OurStorySection({
             {title}
           </h2>
           <p className="home-story-body">{body}</p>
-          <div
-            className="home-values-group"
-            aria-label={HOME_COPY.STORY_VALUES_LABEL}
-          >
+          <div className="home-values-group">
             <p className="home-card-eyebrow">{HOME_COPY.STORY_VALUES_LABEL}</p>
-            <div className="home-badge-row">
+            <ul
+              className="home-story-values-list"
+              aria-label={HOME_COPY.STORY_VALUES_LABEL}
+            >
               {HOME_COPY.STORY_VALUES.map((value) => (
-                <Badge key={value} tone="accent" lang="en">
-                  {value}
-                </Badge>
+                <li key={value} lang="en">
+                  <Badge tone="neutral" className="home-story-value-badge">
+                    {value}
+                  </Badge>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
           <ActionLink
             href={withBranch(ROUTES.ABOUT, branchCode)}
@@ -72,28 +74,25 @@ export function OurStorySection({
           </ActionLink>
         </div>
         {resolvedImageUrl ? (
-          <figure className="media-placeholder overflow-hidden p-0">
-            <div className="relative h-full min-h-60 w-full">
-              <Image
-                src={resolvedImageUrl}
-                alt={imageAlt}
-                fill
-                sizes="(max-width: 768px) 100vw, 480px"
-                unoptimized
-                className="object-cover"
-              />
-            </div>
+          <figure className="home-story-media">
+            <Image
+              src={resolvedImageUrl}
+              alt={imageAlt}
+              fill
+              sizes="(max-width: 768px) 100vw, 480px"
+              unoptimized
+              className="object-cover"
+            />
           </figure>
         ) : (
-          <MediaPlaceholder caption={imageAlt} />
+          <MediaPlaceholder
+            caption={imageAlt}
+            className="home-story-media-placeholder"
+          />
         )}
       </div>
       <Card tone="surface" className="home-custom-business-card">
         <div className="home-custom-business-copy">
-          <Badge tone="neutral">
-            <Building2 size={14} aria-hidden="true" />
-            {HOME_COPY.CUSTOM_BUSINESS_BADGE}
-          </Badge>
           <h3>{customBusinessTitle}</h3>
           <p>{customBusinessBody}</p>
         </div>
@@ -101,6 +100,7 @@ export function OurStorySection({
           href={`${withBranch(ROUTES.CONTACT, branchCode)}#custom-business`}
           variant="primary"
           prefetch={false}
+          className="w-full justify-center sm:w-auto"
         >
           {HOME_COPY.CUSTOM_BUSINESS_CTA}
           <ArrowRight size={16} aria-hidden="true" />
