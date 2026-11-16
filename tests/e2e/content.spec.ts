@@ -119,13 +119,11 @@ test('renders /privacy and /ordering-policy with distinct metadata, template vs 
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     CONTENT_DEFAULTS.LEGAL_PRIVACY.title,
   );
+  await expect(page.getByText(CONTENT_COPY.SOURCE_TEMPLATE_BADGE)).toHaveCount(
+    0,
+  );
   await expect(
-    page.getByText(CONTENT_COPY.SOURCE_TEMPLATE_BADGE).first(),
-  ).toBeVisible();
-  await expect(
-    page.getByText(
-      /TIDAK mengklaim bahwa tidak ada data yang dikirim ke server/i,
-    ),
+    page.getByText(/sementara \(transient\) di server/i),
   ).toBeVisible();
   expect(
     (
@@ -140,9 +138,9 @@ test('renders /privacy and /ordering-policy with distinct metadata, template vs 
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     CONTENT_DEFAULTS.LEGAL_ORDERING_POLICY.title,
   );
-  await expect(
-    page.getByText(CONTENT_COPY.SOURCE_TEMPLATE_BADGE).first(),
-  ).toBeVisible();
+  await expect(page.getByText(CONTENT_COPY.SOURCE_TEMPLATE_BADGE)).toHaveCount(
+    0,
+  );
   expect(
     (
       await new AxeBuilder({ page })

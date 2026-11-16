@@ -69,11 +69,11 @@ export const CONTENT_DEFAULTS = {
   },
   LEGAL_PRIVACY: {
     title: 'Kebijakan Privasi',
-    body: 'Preferensi cabang (selectedBranchId) dan daftar item keranjang tamu (ID varian/produk serta kuantitas) disimpan secara lokal di browser (localStorage) tanpa menyimpan token autentikasi atau data sensitif. Saat Anda menyiapkan checkout atau menggunakan fitur interaksi situs, permintaan kutipan harga/keranjang diproses sementara (transient) di server aplikasi untuk memverifikasi harga cabang dan menyusun pesan pesanan, tanpa menyimpan riwayat transaksi atau mengurangi stok secara otomatis. Pengiriman pesanan ke WhatsApp hanya terjadi atas tindakan langsung Anda ketika membuka tautan wa.me ke nomor cabang terpilih dan selanjutnya tunduk pada kebijakan privasi layanan WhatsApp. Apabila fitur asisten Ask Oma diaktifkan melalui penyedia AI eksternal, hanya pertanyaan yang Anda kirimkan dan konteks katalog publik yang diproses sesuai konfigurasi layanan.',
+    body: 'Untuk menjaga kenyamanan Anda selama menjelajahi katalog, Resep Oma Kueh hanya menyimpan pilihan cabang serta daftar item keranjang belanja Anda di penyimpanan peramban (localStorage) perangkat Anda—tanpa menyimpan kata sandi, akun, maupun data pembayaran.\n\nSaat Anda melanjutkan ke halaman checkout atau memeriksa estimasi pesanan, data permintaan diproses sementara (transient) di server kami semata-mata untuk memastikan harga cabang terbaru dan menyusun draf pesan pesanan, tanpa mencatat riwayat transaksi ataupun mengurangi stok secara otomatis.\n\nPengiriman pesanan ke WhatsApp hanya terjadi atas tindakan langsung Anda ketika membuka tautan wa.me ke admin cabang pilihan Anda, sehingga percakapan selanjutnya mengikuti kebijakan privasi layanan WhatsApp. Apabila asisten Ask Oma digunakan, hanya pertanyaan Anda dan informasi katalog publik yang diproses untuk menjawab kebutuhan Anda.',
   },
   LEGAL_ORDERING_POLICY: {
     title: 'Kebijakan Pemesanan',
-    body: 'Seluruh pesanan melalui situs Resep Oma Kueh diteruskan ke WhatsApp admin cabang terpilih (Surabaya atau Bintaro) untuk konfirmasi manual. Ketersediaan stok aktual, jadwal produksi/pengambilan, ongkos kirim, metode pembayaran, dan total pembayaran akhir dikonfirmasi langsung oleh admin cabang melalui WhatsApp sebelum pembayaran dilakukan. Situs ini tidak memproses pembayaran otomatis dan tidak menerbitkan status pesanan real-time. Ketentuan batas waktu pemesanan (cutoff time), minimum order khusus, pembatalan, pengembalian dana (refund), maupun penjadwalan ulang (reschedule) yang belum dipublikasikan secara resmi masih menunggu persetujuan owner dan dikonfirmasi langsung bersama admin cabang.',
+    body: 'Seluruh pesanan melalui situs Resep Oma Kueh diteruskan ke WhatsApp admin cabang terpilih (Surabaya atau Bintaro) untuk konfirmasi manual.\n\nKetersediaan stok aktual, jadwal produksi atau pengambilan, ongkos kirim, metode pembayaran, serta total pembayaran akhir akan dikonfirmasi langsung oleh admin cabang melalui WhatsApp sebelum pembayaran dilakukan. Situs ini tidak memproses pembayaran otomatis dan tidak menerbitkan status pesanan real-time.\n\nKetentuan batas waktu pemesanan (cutoff time), minimum order khusus, pembatalan, pengembalian dana (refund), maupun penjadwalan ulang (reschedule) yang belum dipublikasikan secara resmi masih menunggu persetujuan owner dan dikonfirmasi langsung bersama admin cabang.',
   },
 } as const;
 
@@ -134,23 +134,19 @@ export const CONTENT_COPY = {
   CONTACT_OFFICIAL_CHANNELS_TITLE: 'Kanal Resmi Lainnya',
   CONTACT_EMAIL_LABEL: 'Email Resmi',
   CONTACT_INSTAGRAM_LABEL: 'Instagram Resmi',
-  CONTACT_B2B_BADGE: 'Konsultasi B2B & Custom',
-  CONTACT_B2B_BRANCH_LABEL: 'Pilih cabang tujuan konsultasi B2B',
-  CONTACT_B2B_TOPIC_LABEL: 'Kebutuhan diskusi bisnis (opsional)',
+  CONTACT_B2B_BRANCH_LABEL: 'Cabang tujuan konsultasi',
+  CONTACT_B2B_TOPIC_LABEL: 'Kebutuhan diskusi bisnis',
   CONTACT_B2B_TOPIC_PLACEHOLDER:
-    'Contoh: suplai kue untuk kafe, hampers perusahaan, atau sajian rapat',
+    'Contoh: suplai kue kafe, hampers perusahaan, atau sajian rapat',
   CONTACT_B2B_NOTE:
-    'Tautan ini membuka diskusi langsung di WhatsApp cabang terpilih tanpa menyimpan data prospek (leads) di database dan tanpa mengarang estimasi harga atau minimum order (MOQ).',
+    'Pesan langsung diteruskan ke WhatsApp admin cabang tanpa menyimpan data Anda di situs.',
   CONTACT_B2B_CTA_PREFIX: 'Konsultasi Bisnis via WhatsApp',
-  FAQ_EYEBROW: 'Pusat Bantuan',
   FAQ_HEADING: 'Pertanyaan yang Sering Diajukan (FAQ)',
   FAQ_SUBTITLE:
     'Informasi faktual mengenai alur pemesanan WhatsApp, konfirmasi stok cabang, dan pendaftaran kelas.',
-  FAQ_DB_SECTION_TITLE: 'FAQ Terpublikasi',
   FAQ_EMPTY_TITLE: 'Belum ada FAQ tambahan yang dipublikasikan',
   FAQ_EMPTY_BODY:
     'Pertanyaan mengenai kebijakan refund, pembatalan, dan batas waktu pemesanan (cutoff) masih ditahan sebagai draft hingga disetujui owner. Silakan merujuk pada panduan faktual di bawah atau hubungi WhatsApp cabang.',
-  FAQ_BASELINE_BADGE: 'Panduan Faktual Sistem',
   FAQ_BASELINE_TITLE: 'Informasi Dasar Pemesanan & Layanan',
   FAQ_BASELINE_NOTICE:
     'Ketentuan pengembalian dana (refund), penjadwalan ulang, dan jam cutoff pemesanan belum disetujui untuk publikasi umum dan masih berstatus draft.',
@@ -178,36 +174,38 @@ export const CONTENT_COPY = {
         'Anda dapat melihat program dan sesi kelas mendatang pada halaman Baking Class sesuai cabang, lalu melanjutkan pendaftaran dan konfirmasi ketersediaan kursi langsung melalui WhatsApp admin cabang penyelenggara.',
     },
   ],
-  PRIVACY_EYEBROW: 'Informasi Privasi & Data',
-  PRIVACY_FACTS_TITLE: 'Ringkasan Pemrosesan Data Teknis',
+  PRIVACY_SUBTITLE:
+    'Penjelasan singkat mengenai penyimpanan preferensi belanja di perangkat Anda dan cara pesanan diteruskan ke cabang kami.',
+  PRIVACY_FACTS_TITLE: 'Bagaimana Data Anda Dikelola',
   PRIVACY_FACTS: [
     {
       id: 'privacy-local-storage',
-      title: 'Penyimpanan Browser (localStorage)',
+      title: 'Penyimpanan Lokal di Browser',
       detail:
-        'Browser hanya menyimpan ID cabang terpilih (selectedBranchId) serta ID item dan kuantitas keranjang tamu agar pilihan Anda tidak hilang saat berpindah halaman. Tidak ada token rahasia atau kredensial admin yang disimpan di localStorage.',
+        'Browser hanya menyimpan pilihan cabang serta daftar item dan jumlah keranjang Anda di localStorage agar tidak hilang saat berpindah halaman. Tidak ada kata sandi, token autentikasi, atau data sensitif yang disimpan.',
     },
     {
       id: 'privacy-transient-server',
-      title: 'Pemrosesan Sementara (Transient) di Server',
+      title: 'Pemrosesan Sementara di Server',
       detail:
-        'Situs ini TIDAK mengklaim bahwa tidak ada data yang dikirim ke server. Saat Anda meminta perhitungan harga checkout atau berinteraksi dengan layanan BFF situs, data permintaan diproses secara sementara di server untuk memvalidasi harga cabang dan menghasilkan tautan pesan, tanpa menulis tabel pesanan atau riwayat transaksi pelanggan.',
+        'Saat Anda memeriksa estimasi checkout atau menggunakan fitur interaksi situs, permintaan Anda diproses sementara di server untuk memastikan harga cabang terbaru dan menyusun draf pesan, tanpa mencatat riwayat transaksi maupun mengurangi stok secara otomatis.',
     },
     {
       id: 'privacy-whatsapp-handoff',
-      title: 'Handoff ke WhatsApp atas Inisiatif Pengguna',
+      title: 'Konfirmasi Langsung via WhatsApp',
       detail:
-        'Pengiriman pesan pesanan atau konsultasi ke WhatsApp hanya terjadi ketika Anda menekan tautan wa.me ke cabang Surabaya atau Bintaro. Percakapan di dalam aplikasi WhatsApp tunduk pada kebijakan privasi WhatsApp/Meta.',
+        'Pesan pesanan maupun konsultasi baru terkirim ke admin cabang Surabaya atau Bintaro saat Anda membuka tautan WhatsApp (wa.me). Percakapan di aplikasi WhatsApp sepenuhnya mengikuti kebijakan privasi WhatsApp/Meta.',
     },
     {
       id: 'privacy-optional-provider',
-      title: 'Penyedia AI Opsional (Ask Oma)',
+      title: 'Asisten Tanya Jawab Ask Oma',
       detail:
-        'Apabila fitur asisten Ask Oma diaktifkan dengan penyedia model bahasa eksternal, isi pertanyaan yang Anda ketikkan dikirim secara sementara untuk menghasilkan jawaban berbasis data katalog publik tanpa akses ke kredensial admin.',
+        'Jika asisten Ask Oma diaktifkan, hanya pertanyaan yang Anda ketikkan dan informasi katalog publik yang diproses sementara untuk membantu menjawab pertanyaan seputar produk dan jam operasional cabang.',
     },
   ],
-  POLICY_EYEBROW: 'Ketentuan Layanan',
-  POLICY_FACTS_TITLE: 'Ketentuan Faktual Pemesanan & Status Persetujuan',
+  POLICY_SUBTITLE:
+    'Panduan proses pemesanan, konfirmasi manual via WhatsApp admin cabang, serta ketentuan layanan Resep Oma Kueh.',
+  POLICY_FACTS_TITLE: 'Ketentuan Pemesanan & Status Persetujuan',
   POLICY_FACTS: [
     {
       id: 'policy-manual-wa',

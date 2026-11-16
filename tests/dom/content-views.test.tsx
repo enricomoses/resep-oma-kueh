@@ -295,16 +295,12 @@ it('distinguishes template vs owner-approved LegalPolicyView and discloses trans
   );
 
   expect(
-    screen.getAllByText(CONTENT_COPY.SOURCE_TEMPLATE_BADGE).length,
-  ).toBeGreaterThanOrEqual(1);
+    screen.queryByText(CONTENT_COPY.SOURCE_TEMPLATE_BADGE),
+  ).not.toBeInTheDocument();
   expect(
-    screen.getByText(
-      /TIDAK mengklaim bahwa tidak ada data yang dikirim ke server/i,
-    ),
-  ).toBeInTheDocument();
-  expect(screen.getAllByText(/selectedBranchId/).length).toBeGreaterThanOrEqual(
-    1,
-  );
+    screen.getAllByText(/sementara \(transient\) di server/i).length,
+  ).toBeGreaterThanOrEqual(1);
+  expect(screen.getAllByText(/localStorage/).length).toBeGreaterThanOrEqual(1);
 
   rerender(
     <ReactQueryProvider>
@@ -338,8 +334,11 @@ it('distinguishes template vs owner-approved LegalPolicyView and discloses trans
   );
 
   expect(
-    screen.getByText(CONTENT_COPY.SOURCE_PUBLISHED_BADGE),
-  ).toBeInTheDocument();
+    screen.queryByText(CONTENT_COPY.SOURCE_PUBLISHED_BADGE),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByText(CONTENT_COPY.SOURCE_TEMPLATE_BADGE),
+  ).not.toBeInTheDocument();
   expect(
     screen.getByRole('heading', {
       level: 1,

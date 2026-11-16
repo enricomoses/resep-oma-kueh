@@ -1,13 +1,10 @@
 'use client';
 
 import { ErrorState } from '@/components/common/feedback/error-state';
-import { InfoCard } from '@/components/common/cards/info-card';
 import { PageHeader } from '@/components/common/layout/page-header';
 import { SectionHeader } from '@/components/common/layout/section-header';
 import { ActionLink } from '@/components/ui/action-link';
-import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import { Feedback } from '@/components/ui/feedback';
 import { CONTENT_COPY, CONTENT_DEFAULTS } from '@/constants/content.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { SITE_COPY } from '@/constants/site.constant';
@@ -53,7 +50,6 @@ export function LegalPolicyView({
     (entry.key === 'legal.privacy' || entry.key === 'legal.ordering_policy')
       ? entry.content.body
       : fallback.body;
-  const source = entry?.source ?? 'template';
 
   const paragraphs = body
     .split(/\n{2,}/)
@@ -66,9 +62,9 @@ export function LegalPolicyView({
   const factsHeading = isPrivacy
     ? CONTENT_COPY.PRIVACY_FACTS_TITLE
     : CONTENT_COPY.POLICY_FACTS_TITLE;
-  const eyebrow = isPrivacy
-    ? CONTENT_COPY.PRIVACY_EYEBROW
-    : CONTENT_COPY.POLICY_EYEBROW;
+  const subtitle = isPrivacy
+    ? CONTENT_COPY.PRIVACY_SUBTITLE
+    : CONTENT_COPY.POLICY_SUBTITLE;
 
   return (
     <main id={SITE_COPY.MAIN_ID} className={cn('content-page-main', className)}>
@@ -79,23 +75,7 @@ export function LegalPolicyView({
         <PageHeader
           titleId="legal-hero-heading"
           title={title}
-          badges={
-            <>
-              <Badge tone="accent">{eyebrow}</Badge>
-              <Badge tone={source === 'published' ? 'success' : 'neutral'}>
-                {source === 'published'
-                  ? CONTENT_COPY.SOURCE_PUBLISHED_BADGE
-                  : CONTENT_COPY.SOURCE_TEMPLATE_BADGE}
-              </Badge>
-            </>
-          }
-          alert={
-            source === 'template' ? (
-              <Feedback title={CONTENT_COPY.SOURCE_TEMPLATE_BADGE}>
-                <p>{CONTENT_COPY.SOURCE_TEMPLATE_NOTE}</p>
-              </Feedback>
-            ) : null
-          }
+          subtitle={subtitle}
         />
 
         {isError ? (
@@ -109,7 +89,7 @@ export function LegalPolicyView({
         ) : null}
 
         <Card className="content-legal-card">
-          <div className="content-legal-body">
+          <div className="content-legal-body content-legal-body--full">
             {paragraphs.map((paragraph, index) => (
               <p key={`${policyKey}-p-${index}`}>{paragraph}</p>
             ))}
@@ -122,19 +102,26 @@ export function LegalPolicyView({
         aria-labelledby="legal-facts-heading"
       >
         <SectionHeader titleId="legal-facts-heading" title={factsHeading} />
-        <div className="content-values-grid">
-          {facts.map((fact) => (
-            <InfoCard
-              key={fact.id}
-              tone="cream"
-              className="content-value-card"
-              title={fact.title}
-              description={fact.detail}
-            />
+        <div
+          className={cn(
+            'content-privacy-grid',
+            facts.length === 3 && 'content-privacy-grid--3',
+          )}
+        >
+          {facts.map((fact, index) => (
+            <Card key={fact.id} className="content-privacy-card">
+              <div className="content-privacy-card-header">
+                <span className="content-privacy-card-index" aria-hidden="true">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <h3 className="content-privacy-card-title">{fact.title}</h3>
+              </div>
+              <p className="content-privacy-card-detail">{fact.detail}</p>
+            </Card>
           ))}
         </div>
 
-        <div className="home-inline-actions">
+        <div className="content-legal-actions">
           <ActionLink
             href={withBranch(ROUTES.CONTACT, activeCode)}
             variant="primary"
