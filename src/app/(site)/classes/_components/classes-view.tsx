@@ -1,6 +1,6 @@
 'use client';
 
-import { MapPin, MessageCircle } from 'lucide-react';
+import { ChefHat, MapPin, MessageCircle } from 'lucide-react';
 
 import { EmptyState } from '@/components/common/feedback/empty-state';
 import { PageHeader } from '@/components/common/layout/page-header';
@@ -82,7 +82,7 @@ export function ClassesView({ initial, className }: ClassesViewProps) {
       ) : !data || data.items.length === 0 ? (
         <EmptyState
           tone="cream"
-          className="classes-empty-card"
+          icon={<ChefHat size={24} strokeWidth={1.65} aria-hidden="true" />}
           title={CLASSES_COPY.EMPTY_PROGRAMS_TITLE}
           description={CLASSES_COPY.EMPTY_PROGRAMS_BODY}
           action={
@@ -113,7 +113,7 @@ export function ClassesView({ initial, className }: ClassesViewProps) {
           }
         />
       ) : (
-        <div className="classes-program-grid">
+        <div className="product-grid classes-program-grid">
           {data.items.map((program) => (
             <ClassProgramCard
               key={program.id}

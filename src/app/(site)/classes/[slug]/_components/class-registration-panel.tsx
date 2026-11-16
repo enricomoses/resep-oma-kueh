@@ -1,7 +1,8 @@
 'use client';
 
-import { MessageCircle } from 'lucide-react';
+import { CalendarX2, MessageCircle } from 'lucide-react';
 
+import { EmptyState } from '@/components/common/feedback/empty-state';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Feedback } from '@/components/ui/feedback';
@@ -196,25 +197,31 @@ export function ClassRegistrationPanel({
           ) : null}
         </Card>
       ) : program.upcomingSessions.length > 0 ? (
-        <Card tone="cream" className="classes-empty-card">
-          <h2>{CLASSES_COPY.NO_FUTURE_SESSIONS_TITLE}</h2>
-          <p>{CLASSES_COPY.NO_FUTURE_SESSIONS_BODY}</p>
-          {fallbackBranch ? (
-            <a
-              href={buildAskNextClassWhatsAppUrl(
-                fallbackBranch.whatsappNumber,
-                fallbackBranch.name,
-                program.title,
-              )}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--brand-burgundy)] px-5 py-2.5 text-sm font-medium text-white"
-            >
-              <MessageCircle size={16} aria-hidden="true" />
-              {CLASSES_COPY.ASK_NEXT_CLASS_CTA}
-            </a>
-          ) : null}
-        </Card>
+        <EmptyState
+          size="sm"
+          tone="cream"
+          headingAs="h2"
+          icon={<CalendarX2 size={20} strokeWidth={1.65} aria-hidden="true" />}
+          title={CLASSES_COPY.NO_FUTURE_SESSIONS_TITLE}
+          description={CLASSES_COPY.NO_FUTURE_SESSIONS_BODY}
+          action={
+            fallbackBranch ? (
+              <a
+                href={buildAskNextClassWhatsAppUrl(
+                  fallbackBranch.whatsappNumber,
+                  fallbackBranch.name,
+                  program.title,
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--brand-burgundy)] px-5 py-2.5 text-sm font-medium text-white"
+              >
+                <MessageCircle size={16} aria-hidden="true" />
+                {CLASSES_COPY.ASK_NEXT_CLASS_CTA}
+              </a>
+            ) : null
+          }
+        />
       ) : null}
     </div>
   );

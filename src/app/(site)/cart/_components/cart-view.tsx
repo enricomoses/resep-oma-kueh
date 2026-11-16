@@ -77,7 +77,11 @@ export function CartView({ className }: CartViewProps) {
       <main id="konten" className={cn('cart-page', className)}>
         <div className="cart-container">
           <EmptyState
-            icon={<ShoppingBag size={48} className="text-burgundy/60" />}
+            size="lg"
+            headingAs="h1"
+            icon={
+              <ShoppingBag size={36} strokeWidth={1.65} aria-hidden="true" />
+            }
             title={CART_COPY.EMPTY_TITLE}
             description={CART_COPY.EMPTY_BODY}
             action={

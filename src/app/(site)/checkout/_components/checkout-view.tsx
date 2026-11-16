@@ -50,7 +50,11 @@ export function CheckoutView({ className }: CheckoutViewProps) {
       <main id="konten" className={cn('checkout-page', className)}>
         <div className="checkout-container">
           <EmptyState
-            icon={<ShoppingBag size={48} className="text-burgundy/60" />}
+            size="lg"
+            headingAs="h1"
+            icon={
+              <ShoppingBag size={36} strokeWidth={1.65} aria-hidden="true" />
+            }
             title={CART_COPY.EMPTY_TITLE}
             description={CART_COPY.EMPTY_BODY}
             action={

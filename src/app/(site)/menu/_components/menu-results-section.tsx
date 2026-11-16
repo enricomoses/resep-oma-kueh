@@ -1,3 +1,5 @@
+import { SearchX } from 'lucide-react';
+
 import { MenuProductCard } from '@/components/common/commerce/menu-product-card';
 import { EmptyState } from '@/components/common/feedback/empty-state';
 import { ErrorState } from '@/components/common/feedback/error-state';
@@ -56,7 +58,7 @@ export function MenuResultsSection({
         />
       ) : catalogData && catalogData.items.length === 0 ? (
         <EmptyState
-          className="content-error-block"
+          icon={<SearchX size={24} strokeWidth={1.65} aria-hidden="true" />}
           title={CATALOG_COPY.EMPTY_TITLE}
           description={CATALOG_COPY.EMPTY_BODY}
           action={

@@ -1,12 +1,14 @@
 'use client';
 
+import { CircleHelp } from 'lucide-react';
+
 import { FaqAccordion } from '@/app/(site)/faq/_components/faq-accordion';
+import { EmptyState } from '@/components/common/feedback/empty-state';
 import { ErrorState } from '@/components/common/feedback/error-state';
 import { PageHeader } from '@/components/common/layout/page-header';
 import { SectionHeader } from '@/components/common/layout/section-header';
 import { ActionLink } from '@/components/ui/action-link';
 import { Card } from '@/components/ui/card';
-import { Feedback } from '@/components/ui/feedback';
 import { CONTENT_COPY } from '@/constants/content.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { SITE_COPY } from '@/constants/site.constant';
@@ -56,9 +58,14 @@ export function FaqView({ initial, className }: FaqViewProps) {
         ) : null}
 
         {!isError && isEmpty ? (
-          <Feedback title={CONTENT_COPY.FAQ_EMPTY_TITLE} announce>
-            <p>{CONTENT_COPY.FAQ_EMPTY_BODY}</p>
-          </Feedback>
+          <EmptyState
+            icon={
+              <CircleHelp size={24} strokeWidth={1.65} aria-hidden="true" />
+            }
+            title={CONTENT_COPY.FAQ_EMPTY_TITLE}
+            description={CONTENT_COPY.FAQ_EMPTY_BODY}
+            announce
+          />
         ) : null}
 
         {!isError && items.length > 0 ? <FaqAccordion items={items} /> : null}

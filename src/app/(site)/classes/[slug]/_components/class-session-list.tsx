@@ -1,7 +1,14 @@
 'use client';
 
-import { CalendarDays, MapPin, MessageCircle, Users } from 'lucide-react';
+import {
+  CalendarDays,
+  CalendarX2,
+  MapPin,
+  MessageCircle,
+  Users,
+} from 'lucide-react';
 
+import { EmptyState } from '@/components/common/feedback/empty-state';
 import { ActionLink } from '@/components/ui/action-link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -45,35 +52,39 @@ export function ClassSessionList({
     <Card tone="surface" className={cn('classes-sessions-card', className)}>
       <h2>Jadwal Sesi Cabang (WIB)</h2>
       {sessions.length === 0 ? (
-        <div className="classes-empty-sessions">
-          <p>{CLASSES_COPY.NO_FUTURE_SESSIONS_TITLE}</p>
-          <p className="classes-meta-note">
-            {CLASSES_COPY.NO_FUTURE_SESSIONS_BODY}
-          </p>
-          {fallbackBranch ? (
-            <a
-              href={buildAskNextClassWhatsAppUrl(
-                fallbackBranch.whatsappNumber,
-                fallbackBranch.name,
-                programTitle,
-              )}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--brand-burgundy)] px-5 py-2.5 text-sm font-medium text-white"
-            >
-              <MessageCircle size={16} aria-hidden="true" />
-              {CLASSES_COPY.ASK_NEXT_CLASS_CTA}
-            </a>
-          ) : (
-            <ActionLink
-              href={withBranch(ROUTES.CONTACT, branchCode)}
-              variant="primary"
-              prefetch={false}
-            >
-              {CLASSES_COPY.ASK_NEXT_CLASS_CTA}
-            </ActionLink>
-          )}
-        </div>
+        <EmptyState
+          size="sm"
+          tone="cream"
+          headingAs="h3"
+          icon={<CalendarX2 size={20} strokeWidth={1.65} aria-hidden="true" />}
+          title={CLASSES_COPY.NO_FUTURE_SESSIONS_TITLE}
+          description={CLASSES_COPY.NO_FUTURE_SESSIONS_BODY}
+          action={
+            fallbackBranch ? (
+              <a
+                href={buildAskNextClassWhatsAppUrl(
+                  fallbackBranch.whatsappNumber,
+                  fallbackBranch.name,
+                  programTitle,
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--brand-burgundy)] px-5 py-2.5 text-sm font-medium text-white"
+              >
+                <MessageCircle size={16} aria-hidden="true" />
+                {CLASSES_COPY.ASK_NEXT_CLASS_CTA}
+              </a>
+            ) : (
+              <ActionLink
+                href={withBranch(ROUTES.CONTACT, branchCode)}
+                variant="primary"
+                prefetch={false}
+              >
+                {CLASSES_COPY.ASK_NEXT_CLASS_CTA}
+              </ActionLink>
+            )
+          }
+        />
       ) : (
         <div className="classes-session-list">
           {sessions.map((session) => {
