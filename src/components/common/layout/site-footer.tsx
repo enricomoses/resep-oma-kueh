@@ -32,6 +32,13 @@ const HELP_ICONS = [FaQuestionCircle, FaShieldAlt, FaFileAlt] as const;
 const BRANCH_MAPS_URL: Record<string, string> = {
   sby: 'https://maps.app.goo.gl/59F3GMc62EU6dBGt6?g_st=ic',
   surabaya: 'https://maps.app.goo.gl/59F3GMc62EU6dBGt6?g_st=ic',
+  bintaro: 'https://maps.app.goo.gl/c3h7LB3Tt1hQfuN48?g_st=ic',
+  btr: 'https://maps.app.goo.gl/c3h7LB3Tt1hQfuN48?g_st=ic',
+};
+
+const BRANCH_FALLBACK_ADDRESS: Record<string, string> = {
+  bintaro: 'Jl. Bintaro Utama 3A.6, Sektor 3A, Blok DD15, Tangerang Selatan',
+  btr: 'Jl. Bintaro Utama 3A.6, Sektor 3A, Blok DD15, Tangerang Selatan',
 };
 
 function formatWhatsappDisplay(number: string): string {
@@ -54,14 +61,24 @@ export function SiteFooter({
     const active = !isError
       ? items.find((branch) => branch.code === fallback.code)
       : undefined;
+    const branchCodeLower = fallback.code.toLowerCase();
+    const resolvedAddress =
+      active?.address ??
+      fallback.address ??
+      BRANCH_FALLBACK_ADDRESS[branchCodeLower] ??
+      null;
+
     return active
       ? {
           code: active.code,
           name: active.name,
           whatsappNumber: active.whatsappNumber,
-          address: active.address,
+          address: resolvedAddress,
         }
-      : fallback;
+      : {
+          ...fallback,
+          address: resolvedAddress,
+        };
   });
   const fallbackNotice =
     isError ||
