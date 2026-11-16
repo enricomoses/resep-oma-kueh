@@ -8,6 +8,7 @@ import { SiteHeader } from '@/components/common/layout/site-header';
 import { SiteFooter } from '@/components/common/layout/site-footer';
 import { ChatSlot } from '@/components/common/chat/chat-slot';
 import { SiteLoader } from '@/app/(site)/_components/site-loader';
+import { SiteSplashLoader } from '@/app/(site)/_components/site-splash-loader';
 import { SITE_COPY } from '@/constants/site.constant';
 import { getPublicEnvironment } from '@/config';
 import '@/styles/layouts/site-shell.css';
@@ -36,6 +37,7 @@ async function SiteContent({ children }: SiteContentProps) {
       {getPublicEnvironment().NEXT_PUBLIC_CHAT_WIDGET_ENABLED ? (
         <ChatSlot />
       ) : null}
+      <SiteSplashLoader label={SITE_COPY.HYDRATING} />
     </BranchProvider>
   );
 }

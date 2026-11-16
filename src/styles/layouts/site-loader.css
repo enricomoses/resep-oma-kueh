@@ -25,7 +25,13 @@
       color-mix(in srgb, var(--accent-rose) 55%, var(--brand-cream)) 100%
     );
     contain: strict;
-    animation: site-loader-in 360ms ease-out 120ms both;
+    opacity: 1;
+    transition: opacity 420ms ease-out;
+  }
+
+  .site-loader--leaving {
+    opacity: 0;
+    pointer-events: none;
   }
 
   .site-loader__art {
