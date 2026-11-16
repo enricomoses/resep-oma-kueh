@@ -74,14 +74,14 @@ Rujukan lanjutan: [panduan UAT F25](uat-f25.md), [deployment runbook](deployment
 
 ### A. Monitoring Kuota & Peringatan Biaya
 
-- **Netlify Dashboard (Hosting Web):** Pantau pemakaian **300 kredit/bulan** (terutama web bandwidth 20 kredit/GB dan jumlah deploy produksi 15 kredit/deploy). Jika kredit mendekati habis, Free tier melakukan **hard stop** (situs berhenti sementara sampai siklus bulan berikutnya atau upgrade plan) — **tidak ada tagihan kejutan**, tetapi pemilik bisnis harus siap meng-upgrade plan bila trafik melonjak.
+- **Vercel Dashboard (Hosting Web):** Pantau pemakaian bandwidth, Serverless Function invocations, dan build minutes di **Vercel Dashboard → Usage**. Pastikan Environment Variables antara **Preview** dan **Production** tetap terpisah.
 - **Supabase Dashboard (DB & Storage):** Pantau ukuran DB (batas 500 MB), Storage (batas 1 GB), dan egress (batas 5 GB standar + 5 GB cached/bulan). Aktifkan notifikasi kuota di pengaturan organisasi Supabase serta cek rutin minimal **seminggu sekali** agar project Free tidak terkena **auto-pause 7 hari inaktivitas**.
 
 ### B. Mematikan Fitur AI Generatif (Kill Switch `CHAT_PROVIDER_ENABLED=false`)
 
 Jika mode AI generatif F23 pernah diaktifkan (`CHAT_PROVIDER_ENABLED=true`) dan terjadi lonjakan biaya API Google AI / kuota Redis limiter atau perilaku tidak diinginkan:
 
-1. Buka **Netlify Dashboard → Site configuration → Environment variables** untuk environment produksi.
+1. Buka **Vercel Dashboard → Project Settings → Environment Variables** untuk environment **Production**.
 2. Ubah **`CHAT_PROVIDER_ENABLED`** menjadi **`false`** (opsional: hapus/kosongkan `GOOGLE_GEN_AI_API_KEY` bila ingin memutus akses kunci sepenuhnya).
-3. Jalankan **Trigger deploy** (atau _Clear cache and deploy site_) agar fungsi runtime server membaca environment terbaru.
+3. Jalankan **Redeploy** pada deployment produksi terbaru agar fungsi runtime server membaca environment terbaru.
 4. **Hasil:** Widget **Ask Oma** tetap hidup di toko memakai mode **F22 deterministik (SELECT-only tanpa panggilan LLM dan tanpa biaya token)**, dan seluruh request tetap aman serta read-only. Jika ingin menyembunyikan seluruh widget chat dari tampilan publik sekaligus, ubah `NEXT_PUBLIC_CHAT_WIDGET_ENABLED` menjadi `false` lalu deploy ulang.
