@@ -4,6 +4,7 @@ import { Plus, RefreshCw, Tag } from 'lucide-react';
 
 import { AdminSectionHeader } from '@/app/admin/(dashboard)/_components/admin-section-header';
 import { ConfirmDialog } from '@/components/common/feedback/confirm-dialog';
+import { EmptyState } from '@/components/common/feedback/empty-state';
 import { Button } from '@/components/ui/button';
 import { Feedback } from '@/components/ui/feedback';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
@@ -131,7 +132,10 @@ export function AdminPromotionsView({
       ) : null}
 
       {promotions.length === 0 ? (
-        <Feedback title={ADMIN_CATALOG_COPY.PROMOTIONS.EMPTY} />
+        <EmptyState
+          icon={<Tag size={24} strokeWidth={1.65} aria-hidden="true" />}
+          title={ADMIN_CATALOG_COPY.PROMOTIONS.EMPTY}
+        />
       ) : (
         <div className="space-y-4">
           {promotions.map((item) => (

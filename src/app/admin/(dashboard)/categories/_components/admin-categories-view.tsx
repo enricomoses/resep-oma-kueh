@@ -1,6 +1,6 @@
 'use client';
 
-import { Plus, RefreshCw } from 'lucide-react';
+import { FolderTree, Plus, RefreshCw } from 'lucide-react';
 
 import { AdminSectionHeader } from '@/app/admin/(dashboard)/_components/admin-section-header';
 import { ConfirmDialog } from '@/components/common/feedback/confirm-dialog';
@@ -97,7 +97,7 @@ export function AdminCategoriesView({
       {items.length === 0 ? (
         <EmptyState
           tone="cream"
-          className="admin-empty-card"
+          icon={<FolderTree size={24} strokeWidth={1.65} aria-hidden="true" />}
           title={ADMIN_CATALOG_COPY.CATEGORIES.EMPTY}
         />
       ) : (

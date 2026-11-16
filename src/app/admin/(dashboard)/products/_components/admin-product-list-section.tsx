@@ -1,3 +1,5 @@
+import { Package } from 'lucide-react';
+
 import { EmptyState } from '@/components/common/feedback/empty-state';
 import { Button } from '@/components/ui/button';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
@@ -32,9 +34,9 @@ export function AdminProductListSection({
     <>
       {productPage.items.length === 0 ? (
         <EmptyState
+          icon={<Package size={24} strokeWidth={1.65} aria-hidden="true" />}
           title={ADMIN_CATALOG_COPY.PRODUCTS.EMPTY}
           tone="cream"
-          className="admin-empty-card"
         />
       ) : (
         <div className="admin-list-stack">

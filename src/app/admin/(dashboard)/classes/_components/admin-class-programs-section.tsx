@@ -1,7 +1,8 @@
-import { Plus } from 'lucide-react';
+import { CalendarDays, Plus } from 'lucide-react';
 import type { Dispatch, FormEvent, SetStateAction } from 'react';
 
 import { AdminSectionHeader } from '@/app/admin/(dashboard)/_components/admin-section-header';
+import { EmptyState } from '@/components/common/feedback/empty-state';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
@@ -92,9 +93,15 @@ export function AdminClassProgramsSection({
       ) : null}
 
       {programs.length === 0 ? (
-        <p className="admin-empty-copy">
-          {ADMIN_CATALOG_COPY.CLASSES.EMPTY_PROGRAMS}
-        </p>
+        <EmptyState
+          size="sm"
+          tone="cream"
+          headingAs="h3"
+          icon={
+            <CalendarDays size={20} strokeWidth={1.65} aria-hidden="true" />
+          }
+          title={ADMIN_CATALOG_COPY.CLASSES.EMPTY_PROGRAMS}
+        />
       ) : (
         <div className="admin-classes-list">
           {programs.map((program) => (

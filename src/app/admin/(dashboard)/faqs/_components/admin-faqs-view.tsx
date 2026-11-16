@@ -1,9 +1,10 @@
 'use client';
 
-import { Plus, RefreshCw } from 'lucide-react';
+import { CircleHelp, Plus, RefreshCw } from 'lucide-react';
 
 import { AdminSectionHeader } from '@/app/admin/(dashboard)/_components/admin-section-header';
 import { ConfirmDialog } from '@/components/common/feedback/confirm-dialog';
+import { EmptyState } from '@/components/common/feedback/empty-state';
 import { Button } from '@/components/ui/button';
 import { Feedback } from '@/components/ui/feedback';
 import { FormField } from '@/components/ui/form-field';
@@ -119,7 +120,10 @@ export function AdminFaqsView({
       </div>
 
       {visibleItems.length === 0 ? (
-        <Feedback title={ADMIN_CATALOG_COPY.FAQS.EMPTY} />
+        <EmptyState
+          icon={<CircleHelp size={24} strokeWidth={1.65} aria-hidden="true" />}
+          title={ADMIN_CATALOG_COPY.FAQS.EMPTY}
+        />
       ) : (
         <div className="admin-cards-grid">
           {visibleItems.map((item) => (

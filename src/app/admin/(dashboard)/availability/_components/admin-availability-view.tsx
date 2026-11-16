@@ -1,6 +1,6 @@
 'use client';
 
-import { RefreshCw } from 'lucide-react';
+import { PackageSearch, RefreshCw } from 'lucide-react';
 
 import { AdminSectionHeader } from '@/app/admin/(dashboard)/_components/admin-section-header';
 import { EmptyState } from '@/components/common/feedback/empty-state';
@@ -139,7 +139,9 @@ export function AdminAvailabilityView({
       {items.length === 0 ? (
         <EmptyState
           tone="cream"
-          className="admin-empty-card"
+          icon={
+            <PackageSearch size={24} strokeWidth={1.65} aria-hidden="true" />
+          }
           title="Tidak ada penawaran SKU yang cocok dengan filter cabang saat ini."
         />
       ) : (

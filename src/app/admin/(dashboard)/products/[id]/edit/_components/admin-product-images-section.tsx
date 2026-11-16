@@ -1,8 +1,9 @@
 'use client';
 
-import { Upload } from 'lucide-react';
+import { ImagePlus, Upload } from 'lucide-react';
 import type { ChangeEvent } from 'react';
 
+import { EmptyState } from '@/components/common/feedback/empty-state';
 import { Feedback } from '@/components/ui/feedback';
 import {
   ADMIN_CATALOG_COPY,
@@ -148,10 +149,14 @@ export function AdminProductImagesSection({
       ) : null}
 
       {images.length === 0 ? (
-        <Feedback tone="info" title="Belum ada foto produk">
-          Unggah minimal satu foto berkualitas tinggi dan beri alt text untuk
-          dapat mempublikasikan produk.
-        </Feedback>
+        <EmptyState
+          size="sm"
+          tone="cream"
+          headingAs="h3"
+          icon={<ImagePlus size={20} strokeWidth={1.65} aria-hidden="true" />}
+          title="Belum ada foto produk"
+          description="Unggah minimal satu foto berkualitas tinggi dan beri alt text untuk dapat mempublikasikan produk."
+        />
       ) : (
         <div className="admin-editor-stack">
           {images.map((img, idx) => (

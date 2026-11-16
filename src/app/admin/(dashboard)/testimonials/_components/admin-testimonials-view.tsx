@@ -1,10 +1,11 @@
 'use client';
 
-import { Plus, RefreshCw, ShieldCheck } from 'lucide-react';
+import { MessageSquareQuote, Plus, RefreshCw, ShieldCheck } from 'lucide-react';
 
 import { AdminSectionHeader } from '@/app/admin/(dashboard)/_components/admin-section-header';
 import { WhatTheySaySection } from '@/components/common/content/what-they-say-section';
 import { ConfirmDialog } from '@/components/common/feedback/confirm-dialog';
+import { EmptyState } from '@/components/common/feedback/empty-state';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -130,7 +131,16 @@ export function AdminTestimonialsView({
       </Card>
 
       {items.length === 0 ? (
-        <Feedback title={ADMIN_CATALOG_COPY.TESTIMONIALS.EMPTY} />
+        <EmptyState
+          icon={
+            <MessageSquareQuote
+              size={24}
+              strokeWidth={1.65}
+              aria-hidden="true"
+            />
+          }
+          title={ADMIN_CATALOG_COPY.TESTIMONIALS.EMPTY}
+        />
       ) : (
         <div className="admin-cards-grid">
           {items.map((item) => (
