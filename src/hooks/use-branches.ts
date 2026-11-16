@@ -103,7 +103,9 @@ export function useBranches() {
     code,
     hydrated: context.hydrated,
     isPending: canExposeClientQuery ? query.isPending : true,
+    isFetching: canExposeClientQuery ? query.isFetching : false,
     isError: canExposeClientQuery ? query.isError : false,
+    errorUpdatedAt: canExposeClientQuery ? query.errorUpdatedAt : 0,
     isEmpty: canExposeClientQuery && query.isSuccess && items.length === 0,
     invalidUrl:
       canExposeClientQuery &&

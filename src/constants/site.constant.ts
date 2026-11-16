@@ -38,7 +38,7 @@ export const SITE_COPY = {
     'Cabang pada URL tidak valid atau sudah tidak aktif. Pilih cabang kembali.',
   PREFERENCE_INVALID:
     'Preferensi cabang tidak lagi aktif. Pilih cabang kembali.',
-  RETRY: 'Coba muat cabang lagi',
+  RETRY: 'Muat ulang',
   CONTACTS: 'Hubungi Resep Oma Kueh',
   CONTACT_FALLBACK:
     'Kontak terkonfirmasi; status cabang saat ini belum dapat diverifikasi.',

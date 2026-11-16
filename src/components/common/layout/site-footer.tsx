@@ -100,7 +100,10 @@ export function SiteFooter({
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <FaWhatsapp className="site-contact-icon" aria-hidden="true" />
+                  <FaWhatsapp
+                    className="site-contact-icon"
+                    aria-hidden="true"
+                  />
                   <span>{formatWhatsappDisplay(branch.whatsappNumber)}</span>
                 </a>
                 {branch.address ? (
@@ -134,10 +137,7 @@ export function SiteFooter({
             <h3 className="site-contact-title">
               <span>Kanal Resmi</span>
             </h3>
-            <a
-              className="site-contact-link"
-              href={`mailto:${contacts.email}`}
-            >
+            <a className="site-contact-link" href={`mailto:${contacts.email}`}>
               <FaEnvelope className="site-contact-icon" aria-hidden="true" />
               <span>{contacts.email}</span>
             </a>
