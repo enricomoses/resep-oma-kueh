@@ -1,5 +1,6 @@
-import { ExternalLink, Globe } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import Image from 'next/image';
+import { FaInstagram } from 'react-icons/fa';
 
 import { MediaPlaceholder } from '@/components/common/media-placeholder';
 import { SectionHeader } from '@/components/common/layout/section-header';
@@ -44,7 +45,7 @@ export function InstagramCommunitySection({
             rel="noopener noreferrer"
             className={buttonStyles('secondary', 'md')}
           >
-            <Globe size={18} aria-hidden="true" />
+            <FaInstagram size={18} aria-hidden="true" />
             {HOME_COPY.COMMUNITY_CTA}
             <ExternalLink size={16} aria-hidden="true" />
           </a>

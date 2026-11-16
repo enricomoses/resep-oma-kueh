@@ -141,7 +141,7 @@ export const HOME_COPY = {
     {
       id: 'community-demo-3',
       imageUrl: '/images/community-3.webp',
-      label: 'Momen ROK Baking Class',
+      label: 'Momen Baking Class',
       caption:
         'Foto kegiatan kelas hanya dipublikasikan dengan persetujuan peserta.',
     },
