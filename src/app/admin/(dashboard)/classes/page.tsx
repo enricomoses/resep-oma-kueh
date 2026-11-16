@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
+import { Suspense } from 'react';
 
 import { AdminClassesView } from './_components/admin-classes-view';
+import AdminLoading from '../../loading';
 import type { AdminClassBranchOption } from '@/types/classes';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { ROUTES } from '@/constants/routes.constant';
@@ -13,12 +15,14 @@ import {
 import { requireAdminSession } from '@/features/auth/admin-guard.server';
 import { getBranches } from '@/features/branches/service.server';
 
+export const instant = false;
+
 export const metadata: Metadata = {
   title: `${ADMIN_CATALOG_COPY.CLASSES.TITLE} · Admin Resep Oma Kueh`,
   robots: { index: false, follow: false },
 };
 
-export default async function AdminClassesPage() {
+async function AdminClassesContent() {
   await connection();
   const profile = await requireAdminSession(ROUTES.ADMIN_CLASSES);
 
@@ -58,5 +62,13 @@ export default async function AdminClassesPage() {
       initialSessions={initialSessions}
       branches={branches}
     />
+  );
+}
+
+export default function AdminClassesPage() {
+  return (
+    <Suspense fallback={<AdminLoading />}>
+      <AdminClassesContent />
+    </Suspense>
   );
 }

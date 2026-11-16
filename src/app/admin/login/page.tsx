@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { connection } from 'next/server';
+import { Suspense } from 'react';
 
 import { AdminLoginView } from './_components/admin-login-view';
+import AdminLoading from '../loading';
 import { AUTH_COPY } from '@/constants/auth.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { verifyAdminAccess } from '@/features/auth/admin-guard.server';
@@ -18,9 +20,9 @@ function firstQueryValue(value: string | string[] | undefined): string | null {
   return typeof value === 'string' ? value : null;
 }
 
-export default async function AdminLoginPage({
+async function AdminLoginContent({
   searchParams,
-}: PageProps<'/admin/login'>) {
+}: Pick<PageProps<'/admin/login'>, 'searchParams'>) {
   await connection();
   const params = await searchParams;
   const safeNext = resolveSafeAdminRedirectPath(
@@ -42,5 +44,15 @@ export default async function AdminLoginPage({
       nextPath={safeNext}
       initialErrorReason={initialErrorReason}
     />
+  );
+}
+
+export default function AdminLoginPage({
+  searchParams,
+}: PageProps<'/admin/login'>) {
+  return (
+    <Suspense fallback={<AdminLoading />}>
+      <AdminLoginContent searchParams={searchParams} />
+    </Suspense>
   );
 }

@@ -1,19 +1,23 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
+import { Suspense } from 'react';
 
 import { AdminForbiddenPanel } from '../_components/admin-forbidden-panel';
+import AdminLoading from '../../loading';
 import { AdminTestimonialsView } from './_components/admin-testimonials-view';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { listAdminTestimonials } from '@/features/admin-catalog/cms-faqs-testimonials.server';
 import { requireAdminSession } from '@/features/auth/admin-guard.server';
 
+export const instant = false;
+
 export const metadata: Metadata = {
   title: `${ADMIN_CATALOG_COPY.TESTIMONIALS.TITLE} · Admin Resep Oma Kueh`,
   robots: { index: false, follow: false },
 };
 
-export default async function AdminTestimonialsPage() {
+async function AdminTestimonialsContent() {
   await connection();
   const profile = await requireAdminSession(ROUTES.ADMIN_TESTIMONIALS);
   if (profile.role !== 'owner') {
@@ -22,4 +26,12 @@ export default async function AdminTestimonialsPage() {
 
   const initialData = await listAdminTestimonials(profile);
   return <AdminTestimonialsView profile={profile} initialData={initialData} />;
+}
+
+export default function AdminTestimonialsPage() {
+  return (
+    <Suspense fallback={<AdminLoading />}>
+      <AdminTestimonialsContent />
+    </Suspense>
+  );
 }

@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { connection } from 'next/server';
+import { Suspense } from 'react';
 
 import { AdminForbiddenPanel } from '../../../_components/admin-forbidden-panel';
+import AdminLoading from '../../../../loading';
 import { AdminProductEditorView } from './_components/admin-product-editor-view';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { getAdminProductEditorAggregate } from '@/features/admin-catalog/configuration.server';
@@ -16,14 +18,14 @@ interface AdminEditProductPageProps {
   params: Promise<{ id: string }>;
 }
 
+export const instant = false;
+
 export const metadata: Metadata = {
   title: `${ADMIN_CATALOG_COPY.PRODUCT_EDITOR.EDIT_PAGE_TITLE} · Admin Resep Oma Kueh`,
   robots: { index: false, follow: false },
 };
 
-export default async function AdminEditProductPage({
-  params,
-}: AdminEditProductPageProps) {
+async function AdminEditProductContent({ params }: AdminEditProductPageProps) {
   await connection();
   const { id } = await params;
   const profile = await requireAdminSession(buildAdminProductEditRoute(id));
@@ -57,5 +59,15 @@ export default async function AdminEditProductPage({
       productId={productId}
       initialAggregate={aggregate}
     />
+  );
+}
+
+export default function AdminEditProductPage({
+  params,
+}: AdminEditProductPageProps) {
+  return (
+    <Suspense fallback={<AdminLoading />}>
+      <AdminEditProductContent params={params} />
+    </Suspense>
   );
 }

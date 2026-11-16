@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
+import { Suspense } from 'react';
 
 import { AdminResetPasswordView } from './_components/admin-reset-password-view';
+import AdminLoading from '../loading';
 import { AUTH_COPY } from '@/constants/auth.constant';
 import { verifyAdminAccess } from '@/features/auth/admin-guard.server';
 import type { AuthErrorReason } from '@/types/auth';
@@ -11,7 +13,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function AdminResetPasswordPage() {
+async function AdminResetPasswordContent() {
   await connection();
   const verification = await verifyAdminAccess();
 
@@ -38,5 +40,13 @@ export default async function AdminResetPasswordPage() {
       hasValidRecoverySession={false}
       errorReason={errorReason}
     />
+  );
+}
+
+export default function AdminResetPasswordPage() {
+  return (
+    <Suspense fallback={<AdminLoading />}>
+      <AdminResetPasswordContent />
+    </Suspense>
   );
 }

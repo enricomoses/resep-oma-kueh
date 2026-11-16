@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
+import { Suspense } from 'react';
 
 import { AdminForbiddenPanel } from '../_components/admin-forbidden-panel';
+import AdminLoading from '../../loading';
 import { AdminProductsView } from './_components/admin-products-view';
 import {
   ADMIN_CATALOG_COPY,
@@ -14,12 +16,14 @@ import {
 } from '@/features/admin-catalog/service.server';
 import { requireAdminSession } from '@/features/auth/admin-guard.server';
 
+export const instant = false;
+
 export const metadata: Metadata = {
   title: `${ADMIN_CATALOG_COPY.PRODUCTS.TITLE} · Admin Resep Oma Kueh`,
   robots: { index: false, follow: false },
 };
 
-export default async function AdminProductsPage() {
+async function AdminProductsContent() {
   await connection();
   const profile = await requireAdminSession(ROUTES.ADMIN_PRODUCTS);
   if (profile.role !== 'owner') {
@@ -40,5 +44,13 @@ export default async function AdminProductsPage() {
       initialProducts={initialProducts}
       initialCategories={initialCategories}
     />
+  );
+}
+
+export default function AdminProductsPage() {
+  return (
+    <Suspense fallback={<AdminLoading />}>
+      <AdminProductsContent />
+    </Suspense>
   );
 }
