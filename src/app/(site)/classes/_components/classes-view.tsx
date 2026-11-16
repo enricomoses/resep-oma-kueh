@@ -113,7 +113,7 @@ export function ClassesView({ initial, className }: ClassesViewProps) {
           }
         />
       ) : (
-        <div className="product-grid classes-program-grid">
+        <div className="baking-class-grid">
           {data.items.map((program) => (
             <ClassProgramCard
               key={program.id}

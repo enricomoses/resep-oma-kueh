@@ -110,7 +110,7 @@ export function BakeWithOmaSection({
           }
         />
       ) : (
-        <div className="product-grid home-classes-grid">
+        <div className="baking-class-grid">
           {visibleSessions.map((session) => {
             const badges: ProductBadgeItem[] = [
               {

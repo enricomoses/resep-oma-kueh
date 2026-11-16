@@ -303,8 +303,19 @@ describe('F21 DOM public classes & detail registration views', () => {
     };
     mockReadClasses.mockResolvedValue({ ok: true, data, requestId: 'r1' });
 
-    renderWithQuery(<ClassesView initial={{ status: 'success', data }} />);
+    const { container } = renderWithQuery(
+      <ClassesView initial={{ status: 'success', data }} />,
+    );
 
+    expect(container.querySelector('.baking-class-grid')).not.toBeNull();
+    expect(
+      container.querySelector('.baking-class-card .baking-class-card-title'),
+    ).toHaveTextContent('Little Baker Chiffon Class');
+    expect(
+      container.querySelector(
+        '.baking-class-card-footer .baking-class-card-price',
+      ),
+    ).toHaveTextContent(/Rp\s*185\.000/);
     expect(screen.getByText('Little Baker Chiffon Class')).toBeInTheDocument();
     expect(screen.getByText(/Cabang terpilih: Surabaya/)).toBeInTheDocument();
     const askLink = screen.getByRole('link', {

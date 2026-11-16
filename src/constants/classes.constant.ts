@@ -47,8 +47,12 @@ export const CLASSES_COPY = {
     'Belum ada sesi mendatang yang dibuka untuk pendaftaran',
   NO_FUTURE_SESSIONS_BODY:
     'Anda tetap dapat menanyakan perkiraan jadwal gelombang berikutnya langsung kepada admin cabang melalui WhatsApp.',
-  ASK_NEXT_CLASS_CTA: 'Tanyakan Jadwal Berikutnya via WhatsApp',
-  DETAIL_CTA: 'Lihat detail & jadwal kelas',
+  ASK_NEXT_CLASS_CTA: 'Tanyakan jadwal berikutnya',
+  DETAIL_CTA: 'Lihat detail',
+  PRICE_CONFIRM_NOTE: 'Harga dikonfirmasi melalui admin cabang.',
+  NO_FUTURE_SESSIONS_BADGE: 'Jadwal menyusul',
+  BADGE_MORE_ARIA_LABEL: (count: number) =>
+    `Lihat semua ${count} informasi kelas`,
   REGISTER_SECTION_TITLE: 'Siapkan Pendaftaran via WhatsApp',
   REGISTER_SUBMIT_CTA: 'Buat Pesan Pendaftaran WhatsApp',
   REGISTER_SUBMITTING: 'Menyiapkan pesan...',

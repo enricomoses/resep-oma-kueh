@@ -7,11 +7,13 @@ import {
 } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 import { HomeView } from '@/app/(site)/_components/home-view';
+import { CLASSES_COPY } from '@/constants/classes.constant';
 import {
   HOME_CMS_DEFAULTS,
   HOME_COPY,
   HOME_SECTION_IDS,
 } from '@/constants/home.constant';
+import { PROMOTION_COPY } from '@/constants/promotion.constant';
 import { ReactQueryProvider } from '@/providers';
 import { BranchProvider } from '@/providers/branch-provider';
 import type { PublicBranch } from '@/types/branch';
@@ -310,5 +312,116 @@ it('renders distinct empty and error states per section without crashing the pag
       level: 1,
       name: HOME_CMS_DEFAULTS.HERO.headline,
     }),
+  ).toBeInTheDocument();
+});
+
+it('renders baking class cards inside landscape baking-class-grid with uniform clamped & aligned slots across multiple cards', () => {
+  const { container } = renderHome({
+    ...LOADED_DATA,
+    upcomingClasses: {
+      status: 'success',
+      data: [
+        {
+          ...(LOADED_DATA.upcomingClasses.status === 'success'
+            ? LOADED_DATA.upcomingClasses.data[0]
+            : (() => {
+                throw new Error('Expected upcomingClasses success');
+              })()),
+          effectivePriceIdr: 185_000,
+        },
+        {
+          id: 'f0400000-0000-4000-8000-000000000952',
+          startsAt: '2026-12-18T10:00:00+07:00',
+          endsAt: '2026-12-18T12:30:00+07:00',
+          registrationDeadlineAt: null,
+          capacity: 10,
+          seatsLeft: null,
+          branch: {
+            id: BINTARO.id,
+            code: 'bintaro',
+            name: 'Bintaro',
+            city: 'Bintaro',
+          },
+          program: {
+            id: 'f0400000-0000-4000-8000-000000000941',
+            title:
+              'Kelas Spesial Menghias Chiffon Pandan Klasik Bersama Oma untuk Pemula',
+            slug: 'demo-class-1',
+            shortDescription:
+              'Deskripsi panjang kelas baking untuk menguji batas tampilan kartu agar tetap rapi dan sejajar ketika dibandingkan dengan kartu lain.',
+            description: 'Deskripsi lengkap.',
+            ageMin: 6,
+            ageMax: 14,
+            durationMinutes: 150,
+            coverAlt: 'DEMO — kelas chiffon',
+          },
+        },
+      ],
+    },
+  });
+
+  const classesSection = container.querySelector(
+    `#${HOME_SECTION_IDS.CLASSES}`,
+  );
+  expect(classesSection).not.toBeNull();
+  const grid = classesSection?.querySelector('.baking-class-grid');
+  expect(grid).not.toBeNull();
+
+  const cards = grid?.querySelectorAll('.baking-class-card') ?? [];
+  expect(cards).toHaveLength(2);
+  for (const card of cards) {
+    expect(card.querySelector('.baking-class-media')).not.toBeNull();
+    expect(card.querySelector('.baking-class-card-title')).not.toBeNull();
+    expect(card.querySelector('.baking-class-card-description')).not.toBeNull();
+    expect(
+      card.querySelector('.baking-class-card-schedule-block'),
+    ).not.toBeNull();
+    expect(card.querySelector('.baking-class-card-footer')).not.toBeNull();
+  }
+  expect(screen.getByText(/Rp\s*185\.000/)).toBeInTheDocument();
+  expect(screen.queryByText(/Mulai dari/)).toBeNull();
+  expect(screen.getByText(CLASSES_COPY.PRICE_CONFIRM_NOTE)).toBeInTheDocument();
+});
+
+it('renders Current Treats promo cards with offer band, scope badge, terms, clamped body, and overflow-safe layout', () => {
+  const { container } = renderHome({
+    ...LOADED_DATA,
+    promotions: {
+      status: 'success',
+      data: [
+        {
+          id: 'f0400000-0000-4000-8000-000000000931',
+          title: 'Promo Akhir Pekan Spesial Chiffon Oma',
+          slug: 'promo-weekend',
+          description: 's'.repeat(180),
+          discountType: 'percentage',
+          discountValue: 50,
+          minSpendIdr: 50_000,
+          maxDiscountIdr: 25_000,
+          scope: 'category',
+          startsAt: '2026-11-16T10:00:00+07:00',
+          endsAt: '2026-11-23T10:00:00+07:00',
+          branchIds: [],
+        },
+      ],
+    },
+  });
+
+  const treatsSection = container.querySelector(`#${HOME_SECTION_IDS.TREATS}`);
+  expect(treatsSection).not.toBeNull();
+  const cards = treatsSection?.querySelectorAll('.home-treat-card') ?? [];
+  expect(cards).toHaveLength(1);
+  expect(cards[0]?.querySelector('.home-treat-offer-band')).not.toBeNull();
+  expect(cards[0]?.querySelector('.home-treat-title')).toHaveTextContent(
+    'Promo Akhir Pekan Spesial Chiffon Oma',
+  );
+  expect(cards[0]?.querySelector('.home-treat-description')).not.toBeNull();
+  expect(cards[0]?.querySelector('.home-treat-footer')).not.toBeNull();
+  expect(screen.getByText('Diskon 50%')).toBeInTheDocument();
+  expect(
+    screen.getByText(PROMOTION_COPY.SCOPE_LABELS.category),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText(/Min\. belanja Rp50\.000 · Maks\. potongan Rp25\.000/),
   ).toBeInTheDocument();
 });

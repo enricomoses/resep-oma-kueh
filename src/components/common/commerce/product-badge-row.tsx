@@ -1,5 +1,6 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
@@ -8,11 +9,13 @@ import { cn } from '@/utils';
 export interface ProductBadgeItem {
   id: string;
   label: string;
+  icon?: ReactNode;
   tone?: 'neutral' | 'accent' | 'success' | 'danger';
 }
 
 interface ProductBadgeRowProps {
   items: ProductBadgeItem[];
+  moreAriaLabel?: string;
   className?: string;
 }
 
@@ -23,7 +26,11 @@ interface BadgeLayout {
   popoverAlign: PopoverAlign;
 }
 
-export function ProductBadgeRow({ items, className }: ProductBadgeRowProps) {
+export function ProductBadgeRow({
+  items,
+  moreAriaLabel,
+  className,
+}: ProductBadgeRowProps) {
   const rowRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
   const moreWrapRef = useRef<HTMLDivElement>(null);
@@ -168,6 +175,7 @@ export function ProductBadgeRow({ items, className }: ProductBadgeRowProps) {
     >
       {visibleItems.map((item) => (
         <Badge key={item.id} tone={item.tone} className="product-badge-item">
+          {item.icon}
           {item.label}
         </Badge>
       ))}
@@ -188,7 +196,9 @@ export function ProductBadgeRow({ items, className }: ProductBadgeRowProps) {
           <button
             type="button"
             className="ui-badge product-badge-more"
-            aria-label={`Lihat semua ${items.length} label produk`}
+            aria-label={
+              moreAriaLabel ?? `Lihat semua ${items.length} label produk`
+            }
             aria-expanded={isOpen}
             aria-haspopup="true"
             onClick={() => setIsOpen((prev) => !prev)}
@@ -205,6 +215,7 @@ export function ProductBadgeRow({ items, className }: ProductBadgeRowProps) {
               <div className="product-badge-popover-list">
                 {items.map((item) => (
                   <Badge key={item.id} tone={item.tone}>
+                    {item.icon}
                     {item.label}
                   </Badge>
                 ))}
@@ -226,6 +237,7 @@ export function ProductBadgeRow({ items, className }: ProductBadgeRowProps) {
               tone={item.tone}
               className="product-badge-item"
             >
+              {item.icon}
               {item.label}
             </Badge>
           ))}
