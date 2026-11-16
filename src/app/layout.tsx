@@ -70,6 +70,9 @@ export const metadata: Metadata = {
     description: FOUNDATION_COPY.META,
     images: [SEO_DEFAULTS.DEFAULT_OG_IMAGE],
   },
+  verification: {
+    google: 'EEZJOPSI74fu9cL-INPkZ5kGBzcCohcjeW6FVyUhXNU',
+  },
   robots: isNoIndex
     ? { index: false, follow: false }
     : {
