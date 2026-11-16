@@ -11,12 +11,18 @@ import {
   PRODUCT_DETAIL_COPY,
 } from '@/constants/catalog.constant';
 import { ROUTES } from '@/constants/routes.constant';
-import { readPublishedProductBySlug } from '@/features/catalog/repository.server';
+import {
+  pickApprovedPrimaryProductImage,
+  readPublishedProductBySlug,
+} from '@/features/catalog/repository.server';
 import { getProductDetail } from '@/features/catalog/service.server';
 import type { InitialCatalogSection, ProductDetail } from '@/types/catalog';
 import { firstSearchParam } from '@/utils/branch-url';
 import { buildPageMetadata } from '@/utils/seo';
-import { buildProductJsonLd } from '@/utils/structured-data';
+import {
+  buildBreadcrumbJsonLd,
+  buildProductJsonLd,
+} from '@/utils/structured-data';
 
 export async function generateMetadata({
   params,
@@ -35,8 +41,14 @@ export async function generateMetadata({
         title: PRODUCT_DETAIL_COPY.METADATA_DEFAULT_TITLE,
         description: PRODUCT_DETAIL_COPY.METADATA_DEFAULT_DESCRIPTION,
         path: `${ROUTES.MENU}/${slug}`,
+        noIndex: true,
       });
     }
+
+    const { previewImageUrl } = pickApprovedPrimaryProductImage(
+      product.product_images,
+      product.name,
+    );
 
     return buildPageMetadata({
       title: `${product.name} | Resep Oma Kueh`,
@@ -45,12 +57,14 @@ export async function generateMetadata({
         product.description ||
         PRODUCT_DETAIL_COPY.METADATA_DEFAULT_DESCRIPTION,
       path: `${ROUTES.MENU}/${product.slug}`,
+      imageUrl: previewImageUrl,
     });
   } catch {
     return buildPageMetadata({
       title: PRODUCT_DETAIL_COPY.METADATA_DEFAULT_TITLE,
       description: PRODUCT_DETAIL_COPY.METADATA_DEFAULT_DESCRIPTION,
       path: `${ROUTES.MENU}/${slug}`,
+      noIndex: true,
     });
   }
 }
@@ -84,17 +98,33 @@ async function MenuDetailContent({
     initialDetail = { status: 'error' };
   }
 
+  const siteUrl = getPublicEnvironment().NEXT_PUBLIC_SITE_URL;
   const productJsonLd =
     initialDetail.status === 'success'
       ? buildProductJsonLd({
-          siteUrl: getPublicEnvironment().NEXT_PUBLIC_SITE_URL,
+          siteUrl,
           product: initialDetail.data,
+        })
+      : null;
+  const breadcrumbJsonLd =
+    initialDetail.status === 'success'
+      ? buildBreadcrumbJsonLd({
+          siteUrl,
+          items: [
+            { name: 'Beranda', path: ROUTES.HOME },
+            { name: 'Menu', path: ROUTES.MENU },
+            {
+              name: initialDetail.data.name,
+              path: `${ROUTES.MENU}/${initialDetail.data.slug}`,
+            },
+          ],
         })
       : null;
 
   return (
     <>
       <StructuredDataScript data={productJsonLd} />
+      <StructuredDataScript data={breadcrumbJsonLd} />
       <ProductDetailView slug={slug} initial={initialDetail} />
     </>
   );

@@ -262,3 +262,108 @@ export function buildClassEventJsonLd({
       : {}),
   };
 }
+
+export interface BreadcrumbItemInput {
+  name: string;
+  path: string;
+}
+
+export function buildWebsiteJsonLd({
+  siteUrl,
+}: {
+  siteUrl: string;
+}): Record<string, unknown> {
+  const homeUrl = resolveCanonicalUrl(siteUrl, ROUTES.HOME);
+  const menuUrl = resolveCanonicalUrl(siteUrl, ROUTES.MENU);
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: APP.NAME,
+    url: homeUrl,
+    inLanguage: 'id',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${menuUrl}?q={search_term_string}`,
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  };
+}
+
+export function buildBreadcrumbJsonLd({
+  siteUrl,
+  items,
+}: {
+  siteUrl: string;
+  items: readonly BreadcrumbItemInput[];
+}): Record<string, unknown> | null {
+  if (items.length === 0) {
+    return null;
+  }
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: resolveCanonicalUrl(siteUrl, item.path),
+    })),
+  };
+}
+
+export function buildCollectionPageJsonLd({
+  siteUrl,
+  title,
+  description,
+  path,
+}: {
+  siteUrl: string;
+  title: string;
+  description: string;
+  path: string;
+}): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: title,
+    description,
+    url: resolveCanonicalUrl(siteUrl, path),
+    inLanguage: 'id',
+    isPartOf: {
+      '@type': 'WebSite',
+      name: APP.NAME,
+      url: resolveCanonicalUrl(siteUrl, ROUTES.HOME),
+    },
+  };
+}
+
+export function buildFaqJsonLd({
+  faqs,
+}: {
+  faqs: ReadonlyArray<{ question: string; answer: string }>;
+}): Record<string, unknown> | null {
+  const validFaqs = faqs.filter(
+    (item) => item.question.trim() && item.answer.trim(),
+  );
+  if (validFaqs.length === 0) {
+    return null;
+  }
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: validFaqs.map((item) => ({
+      '@type': 'Question',
+      name: item.question.trim(),
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer.trim(),
+      },
+    })),
+  };
+}

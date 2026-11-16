@@ -9,7 +9,10 @@ import { PAGE_METADATA } from '@/constants/content.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { getContactPageData } from '@/features/content/service.server';
 import { buildPageMetadata } from '@/utils/seo';
-import { buildBakeryJsonLd } from '@/utils/structured-data';
+import {
+  buildBakeryJsonLd,
+  buildBreadcrumbJsonLd,
+} from '@/utils/structured-data';
 
 export const metadata: Metadata = buildPageMetadata({
   title: PAGE_METADATA.CONTACT.title,
@@ -20,16 +23,25 @@ export const metadata: Metadata = buildPageMetadata({
 async function ContactContent() {
   await connection();
   const data = await getContactPageData();
+  const siteUrl = getPublicEnvironment().NEXT_PUBLIC_SITE_URL;
   const bakeryJsonLd = buildBakeryJsonLd({
-    siteUrl: getPublicEnvironment().NEXT_PUBLIC_SITE_URL,
+    siteUrl,
     email: data.email,
     instagramUrl: data.instagramUrl,
     branches: data.branches,
+  });
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd({
+    siteUrl,
+    items: [
+      { name: 'Beranda', path: ROUTES.HOME },
+      { name: 'Contact', path: ROUTES.CONTACT },
+    ],
   });
 
   return (
     <>
       <StructuredDataScript data={bakeryJsonLd} />
+      <StructuredDataScript data={breadcrumbJsonLd} />
       <ContactView data={data} />
     </>
   );

@@ -14,20 +14,43 @@ import {
 } from '@/utils/seo';
 import {
   buildBakeryJsonLd,
+  buildBreadcrumbJsonLd,
   buildClassEventJsonLd,
+  buildCollectionPageJsonLd,
+  buildFaqJsonLd,
   buildProductJsonLd,
+  buildWebsiteJsonLd,
   serializeJsonLd,
 } from '@/utils/structured-data';
 
-it('builds metadata with canonical URL, OG tags, and noindex overrides cleanly', () => {
+it('builds metadata with canonical URL, OG tags, consistent | titles, and noindex overrides cleanly', () => {
+  const homeMeta = buildPageMetadata({
+    title: 'Resep Oma Kueh',
+    description: 'Beranda resmi',
+    path: ROUTES.HOME,
+    siteUrl: 'https://resepomakueh.com',
+    demoMode: false,
+  });
+  expect(homeMeta.title).toEqual({ absolute: 'Resep Oma Kueh' });
+  expect(homeMeta.openGraph?.title).toBe('Resep Oma Kueh');
+  expect(homeMeta.openGraph?.images).toEqual([
+    {
+      url: 'https://resepomakueh.com/images/hero-bakery.webp',
+      alt: 'Resep Oma Kueh',
+    },
+  ]);
+
   const indexableMeta = buildPageMetadata({
-    title: 'Menu & Katalog | Resep Oma Kueh',
+    title: 'Menu | Resep Oma Kueh',
     description: 'Katalog produk resmi',
     path: ROUTES.MENU,
     siteUrl: 'https://resepomakueh.com',
     demoMode: false,
   });
 
+  expect(indexableMeta.title).toBe('Menu');
+  expect(indexableMeta.openGraph?.title).toBe('Menu | Resep Oma Kueh');
+  expect(indexableMeta.twitter?.title).toBe('Menu | Resep Oma Kueh');
   expect(indexableMeta.alternates?.canonical).toBe(
     'https://resepomakueh.com/menu',
   );
@@ -46,7 +69,19 @@ it('builds metadata with canonical URL, OG tags, and noindex overrides cleanly',
 
   expect(
     isNoIndexDeployment({
+      siteUrl: 'https://resepomakueh.vercel.app',
+      demoMode: false,
+    }),
+  ).toBe(false);
+  expect(
+    isNoIndexDeployment({
       siteUrl: 'https://resep-oma-kueh-preview.vercel.app',
+      demoMode: false,
+    }),
+  ).toBe(true);
+  expect(
+    isNoIndexDeployment({
+      siteUrl: 'https://resepomakueh-git-feat-seo.vercel.app',
       demoMode: false,
     }),
   ).toBe(true);
@@ -315,4 +350,36 @@ it('escapes HTML-sensitive characters in JSON-LD serialization and builds workab
   );
   expect(cspHeader?.value).toContain('upgrade-insecure-requests');
   expect(hstsHeader?.value).toContain('max-age=31536000');
+});
+
+it('builds WebSite, BreadcrumbList, CollectionPage, and FAQPage JSON-LD accurately', () => {
+  const website = buildWebsiteJsonLd({ siteUrl: 'https://resepomakueh.com' });
+  expect(website['@type']).toBe('WebSite');
+  expect(website.url).toBe('https://resepomakueh.com/');
+
+  const breadcrumbs = buildBreadcrumbJsonLd({
+    siteUrl: 'https://resepomakueh.com',
+    items: [
+      { name: 'Beranda', path: ROUTES.HOME },
+      { name: 'Menu', path: ROUTES.MENU },
+    ],
+  });
+  expect(breadcrumbs?.['@type']).toBe('BreadcrumbList');
+  expect(
+    (breadcrumbs?.itemListElement as Array<Record<string, unknown>>).length,
+  ).toBe(2);
+
+  const collection = buildCollectionPageJsonLd({
+    siteUrl: 'https://resepomakueh.com',
+    title: 'Menu | Resep Oma Kueh',
+    description: 'Katalog kue',
+    path: ROUTES.MENU,
+  });
+  expect(collection['@type']).toBe('CollectionPage');
+
+  expect(buildFaqJsonLd({ faqs: [] })).toBeNull();
+  const faq = buildFaqJsonLd({
+    faqs: [{ question: 'Cara pesan?', answer: 'Lewat WhatsApp cabang.' }],
+  });
+  expect(faq?.['@type']).toBe('FAQPage');
 });

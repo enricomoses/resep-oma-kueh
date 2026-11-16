@@ -15,7 +15,10 @@ import { getPublicClassDetail } from '@/features/classes/service.server';
 import type { InitialPublicClassDetail } from '@/types/classes';
 import { firstSearchParam } from '@/utils/branch-url';
 import { buildPageMetadata } from '@/utils/seo';
-import { buildClassEventJsonLd } from '@/utils/structured-data';
+import {
+  buildBreadcrumbJsonLd,
+  buildClassEventJsonLd,
+} from '@/utils/structured-data';
 
 export async function generateMetadata({
   params,
@@ -29,7 +32,7 @@ export async function generateMetadata({
   try {
     const detail = await getPublicClassDetail(slug, { branch });
     return buildPageMetadata({
-      title: `${detail.program.title} | ROK Baking Class`,
+      title: `${detail.program.title} | Resep Oma Kueh`,
       description:
         detail.program.shortDescription ??
         detail.program.description.slice(0, 155),
@@ -41,6 +44,7 @@ export async function generateMetadata({
       title: 'ROK Baking Class | Resep Oma Kueh',
       description: CLASSES_COPY.SUBTITLE,
       path: `${ROUTES.CLASSES}/${slug}`,
+      noIndex: true,
     });
   }
 }
@@ -65,18 +69,34 @@ async function ClassDetailContent({
     initial = { status: 'error' };
   }
 
+  const siteUrl = getPublicEnvironment().NEXT_PUBLIC_SITE_URL;
   const eventJsonLd =
     initial.status === 'success'
       ? buildClassEventJsonLd({
-          siteUrl: getPublicEnvironment().NEXT_PUBLIC_SITE_URL,
+          siteUrl,
           program: initial.data.program,
           evaluatedAtIso: initial.data.evaluatedAtUtc,
+        })
+      : null;
+  const breadcrumbJsonLd =
+    initial.status === 'success'
+      ? buildBreadcrumbJsonLd({
+          siteUrl,
+          items: [
+            { name: 'Beranda', path: ROUTES.HOME },
+            { name: 'ROK Baking Class', path: ROUTES.CLASSES },
+            {
+              name: initial.data.program.title,
+              path: `${ROUTES.CLASSES}/${initial.data.program.slug}`,
+            },
+          ],
         })
       : null;
 
   return (
     <>
       <StructuredDataScript data={eventJsonLd} />
+      <StructuredDataScript data={breadcrumbJsonLd} />
       <ClassDetailView slug={slug} initial={initial} />
     </>
   );

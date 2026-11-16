@@ -11,7 +11,7 @@ import { FOUNDATION_COPY } from '@/constants/ui.constant';
 import { getInitialBranches } from '@/features/branches/service.server';
 import { getHomeData } from '@/features/home/service.server';
 import { buildPageMetadata } from '@/utils/seo';
-import { buildBakeryJsonLd } from '@/utils/structured-data';
+import { buildBakeryJsonLd, buildWebsiteJsonLd } from '@/utils/structured-data';
 
 export const metadata: Metadata = buildPageMetadata({
   title: APP.NAME,
@@ -38,9 +38,13 @@ async function HomeContent() {
     instagramUrl: APPROVED_CONTACTS.instagramUrl,
     branches: structuredBranches,
   });
+  const websiteJsonLd = buildWebsiteJsonLd({
+    siteUrl: NEXT_PUBLIC_SITE_URL,
+  });
 
   return (
     <>
+      <StructuredDataScript data={websiteJsonLd} />
       <StructuredDataScript data={bakeryJsonLd} />
       <HomeView data={data} contacts={APPROVED_CONTACTS} />
     </>
