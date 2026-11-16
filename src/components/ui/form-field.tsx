@@ -3,7 +3,6 @@
 import { useId } from 'react';
 import type { ReactNode } from 'react';
 
-import { UI_COPY } from '@/constants/ui.constant';
 import { cn } from '@/utils';
 
 interface FieldControlProps {
@@ -39,8 +38,12 @@ export function FormField({
   return (
     <div className={cn('ui-field', className)}>
       <label htmlFor={id} className="ui-field-label">
-        {label}
-        {required ? ` ${UI_COPY.REQUIRED}` : ''}
+        <span>{label}</span>
+        {required ? (
+          <span className="ui-field-required" aria-hidden="true">
+            *
+          </span>
+        ) : null}
       </label>
       {children({
         id,
