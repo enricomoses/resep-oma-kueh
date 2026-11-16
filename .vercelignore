@@ -1,9 +1,9 @@
 # Local environment & test artifacts
-.env.local
-test-results/
-playwright-report/
-coverage/
+/.env.local
+/test-results/
+/playwright-report/
+/coverage/
 
 # Database migrations/seeds & docs not required for Next.js build
-supabase/
-docs/
+/supabase/
+/docs/
