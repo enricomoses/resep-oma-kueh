@@ -171,7 +171,7 @@ export const PRODUCT_DETAIL_COPY = {
   CTA_BUNDLE_NOTICE_TITLE: 'Konfigurasi Paket Mix 12 Potong (Segera di F11)',
   CTA_BUNDLE_NOTICE_BODY:
     'Pemilihan 4 rasa terstruktur (2 rasa tetap + 2 pilihan grup) untuk Chiffon Slice Mix diaktifkan pada tahap F11.',
-  CTA_PREPARED_TITLE: 'Pilihan varian siap untuk keranjang (Menunggu F12)',
+  CTA_PREPARED_TITLE: 'Berhasil ditambahkan ke keranjang',
   CTA_PREPARED_BODY:
     'Payload varian dan jumlah telah tervalidasi. Penyimpanan keranjang lokal (localStorage) dan penggabungan baris keranjang diaktifkan pada tahap F12.',
   FOOD_INFO_TITLE: 'Informasi Makanan, Diet & Alergen SKU',
@@ -227,7 +227,7 @@ export const BUNDLE_CUSTOMIZER_COPY = {
   COMPONENT_UNAVAILABLE_WARNING:
     'Salah satu komponen rasa pilihan sedang tidak tersedia atau habis di cabang terpilih.',
   CONFIRM_CONFIG_CTA: 'Siapkan Paket untuk Keranjang',
-  CONFIG_READY_TITLE: 'Konfigurasi Paket Mix Lengkap (Menunggu F12)',
+  CONFIG_READY_TITLE: 'Konfigurasi Paket Mix Lengkap',
   CONFIG_READY_BODY:
     '12 potong dengan 4 rasa berbeda telah terkonfigurasi dan tervalidasi. Integrasi keranjang belanja aktif pada F12.',
   SLICES_SUFFIX: 'potong',
