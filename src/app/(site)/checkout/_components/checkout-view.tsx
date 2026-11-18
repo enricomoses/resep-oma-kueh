@@ -6,7 +6,6 @@ import { BranchStatusPill } from '@/components/common/branch/branch-status-pill'
 import { NoBranchAlert } from '@/components/common/branch/no-branch-alert';
 import { EmptyState } from '@/components/common/feedback/empty-state';
 import { ErrorState } from '@/components/common/feedback/error-state';
-import { LoadingState } from '@/components/common/feedback/loading-state';
 import { BackLink } from '@/components/common/layout/back-link';
 import { PageHeader } from '@/components/common/layout/page-header';
 import { ActionLink } from '@/components/ui/action-link';
@@ -23,6 +22,7 @@ import '@/styles/features/checkout.css';
 import { cn } from '@/utils';
 import { withBranch } from '@/utils/branch-url';
 
+import { SiteCheckoutSkeleton } from '../../_components/skeletons/site-checkout-skeleton';
 import { CheckoutConsultationCard } from './checkout-consultation-card';
 import { CheckoutFormCard } from './checkout-form-card';
 import { CheckoutQuoteReviewCard } from './checkout-quote-review-card';
@@ -37,11 +37,10 @@ export function CheckoutView({ className }: CheckoutViewProps) {
 
   if (flow.isInitialLoading) {
     return (
-      <main id="konten" className={cn('checkout-page', className)}>
-        <div className="checkout-container">
-          <LoadingState message={CART_COPY.LOADING_RESTORE} />
-        </div>
-      </main>
+      <SiteCheckoutSkeleton
+        label={CART_COPY.LOADING_RESTORE}
+        className={className}
+      />
     );
   }
 

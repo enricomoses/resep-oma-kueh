@@ -7,7 +7,6 @@ import { BranchStatusPill } from '@/components/common/branch/branch-status-pill'
 import { ConfirmDialog } from '@/components/common/feedback/confirm-dialog';
 import { EmptyState } from '@/components/common/feedback/empty-state';
 import { ErrorState } from '@/components/common/feedback/error-state';
-import { LoadingState } from '@/components/common/feedback/loading-state';
 import { NoBranchAlert } from '@/components/common/branch/no-branch-alert';
 import { BackLink } from '@/components/common/layout/back-link';
 import { PageHeader } from '@/components/common/layout/page-header';
@@ -26,6 +25,7 @@ import type { CartValidatedLine } from '@/types/cart';
 import { cn } from '@/utils';
 import { withBranch } from '@/utils/branch-url';
 
+import { SiteCartSkeleton } from '../../_components/skeletons/site-cart-skeleton';
 import { CartItemCard } from './cart-item-card';
 import { CartSummary } from './cart-summary';
 
@@ -64,11 +64,10 @@ export function CartView({ className }: CartViewProps) {
     (isValidating && lines.length > 0 && validatedLines.length === 0)
   ) {
     return (
-      <main id="konten" className={cn('cart-page', className)}>
-        <div className="cart-container">
-          <LoadingState message={CART_COPY.LOADING_RESTORE} />
-        </div>
-      </main>
+      <SiteCartSkeleton
+        label={CART_COPY.LOADING_RESTORE}
+        className={className}
+      />
     );
   }
 

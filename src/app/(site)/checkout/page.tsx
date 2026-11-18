@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { connection } from 'next/server';
 import { Suspense } from 'react';
 import { CheckoutView } from './_components/checkout-view';
-import SiteLoading from '../loading';
+import { SiteCheckoutSkeleton } from '../_components/skeletons/site-checkout-skeleton';
 import { CHECKOUT_COPY } from '@/constants/checkout.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { buildPageMetadata } from '@/utils/seo';
@@ -21,7 +21,7 @@ async function CheckoutContent() {
 
 export default function CheckoutPage() {
   return (
-    <Suspense fallback={<SiteLoading />}>
+    <Suspense fallback={<SiteCheckoutSkeleton />}>
       <CheckoutContent />
     </Suspense>
   );

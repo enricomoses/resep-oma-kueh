@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { connection } from 'next/server';
 import { Suspense } from 'react';
 import { CartView } from './_components/cart-view';
-import SiteLoading from '../loading';
+import { SiteCartSkeleton } from '../_components/skeletons/site-cart-skeleton';
 import { CART_COPY } from '@/constants/cart.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { buildPageMetadata } from '@/utils/seo';
@@ -21,7 +21,7 @@ async function CartContent() {
 
 export default function CartPage() {
   return (
-    <Suspense fallback={<SiteLoading />}>
+    <Suspense fallback={<SiteCartSkeleton />}>
       <CartContent />
     </Suspense>
   );
