@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { connection } from 'next/server';
 import { Suspense } from 'react';
 import { ContactView } from './_components/contact-view';
-import SiteLoading from '../loading';
+import { SiteContactSkeleton } from '../_components/skeletons/site-contact-skeleton';
 import { StructuredDataScript } from '@/components/common/structured-data-script';
 import { getPublicEnvironment } from '@/config/environment.client';
 import { PAGE_METADATA } from '@/constants/content.constant';
@@ -49,7 +49,7 @@ async function ContactContent() {
 
 export default function ContactPage() {
   return (
-    <Suspense fallback={<SiteLoading />}>
+    <Suspense fallback={<SiteContactSkeleton />}>
       <ContactContent />
     </Suspense>
   );

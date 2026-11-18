@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
 import { Suspense } from 'react';
-import SiteLoading from '../loading';
+import { SiteLegalPolicySkeleton } from '../_components/skeletons/site-legal-policy-skeleton';
 import { LegalPolicyView } from '@/components/common/content/legal-policy-view';
 import { PAGE_METADATA } from '@/constants/content.constant';
 import { ROUTES } from '@/constants/routes.constant';
@@ -24,7 +24,7 @@ async function OrderingPolicyContent() {
 
 export default function OrderingPolicyPage() {
   return (
-    <Suspense fallback={<SiteLoading />}>
+    <Suspense fallback={<SiteLegalPolicySkeleton factCount={3} />}>
       <OrderingPolicyContent />
     </Suspense>
   );

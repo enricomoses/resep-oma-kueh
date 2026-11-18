@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { connection } from 'next/server';
 import { Suspense } from 'react';
 import { AboutView } from './_components/about-view';
-import SiteLoading from '../loading';
+import { SiteAboutSkeleton } from '../_components/skeletons/site-about-skeleton';
 import { StructuredDataScript } from '@/components/common/structured-data-script';
 import { getPublicEnvironment } from '@/config/environment.client';
 import { PAGE_METADATA } from '@/constants/content.constant';
@@ -40,7 +40,7 @@ async function AboutContent() {
 
 export default function AboutPage() {
   return (
-    <Suspense fallback={<SiteLoading />}>
+    <Suspense fallback={<SiteAboutSkeleton />}>
       <AboutContent />
     </Suspense>
   );

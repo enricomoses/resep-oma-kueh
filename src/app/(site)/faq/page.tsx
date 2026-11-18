@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { connection } from 'next/server';
 import { Suspense } from 'react';
 import { FaqView } from './_components/faq-view';
-import SiteLoading from '../loading';
+import { SiteFaqSkeleton } from '../_components/skeletons/site-faq-skeleton';
 import { StructuredDataScript } from '@/components/common/structured-data-script';
 import { getPublicEnvironment } from '@/config/environment.client';
 import { PAGE_METADATA } from '@/constants/content.constant';
@@ -43,7 +43,7 @@ async function FaqContent() {
 
 export default function FaqPage() {
   return (
-    <Suspense fallback={<SiteLoading />}>
+    <Suspense fallback={<SiteFaqSkeleton />}>
       <FaqContent />
     </Suspense>
   );
