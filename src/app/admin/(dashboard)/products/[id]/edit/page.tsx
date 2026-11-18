@@ -4,7 +4,7 @@ import { connection } from 'next/server';
 import { Suspense } from 'react';
 
 import { AdminForbiddenPanel } from '../../../_components/admin-forbidden-panel';
-import AdminLoading from '../../../../loading';
+import { AdminProductEditorSkeleton } from '../../../../_components/skeletons/admin-product-editor-skeleton';
 import { AdminProductEditorView } from './_components/admin-product-editor-view';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { getAdminProductEditorAggregate } from '@/features/admin-catalog/configuration.server';
@@ -66,7 +66,7 @@ export default function AdminEditProductPage({
   params,
 }: AdminEditProductPageProps) {
   return (
-    <Suspense fallback={<AdminLoading />}>
+    <Suspense fallback={<AdminProductEditorSkeleton />}>
       <AdminEditProductContent params={params} />
     </Suspense>
   );

@@ -3,7 +3,7 @@ import { connection } from 'next/server';
 import { Suspense } from 'react';
 
 import { AdminAvailabilityView } from './_components/admin-availability-view';
-import AdminLoading from '../../loading';
+import { AdminAvailabilitySkeleton } from '../../_components/skeletons/admin-availability-skeleton';
 import {
   ADMIN_BRANCH_LIMITS,
   ADMIN_CATALOG_COPY,
@@ -34,7 +34,7 @@ async function AdminAvailabilityContent() {
 
 export default function AdminAvailabilityPage() {
   return (
-    <Suspense fallback={<AdminLoading />}>
+    <Suspense fallback={<AdminAvailabilitySkeleton />}>
       <AdminAvailabilityContent />
     </Suspense>
   );

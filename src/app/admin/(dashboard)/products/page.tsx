@@ -3,7 +3,7 @@ import { connection } from 'next/server';
 import { Suspense } from 'react';
 
 import { AdminForbiddenPanel } from '../_components/admin-forbidden-panel';
-import AdminLoading from '../../loading';
+import { AdminProductsSkeleton } from '../../_components/skeletons/admin-products-skeleton';
 import { AdminProductsView } from './_components/admin-products-view';
 import {
   ADMIN_CATALOG_COPY,
@@ -49,7 +49,7 @@ async function AdminProductsContent() {
 
 export default function AdminProductsPage() {
   return (
-    <Suspense fallback={<AdminLoading />}>
+    <Suspense fallback={<AdminProductsSkeleton />}>
       <AdminProductsContent />
     </Suspense>
   );

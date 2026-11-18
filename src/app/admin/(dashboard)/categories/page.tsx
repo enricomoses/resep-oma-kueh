@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 
 import { AdminCategoriesView } from './_components/admin-categories-view';
 import { AdminForbiddenPanel } from '../_components/admin-forbidden-panel';
-import AdminLoading from '../../loading';
+import { AdminCategoriesSkeleton } from '../../_components/skeletons/admin-categories-skeleton';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { listAdminCategories } from '@/features/admin-catalog/service.server';
@@ -35,7 +35,7 @@ async function AdminCategoriesContent() {
 
 export default function AdminCategoriesPage() {
   return (
-    <Suspense fallback={<AdminLoading />}>
+    <Suspense fallback={<AdminCategoriesSkeleton />}>
       <AdminCategoriesContent />
     </Suspense>
   );
