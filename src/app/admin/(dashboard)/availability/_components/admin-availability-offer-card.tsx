@@ -2,8 +2,6 @@
 
 import { useState } from 'react';
 
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
 import { Feedback } from '@/components/ui/feedback';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { ApiClientError } from '@/lib/errors';
@@ -18,15 +16,6 @@ import { isZeroStockStatusValid } from '@/utils/admin-branches';
 import { upsertBranchAvailabilitySchema } from '@/validations/admin-catalog.schema';
 
 import { AdminAvailabilityOfferFields } from './admin-availability-offer-fields';
-
-const STATUS_BADGE_TONE: Record<
-  AdminOfferAvailabilityStatus,
-  'success' | 'accent' | 'neutral'
-> = {
-  available: 'success',
-  sold_out: 'accent',
-  unconfirmed: 'neutral',
-};
 
 const STATUS_LABELS: Record<AdminOfferAvailabilityStatus, string> = {
   available: 'Tersedia',
@@ -46,7 +35,7 @@ interface AdminAvailabilityOfferCardProps {
   className?: string;
 }
 
-/** Editable card for managing branch listing, availability, stock, and price per SKU offer. */
+/** Editable row for managing branch listing, availability, stock, and price per SKU offer. */
 export function AdminAvailabilityOfferCard({
   offer,
   isOwner,
@@ -183,10 +172,16 @@ export function AdminAvailabilityOfferCard({
   }
 
   return (
-    <Card tone="surface" className={cn('admin-availability-card', className)}>
-      <div className="admin-availability-card-header">
-        <div className="admin-availability-title-group">
-          <label className="admin-checkbox-label">
+    <li
+      className={cn(
+        'admin-avail-row',
+        selected && 'admin-avail-row--selected',
+        className,
+      )}
+    >
+      <div className="admin-avail-row-head">
+        <div className="admin-avail-title-group">
+          <label className="admin-avail-checkbox-wrap">
             <input
               type="checkbox"
               aria-label={`Pilih ${offer.productName} ${offer.variantLabel} (${offer.branchName})`}
@@ -194,25 +189,43 @@ export function AdminAvailabilityOfferCard({
               onChange={(event) => onToggleSelected(event.target.checked)}
             />
           </label>
-          <div>
-            <div className="admin-row-title-row">
-              <h3 className="admin-row-title admin-wrap-text">
+          <div className="admin-avail-identity">
+            <div className="admin-avail-name-line">
+              <h3 className="admin-avail-name admin-wrap-text">
                 {offer.productName} — {offer.variantLabel}
               </h3>
-              <Badge tone="neutral">{offer.branchName}</Badge>
-              <Badge tone={STATUS_BADGE_TONE[availabilityStatus]}>
-                {STATUS_LABELS[availabilityStatus]}
-              </Badge>
+              <span className="admin-avail-branch-chip">
+                {offer.branchName}
+              </span>
               {offer.productStatus === 'draft' ? (
-                <Badge tone="neutral">Produk Draf</Badge>
+                <span className="admin-avail-draft-tag">· Produk Draf</span>
               ) : null}
             </div>
-            <p className="admin-row-meta">
-              SKU: <code>{offer.sku}</code> · Harga Efektif:{' '}
-              <strong>{formatIdr(effectivePreviewPrice)}</strong>
-              {offer.priceOverrideIdr !== null ? ' (Override Cabang)' : ''}
+            <p className="admin-avail-sku-meta">
+              SKU: <code className="admin-avail-sku-code">{offer.sku}</code>
             </p>
           </div>
+        </div>
+
+        <div className="admin-avail-summary">
+          <p
+            className={cn(
+              'admin-avail-status',
+              `admin-avail-status--${availabilityStatus}`,
+            )}
+          >
+            <span className="admin-avail-status-dot" aria-hidden="true" />
+            <span>{STATUS_LABELS[availabilityStatus]}</span>
+          </p>
+          <p className="admin-avail-price-preview">
+            {formatIdr(effectivePreviewPrice)}
+            {offer.priceOverrideIdr !== null ? (
+              <span className="admin-avail-override-note">
+                {' '}
+                (Override Cabang)
+              </span>
+            ) : null}
+          </p>
         </div>
       </div>
 
@@ -240,6 +253,6 @@ export function AdminAvailabilityOfferCard({
       />
 
       {rowError ? <Feedback tone="error" title={rowError} announce /> : null}
-    </Card>
+    </li>
   );
 }

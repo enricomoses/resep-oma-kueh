@@ -1,11 +1,11 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
+import { Search } from 'lucide-react';
+
 import { Card } from '@/components/ui/card';
 import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
-import '@/styles/components/stat-card.css';
 import type {
   AdminAvailabilityListResponse,
   AdminOfferAvailabilityStatus,
@@ -43,16 +43,26 @@ export function AdminAvailabilityFilters({
   className,
 }: AdminAvailabilityFiltersProps) {
   return (
-    <Card tone="surface" className={cn('admin-filter-card', className)}>
-      <div className="admin-filter-grid">
+    <Card tone="surface" className={cn('admin-avail-filter-card', className)}>
+      <div className="admin-avail-filter-grid">
         <FormField id="avail-search" label="Cari Produk / SKU">
           {(fieldProps) => (
-            <Input
-              {...fieldProps}
-              value={searchInput}
-              placeholder="Nama kue, slug, SKU, atau ukuran..."
-              onChange={(event) => onSearchChange(event.target.value)}
-            />
+            <div className="admin-avail-search-wrap">
+              <Search
+                size={15}
+                className="admin-avail-search-icon"
+                aria-hidden="true"
+              />
+              <Input
+                {...fieldProps}
+                type="search"
+                sizeVariant="compact"
+                value={searchInput}
+                placeholder="Nama kue, slug, SKU, atau ukuran..."
+                onChange={(event) => onSearchChange(event.target.value)}
+                className="admin-avail-search-input"
+              />
+            </div>
           )}
         </FormField>
 
@@ -61,6 +71,7 @@ export function AdminAvailabilityFilters({
             {(fieldProps) => (
               <Select
                 {...fieldProps}
+                sizeVariant="compact"
                 value={branchIdFilter}
                 onChange={(event) => onBranchChange(event.target.value)}
               >
@@ -74,11 +85,11 @@ export function AdminAvailabilityFilters({
             )}
           </FormField>
         ) : (
-          <div className="admin-staff-branch-pill">
+          <div className="admin-avail-branch-readonly">
             <span className="admin-stat-label">Cabang Tugas</span>
-            <Badge tone="accent">
+            <span className="admin-avail-branch-pill">
               {branches[0]?.name ?? fallbackBranchName ?? 'Cabang Terbatas'}
-            </Badge>
+            </span>
           </div>
         )}
 
@@ -86,6 +97,7 @@ export function AdminAvailabilityFilters({
           {(fieldProps) => (
             <Select
               {...fieldProps}
+              sizeVariant="compact"
               value={listedFilter}
               onChange={(event) =>
                 onListedChange(
@@ -104,6 +116,7 @@ export function AdminAvailabilityFilters({
           {(fieldProps) => (
             <Select
               {...fieldProps}
+              sizeVariant="compact"
               value={statusFilter}
               onChange={(event) =>
                 onStatusChange(

@@ -71,7 +71,7 @@ export function AdminAvailabilityView({
   });
 
   return (
-    <section className={cn('admin-section', className)}>
+    <section className={cn('admin-section admin-avail-section', className)}>
       <AdminSectionHeader
         title={ADMIN_CATALOG_COPY.AVAILABILITY.TITLE}
         description={ADMIN_CATALOG_COPY.AVAILABILITY.SUBTITLE}
@@ -91,14 +91,13 @@ export function AdminAvailabilityView({
       />
 
       {!isOwner ? (
-        <Card tone="cream" className="admin-quick-actions-card">
-          <p className="admin-section-subtitle">
-            {ADMIN_CATALOG_COPY.AVAILABILITY.STAFF_SCOPE_NOTE}
-          </p>
-        </Card>
+        <Feedback
+          tone="info"
+          title={ADMIN_CATALOG_COPY.AVAILABILITY.STAFF_SCOPE_NOTE}
+        />
       ) : null}
 
-      <p className="admin-row-meta">
+      <p className="admin-avail-hint">
         {ADMIN_CATALOG_COPY.AVAILABILITY.NULL_STOCK_HINT}
       </p>
 
@@ -145,51 +144,57 @@ export function AdminAvailabilityView({
           title="Tidak ada penawaran SKU yang cocok dengan filter cabang saat ini."
         />
       ) : (
-        <div className="admin-list-stack">
-          {items.map((item) => {
-            const key = getAvailabilityOfferKey(item);
-            return (
-              <AdminAvailabilityOfferCard
-                key={`${key}:${item.offerUpdatedAt ?? 'none'}:${item.variantUpdatedAt}`}
-                offer={item}
-                isOwner={isOwner}
-                selected={selectedKeys.includes(key)}
-                onToggleSelected={(checked) => toggleSelectedKey(key, checked)}
-                onSaveRow={handleSaveRow}
-              />
-            );
-          })}
-        </div>
-      )}
+        <Card tone="surface" className="admin-avail-panel">
+          <ul className="admin-avail-list">
+            {items.map((item) => {
+              const key = getAvailabilityOfferKey(item);
+              return (
+                <AdminAvailabilityOfferCard
+                  key={`${key}:${item.offerUpdatedAt ?? 'none'}:${item.variantUpdatedAt}`}
+                  offer={item}
+                  isOwner={isOwner}
+                  selected={selectedKeys.includes(key)}
+                  onToggleSelected={(checked) =>
+                    toggleSelectedKey(key, checked)
+                  }
+                  onSaveRow={handleSaveRow}
+                />
+              );
+            })}
+          </ul>
 
-      {pagination.totalPages > 1 ? (
-        <div className="admin-pagination-row">
-          <Button
-            type="button"
-            variant="secondary"
-            size="sm"
-            disabled={pagination.page <= 1}
-            onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-          >
-            <span>Sebelumnya</span>
-          </Button>
-          <span className="admin-row-meta">
-            Halaman {pagination.page} dari {pagination.totalPages} (
-            {pagination.totalCount} SKU)
-          </span>
-          <Button
-            type="button"
-            variant="secondary"
-            size="sm"
-            disabled={pagination.page >= pagination.totalPages}
-            onClick={() =>
-              setPage((prev) => Math.min(pagination.totalPages, prev + 1))
-            }
-          >
-            <span>Berikutnya</span>
-          </Button>
-        </div>
-      ) : null}
+          {pagination.totalPages > 1 ? (
+            <div className="admin-avail-pagination">
+              <span className="admin-avail-pagination-info">
+                Halaman {pagination.page} dari {pagination.totalPages} (
+                {pagination.totalCount} SKU)
+              </span>
+              <div className="admin-inline-actions">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  disabled={pagination.page <= 1}
+                  onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                >
+                  <span>Sebelumnya</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  disabled={pagination.page >= pagination.totalPages}
+                  onClick={() =>
+                    setPage((prev) => Math.min(pagination.totalPages, prev + 1))
+                  }
+                >
+                  <span>Berikutnya</span>
+                </Button>
+              </div>
+            </div>
+          ) : null}
+        </Card>
+      )}
     </section>
   );
 }

@@ -7,12 +7,11 @@ import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { ADMIN_BRANCH_LIMITS } from '@/constants/admin-catalog.constant';
-import '@/styles/components/stat-card.css';
 import type {
   AdminAvailabilityOfferItem,
   AdminOfferAvailabilityStatus,
 } from '@/types/admin-catalog';
-import { formatIdr } from '@/utils';
+import { cn, formatIdr } from '@/utils';
 
 interface AdminAvailabilityOfferFieldsProps {
   offer: AdminAvailabilityOfferItem;
@@ -51,8 +50,13 @@ export function AdminAvailabilityOfferFields({
   onSave,
 }: AdminAvailabilityOfferFieldsProps) {
   return (
-    <div className="admin-availability-controls-grid">
-      <div className="admin-availability-toggle-col">
+    <div
+      className={cn(
+        'admin-avail-controls',
+        isOwner ? 'admin-avail-controls--owner' : 'admin-avail-controls--staff',
+      )}
+    >
+      <div className="admin-avail-toggle-col">
         <label className="admin-checkbox-label">
           <input
             type="checkbox"
@@ -61,7 +65,7 @@ export function AdminAvailabilityOfferFields({
           />
           <span>Tampil di Cabang</span>
         </label>
-        <span className="admin-row-meta">
+        <span className="admin-avail-offer-state">
           {offer.hasOfferRow ? 'Sudah terdaftar' : 'Belum ada penawaran'}
         </span>
       </div>
@@ -73,6 +77,7 @@ export function AdminAvailabilityOfferFields({
         {(fieldProps) => (
           <Select
             {...fieldProps}
+            sizeVariant="compact"
             value={availabilityStatus}
             onChange={(event) =>
               onStatusChange(event.target.value as AdminOfferAvailabilityStatus)
@@ -87,11 +92,12 @@ export function AdminAvailabilityOfferFields({
 
       <FormField
         id={`avail-stock-${offer.branchId}-${offer.variantId}`}
-        label="Stok (Kosong = Tidak Dilacak)"
+        label="Stok (Opsional)"
       >
         {(fieldProps) => (
           <Input
             {...fieldProps}
+            sizeVariant="compact"
             type="number"
             min={0}
             max={ADMIN_BRANCH_LIMITS.MAX_STOCK_QUANTITY}
@@ -111,6 +117,7 @@ export function AdminAvailabilityOfferFields({
             {(fieldProps) => (
               <Input
                 {...fieldProps}
+                sizeVariant="compact"
                 type="number"
                 min={0}
                 max={ADMIN_BRANCH_LIMITS.MAX_PRICE_IDR}
@@ -127,6 +134,7 @@ export function AdminAvailabilityOfferFields({
             {(fieldProps) => (
               <Input
                 {...fieldProps}
+                sizeVariant="compact"
                 type="number"
                 min={0}
                 max={ADMIN_BRANCH_LIMITS.MAX_PRICE_IDR}
@@ -138,16 +146,18 @@ export function AdminAvailabilityOfferFields({
           </FormField>
         </>
       ) : (
-        <div className="admin-staff-price-readonly">
-          <span className="admin-stat-label">Harga Cabang</span>
-          <strong>{formatIdr(offer.effectivePriceIdr)}</strong>
+        <div className="admin-avail-staff-price">
+          <span className="admin-avail-staff-price-label">Harga Cabang</span>
+          <strong className="admin-avail-staff-price-val">
+            {formatIdr(offer.effectivePriceIdr)}
+          </strong>
         </div>
       )}
 
-      <div className="admin-availability-save-col">
+      <div className="admin-avail-save-col">
         <Button
           type="button"
-          variant="primary"
+          variant={isDirty ? 'primary' : 'secondary'}
           size="sm"
           disabled={!isDirty || saving}
           loading={saving}
