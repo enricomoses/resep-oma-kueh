@@ -75,7 +75,7 @@ Terbagi menjadi dua subfolder:
      - `chat/` (`chat-slot.tsx`, `ask-oma-widget.tsx`, `ask-oma-messages.tsx`, `ask-oma-composer.tsx`, `ask-oma-quick-prompts.tsx`, `ask-oma-recommendations.tsx`)
      - `commerce/` (`menu-product-card.tsx`, `menu-product-card-media.tsx`, `price-display.tsx`, `order-totals-summary.tsx`)
      - `content/` (`legal-policy-view.tsx`, `what-they-say-section.tsx`)
-     - `feedback/` (`loading-state.tsx`, `empty-state.tsx`, `error-state.tsx`, `error-fallback-panel.tsx`, `confirm-dialog.tsx`)
+     - `feedback/` (`empty-state.tsx`, `error-state.tsx`, `error-fallback-panel.tsx`, `confirm-dialog.tsx`)
      - `layout/` (`site-header.tsx`, `site-nav.tsx`, `site-footer.tsx`, `cart-badge.tsx`, `page-header.tsx`, `section-header.tsx`)
      - Utilitas lintas modul di root `common/`: `media-placeholder.tsx`, `structured-data-script.tsx`
 
