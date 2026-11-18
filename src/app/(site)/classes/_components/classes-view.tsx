@@ -18,6 +18,7 @@ import type { InitialPublicClasses } from '@/types/classes';
 import { cn } from '@/utils';
 import { withBranch } from '@/utils/branch-url';
 import { buildAskNextClassWhatsAppUrl } from '@/utils/classes';
+import { SiteClassesGridSkeleton } from '../../_components/skeletons/site-classes-skeleton';
 import { ClassProgramCard } from './class-program-card';
 
 interface ClassesViewProps {
@@ -74,6 +75,8 @@ export function ClassesView({ initial, className }: ClassesViewProps) {
             </ActionLink>
           </div>
         </Feedback>
+      ) : !data && query.isPending ? (
+        <SiteClassesGridSkeleton />
       ) : !data || data.items.length === 0 ? (
         <EmptyState
           tone="cream"

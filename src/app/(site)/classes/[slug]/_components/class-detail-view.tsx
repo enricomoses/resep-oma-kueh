@@ -19,6 +19,7 @@ import { cn } from '@/utils';
 import { withBranch } from '@/utils/branch-url';
 import { formatClassAgeRange } from '@/utils/classes';
 import { formatIdr } from '@/utils/currency';
+import { SiteClassDetailLayoutSkeleton } from '@/app/(site)/_components/skeletons/site-class-detail-skeleton';
 import { ClassRegistrationPanel } from './class-registration-panel';
 
 interface ClassDetailViewProps {
@@ -142,6 +143,8 @@ export function ClassDetailView({
             branchCode={branchCode}
           />
         </div>
+      ) : query.isPending ? (
+        <SiteClassDetailLayoutSkeleton />
       ) : null}
     </main>
   );

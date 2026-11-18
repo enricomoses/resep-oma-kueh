@@ -3,7 +3,7 @@ import { connection } from 'next/server';
 import { Suspense } from 'react';
 
 import { ClassesView } from './_components/classes-view';
-import SiteLoading from '../loading';
+import { SiteClassesSkeleton } from '../_components/skeletons/site-classes-skeleton';
 import { StructuredDataScript } from '@/components/common/structured-data-script';
 import { getPublicEnvironment } from '@/config/environment.client';
 import { CATALOG_QUERY_PARAMS } from '@/constants/catalog.constant';
@@ -65,7 +65,7 @@ async function ClassesContent({
 
 export default function ClassesPage({ searchParams }: PageProps<'/classes'>) {
   return (
-    <Suspense fallback={<SiteLoading />}>
+    <Suspense fallback={<SiteClassesSkeleton />}>
       <ClassesContent searchParams={searchParams} />
     </Suspense>
   );

@@ -4,7 +4,7 @@ import { connection } from 'next/server';
 import { Suspense } from 'react';
 
 import { ClassDetailView } from './_components/class-detail-view';
-import SiteLoading from '../../loading';
+import { SiteClassDetailSkeleton } from '../../_components/skeletons/site-class-detail-skeleton';
 import { StructuredDataScript } from '@/components/common/structured-data-script';
 import { getPublicEnvironment } from '@/config/environment.client';
 import { CATALOG_QUERY_PARAMS } from '@/constants/catalog.constant';
@@ -107,7 +107,7 @@ export default function ClassDetailPage({
   searchParams,
 }: PageProps<'/classes/[slug]'>) {
   return (
-    <Suspense fallback={<SiteLoading />}>
+    <Suspense fallback={<SiteClassDetailSkeleton />}>
       <ClassDetailContent params={params} searchParams={searchParams} />
     </Suspense>
   );
