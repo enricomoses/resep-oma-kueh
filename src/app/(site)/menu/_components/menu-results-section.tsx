@@ -8,10 +8,12 @@ import { CATALOG_COPY } from '@/constants/catalog.constant';
 import type { CatalogDirectory } from '@/types/catalog';
 import { cn } from '@/utils';
 
+import { SiteMenuResultsSkeleton } from '../../_components/skeletons/site-menu-skeleton';
 import { MenuPagination } from './menu-pagination';
 
 interface MenuResultsSectionProps {
   catalogData: CatalogDirectory | undefined;
+  isCatalogLoading?: boolean;
   isCatalogError: boolean;
   hasBranchSelected: boolean;
   branchCode: string | null;
@@ -26,6 +28,7 @@ interface MenuResultsSectionProps {
  */
 export function MenuResultsSection({
   catalogData,
+  isCatalogLoading = false,
   isCatalogError,
   hasBranchSelected,
   branchCode,
@@ -34,6 +37,10 @@ export function MenuResultsSection({
   onPageChange,
   className,
 }: MenuResultsSectionProps) {
+  if (!isCatalogError && !catalogData && isCatalogLoading) {
+    return <SiteMenuResultsSkeleton className={className} />;
+  }
+
   return (
     <div className={cn('menu-results-column', className)}>
       {catalogData ? (

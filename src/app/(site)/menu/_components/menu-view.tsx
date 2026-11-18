@@ -137,6 +137,7 @@ export function MenuView({
 
           <MenuResultsSection
             catalogData={menu.catalogData}
+            isCatalogLoading={menu.isCatalogLoading}
             isCatalogError={menu.isCatalogError}
             hasBranchSelected={menu.hasBranchSelected}
             branchCode={menu.displayBranchCode}

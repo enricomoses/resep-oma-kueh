@@ -32,6 +32,7 @@ import '@/styles/features/product-detail.css';
 import { cn, formatIdr } from '@/utils';
 import { withBranch } from '@/utils/branch-url';
 import { preparedCartLinePayloadSchema } from '@/validations/catalog.schema';
+import { SiteProductDetailSkeleton } from '@/app/(site)/_components/skeletons/site-product-detail-skeleton';
 import { ProductFoodInfo } from './product-food-info';
 import { ProductGallery } from './product-gallery';
 import { ProductVariantPicker } from './product-variant-picker';
@@ -208,7 +209,7 @@ export function ProductDetailView({
   }
 
   if (!product) {
-    return null;
+    return <SiteProductDetailSkeleton className={className} />;
   }
 
   return (

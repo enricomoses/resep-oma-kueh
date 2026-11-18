@@ -200,6 +200,7 @@ export function useMenuFilters({
       : []);
 
   const catalogData = catalogQuery.data;
+  const isCatalogLoading = catalogQuery.isPending && !catalogData;
   const isCatalogError =
     catalogQuery.isError ||
     (!catalogData &&
@@ -255,6 +256,7 @@ export function useMenuFilters({
   return {
     categories,
     catalogData,
+    isCatalogLoading,
     isCatalogError,
     hasBranchSelected,
     displayBranchCode: activeBranch?.code ?? branchState.code,

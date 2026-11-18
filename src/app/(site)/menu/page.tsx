@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
 import { Suspense } from 'react';
-import SiteLoading from '../loading';
+import { SiteMenuSkeleton } from '../_components/skeletons/site-menu-skeleton';
 import { MenuView } from './_components/menu-view';
 import { StructuredDataScript } from '@/components/common/structured-data-script';
 import { getPublicEnvironment } from '@/config/environment.client';
@@ -72,7 +72,7 @@ async function MenuContent({
 
 export default function MenuPage({ searchParams }: PageProps<'/menu'>) {
   return (
-    <Suspense fallback={<SiteLoading />}>
+    <Suspense fallback={<SiteMenuSkeleton />}>
       <MenuContent searchParams={searchParams} />
     </Suspense>
   );

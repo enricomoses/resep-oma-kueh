@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { connection } from 'next/server';
 import { Suspense } from 'react';
 import { ProductDetailView } from './_components/product-detail-view';
-import SiteLoading from '../../loading';
+import { SiteProductDetailSkeleton } from '../../_components/skeletons/site-product-detail-skeleton';
 import { StructuredDataScript } from '@/components/common/structured-data-script';
 import { getPublicEnvironment } from '@/config/environment.client';
 import {
@@ -135,7 +135,7 @@ export default function MenuDetailPage({
   searchParams,
 }: PageProps<'/menu/[slug]'>) {
   return (
-    <Suspense fallback={<SiteLoading />}>
+    <Suspense fallback={<SiteProductDetailSkeleton />}>
       <MenuDetailContent params={params} searchParams={searchParams} />
     </Suspense>
   );
