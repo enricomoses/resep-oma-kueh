@@ -4,7 +4,7 @@ import { MapPin } from 'lucide-react';
 import { type FormEvent, useState } from 'react';
 
 import { AdminSectionHeader } from '@/app/admin/(dashboard)/_components/admin-section-header';
-import { Badge } from '@/components/ui/badge';
+import { StatusIndicator } from '@/components/common/status/status-indicator';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Feedback } from '@/components/ui/feedback';
@@ -137,11 +137,11 @@ export function AdminBranchProfileForm({
     <Card tone="surface" className={cn('admin-locations-panel', className)}>
       <AdminSectionHeader
         headingAs="h3"
-        titleClassName="admin-row-title"
+        titleClassName="admin-loc-panel-title"
         title={
           <>
-            <MapPin size={18} aria-hidden="true" />{' '}
-            <span>Profil & Pengaturan {branch.name}</span>
+            <MapPin size={18} aria-hidden="true" />
+            <span>Profil &amp; Pengaturan {branch.name}</span>
           </>
         }
         description={
@@ -150,13 +150,14 @@ export function AdminBranchProfileForm({
           </>
         }
         actions={
-          <Badge
+          <StatusIndicator
             tone={branch.readiness.hasConfirmedAddress ? 'success' : 'accent'}
-          >
-            {branch.readiness.hasConfirmedAddress
-              ? 'Alamat Terkonfirmasi'
-              : 'Alamat Belum Ditetapkan'}
-          </Badge>
+            label={
+              branch.readiness.hasConfirmedAddress
+                ? 'Alamat Terkonfirmasi'
+                : 'Alamat Belum Ditetapkan'
+            }
+          />
         }
       />
 
@@ -169,135 +170,145 @@ export function AdminBranchProfileForm({
         onSubmit={(event) => void handleSubmit(event)}
         className="admin-location-form"
       >
-        <div className="admin-editor-grid">
+        <div className="admin-loc-form-group">
+          <h4 className="admin-loc-group-label">Identitas &amp; Lokasi</h4>
+          <div className="admin-loc-grid-2">
+            <FormField
+              id={`branch-name-${branch.id}`}
+              label="Nama Cabang"
+              required
+              error={mergedFieldErrors.name?.[0]}
+            >
+              {(fieldProps) => (
+                <Input
+                  {...fieldProps}
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                />
+              )}
+            </FormField>
+
+            <FormField
+              id={`branch-city-${branch.id}`}
+              label="Kota"
+              required
+              error={mergedFieldErrors.city?.[0]}
+            >
+              {(fieldProps) => (
+                <Input
+                  {...fieldProps}
+                  value={city}
+                  onChange={(event) => setCity(event.target.value)}
+                />
+              )}
+            </FormField>
+          </div>
+
           <FormField
-            id={`branch-name-${branch.id}`}
-            label="Nama Cabang"
-            required
-            error={mergedFieldErrors.name?.[0]}
+            id={`branch-address-${branch.id}`}
+            label="Alamat Cabang"
+            helper={
+              branch.code === 'bintaro'
+                ? 'Biarkan kosong hingga alamat Bintaro resmi dikonfirmasi Owner.'
+                : 'Alamat Surabaya resmi telah dikonfirmasi.'
+            }
+            error={mergedFieldErrors.address?.[0]}
           >
             {(fieldProps) => (
-              <Input
+              <Textarea
                 {...fieldProps}
-                value={name}
-                onChange={(event) => setName(event.target.value)}
+                rows={2}
+                value={address}
+                onChange={(event) => setAddress(event.target.value)}
               />
             )}
           </FormField>
 
+          <div className="admin-loc-grid-2">
+            <FormField
+              id={`branch-maps-${branch.id}`}
+              label="Tautan Google Maps (HTTPS)"
+              helper="Hanya domain resmi Google Maps HTTPS (maps.google.com, www.google.com/maps, maps.app.goo.gl)."
+              error={mergedFieldErrors.mapsUrl?.[0]}
+            >
+              {(fieldProps) => (
+                <Input
+                  {...fieldProps}
+                  type="url"
+                  placeholder="https://maps.google.com/?q=..."
+                  value={mapsUrl}
+                  onChange={(event) => setMapsUrl(event.target.value)}
+                />
+              )}
+            </FormField>
+
+            <FormField
+              id={`branch-sort-${branch.id}`}
+              label="Urutan Tampil"
+              error={mergedFieldErrors.sortOrder?.[0]}
+            >
+              {(fieldProps) => (
+                <Input
+                  {...fieldProps}
+                  type="number"
+                  min={0}
+                  max={10000}
+                  value={sortOrder}
+                  onChange={(event) => setSortOrder(event.target.value)}
+                />
+              )}
+            </FormField>
+          </div>
+
           <FormField
-            id={`branch-city-${branch.id}`}
-            label="Kota"
-            required
-            error={mergedFieldErrors.city?.[0]}
+            id={`branch-desc-${branch.id}`}
+            label="Deskripsi Cabang"
+            error={mergedFieldErrors.description?.[0]}
           >
             {(fieldProps) => (
-              <Input
+              <Textarea
                 {...fieldProps}
-                value={city}
-                onChange={(event) => setCity(event.target.value)}
+                rows={2}
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
               />
             )}
           </FormField>
         </div>
 
-        <FormField
-          id={`branch-address-${branch.id}`}
-          label="Alamat Cabang"
-          helper={
-            branch.code === 'bintaro'
-              ? 'Biarkan kosong hingga alamat Bintaro resmi dikonfirmasi Owner.'
-              : 'Alamat Surabaya resmi telah dikonfirmasi.'
-          }
-          error={mergedFieldErrors.address?.[0]}
-        >
-          {(fieldProps) => (
-            <Textarea
-              {...fieldProps}
-              rows={2}
-              value={address}
-              onChange={(event) => setAddress(event.target.value)}
-            />
-          )}
-        </FormField>
-
-        <div className="admin-editor-grid">
-          <FormField
-            id={`branch-maps-${branch.id}`}
-            label="Tautan Google Maps (HTTPS)"
-            helper="Hanya domain resmi Google Maps HTTPS (maps.google.com, www.google.com/maps, maps.app.goo.gl)."
-            error={mergedFieldErrors.mapsUrl?.[0]}
-          >
-            {(fieldProps) => (
-              <Input
-                {...fieldProps}
-                type="url"
-                placeholder="https://maps.google.com/?q=..."
-                value={mapsUrl}
-                onChange={(event) => setMapsUrl(event.target.value)}
-              />
-            )}
-          </FormField>
-
-          <FormField
-            id={`branch-sort-${branch.id}`}
-            label="Urutan Tampil"
-            error={mergedFieldErrors.sortOrder?.[0]}
-          >
-            {(fieldProps) => (
-              <Input
-                {...fieldProps}
-                type="number"
-                min={0}
-                max={10000}
-                value={sortOrder}
-                onChange={(event) => setSortOrder(event.target.value)}
-              />
-            )}
-          </FormField>
+        <div className="admin-loc-form-group">
+          <h4 className="admin-loc-group-label">Routing WhatsApp</h4>
+          <AdminBranchWhatsappField
+            branchId={branch.id}
+            whatsappNumber={whatsappNumber}
+            waTargetPreview={waTargetPreview}
+            whatsappChanged={whatsappChanged}
+            confirmWhatsappChange={confirmWhatsappChange}
+            whatsappError={mergedFieldErrors.whatsappNumber?.[0]}
+            confirmError={mergedFieldErrors.confirmWhatsappChange?.[0]}
+            onWhatsappChange={(value) => {
+              setWhatsappNumber(value);
+              setConfirmWhatsappChange(false);
+            }}
+            onConfirmChange={setConfirmWhatsappChange}
+          />
         </div>
 
-        <AdminBranchWhatsappField
-          branchId={branch.id}
-          whatsappNumber={whatsappNumber}
-          waTargetPreview={waTargetPreview}
-          whatsappChanged={whatsappChanged}
-          confirmWhatsappChange={confirmWhatsappChange}
-          whatsappError={mergedFieldErrors.whatsappNumber?.[0]}
-          confirmError={mergedFieldErrors.confirmWhatsappChange?.[0]}
-          onWhatsappChange={(value) => {
-            setWhatsappNumber(value);
-            setConfirmWhatsappChange(false);
-          }}
-          onConfirmChange={setConfirmWhatsappChange}
-        />
+        <div className="admin-loc-form-group">
+          <AdminBranchFulfillmentBox
+            allowPickup={allowPickup}
+            allowDelivery={allowDelivery}
+            fulfillmentReviewed={fulfillmentReviewed}
+            reviewError={
+              mergedFieldErrors.fulfillmentReviewedForProduction?.[0]
+            }
+            onAllowPickupChange={setAllowPickup}
+            onAllowDeliveryChange={setAllowDelivery}
+            onFulfillmentReviewedChange={setFulfillmentReviewed}
+          />
+        </div>
 
-        <FormField
-          id={`branch-desc-${branch.id}`}
-          label="Deskripsi Cabang"
-          error={mergedFieldErrors.description?.[0]}
-        >
-          {(fieldProps) => (
-            <Textarea
-              {...fieldProps}
-              rows={2}
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
-            />
-          )}
-        </FormField>
-
-        <AdminBranchFulfillmentBox
-          allowPickup={allowPickup}
-          allowDelivery={allowDelivery}
-          fulfillmentReviewed={fulfillmentReviewed}
-          reviewError={mergedFieldErrors.fulfillmentReviewedForProduction?.[0]}
-          onAllowPickupChange={setAllowPickup}
-          onAllowDeliveryChange={setAllowDelivery}
-          onFulfillmentReviewedChange={setFulfillmentReviewed}
-        />
-
-        <div className="admin-inline-actions">
+        <div className="admin-loc-form-footer">
           <Button
             type="submit"
             variant="primary"

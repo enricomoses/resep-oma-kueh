@@ -4,7 +4,7 @@ import { Clock, RotateCcw } from 'lucide-react';
 import { type FormEvent, useState } from 'react';
 
 import { AdminSectionHeader } from '@/app/admin/(dashboard)/_components/admin-section-header';
-import { Badge } from '@/components/ui/badge';
+import { StatusIndicator } from '@/components/common/status/status-indicator';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Feedback } from '@/components/ui/feedback';
@@ -153,22 +153,23 @@ export function AdminBranchHoursEditor({
     <Card tone="surface" className={cn('admin-locations-panel', className)}>
       <AdminSectionHeader
         headingAs="h3"
-        titleClassName="admin-row-title"
+        titleClassName="admin-loc-panel-title"
         title={
           <>
-            <Clock size={18} aria-hidden="true" />{' '}
+            <Clock size={18} aria-hidden="true" />
             <span>Jam Operasional Mingguan ({branch.name})</span>
           </>
         }
         description={ADMIN_CATALOG_COPY.LOCATIONS.UNKNOWN_HOURS_HINT}
         actions={
-          <Badge
+          <StatusIndicator
             tone={branch.readiness.hasVerifiedHours ? 'success' : 'neutral'}
-          >
-            {branch.readiness.hasVerifiedHours
-              ? 'Sebagian/Semua Hari Terisi'
-              : 'Belum Dikonfirmasi'}
-          </Badge>
+            label={
+              branch.readiness.hasVerifiedHours
+                ? 'Sebagian/Semua Hari Terisi'
+                : 'Belum Dikonfirmasi'
+            }
+          />
         }
       />
 
@@ -184,17 +185,22 @@ export function AdminBranchHoursEditor({
         onSubmit={(event) => void handleSubmit(event)}
         className="admin-hours-form"
       >
-        <div className="admin-hours-list">
+        <ul className="admin-hours-list">
           {days.map((day) => {
             const label = ADMIN_DAY_OF_WEEK_LABELS[day.dayOfWeek] ?? '';
             const dayError = dayErrors[day.dayOfWeek];
+            const preview = resolveDayPreview(day);
+            const previewTone = day.isClosed
+              ? 'neutral'
+              : day.opensAt.trim() && day.closesAt.trim()
+                ? 'success'
+                : 'accent';
+
             return (
-              <div key={day.dayOfWeek} className="admin-hours-row">
+              <li key={day.dayOfWeek} className="admin-hours-row">
                 <div className="admin-hours-day-header">
-                  <strong>{label}</strong>
-                  <Badge tone={day.isClosed ? 'neutral' : 'accent'}>
-                    {resolveDayPreview(day)}
-                  </Badge>
+                  <span className="admin-hours-day-name">{label}</span>
+                  <StatusIndicator tone={previewTone} label={preview} />
                 </div>
 
                 <div className="admin-hours-controls">
@@ -222,6 +228,7 @@ export function AdminBranchHoursEditor({
                     {(fieldProps) => (
                       <Input
                         {...fieldProps}
+                        sizeVariant="compact"
                         type="text"
                         inputMode="numeric"
                         placeholder="09:00"
@@ -243,6 +250,7 @@ export function AdminBranchHoursEditor({
                     {(fieldProps) => (
                       <Input
                         {...fieldProps}
+                        sizeVariant="compact"
                         type="text"
                         inputMode="numeric"
                         placeholder="17:00"
@@ -264,6 +272,7 @@ export function AdminBranchHoursEditor({
                     {(fieldProps) => (
                       <Input
                         {...fieldProps}
+                        sizeVariant="compact"
                         type="text"
                         placeholder="Opsional, mis. Jam pickup"
                         value={day.note}
@@ -276,7 +285,7 @@ export function AdminBranchHoursEditor({
 
                   <Button
                     type="button"
-                    variant="secondary"
+                    variant="ghost"
                     size="sm"
                     onClick={() =>
                       updateDay(day.dayOfWeek, {
@@ -290,12 +299,12 @@ export function AdminBranchHoursEditor({
                     <span>Belum Konfirmasi</span>
                   </Button>
                 </div>
-              </div>
+              </li>
             );
           })}
-        </div>
+        </ul>
 
-        <div className="admin-inline-actions">
+        <div className="admin-loc-form-footer">
           <Button
             type="submit"
             variant="primary"

@@ -46,7 +46,7 @@ export function AdminLocationsView({
   } = useAdminLocationsManager({ profile, initialData });
 
   return (
-    <section className={cn('admin-section', className)}>
+    <section className={cn('admin-section admin-loc-section', className)}>
       <AdminSectionHeader
         title={ADMIN_CATALOG_COPY.LOCATIONS.TITLE}
         description={ADMIN_CATALOG_COPY.LOCATIONS.SUBTITLE}
@@ -74,27 +74,20 @@ export function AdminLocationsView({
         <Feedback tone="error" title={loadErrorMessage} announce />
       ) : null}
 
-      <div
-        className="admin-inline-actions"
-        role="tablist"
-        aria-label="Pilih cabang"
-      >
+      <div className="admin-loc-tabs" role="tablist" aria-label="Pilih cabang">
         {branches.map((branch) => {
           const active = selectedBranch?.id === branch.id;
           return (
-            <Button
+            <button
               key={branch.id}
               type="button"
               role="tab"
               aria-selected={active}
-              variant={active ? 'primary' : 'secondary'}
-              size="sm"
+              className={cn('admin-loc-tab', active && 'admin-loc-tab--active')}
               onClick={() => handleSelectBranch(branch.id)}
             >
-              <span>
-                {branch.name} ({branch.city})
-              </span>
-            </Button>
+              {branch.name} ({branch.city})
+            </button>
           );
         })}
       </div>

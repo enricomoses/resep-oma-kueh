@@ -1,6 +1,6 @@
 import { AlertTriangle, CheckCircle2 } from 'lucide-react';
 
-import { Badge } from '@/components/ui/badge';
+import { StatusIndicator } from '@/components/common/status/status-indicator';
 import { Card } from '@/components/ui/card';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import type { AdminBranchItem } from '@/types/admin-catalog';
@@ -18,21 +18,34 @@ export function AdminBranchReadinessCard({
   className,
 }: AdminBranchReadinessCardProps) {
   return (
-    <Card tone="cream" className={cn('admin-readiness-card', className)}>
-      <h3 className="admin-row-title">
+    <Card tone="surface" className={cn('admin-readiness-card', className)}>
+      <h3 className="admin-readiness-title">
         {ADMIN_CATALOG_COPY.LOCATIONS.READINESS_TITLE}
       </h3>
-      <ul className="admin-readiness-list">
-        <li>
-          <CheckCircle2 size={15} aria-hidden="true" />{' '}
+
+      <ul className="admin-readiness-notes">
+        <li className="admin-readiness-note-item">
+          <CheckCircle2
+            size={15}
+            className="admin-readiness-note-icon"
+            aria-hidden="true"
+          />
           <span>{ADMIN_CATALOG_COPY.LOCATIONS.SURABAYA_FINAL_NOTE}</span>
         </li>
-        <li>
+        <li className="admin-readiness-note-item">
           {bintaroAddressResolved ? (
-            <CheckCircle2 size={15} aria-hidden="true" />
+            <CheckCircle2
+              size={15}
+              className="admin-readiness-note-icon"
+              aria-hidden="true"
+            />
           ) : (
-            <AlertTriangle size={15} aria-hidden="true" />
-          )}{' '}
+            <AlertTriangle
+              size={15}
+              className="admin-readiness-note-icon"
+              aria-hidden="true"
+            />
+          )}
           <span>
             {bintaroAddressResolved
               ? 'Alamat cabang Bintaro sudah diisi oleh Owner.'
@@ -41,27 +54,38 @@ export function AdminBranchReadinessCard({
         </li>
       </ul>
 
-      <div className="admin-readiness-badges">
+      <div className="admin-readiness-branches">
         {branches.map((branch) => (
-          <div key={branch.id} className="admin-readiness-branch-row">
-            <strong>{branch.name}</strong>
-            <Badge
-              tone={branch.readiness.hasConfirmedAddress ? 'success' : 'accent'}
-            >
-              {branch.readiness.hasConfirmedAddress
-                ? 'Alamat Siap'
-                : 'Alamat Unresolved'}
-            </Badge>
-            <Badge tone={branch.readiness.hasMapsUrl ? 'success' : 'neutral'}>
-              {branch.readiness.hasMapsUrl ? 'Maps HTTPS' : 'Belum Ada Maps'}
-            </Badge>
-            <Badge
-              tone={branch.readiness.fulfillmentEnabled ? 'success' : 'neutral'}
-            >
-              {branch.readiness.fulfillmentEnabled
-                ? 'Fulfillment Aktif'
-                : 'Fulfillment Nonaktif'}
-            </Badge>
+          <div key={branch.id} className="admin-readiness-branch">
+            <p className="admin-readiness-branch-name">{branch.name}</p>
+            <div className="admin-readiness-indicators">
+              <StatusIndicator
+                tone={
+                  branch.readiness.hasConfirmedAddress ? 'success' : 'accent'
+                }
+                label={
+                  branch.readiness.hasConfirmedAddress
+                    ? 'Alamat Siap'
+                    : 'Alamat Unresolved'
+                }
+              />
+              <StatusIndicator
+                tone={branch.readiness.hasMapsUrl ? 'success' : 'neutral'}
+                label={
+                  branch.readiness.hasMapsUrl ? 'Maps HTTPS' : 'Belum Ada Maps'
+                }
+              />
+              <StatusIndicator
+                tone={
+                  branch.readiness.fulfillmentEnabled ? 'success' : 'neutral'
+                }
+                label={
+                  branch.readiness.fulfillmentEnabled
+                    ? 'Fulfillment Aktif'
+                    : 'Fulfillment Nonaktif'
+                }
+              />
+            </div>
           </div>
         ))}
       </div>

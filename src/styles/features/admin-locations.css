@@ -1,32 +1,193 @@
 /* ==========================================================================
-   Admin Branch Locations, Readiness, Hours, & WhatsApp Preview
+   Admin Branch Locations (/admin/locations) — Readiness, Profile & Hours
    ========================================================================== */
 
 @layer components {
-  .admin-readiness-card,
+  .admin-loc-section {
+    gap: 1.25rem;
+  }
+
+  /* Readiness Overview Card */
+  .admin-readiness-card {
+    display: grid;
+    gap: 1rem;
+    padding: 1.25rem 1.375rem;
+    box-shadow: 0 1px 2px var(--shadow-warm);
+  }
+
+  .admin-readiness-title {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--brand-deep);
+  }
+
+  .admin-readiness-notes {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.375rem;
+    font-size: 0.8125rem;
+    color: var(--text-cocoa);
+  }
+
+  .admin-readiness-note-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .admin-readiness-note-icon {
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+    color: var(--brand-burgundy);
+  }
+
+  .admin-readiness-branches {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.875rem;
+    padding-top: 0.875rem;
+    border-top: 1px solid var(--sand-divider-subtle);
+  }
+
+  @media (min-width: 48rem) {
+    .admin-readiness-branches {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.25rem;
+    }
+  }
+
+  .admin-readiness-branch {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.875rem 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--sand-divider-subtle);
+    background: var(--surface-paper);
+  }
+
+  .admin-readiness-branch-name {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--brand-deep);
+  }
+
+  .admin-readiness-indicators {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+  }
+
+  /* Segmented Branch Switcher */
+  .admin-loc-tabs {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    padding: 0.375rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-sand);
+    background: var(--surface-white);
+    box-shadow: 0 1px 2px var(--shadow-warm);
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .admin-loc-tab {
+    min-height: 2.375rem;
+    padding: 0.375rem 0.875rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    background: transparent;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-cocoa);
+    cursor: pointer;
+    transition:
+      background-color var(--transition-fast),
+      color var(--transition-fast),
+      border-color var(--transition-fast);
+  }
+
+  .admin-loc-tab:hover {
+    background: var(--surface-cream);
+    color: var(--brand-deep);
+  }
+
+  .admin-loc-tab:focus-visible {
+    outline: 2px solid var(--brand-deep);
+    outline-offset: 2px;
+  }
+
+  .admin-loc-tab--active {
+    background: var(--brand-burgundy);
+    color: var(--surface-on-brand);
+  }
+
+  .admin-loc-tab--active:hover {
+    background: var(--brand-deep);
+    color: var(--surface-on-brand);
+  }
+
+  /* Stack & Panels */
+  .admin-locations-stack {
+    display: grid;
+    gap: 1.25rem;
+  }
+
   .admin-locations-panel {
+    display: grid;
+    gap: 1.25rem;
+    padding: 1.375rem;
+    box-shadow: 0 1px 2px var(--shadow-warm);
+  }
+
+  .admin-loc-panel-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--brand-deep);
+  }
+
+  .admin-location-form,
+  .admin-hours-form {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .admin-loc-form-group {
     display: grid;
     gap: 0.875rem;
   }
 
-  .admin-readiness-badges {
-    display: grid;
-    gap: 0.5rem;
+  .admin-loc-form-group + .admin-loc-form-group {
+    padding-top: 1.125rem;
+    border-top: 1px solid var(--sand-divider-subtle);
   }
 
-  .admin-readiness-branch-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem;
+  .admin-loc-group-label {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-cocoa);
   }
 
-  .admin-locations-stack,
-  .admin-location-form,
-  .admin-hours-form,
-  .admin-hours-list {
+  .admin-loc-grid-2 {
     display: grid;
-    gap: 1rem;
+    grid-template-columns: 1fr;
+    gap: 0.875rem;
+  }
+
+  @media (min-width: 44rem) {
+    .admin-loc-grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 
   .admin-wa-preview-box,
@@ -34,10 +195,11 @@
   .admin-fulfillment-box {
     display: grid;
     gap: 0.5rem;
-    padding: 0.75rem;
-    border: 1px solid var(--border-sand);
-    border-radius: var(--radius-sm);
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--sand-divider-subtle);
+    border-radius: var(--radius-md);
     background-color: var(--surface-cream);
+    font-size: 0.875rem;
   }
 
   .admin-wa-preview-link {
@@ -49,12 +211,41 @@
     word-break: break-all;
   }
 
+  .admin-loc-form-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--sand-divider-subtle);
+  }
+
+  /* Unified 7-Day Hours List */
+  .admin-hours-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    border: 1px solid var(--border-sand);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
   .admin-hours-row {
     display: grid;
-    gap: 0.625rem;
-    padding: 0.75rem;
-    border: 1px solid var(--border-sand);
-    border-radius: var(--radius-sm);
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    background: var(--surface-white);
+    transition: background-color var(--transition-fast);
+  }
+
+  .admin-hours-row + .admin-hours-row {
+    border-top: 1px solid var(--sand-divider-subtle);
+  }
+
+  .admin-hours-row:hover {
+    background: color-mix(in srgb, var(--surface-cream) 45%, transparent);
   }
 
   .admin-hours-day-header {
@@ -63,6 +254,12 @@
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
+  }
+
+  .admin-hours-day-name {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--brand-deep);
   }
 
   .admin-hours-controls {
@@ -77,6 +274,13 @@
       grid-template-columns:
         auto minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.3fr)
         auto;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .admin-loc-tab,
+    .admin-hours-row {
+      transition: none;
     }
   }
 }
