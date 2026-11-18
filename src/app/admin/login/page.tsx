@@ -4,7 +4,7 @@ import { connection } from 'next/server';
 import { Suspense } from 'react';
 
 import { AdminLoginView } from './_components/admin-login-view';
-import AdminLoading from '../loading';
+import { AdminAuthSkeleton } from '../_components/skeletons/admin-auth-skeleton';
 import { AUTH_COPY } from '@/constants/auth.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { verifyAdminAccess } from '@/features/auth/admin-guard.server';
@@ -51,7 +51,7 @@ export default function AdminLoginPage({
   searchParams,
 }: PageProps<'/admin/login'>) {
   return (
-    <Suspense fallback={<AdminLoading />}>
+    <Suspense fallback={<AdminAuthSkeleton />}>
       <AdminLoginContent searchParams={searchParams} />
     </Suspense>
   );

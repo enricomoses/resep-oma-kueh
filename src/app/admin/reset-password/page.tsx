@@ -3,7 +3,7 @@ import { connection } from 'next/server';
 import { Suspense } from 'react';
 
 import { AdminResetPasswordView } from './_components/admin-reset-password-view';
-import AdminLoading from '../loading';
+import { AdminAuthSkeleton } from '../_components/skeletons/admin-auth-skeleton';
 import { AUTH_COPY } from '@/constants/auth.constant';
 import { verifyAdminAccess } from '@/features/auth/admin-guard.server';
 import type { AuthErrorReason } from '@/types/auth';
@@ -45,7 +45,7 @@ async function AdminResetPasswordContent() {
 
 export default function AdminResetPasswordPage() {
   return (
-    <Suspense fallback={<AdminLoading />}>
+    <Suspense fallback={<AdminAuthSkeleton />}>
       <AdminResetPasswordContent />
     </Suspense>
   );
