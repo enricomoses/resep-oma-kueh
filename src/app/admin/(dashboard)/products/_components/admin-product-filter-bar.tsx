@@ -1,5 +1,7 @@
 'use client';
 
+import { Search } from 'lucide-react';
+
 import { Card } from '@/components/ui/card';
 import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
@@ -33,16 +35,26 @@ export function AdminProductFilterBar({
   className,
 }: AdminProductFilterBarProps) {
   return (
-    <Card tone="cream" className={cn('admin-filter-bar', className)}>
-      <div className="admin-filter-grid">
+    <Card tone="surface" className={cn('admin-prod-filter-card', className)}>
+      <div className="admin-prod-filter-grid">
         <FormField label={ADMIN_CATALOG_COPY.PRODUCTS.SEARCH_LABEL}>
           {(props) => (
-            <Input
-              {...props}
-              placeholder={ADMIN_CATALOG_COPY.PRODUCTS.SEARCH_PLACEHOLDER}
-              value={searchInput}
-              onChange={(event) => onSearchChange(event.target.value)}
-            />
+            <div className="admin-prod-search-wrap">
+              <Search
+                size={15}
+                className="admin-prod-search-icon"
+                aria-hidden="true"
+              />
+              <Input
+                {...props}
+                type="search"
+                sizeVariant="compact"
+                placeholder={ADMIN_CATALOG_COPY.PRODUCTS.SEARCH_PLACEHOLDER}
+                value={searchInput}
+                onChange={(event) => onSearchChange(event.target.value)}
+                className="admin-prod-search-input"
+              />
+            </div>
           )}
         </FormField>
 
@@ -50,6 +62,7 @@ export function AdminProductFilterBar({
           {(props) => (
             <Select
               {...props}
+              sizeVariant="compact"
               value={statusFilter}
               onChange={(event) =>
                 onStatusChange(event.target.value as '' | AdminCatalogStatus)
@@ -75,6 +88,7 @@ export function AdminProductFilterBar({
           {(props) => (
             <Select
               {...props}
+              sizeVariant="compact"
               value={categoryFilter}
               onChange={(event) => onCategoryChange(event.target.value)}
             >

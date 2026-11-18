@@ -22,22 +22,16 @@ export function AdminProductEditorPreviewAside({
       className={cn('admin-editor-preview-aside', className)}
       aria-label={ADMIN_CATALOG_COPY.PRODUCT_EDITOR.PREVIEW_HEADING}
     >
-      <Card tone="cream" className="admin-editor-preview-card">
+      <Card tone="surface" className="admin-editor-preview-card">
         <h3 className="admin-editor-heading">
           {ADMIN_CATALOG_COPY.PRODUCT_EDITOR.PREVIEW_HEADING}
         </h3>
-        <p className="admin-row-meta">
-          {ADMIN_CATALOG_COPY.PRODUCT_EDITOR.PREVIEW_SUBTITLE}
-        </p>
         <MenuProductCard
           product={product}
           previewImageUrl={previewImageUrl}
           hasBranchSelected
           branchCode="surabaya"
         />
-        <p className="admin-row-meta">
-          {ADMIN_CATALOG_COPY.PRODUCT_EDITOR.PREVIEW_NO_BRANCH_NOTE}
-        </p>
       </Card>
     </aside>
   );

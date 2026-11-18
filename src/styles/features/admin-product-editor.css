@@ -3,11 +3,57 @@
    ========================================================================== */
 
 @layer components {
+  /* Editor Header */
+  .admin-editor-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .admin-editor-header-main {
+    display: grid;
+    gap: 0.375rem;
+    min-width: 0;
+  }
+
+  .admin-editor-back-link {
+    width: fit-content;
+    margin-left: -0.5rem;
+  }
+
+  .admin-editor-title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    min-width: 0;
+  }
+
+  .admin-editor-meta {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: var(--text-cocoa);
+  }
+
+  .admin-editor-slug {
+    font-size: 0.75rem;
+    padding: 0.0625rem 0.4375rem;
+    border-radius: 0.3125rem;
+    background: var(--surface-white);
+    border: 1px solid var(--sand-divider-subtle);
+    color: var(--text-cocoa);
+  }
+
+  /* Main Two-Column Responsive Layout */
   .admin-editor-layout {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.5rem;
     align-items: start;
+    min-width: 0;
   }
 
   @media (min-width: 68rem) {
@@ -21,6 +67,56 @@
   .admin-editor-stack {
     display: grid;
     gap: 1.25rem;
+    min-width: 0;
+  }
+
+  .admin-editor-main > *,
+  .admin-editor-section > *,
+  .admin-editor-stack > * {
+    min-width: 0;
+  }
+
+  .admin-editor-create-card {
+    padding: 1.375rem;
+    box-shadow: 0 1px 2px var(--shadow-warm);
+  }
+
+  .admin-editor-form-group {
+    display: grid;
+    gap: 1rem;
+    min-width: 0;
+  }
+
+  .admin-editor-form-group + .admin-editor-form-group {
+    padding-top: 1.125rem;
+    border-top: 1px solid var(--sand-divider-subtle);
+  }
+
+  .admin-editor-group-title {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-cocoa);
+  }
+
+  .admin-editor-checkbox-panel {
+    display: grid;
+    gap: 0.625rem;
+    padding: 0.875rem 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--sand-divider-subtle);
+    background: var(--surface-cream);
+  }
+
+  .admin-editor-form-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.625rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--sand-divider-subtle);
   }
 
   .admin-editor-item-card,
@@ -29,13 +125,19 @@
   .admin-editor-subrow {
     display: grid;
     gap: 0.875rem;
+    min-width: 0;
+  }
+
+  .admin-editor-item-card {
+    padding: 1.25rem 1.375rem;
+    box-shadow: 0 1px 2px var(--shadow-warm);
   }
 
   .admin-editor-subgroup,
   .admin-editor-subrow {
-    padding: 0.875rem;
+    padding: 0.875rem 1rem;
     border-radius: var(--radius-md);
-    border: 1px solid var(--border-sand);
+    border: 1px solid var(--sand-divider-subtle);
     background-color: var(--surface-cream);
   }
 
@@ -49,7 +151,7 @@
 
   .admin-editor-heading {
     margin: 0;
-    font-size: 1.0625rem;
+    font-size: 1rem;
     font-weight: 700;
     color: var(--brand-deep);
   }
@@ -58,6 +160,7 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 1rem;
+    min-width: 0;
   }
 
   @media (min-width: 44rem) {
@@ -89,13 +192,15 @@
   .admin-editor-image-fields {
     display: grid;
     gap: 0.75rem;
+    min-width: 0;
   }
 
   .admin-upload-trigger {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.55rem 0.9rem;
+    min-height: 2.5rem;
+    padding: 0.5rem 0.9rem;
     border-radius: var(--radius-md);
     border: 1px solid var(--brand-burgundy);
     color: var(--brand-burgundy);
@@ -103,15 +208,22 @@
     font-size: 0.875rem;
     font-weight: 600;
     cursor: pointer;
+    transition: background-color var(--transition-fast);
   }
 
   .admin-upload-trigger:hover {
     background-color: var(--surface-cream);
   }
 
+  /* Category Assignment List */
   .admin-category-assignment-grid {
+    margin: 0;
+    padding: 0;
+    list-style: none;
     display: grid;
-    gap: 0.5rem;
+    border: 1px solid var(--border-sand);
+    border-radius: var(--radius-md);
+    overflow: hidden;
   }
 
   .admin-category-assignment-row {
@@ -120,25 +232,45 @@
     justify-content: space-between;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid var(--border-sand);
-    border-radius: var(--radius-sm);
+    padding: 0.625rem 0.875rem;
+    background: var(--surface-white);
   }
 
+  .admin-category-assignment-row + .admin-category-assignment-row {
+    border-top: 1px solid var(--sand-divider-subtle);
+  }
+
+  .admin-category-assignment-row--active {
+    background: color-mix(in srgb, var(--surface-cream) 75%, transparent);
+  }
+
+  /* Preview Aside & Sticky Savebar */
   .admin-editor-preview-aside {
-    position: sticky;
-    top: 1.25rem;
+    position: static;
+    min-width: 0;
+  }
+
+  @media (min-width: 68rem) {
+    .admin-editor-preview-aside {
+      position: sticky;
+      top: 1.25rem;
+    }
   }
 
   .admin-editor-preview-card {
     display: grid;
     gap: 0.875rem;
+    padding: 1.25rem;
+    box-shadow: 0 1px 2px var(--shadow-warm);
   }
 
   .admin-editor-savebar {
     position: sticky;
     bottom: 0.75rem;
     z-index: 10;
+    padding: 0.875rem 1.25rem;
+    box-shadow: 0 -4px 20px -8px rgba(101, 14, 32, 0.16);
+    border-color: var(--border-sand);
   }
 
   .admin-checkbox-align {
@@ -146,5 +278,11 @@
     flex-direction: column;
     justify-content: flex-end;
     gap: 0.25rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .admin-upload-trigger {
+      transition: none;
+    }
   }
 }

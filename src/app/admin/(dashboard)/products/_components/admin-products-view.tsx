@@ -10,6 +10,7 @@ import { Feedback } from '@/components/ui/feedback';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { useAdminProductsManager } from '@/hooks/use-admin-products-manager';
+import '@/styles/features/admin-products.css';
 import type {
   AdminCategoryListResponse,
   AdminProductListResponse,
@@ -41,7 +42,7 @@ export function AdminProductsView({
   });
 
   return (
-    <section className={cn('admin-section', className)}>
+    <section className={cn('admin-section admin-prod-section', className)}>
       <AdminSectionHeader
         title={ADMIN_CATALOG_COPY.PRODUCTS.TITLE}
         description={ADMIN_CATALOG_COPY.PRODUCTS.SUBTITLE}
@@ -78,10 +79,6 @@ export function AdminProductsView({
           </div>
         }
       />
-
-      <Feedback tone="info" title="Ruang lingkup data inti produk (F16)">
-        {ADMIN_CATALOG_COPY.PRODUCTS.NO_PRICE_NOTICE}
-      </Feedback>
 
       {mgr.listErrorMessage ? (
         <Feedback tone="error" title={mgr.listErrorMessage} announce />

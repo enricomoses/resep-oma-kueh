@@ -1,16 +1,11 @@
 'use client';
 
-import { Archive, Pencil, SlidersHorizontal } from 'lucide-react';
+import { AlertCircle, Archive, Pencil, SlidersHorizontal } from 'lucide-react';
 
 import { ActionLink } from '@/components/ui/action-link';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
-import type {
-  AdminCatalogStatus,
-  AdminProductItem,
-} from '@/types/admin-catalog';
+import type { AdminProductItem } from '@/types/admin-catalog';
 import { cn } from '@/utils';
 import { buildAdminProductEditRoute } from '@/utils/admin-catalog';
 
@@ -21,12 +16,6 @@ interface AdminProductCardProps {
   className?: string;
 }
 
-function getStatusBadgeTone(status: AdminCatalogStatus) {
-  if (status === 'published') return 'success';
-  if (status === 'archived') return 'neutral';
-  return 'accent';
-}
-
 export function AdminProductCard({
   product,
   onEdit,
@@ -34,52 +23,73 @@ export function AdminProductCard({
   className,
 }: AdminProductCardProps) {
   return (
-    <Card tone="surface" className={cn('admin-row-card', className)}>
-      <div className="admin-row-main">
-        <div className="admin-row-title-row">
-          <h3 className="admin-row-title admin-wrap-text">{product.name}</h3>
-          <Badge tone={getStatusBadgeTone(product.status)}>
-            {ADMIN_CATALOG_COPY.PRODUCTS.STATUS_LABELS[product.status]}
-          </Badge>
-          <Badge tone="neutral">
-            {ADMIN_CATALOG_COPY.PRODUCTS.TYPE_LABELS[product.productType]}
-          </Badge>
+    <li className={cn('admin-prod-row', className)}>
+      <div className="admin-prod-primary">
+        <div className="admin-prod-name-line">
+          <h3 className="admin-prod-name admin-wrap-text">{product.name}</h3>
+          <code className="admin-prod-slug">{product.slug}</code>
           {product.needsOwnerReview ? (
-            <Badge tone="accent">Perlu Review</Badge>
+            <span className="admin-prod-review-flag">
+              <AlertCircle size={13} aria-hidden="true" />
+              <span>Perlu Review</span>
+            </span>
           ) : null}
         </div>
-        <p className="admin-row-meta admin-wrap-text">
-          Slug: <code>{product.slug}</code> · Urutan: {product.sortOrder} ·
-          Varian aktif: {product.readiness.activeVariantCount}
-        </p>
+
         {product.categories.length > 0 ? (
-          <p className="admin-row-meta admin-wrap-text">
-            Kategori: {product.categories.map((cat) => cat.name).join(', ')}
+          <p className="admin-prod-categories admin-wrap-text">
+            {product.categories.map((cat) => cat.name).join(' · ')}
           </p>
         ) : null}
+
         {product.shortDescription ? (
-          <p className="admin-row-desc admin-wrap-text">
+          <p className="admin-prod-desc admin-wrap-text">
             {product.shortDescription}
           </p>
         ) : null}
       </div>
 
-      <div className="admin-row-actions">
+      <div className="admin-prod-meta-inline">
+        <p className="admin-prod-type">
+          <span className="admin-prod-cell-label">Tipe:</span>
+          {ADMIN_CATALOG_COPY.PRODUCTS.TYPE_LABELS[product.productType]}
+        </p>
+
+        <p
+          className={cn(
+            'admin-prod-status',
+            `admin-prod-status--${product.status}`,
+          )}
+        >
+          <span className="admin-prod-status-dot" aria-hidden="true" />
+          <span>
+            {ADMIN_CATALOG_COPY.PRODUCTS.STATUS_LABELS[product.status]}
+          </span>
+        </p>
+
+        <p className="admin-prod-stats">
+          <span className="admin-prod-cell-label">Varian &amp; Urutan:</span>
+          <strong>{product.readiness.activeVariantCount}</strong> varian · #
+          {product.sortOrder}
+        </p>
+      </div>
+
+      <div className="admin-prod-actions">
         <ActionLink
           href={buildAdminProductEditRoute(product.id)}
-          variant="primary"
+          variant="secondary"
           size="sm"
         >
-          <SlidersHorizontal size={15} aria-hidden="true" />
+          <SlidersHorizontal size={14} aria-hidden="true" />
           <span>{ADMIN_CATALOG_COPY.PRODUCT_EDITOR.OPEN_EDITOR_BTN}</span>
         </ActionLink>
         <Button
           type="button"
-          variant="secondary"
+          variant="ghost"
           size="sm"
           onClick={() => onEdit(product)}
         >
-          <Pencil size={15} aria-hidden="true" />
+          <Pencil size={14} aria-hidden="true" />
           <span>{ADMIN_CATALOG_COPY.PRODUCTS.EDIT_BTN}</span>
         </Button>
         {product.status !== 'archived' ? (
@@ -89,11 +99,11 @@ export function AdminProductCard({
             size="sm"
             onClick={() => onArchive(product)}
           >
-            <Archive size={15} aria-hidden="true" />
+            <Archive size={14} aria-hidden="true" />
             <span>{ADMIN_CATALOG_COPY.PRODUCTS.ARCHIVE_BTN}</span>
           </Button>
         ) : null}
       </div>
-    </Card>
+    </li>
   );
 }

@@ -26,19 +26,25 @@ export function AdminProductCategoriesCard({
   className,
 }: AdminProductCategoriesCardProps) {
   return (
-    <Card className={cn('admin-editor-item-card', className)}>
+    <Card tone="surface" className={cn('admin-editor-item-card', className)}>
       <h3 className="admin-editor-heading">Kategori Produk</h3>
       {errorMessage ? (
         <Feedback tone="error" title={errorMessage} announce />
       ) : null}
 
-      <div className="admin-category-assignment-grid">
+      <ul className="admin-category-assignment-grid">
         {referenceCategories.map((cat) => {
           const assigned = assignedCategories.find(
             (c) => c.categoryId === cat.id,
           );
           return (
-            <div key={cat.id} className="admin-category-assignment-row">
+            <li
+              key={cat.id}
+              className={cn(
+                'admin-category-assignment-row',
+                assigned && 'admin-category-assignment-row--active',
+              )}
+            >
               <label className="admin-checkbox-label">
                 <input
                   type="checkbox"
@@ -60,10 +66,10 @@ export function AdminProductCategoriesCard({
                   <span>Utama</span>
                 </label>
               ) : null}
-            </div>
+            </li>
           );
         })}
-      </div>
+      </ul>
     </Card>
   );
 }

@@ -38,216 +38,225 @@ export function AdminProductCreateForm({
   onSubmit,
 }: AdminProductCreateFormProps) {
   return (
-    <Card>
+    <Card tone="surface" className="admin-editor-create-card">
       <form onSubmit={onSubmit} className="admin-form" noValidate>
         {formError ? (
           <Feedback tone="error" title={formError} announce />
         ) : null}
 
-        <div className="admin-form-row-2">
-          <FormField
-            label={ADMIN_CATALOG_COPY.PRODUCTS.NAME_LABEL}
-            required
-            error={fieldErrors.name?.[0]}
-          >
-            {(props) => (
-              <Input
-                {...props}
-                value={formState.name}
-                onChange={(e) => onNameChange(e.target.value)}
-              />
-            )}
-          </FormField>
+        <div className="admin-editor-form-group">
+          <h3 className="admin-editor-group-title">Identitas Produk</h3>
+          <div className="admin-form-row-2">
+            <FormField
+              label={ADMIN_CATALOG_COPY.PRODUCTS.NAME_LABEL}
+              required
+              error={fieldErrors.name?.[0]}
+            >
+              {(props) => (
+                <Input
+                  {...props}
+                  value={formState.name}
+                  onChange={(e) => onNameChange(e.target.value)}
+                />
+              )}
+            </FormField>
 
-          <FormField
-            label={ADMIN_CATALOG_COPY.PRODUCTS.SLUG_LABEL}
-            required
-            helper={ADMIN_CATALOG_COPY.PRODUCTS.SLUG_HELP_CREATE}
-            error={fieldErrors.slug?.[0]}
-          >
-            {(props) => (
-              <Input
-                {...props}
-                value={formState.slug}
-                onChange={(e) => onSlugChange(e.target.value)}
-              />
-            )}
-          </FormField>
+            <FormField
+              label={ADMIN_CATALOG_COPY.PRODUCTS.SLUG_LABEL}
+              required
+              helper={ADMIN_CATALOG_COPY.PRODUCTS.SLUG_HELP_CREATE}
+              error={fieldErrors.slug?.[0]}
+            >
+              {(props) => (
+                <Input
+                  {...props}
+                  value={formState.slug}
+                  onChange={(e) => onSlugChange(e.target.value)}
+                />
+              )}
+            </FormField>
+          </div>
+
+          <div className="admin-form-row-2">
+            <FormField
+              label={ADMIN_CATALOG_COPY.PRODUCTS.TYPE_LABEL}
+              required
+              error={fieldErrors.productType?.[0]}
+            >
+              {(props) => (
+                <Select
+                  {...props}
+                  value={formState.productType}
+                  onChange={(e) =>
+                    setFormState((prev) => ({
+                      ...prev,
+                      productType: e.target.value as AdminProductType,
+                    }))
+                  }
+                >
+                  <option value="simple">
+                    {ADMIN_CATALOG_COPY.PRODUCTS.TYPE_LABELS.simple}
+                  </option>
+                  <option value="variants">
+                    {ADMIN_CATALOG_COPY.PRODUCTS.TYPE_LABELS.variants}
+                  </option>
+                  <option value="bundle">
+                    {ADMIN_CATALOG_COPY.PRODUCTS.TYPE_LABELS.bundle}
+                  </option>
+                </Select>
+              )}
+            </FormField>
+
+            <FormField
+              label={ADMIN_CATALOG_COPY.PRODUCTS.SORT_LABEL}
+              required
+              error={fieldErrors.sortOrder?.[0]}
+            >
+              {(props) => (
+                <Input
+                  {...props}
+                  type="number"
+                  min={0}
+                  max={9999}
+                  value={formState.sortOrder}
+                  onChange={(e) =>
+                    setFormState((prev) => ({
+                      ...prev,
+                      sortOrder: e.target.value,
+                    }))
+                  }
+                />
+              )}
+            </FormField>
+          </div>
         </div>
 
-        <div className="admin-form-row-2">
+        <div className="admin-editor-form-group">
+          <h3 className="admin-editor-group-title">Deskripsi &amp; Catatan</h3>
           <FormField
-            label={ADMIN_CATALOG_COPY.PRODUCTS.TYPE_LABEL}
-            required
-            error={fieldErrors.productType?.[0]}
+            label={ADMIN_CATALOG_COPY.PRODUCTS.SHORT_DESC_LABEL}
+            error={fieldErrors.shortDescription?.[0]}
           >
             {(props) => (
-              <Select
+              <Input
                 {...props}
-                value={formState.productType}
+                value={formState.shortDescription}
                 onChange={(e) =>
                   setFormState((prev) => ({
                     ...prev,
-                    productType: e.target.value as AdminProductType,
-                  }))
-                }
-              >
-                <option value="simple">
-                  {ADMIN_CATALOG_COPY.PRODUCTS.TYPE_LABELS.simple}
-                </option>
-                <option value="variants">
-                  {ADMIN_CATALOG_COPY.PRODUCTS.TYPE_LABELS.variants}
-                </option>
-                <option value="bundle">
-                  {ADMIN_CATALOG_COPY.PRODUCTS.TYPE_LABELS.bundle}
-                </option>
-              </Select>
-            )}
-          </FormField>
-
-          <FormField
-            label={ADMIN_CATALOG_COPY.PRODUCTS.SORT_LABEL}
-            required
-            error={fieldErrors.sortOrder?.[0]}
-          >
-            {(props) => (
-              <Input
-                {...props}
-                type="number"
-                min={0}
-                max={9999}
-                value={formState.sortOrder}
-                onChange={(e) =>
-                  setFormState((prev) => ({
-                    ...prev,
-                    sortOrder: e.target.value,
+                    shortDescription: e.target.value,
                   }))
                 }
               />
             )}
           </FormField>
-        </div>
 
-        <FormField
-          label={ADMIN_CATALOG_COPY.PRODUCTS.SHORT_DESC_LABEL}
-          error={fieldErrors.shortDescription?.[0]}
-        >
-          {(props) => (
-            <Input
-              {...props}
-              value={formState.shortDescription}
-              onChange={(e) =>
-                setFormState((prev) => ({
-                  ...prev,
-                  shortDescription: e.target.value,
-                }))
-              }
-            />
-          )}
-        </FormField>
-
-        <FormField
-          label={ADMIN_CATALOG_COPY.PRODUCTS.DESC_LABEL}
-          error={fieldErrors.description?.[0]}
-        >
-          {(props) => (
-            <Textarea
-              {...props}
-              rows={3}
-              value={formState.description}
-              onChange={(e) =>
-                setFormState((prev) => ({
-                  ...prev,
-                  description: e.target.value,
-                }))
-              }
-            />
-          )}
-        </FormField>
-
-        <div className="admin-form-row-2">
           <FormField
-            label={ADMIN_CATALOG_COPY.PRODUCTS.INGREDIENTS_LABEL}
-            error={fieldErrors.ingredientsInfo?.[0]}
+            label={ADMIN_CATALOG_COPY.PRODUCTS.DESC_LABEL}
+            error={fieldErrors.description?.[0]}
           >
             {(props) => (
               <Textarea
                 {...props}
-                rows={2}
-                value={formState.ingredientsInfo}
+                rows={3}
+                value={formState.description}
                 onChange={(e) =>
                   setFormState((prev) => ({
                     ...prev,
-                    ingredientsInfo: e.target.value,
+                    description: e.target.value,
                   }))
                 }
               />
             )}
           </FormField>
 
-          <FormField
-            label={ADMIN_CATALOG_COPY.PRODUCTS.STORAGE_LABEL}
-            error={fieldErrors.storageInstructions?.[0]}
-          >
-            {(props) => (
-              <Textarea
-                {...props}
-                rows={2}
-                value={formState.storageInstructions}
+          <div className="admin-form-row-2">
+            <FormField
+              label={ADMIN_CATALOG_COPY.PRODUCTS.INGREDIENTS_LABEL}
+              error={fieldErrors.ingredientsInfo?.[0]}
+            >
+              {(props) => (
+                <Textarea
+                  {...props}
+                  rows={2}
+                  value={formState.ingredientsInfo}
+                  onChange={(e) =>
+                    setFormState((prev) => ({
+                      ...prev,
+                      ingredientsInfo: e.target.value,
+                    }))
+                  }
+                />
+              )}
+            </FormField>
+
+            <FormField
+              label={ADMIN_CATALOG_COPY.PRODUCTS.STORAGE_LABEL}
+              error={fieldErrors.storageInstructions?.[0]}
+            >
+              {(props) => (
+                <Textarea
+                  {...props}
+                  rows={2}
+                  value={formState.storageInstructions}
+                  onChange={(e) =>
+                    setFormState((prev) => ({
+                      ...prev,
+                      storageInstructions: e.target.value,
+                    }))
+                  }
+                />
+              )}
+            </FormField>
+          </div>
+        </div>
+
+        <div className="admin-editor-form-group">
+          <h3 className="admin-editor-group-title">Penanda Katalog</h3>
+          <div className="admin-editor-checkbox-panel">
+            <label className="admin-checkbox-label">
+              <input
+                type="checkbox"
+                checked={formState.isFeatured}
                 onChange={(e) =>
                   setFormState((prev) => ({
                     ...prev,
-                    storageInstructions: e.target.value,
+                    isFeatured: e.target.checked,
                   }))
                 }
               />
-            )}
-          </FormField>
+              <span>{ADMIN_CATALOG_COPY.PRODUCTS.FEATURED_CHECKBOX}</span>
+            </label>
+            <label className="admin-checkbox-label">
+              <input
+                type="checkbox"
+                checked={formState.isBestSeller}
+                onChange={(e) =>
+                  setFormState((prev) => ({
+                    ...prev,
+                    isBestSeller: e.target.checked,
+                  }))
+                }
+              />
+              <span>{ADMIN_CATALOG_COPY.PRODUCTS.BEST_SELLER_CHECKBOX}</span>
+            </label>
+            <label className="admin-checkbox-label">
+              <input
+                type="checkbox"
+                checked={formState.isNew}
+                onChange={(e) =>
+                  setFormState((prev) => ({
+                    ...prev,
+                    isNew: e.target.checked,
+                  }))
+                }
+              />
+              <span>{ADMIN_CATALOG_COPY.PRODUCTS.NEW_CHECKBOX}</span>
+            </label>
+          </div>
         </div>
 
-        <div className="admin-checkbox-group">
-          <label className="admin-checkbox-label">
-            <input
-              type="checkbox"
-              checked={formState.isFeatured}
-              onChange={(e) =>
-                setFormState((prev) => ({
-                  ...prev,
-                  isFeatured: e.target.checked,
-                }))
-              }
-            />
-            <span>{ADMIN_CATALOG_COPY.PRODUCTS.FEATURED_CHECKBOX}</span>
-          </label>
-          <label className="admin-checkbox-label">
-            <input
-              type="checkbox"
-              checked={formState.isBestSeller}
-              onChange={(e) =>
-                setFormState((prev) => ({
-                  ...prev,
-                  isBestSeller: e.target.checked,
-                }))
-              }
-            />
-            <span>{ADMIN_CATALOG_COPY.PRODUCTS.BEST_SELLER_CHECKBOX}</span>
-          </label>
-          <label className="admin-checkbox-label">
-            <input
-              type="checkbox"
-              checked={formState.isNew}
-              onChange={(e) =>
-                setFormState((prev) => ({
-                  ...prev,
-                  isNew: e.target.checked,
-                }))
-              }
-            />
-            <span>{ADMIN_CATALOG_COPY.PRODUCTS.NEW_CHECKBOX}</span>
-          </label>
-        </div>
-
-        <div className="admin-dialog-actions">
+        <div className="admin-editor-form-footer">
           <ActionLink href={ROUTES.ADMIN_PRODUCTS} variant="ghost" size="sm">
             {ADMIN_CATALOG_COPY.PRODUCTS.CANCEL}
           </ActionLink>
