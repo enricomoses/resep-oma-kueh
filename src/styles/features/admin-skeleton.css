@@ -1,0 +1,84 @@
+/* ==========================================================================
+   Admin Skeleton Layout & Route Fidelity Helpers
+   ========================================================================== */
+
+@layer components {
+  .admin-skel-header-copy {
+    display: grid;
+    gap: 0.5rem;
+    min-width: 0;
+    flex: 1 1 18rem;
+  }
+
+  .admin-skel-field {
+    display: grid;
+    gap: 0.375rem;
+    min-width: 0;
+  }
+
+  .admin-skel-inline-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+  }
+
+  .admin-skel-stack-sm {
+    display: grid;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .admin-skel-stack-md {
+    display: grid;
+    gap: 0.875rem;
+    min-width: 0;
+  }
+
+  /* Workspace Shell Skeleton Extras */
+  .admin-skel-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    min-height: 2.5rem;
+    padding: 0.5rem 0.625rem;
+  }
+
+  .admin-skel-profile {
+    display: grid;
+    gap: 0.4375rem;
+    padding: 0.25rem;
+  }
+
+  /* Preview Card Grid for Testimonials */
+  .admin-skel-preview-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.875rem;
+  }
+
+  @media (min-width: 48rem) {
+    .admin-skel-preview-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .admin-skel-preview-quote-card {
+    display: grid;
+    gap: 0.625rem;
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--sand-divider-subtle);
+    background: var(--surface-paper);
+  }
+
+  /* Product Editor Preview Card Skeleton */
+  .admin-skel-product-preview {
+    display: grid;
+    gap: 0.75rem;
+    padding: 0.875rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-sand);
+    background: var(--surface-paper);
+  }
+}

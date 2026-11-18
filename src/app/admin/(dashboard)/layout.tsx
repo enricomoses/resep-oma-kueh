@@ -3,7 +3,8 @@ import { connection } from 'next/server';
 import { Suspense } from 'react';
 
 import { AdminShell } from './_components/admin-shell';
-import AdminLoading from '../loading';
+import { AdminOverviewSkeleton } from '../_components/skeletons/admin-overview-skeleton';
+import { AdminWorkspaceSkeleton } from '../_components/skeletons/admin-workspace-skeleton';
 import { ROUTES } from '@/constants/routes.constant';
 import { requireAdminSession } from '@/features/auth/admin-guard.server';
 import '@/styles/layouts/admin-workspace.css';
@@ -25,7 +26,13 @@ export default function AdminDashboardLayout({
   children,
 }: AdminDashboardLayoutProps) {
   return (
-    <Suspense fallback={<AdminLoading />}>
+    <Suspense
+      fallback={
+        <AdminWorkspaceSkeleton>
+          <AdminOverviewSkeleton />
+        </AdminWorkspaceSkeleton>
+      }
+    >
       <AdminDashboardGate>{children}</AdminDashboardGate>
     </Suspense>
   );
