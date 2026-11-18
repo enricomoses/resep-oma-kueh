@@ -6,10 +6,12 @@ import { AdminSectionHeader } from '@/app/admin/(dashboard)/_components/admin-se
 import { ConfirmDialog } from '@/components/common/feedback/confirm-dialog';
 import { EmptyState } from '@/components/common/feedback/empty-state';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Feedback } from '@/components/ui/feedback';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { PROMOTION_COPY } from '@/constants/promotion.constant';
 import { useAdminPromotionsManager } from '@/hooks/use-admin-promotions-manager';
+import '@/styles/features/admin-promotions.css';
 import type { AdminSessionProfile } from '@/types/auth';
 import type { AdminPromotionsListResponse } from '@/types/promotion';
 import { cn } from '@/utils';
@@ -67,27 +69,32 @@ export function AdminPromotionsView({
   });
 
   return (
-    <div className={cn('admin-page space-y-6', className)}>
+    <section className={cn('admin-section admin-promo-section', className)}>
       <AdminSectionHeader
         title={ADMIN_CATALOG_COPY.PROMOTIONS.TITLE}
         description={ADMIN_CATALOG_COPY.PROMOTIONS.SUBTITLE}
-        headingAs="h1"
-        className="admin-page-header"
-        titleClassName="admin-page-title"
         actions={
           <div className="admin-inline-actions">
             <Button
+              type="button"
               variant="secondary"
               size="sm"
+              loading={isFetching}
+              loadingLabel="Memuat ulang..."
               onClick={() => void refetch()}
               disabled={isFetching}
             >
               <RefreshCw size={15} aria-hidden="true" />
-              {ADMIN_CATALOG_COPY.PROMOTIONS.REFRESH}
+              <span>{ADMIN_CATALOG_COPY.PROMOTIONS.REFRESH}</span>
             </Button>
-            <Button variant="primary" size="sm" onClick={openCreateForm}>
+            <Button
+              type="button"
+              variant="primary"
+              size="sm"
+              onClick={openCreateForm}
+            >
               <Plus size={15} aria-hidden="true" />
-              {ADMIN_CATALOG_COPY.PROMOTIONS.ADD_BUTTON}
+              <span>{ADMIN_CATALOG_COPY.PROMOTIONS.ADD_BUTTON}</span>
             </Button>
           </div>
         }
@@ -133,20 +140,23 @@ export function AdminPromotionsView({
 
       {promotions.length === 0 ? (
         <EmptyState
+          tone="cream"
           icon={<Tag size={24} strokeWidth={1.65} aria-hidden="true" />}
           title={ADMIN_CATALOG_COPY.PROMOTIONS.EMPTY}
         />
       ) : (
-        <div className="space-y-4">
-          {promotions.map((item) => (
-            <AdminPromotionCard
-              key={item.id}
-              item={item}
-              onEdit={openEditForm}
-              onArchive={setArchiveTarget}
-            />
-          ))}
-        </div>
+        <Card tone="surface" className="admin-promo-panel">
+          <ul className="admin-promo-list">
+            {promotions.map((item) => (
+              <AdminPromotionCard
+                key={item.id}
+                item={item}
+                onEdit={openEditForm}
+                onArchive={setArchiveTarget}
+              />
+            ))}
+          </ul>
+        </Card>
       )}
 
       <ConfirmDialog
@@ -163,10 +173,10 @@ export function AdminPromotionsView({
         onConfirm={() => void handleConfirmArchive()}
       />
 
-      <p className="text-muted-foreground flex items-center gap-1.5 text-xs">
+      <p className="admin-promo-footnote">
         <Tag size={14} aria-hidden="true" />
-        {PROMOTION_COPY.NON_STACKABLE_NOTE}
+        <span>{PROMOTION_COPY.NON_STACKABLE_NOTE}</span>
       </p>
-    </div>
+    </section>
   );
 }

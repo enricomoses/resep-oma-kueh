@@ -64,169 +64,190 @@ export function AdminPromotionFormCard({
   className,
 }: AdminPromotionFormCardProps) {
   return (
-    <Card tone="surface" className={cn('space-y-5', className)}>
-      <div className="flex flex-wrap items-center justify-between gap-2">
+    <Card tone="surface" className={cn('admin-promo-card', className)}>
+      <div className="admin-promo-card-head">
         <div>
-          <h2 className="admin-card-title">
+          <h2 className="admin-promo-card-title">
             {formState.id ? 'Ubah Promosi' : 'Buat Promosi Baru'}
           </h2>
-          <p className="text-muted-foreground text-xs">
+          <p className="admin-promo-card-sub">
             {PROMOTION_COPY.ENDS_EXCLUSIVE_NOTE}
           </p>
         </div>
-        <Button variant="ghost" size="sm" onClick={onClose}>
+        <Button type="button" variant="ghost" size="sm" onClick={onClose}>
           Tutup Form
         </Button>
       </div>
 
       {formError ? <Feedback tone="error" title={formError} announce /> : null}
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <FormField
-          id="promo-title"
-          label="Judul Promo"
-          error={fieldErrors.title?.[0]}
-        >
-          {(fieldProps) => (
-            <Input
-              {...fieldProps}
-              value={formState.title}
-              onChange={(e) => {
-                const title = e.target.value;
-                setFormState((prev) => ({
-                  ...prev,
-                  title,
-                  slug:
-                    !prev.id && !slugTouched
-                      ? slugifyPromotionTitle(title)
-                      : prev.slug,
-                }));
-              }}
-              placeholder="Contoh: Promo Akhir Pekan Chiffon"
-            />
-          )}
-        </FormField>
+      <div className="admin-promo-form-group">
+        <h3 className="admin-promo-group-label">Identitas Promo</h3>
+        <div className="admin-promo-grid-2">
+          <FormField
+            id="promo-title"
+            label="Judul Promo"
+            error={fieldErrors.title?.[0]}
+          >
+            {(fieldProps) => (
+              <Input
+                {...fieldProps}
+                value={formState.title}
+                onChange={(e) => {
+                  const title = e.target.value;
+                  setFormState((prev) => ({
+                    ...prev,
+                    title,
+                    slug:
+                      !prev.id && !slugTouched
+                        ? slugifyPromotionTitle(title)
+                        : prev.slug,
+                  }));
+                }}
+                placeholder="Contoh: Promo Akhir Pekan Chiffon"
+              />
+            )}
+          </FormField>
+
+          <FormField
+            id="promo-slug"
+            label="Slug Promo (Permanen)"
+            error={fieldErrors.slug?.[0]}
+          >
+            {(fieldProps) => (
+              <Input
+                {...fieldProps}
+                value={formState.slug}
+                disabled={Boolean(formState.id)}
+                onChange={(e) => {
+                  setSlugTouched(true);
+                  setFormState((prev) => ({ ...prev, slug: e.target.value }));
+                }}
+                placeholder="promo-akhir-pekan"
+              />
+            )}
+          </FormField>
+        </div>
 
         <FormField
-          id="promo-slug"
-          label="Slug Promo (Permanen)"
-          error={fieldErrors.slug?.[0]}
+          id="promo-description"
+          label="Deskripsi Singkat (Opsional)"
+          error={fieldErrors.description?.[0]}
         >
           {(fieldProps) => (
-            <Input
+            <Textarea
               {...fieldProps}
-              value={formState.slug}
-              disabled={Boolean(formState.id)}
-              onChange={(e) => {
-                setSlugTouched(true);
-                setFormState((prev) => ({ ...prev, slug: e.target.value }));
-              }}
-              placeholder="promo-akhir-pekan"
-            />
-          )}
-        </FormField>
-      </div>
-
-      <FormField
-        id="promo-description"
-        label="Deskripsi Singkat (Opsional)"
-        error={fieldErrors.description?.[0]}
-      >
-        {(fieldProps) => (
-          <Textarea
-            {...fieldProps}
-            rows={2}
-            value={formState.description}
-            onChange={(e) =>
-              setFormState((prev) => ({ ...prev, description: e.target.value }))
-            }
-          />
-        )}
-      </FormField>
-
-      <AdminPromotionDiscountFields
-        formState={formState}
-        fieldErrors={fieldErrors}
-        onChange={setFormState}
-      />
-
-      <AdminPromotionScheduleFields
-        formState={formState}
-        fieldErrors={fieldErrors}
-        onChange={setFormState}
-      />
-
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-2">
-          <label className="flex cursor-pointer items-center gap-2 text-sm font-medium">
-            <input
-              type="checkbox"
-              checked={formState.isEnabled}
+              rows={2}
+              value={formState.description}
               onChange={(e) =>
                 setFormState((prev) => ({
                   ...prev,
-                  isEnabled: e.target.checked,
+                  description: e.target.value,
                 }))
               }
             />
-            Aktifkan Promo (Toggle isEnabled)
-          </label>
+          )}
+        </FormField>
+      </div>
 
-          <label className="text-muted-foreground flex items-center gap-2 text-xs">
-            <input type="checkbox" checked={false} disabled readOnly />
-            Non-stackable (tetap false) — {PROMOTION_COPY.NON_STACKABLE_NOTE}
-          </label>
-        </div>
+      <div className="admin-promo-form-group">
+        <h3 className="admin-promo-group-label">Diskon &amp; Jadwal</h3>
+        <AdminPromotionDiscountFields
+          formState={formState}
+          fieldErrors={fieldErrors}
+          onChange={setFormState}
+        />
 
-        <AdminPromotionBannerField
-          bannerPreviewUrl={formState.bannerPreviewUrl}
-          bannerImagePath={formState.bannerImagePath}
-          isUploading={isUploadingBanner}
-          uploadError={uploadError}
-          onFileChange={onBannerFileChange}
-          onRemoveBanner={() =>
-            setFormState((prev) => ({
-              ...prev,
-              bannerImagePath: null,
-              bannerDraftPath: null,
-              bannerPreviewUrl: null,
-            }))
-          }
+        <AdminPromotionScheduleFields
+          formState={formState}
+          fieldErrors={fieldErrors}
+          onChange={setFormState}
         />
       </div>
 
-      <AdminPromotionScopeSection
-        formState={formState}
-        fieldErrors={fieldErrors}
-        references={references}
-        onChange={setFormState}
-      />
+      <div className="admin-promo-form-group">
+        <h3 className="admin-promo-group-label">Aktivasi &amp; Banner</h3>
+        <div className="admin-promo-grid-2">
+          <div className="admin-promo-checkbox-panel">
+            <label className="admin-checkbox-label">
+              <input
+                type="checkbox"
+                checked={formState.isEnabled}
+                onChange={(e) =>
+                  setFormState((prev) => ({
+                    ...prev,
+                    isEnabled: e.target.checked,
+                  }))
+                }
+              />
+              <span>Aktifkan Promo (Toggle isEnabled)</span>
+            </label>
 
-      <AdminPromotionBranchTargets
-        branches={references.branches}
-        selectedBranchIds={formState.branchIds}
-        errorMessage={fieldErrors.branchIds?.[0]}
-        onToggleBranch={(branchId) =>
-          setFormState((prev) => ({
-            ...prev,
-            branchIds: togglePromotionTargetId(prev.branchIds, branchId),
-          }))
-        }
-      />
+            <label className="admin-promo-muted-check">
+              <input type="checkbox" checked={false} disabled readOnly />
+              <span>
+                Non-stackable (tetap false) —{' '}
+                {PROMOTION_COPY.NON_STACKABLE_NOTE}
+              </span>
+            </label>
+          </div>
 
-      <AdminPromotionPreviewCard previewExamples={previewExamples} />
+          <AdminPromotionBannerField
+            bannerPreviewUrl={formState.bannerPreviewUrl}
+            bannerImagePath={formState.bannerImagePath}
+            isUploading={isUploadingBanner}
+            uploadError={uploadError}
+            onFileChange={onBannerFileChange}
+            onRemoveBanner={() =>
+              setFormState((prev) => ({
+                ...prev,
+                bannerImagePath: null,
+                bannerDraftPath: null,
+                bannerPreviewUrl: null,
+              }))
+            }
+          />
+        </div>
+      </div>
 
-      <div className="flex flex-wrap justify-end gap-3">
-        <Button type="button" variant="secondary" onClick={onClose}>
+      <div className="admin-promo-form-group">
+        <h3 className="admin-promo-group-label">Target &amp; Pratinjau</h3>
+        <AdminPromotionScopeSection
+          formState={formState}
+          fieldErrors={fieldErrors}
+          references={references}
+          onChange={setFormState}
+        />
+
+        <AdminPromotionBranchTargets
+          branches={references.branches}
+          selectedBranchIds={formState.branchIds}
+          errorMessage={fieldErrors.branchIds?.[0]}
+          onToggleBranch={(branchId) =>
+            setFormState((prev) => ({
+              ...prev,
+              branchIds: togglePromotionTargetId(prev.branchIds, branchId),
+            }))
+          }
+        />
+
+        <AdminPromotionPreviewCard previewExamples={previewExamples} />
+      </div>
+
+      <div className="admin-promo-card-footer admin-promo-card-footer--end">
+        <Button type="button" variant="secondary" size="sm" onClick={onClose}>
           Batal
         </Button>
         <Button
           type="button"
           variant="primary"
+          size="sm"
+          loading={isSaving}
+          loadingLabel="Menyimpan..."
           onClick={onSave}
           disabled={isSaving || isUploadingBanner}
         >
-          {isSaving ? 'Menyimpan...' : 'Simpan Promosi'}
+          <span>Simpan Promosi</span>
         </Button>
       </div>
     </Card>

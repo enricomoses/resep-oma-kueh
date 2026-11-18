@@ -1,11 +1,10 @@
 'use client';
 
-import { Trash2 } from 'lucide-react';
+import { Archive, Pencil } from 'lucide-react';
 import Image from 'next/image';
 
-import { Badge } from '@/components/ui/badge';
+import { StatusIndicator } from '@/components/common/status/status-indicator';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { PROMOTION_COPY } from '@/constants/promotion.constant';
 import type { AdminPromotionItem } from '@/types/promotion';
@@ -22,7 +21,7 @@ interface AdminPromotionCardProps {
   className?: string;
 }
 
-function getClockBadgeTone(clockState: 'scheduled' | 'active' | 'ended') {
+function getClockTone(clockState: 'scheduled' | 'active' | 'ended') {
   if (clockState === 'active') return 'success' as const;
   if (clockState === 'scheduled') return 'accent' as const;
   return 'neutral' as const;
@@ -45,48 +44,62 @@ export function AdminPromotionCard({
           : 0;
 
   return (
-    <Card tone="surface" className={cn('space-y-3', className)}>
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-burgundy font-serif text-lg font-bold">
+    <li className={cn('admin-promo-row', className)}>
+      <div className="admin-promo-row-head">
+        <div className="admin-promo-row-identity">
+          <div className="admin-promo-row-title-line">
+            <h3 className="admin-promo-row-title admin-wrap-text">
               {item.title}
             </h3>
-            <Badge tone={getClockBadgeTone(clockState)}>
-              {PROMOTION_COPY.CLOCK_LABELS[clockState]}
-            </Badge>
-            <Badge tone={item.status === 'published' ? 'success' : 'neutral'}>
-              {ADMIN_CATALOG_COPY.PRODUCTS.STATUS_LABELS[item.status]}
-            </Badge>
-            <Badge tone={item.isEnabled ? 'accent' : 'neutral'}>
-              {item.isEnabled ? 'Toggle Aktif' : 'Toggle Nonaktif'}
-            </Badge>
+            <StatusIndicator
+              tone={getClockTone(clockState)}
+              label={PROMOTION_COPY.CLOCK_LABELS[clockState]}
+            />
           </div>
-          <p className="text-muted-foreground text-xs">
-            Slug: <code>{item.slug}</code> · Prioritas: {item.priority}
+          <p className="admin-promo-row-meta">
+            <code className="admin-promo-slug">{item.slug}</code>
+            <span>·</span>
+            <span>
+              {ADMIN_CATALOG_COPY.PRODUCTS.STATUS_LABELS[item.status]}
+            </span>
+            <span>·</span>
+            <span>{item.isEnabled ? 'Toggle Aktif' : 'Toggle Nonaktif'}</span>
+            <span>·</span>
+            <span>Prioritas #{item.priority}</span>
           </p>
         </div>
 
         <div className="admin-inline-actions">
-          <Button variant="secondary" size="sm" onClick={() => onEdit(item)}>
-            Ubah
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            onClick={() => onEdit(item)}
+          >
+            <Pencil size={14} aria-hidden="true" />
+            <span>Ubah</span>
           </Button>
           {item.status !== 'archived' ? (
-            <Button variant="ghost" size="sm" onClick={() => onArchive(item)}>
-              <Trash2 size={14} aria-hidden="true" />
-              Arsipkan
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => onArchive(item)}
+            >
+              <Archive size={14} aria-hidden="true" />
+              <span>Arsipkan</span>
             </Button>
           ) : null}
         </div>
       </div>
 
       {item.bannerImageUrl ? (
-        <div className="relative h-28 w-full max-w-md overflow-hidden rounded-[var(--radius-sm)] border border-[var(--border-sand)]">
+        <div className="admin-promo-banner-thumb">
           <Image
             src={item.bannerImageUrl}
             alt={`Banner ${item.title}`}
             fill
-            sizes="(max-width: 768px) 100vw, 448px"
+            sizes="(max-width: 768px) 100vw, 384px"
             unoptimized
             className="object-cover"
           />
@@ -94,56 +107,58 @@ export function AdminPromotionCard({
       ) : null}
 
       {item.description ? (
-        <p className="text-cocoa text-sm">{item.description}</p>
+        <p className="admin-promo-desc admin-wrap-text">{item.description}</p>
       ) : null}
 
-      <div className="grid gap-2 text-xs sm:grid-cols-2 lg:grid-cols-4">
-        <div>
-          <span className="text-muted-foreground block">Nilai Diskon</span>
-          <strong>
+      <div className="admin-promo-specs">
+        <div className="admin-promo-spec-item">
+          <span className="admin-promo-spec-label">Nilai Diskon</span>
+          <strong className="admin-promo-spec-value">
             {item.discountType === 'percentage'
               ? `${item.discountValue}%`
               : `${formatIdr(item.discountValue)} / unit`}
           </strong>
           {item.maxDiscountIdr !== null ? (
-            <span className="text-muted-foreground block">
+            <span className="admin-promo-spec-sub">
               Maks. {formatIdr(item.maxDiscountIdr)} / baris
             </span>
           ) : null}
         </div>
 
-        <div>
-          <span className="text-muted-foreground block">
-            Min. Belanja Eligible
-          </span>
-          <strong>{formatIdr(item.minSpendIdr)}</strong>
+        <div className="admin-promo-spec-item">
+          <span className="admin-promo-spec-label">Min. Belanja Eligible</span>
+          <strong className="admin-promo-spec-value">
+            {formatIdr(item.minSpendIdr)}
+          </strong>
         </div>
 
-        <div>
-          <span className="text-muted-foreground block">Scope & Target</span>
-          <strong>{PROMOTION_COPY.SCOPE_LABELS[item.scope]}</strong>
+        <div className="admin-promo-spec-item">
+          <span className="admin-promo-spec-label">Scope &amp; Target</span>
+          <strong className="admin-promo-spec-value">
+            {PROMOTION_COPY.SCOPE_LABELS[item.scope]}
+          </strong>
           {item.scope !== 'all' ? (
-            <span className="text-muted-foreground block">
+            <span className="admin-promo-spec-sub">
               {targetCount} target dipilih
             </span>
           ) : null}
         </div>
 
-        <div>
-          <span className="text-muted-foreground block">
-            Cabang & Jadwal WIB
+        <div className="admin-promo-spec-item">
+          <span className="admin-promo-spec-label">
+            Cabang &amp; Jadwal WIB
           </span>
-          <strong>
+          <strong className="admin-promo-spec-value">
             {item.branchIds.length === 0
               ? PROMOTION_COPY.ALL_ACTIVE_BRANCHES_LABEL
               : `${item.branchIds.length} cabang dipilih`}
           </strong>
-          <span className="text-muted-foreground block">
+          <span className="admin-promo-spec-sub">
             {formatJakartaDateTimeDisplay(item.startsAt)} –{' '}
             {formatJakartaDateTimeDisplay(item.endsAt)}
           </span>
         </div>
       </div>
-    </Card>
+    </li>
   );
 }

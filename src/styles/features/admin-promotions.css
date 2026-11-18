@@ -1,0 +1,273 @@
+/* ==========================================================================
+   Admin Promotions (/admin/promotions) — Shipping Banner, Form & Directory
+   ========================================================================== */
+
+@layer components {
+  .admin-promo-section {
+    gap: 1.25rem;
+  }
+
+  /* Shipping Banner Panel & Promotion Form Card */
+  .admin-promo-card {
+    display: grid;
+    gap: 1.125rem;
+    padding: 1.375rem;
+    box-shadow: 0 1px 2px var(--shadow-warm);
+  }
+
+  .admin-promo-card-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .admin-promo-card-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--brand-deep);
+  }
+
+  .admin-promo-card-sub {
+    margin: 0.25rem 0 0;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: var(--text-cocoa);
+  }
+
+  .admin-promo-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.875rem;
+  }
+
+  @media (min-width: 48rem) {
+    .admin-promo-grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .admin-promo-form-group {
+    display: grid;
+    gap: 0.875rem;
+  }
+
+  .admin-promo-form-group + .admin-promo-form-group {
+    padding-top: 1.125rem;
+    border-top: 1px solid var(--sand-divider-subtle);
+  }
+
+  .admin-promo-group-label {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-cocoa);
+  }
+
+  .admin-promo-checkbox-panel {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.875rem 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--sand-divider-subtle);
+    background: var(--surface-cream);
+  }
+
+  .admin-promo-muted-check {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    color: var(--text-cocoa);
+  }
+
+  .admin-promo-card-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-top: 0.875rem;
+    border-top: 1px solid var(--sand-divider-subtle);
+  }
+
+  .admin-promo-card-footer--end {
+    justify-content: flex-end;
+  }
+
+  .admin-promo-timestamp {
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-cocoa);
+  }
+
+  /* Unified Promotion Directory Panel */
+  .admin-promo-panel {
+    overflow: hidden;
+    padding: 0;
+    box-shadow: 0 1px 2px var(--shadow-warm);
+  }
+
+  .admin-promo-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+  }
+
+  .admin-promo-row {
+    display: grid;
+    gap: 0.875rem;
+    padding: 1.125rem 1.25rem;
+    transition: background-color var(--transition-fast);
+  }
+
+  .admin-promo-row + .admin-promo-row {
+    border-top: 1px solid var(--sand-divider-subtle);
+  }
+
+  .admin-promo-row:hover {
+    background: color-mix(in srgb, var(--surface-cream) 45%, transparent);
+  }
+
+  .admin-promo-row-head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  @media (min-width: 48rem) {
+    .admin-promo-row-head {
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+  }
+
+  .admin-promo-row-identity {
+    display: grid;
+    gap: 0.3125rem;
+    min-width: 0;
+  }
+
+  .admin-promo-row-title-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    min-width: 0;
+  }
+
+  .admin-promo-row-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--brand-deep);
+  }
+
+  .admin-promo-row-meta {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.375rem 0.625rem;
+    font-size: 0.8125rem;
+    color: var(--text-cocoa);
+  }
+
+  .admin-promo-slug {
+    font-size: 0.75rem;
+    padding: 0.0625rem 0.4375rem;
+    border-radius: 0.3125rem;
+    background: var(--surface-cream);
+    border: 1px solid var(--sand-divider-subtle);
+    color: var(--text-cocoa);
+  }
+
+  .admin-promo-banner-thumb {
+    position: relative;
+    height: 6.5rem;
+    width: 100%;
+    max-width: 24rem;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-sand);
+    background: var(--surface-cream);
+  }
+
+  .admin-promo-desc {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.45;
+    color: var(--text-cocoa);
+    max-width: 65ch;
+  }
+
+  .admin-promo-specs {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    background: var(--surface-paper);
+    border: 1px solid var(--sand-divider-subtle);
+  }
+
+  @media (min-width: 36rem) {
+    .admin-promo-specs {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .admin-promo-specs {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .admin-promo-spec-item {
+    display: grid;
+    gap: 0.125rem;
+    align-content: start;
+  }
+
+  .admin-promo-spec-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-cocoa);
+  }
+
+  .admin-promo-spec-value {
+    font-size: 0.875rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--brand-deep);
+  }
+
+  .admin-promo-spec-sub {
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-cocoa);
+  }
+
+  .admin-promo-footnote {
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4375rem;
+    font-size: 0.8125rem;
+    color: var(--text-cocoa);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .admin-promo-row {
+      transition: none;
+    }
+  }
+}

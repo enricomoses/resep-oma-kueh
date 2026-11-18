@@ -2,7 +2,7 @@
 
 import type { Dispatch, SetStateAction } from 'react';
 
-import { Badge } from '@/components/ui/badge';
+import { StatusIndicator } from '@/components/common/status/status-indicator';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Feedback } from '@/components/ui/feedback';
@@ -33,30 +33,34 @@ export function AdminShippingBannerCard({
   className,
 }: AdminShippingBannerCardProps) {
   return (
-    <Card tone="cream" className={cn('space-y-4', className)}>
-      <div className="flex flex-wrap items-center justify-between gap-2">
+    <Card tone="surface" className={cn('admin-promo-card', className)}>
+      <div className="admin-promo-card-head">
         <div>
-          <h2 className="admin-card-title">
+          <h2 className="admin-promo-card-title">
             Banner Informasi Pengiriman (Owner-Approved)
           </h2>
-          <p className="text-muted-foreground text-xs">
+          <p className="admin-promo-card-sub">
             {PROMOTION_COPY.SHIPPING_BANNER_SAFETY_NOTE}
           </p>
         </div>
-        <Badge tone={form.status === 'published' ? 'success' : 'neutral'}>
-          {form.status === 'published'
-            ? 'Terpublikasi ke Publik'
-            : 'Draf (Tersembunyi)'}
-        </Badge>
+        <StatusIndicator
+          tone={form.status === 'published' ? 'success' : 'neutral'}
+          label={
+            form.status === 'published'
+              ? 'Terpublikasi ke Publik'
+              : 'Draf (Tersembunyi)'
+          }
+        />
       </div>
 
       {error ? <Feedback tone="error" title={error} announce /> : null}
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="admin-promo-grid-2">
         <FormField id="shipping-banner-title" label="Judul Banner Info">
           {(fieldProps) => (
             <Input
               {...fieldProps}
+              sizeVariant="compact"
               value={form.title}
               onChange={(e) =>
                 setForm((prev) => ({ ...prev, title: e.target.value }))
@@ -69,6 +73,7 @@ export function AdminShippingBannerCard({
           {(fieldProps) => (
             <Select
               {...fieldProps}
+              sizeVariant="compact"
               value={form.status}
               onChange={(e) =>
                 setForm((prev) => ({
@@ -80,7 +85,7 @@ export function AdminShippingBannerCard({
             >
               <option value="draft">Draf (Jangan tampilkan ke publik)</option>
               <option value="published">
-                Terpublikasi (Tampilkan di Home & Checkout)
+                Terpublikasi (Tampilkan di Home &amp; Checkout)
               </option>
             </Select>
           )}
@@ -101,19 +106,22 @@ export function AdminShippingBannerCard({
         )}
       </FormField>
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <span className="text-muted-foreground text-xs">
+      <div className="admin-promo-card-footer">
+        <span className="admin-promo-timestamp">
           {form.expectedUpdatedAt
             ? `Terakhir disimpan: ${formatJakartaDateTimeDisplay(form.expectedUpdatedAt)}`
             : 'Belum pernah disimpan ke database.'}
         </span>
         <Button
+          type="button"
           variant="secondary"
           size="sm"
+          loading={isSaving}
+          loadingLabel="Menyimpan..."
           onClick={onSave}
           disabled={isSaving}
         >
-          {isSaving ? 'Menyimpan...' : 'Simpan Banner Info'}
+          <span>Simpan Banner Info</span>
         </Button>
       </div>
     </Card>
