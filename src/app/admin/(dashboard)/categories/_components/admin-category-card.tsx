@@ -1,20 +1,9 @@
-import { Archive, CheckCircle2, Pencil } from 'lucide-react';
+import { Archive, CheckCircle2, CornerDownRight, Pencil } from 'lucide-react';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
-import type {
-  AdminCatalogStatus,
-  AdminCategoryItem,
-} from '@/types/admin-catalog';
+import type { AdminCategoryItem } from '@/types/admin-catalog';
 import { cn } from '@/utils';
-
-function getStatusBadgeTone(status: AdminCatalogStatus) {
-  if (status === 'published') return 'success';
-  if (status === 'archived') return 'neutral';
-  return 'accent';
-}
 
 interface AdminCategoryCardProps {
   category: AdminCategoryItem;
@@ -36,42 +25,66 @@ export function AdminCategoryCard({
   const hasRefs = category.childCount > 0 || category.productRefCount > 0;
 
   return (
-    <Card tone="surface" className={cn('admin-row-card', className)}>
-      <div className="admin-row-main">
-        <div className="admin-row-title-row">
-          <h3 className="admin-row-title admin-wrap-text">{category.name}</h3>
-          <Badge tone={getStatusBadgeTone(category.status)}>
-            {ADMIN_CATALOG_COPY.CATEGORIES.STATUS_LABELS[category.status]}
-          </Badge>
-          <Badge tone="neutral">Urutan {category.sortOrder}</Badge>
+    <li className={cn('admin-cat-row', className)}>
+      <div className="admin-cat-primary">
+        <div className="admin-cat-name-line">
+          <h3 className="admin-cat-name admin-wrap-text">{category.name}</h3>
+          <code className="admin-cat-slug">{category.slug}</code>
         </div>
-        <p className="admin-row-meta admin-wrap-text">
-          Slug: <code>{category.slug}</code>
-          {category.parentName
-            ? ` · ${ADMIN_CATALOG_COPY.CATEGORIES.PARENT_PREFIX} ${category.parentName}`
-            : ''}
-        </p>
+
+        {category.parentName ? (
+          <p className="admin-cat-parent admin-wrap-text">
+            <CornerDownRight size={13} aria-hidden="true" />
+            <span>
+              {ADMIN_CATALOG_COPY.CATEGORIES.PARENT_PREFIX}{' '}
+              {category.parentName}
+            </span>
+          </p>
+        ) : null}
+
         {category.description ? (
-          <p className="admin-row-desc admin-wrap-text">
+          <p className="admin-cat-desc admin-wrap-text">
             {category.description}
           </p>
         ) : null}
-        <p className="admin-row-meta">
-          {ADMIN_CATALOG_COPY.CATEGORIES.REFS_PREFIX}{' '}
+      </div>
+
+      <div className="admin-cat-meta-inline">
+        <p
+          className={cn(
+            'admin-cat-status',
+            `admin-cat-status--${category.status}`,
+          )}
+        >
+          <span className="admin-cat-status-dot" aria-hidden="true" />
+          <span>
+            {ADMIN_CATALOG_COPY.CATEGORIES.STATUS_LABELS[category.status]}
+          </span>
+        </p>
+
+        <p className="admin-cat-sort">
+          <span className="admin-cat-cell-label">Urutan:</span>#
+          {category.sortOrder}
+        </p>
+
+        <p className="admin-cat-refs">
+          <span className="admin-cat-cell-label">
+            {ADMIN_CATALOG_COPY.CATEGORIES.REFS_PREFIX}
+          </span>
           {hasRefs
-            ? `${category.childCount} subkategori, ${category.productRefCount} produk`
+            ? `${category.childCount} sub · ${category.productRefCount} produk`
             : ADMIN_CATALOG_COPY.CATEGORIES.REFS_NONE}
         </p>
       </div>
 
-      <div className="admin-row-actions">
+      <div className="admin-cat-actions">
         <Button
           type="button"
           variant="secondary"
           size="sm"
           onClick={() => onEdit(category)}
         >
-          <Pencil size={15} aria-hidden="true" />
+          <Pencil size={14} aria-hidden="true" />
           <span>{ADMIN_CATALOG_COPY.CATEGORIES.EDIT_BTN}</span>
         </Button>
         {category.status === 'draft' ? (
@@ -82,7 +95,7 @@ export function AdminCategoryCard({
             loading={isPublishing}
             onClick={() => onQuickPublish(category)}
           >
-            <CheckCircle2 size={15} aria-hidden="true" />
+            <CheckCircle2 size={14} aria-hidden="true" />
             <span>{ADMIN_CATALOG_COPY.CATEGORIES.PUBLISH_BTN}</span>
           </Button>
         ) : null}
@@ -93,11 +106,11 @@ export function AdminCategoryCard({
             size="sm"
             onClick={() => onRequestArchive(category)}
           >
-            <Archive size={15} aria-hidden="true" />
+            <Archive size={14} aria-hidden="true" />
             <span>{ADMIN_CATALOG_COPY.CATEGORIES.ARCHIVE_BTN}</span>
           </Button>
         ) : null}
       </div>
-    </Card>
+    </li>
   );
 }
