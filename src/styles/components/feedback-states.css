@@ -130,39 +130,4 @@
     gap: 0.75rem;
     margin-top: 0.25rem;
   }
-
-  .cart-loading-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding-block: 5rem;
-    gap: 1rem;
-  }
-
-  .cart-spinner {
-    width: 2.5rem;
-    height: 2.5rem;
-    border: 3px solid var(--border-sand);
-    border-top-color: var(--brand-burgundy);
-    border-radius: 9999px;
-    animation: cart-spin 0.8s linear infinite;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .cart-spinner {
-      animation: none;
-    }
-  }
-
-  .cart-loading-text {
-    font-size: 0.875rem;
-    color: var(--text-cocoa);
-  }
-}
-
-@keyframes cart-spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
