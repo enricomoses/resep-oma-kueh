@@ -2,7 +2,7 @@
 
 import { FileText, ShieldAlert } from 'lucide-react';
 
-import { Badge } from '@/components/ui/badge';
+import { StatusIndicator } from '@/components/common/status/status-indicator';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Feedback } from '@/components/ui/feedback';
@@ -49,22 +49,18 @@ export function AdminCmsEntryEditor({
   const supportsSingleMedia = supportsCmsSingleMedia(form?.key);
 
   return (
-    <Card tone="cream" className={cn('admin-cms-editor-card', className)}>
+    <Card tone="surface" className={cn('admin-cms-editor-card', className)}>
       {!form || !activeEntry ? (
         <p className="admin-section-subtitle">Memuat skema konten CMS...</p>
       ) : (
         <div className="admin-cms-editor-stack">
-          <div className="admin-card-head">
+          <div className="admin-cms-editor-head">
             <div>
-              <h3 className="admin-card-title">
-                <FileText
-                  size={18}
-                  aria-hidden="true"
-                  className="mr-1 inline"
-                />
-                {CMS_KEY_LABELS[form.key]}
+              <h3 className="admin-cms-editor-title">
+                <FileText size={18} aria-hidden="true" />
+                <span>{CMS_KEY_LABELS[form.key]}</span>
               </h3>
-              <p className="admin-section-subtitle">
+              <p className="admin-cms-editor-meta">
                 Kunci: <code>{form.key}</code> ·{' '}
                 {activeEntry.isPersisted ? 'Tersimpan di DB' : 'Template Awal'}
                 {activeEntry.updatedAt
@@ -72,16 +68,17 @@ export function AdminCmsEntryEditor({
                   : ''}
               </p>
             </div>
-            <Badge
+            <StatusIndicator
               tone={activeEntry.status === 'published' ? 'success' : 'accent'}
-            >
-              {activeEntry.status === 'published' ? 'Terpublikasi' : 'Draf'}
-            </Badge>
+              label={
+                activeEntry.status === 'published' ? 'Terpublikasi' : 'Draf'
+              }
+            />
           </div>
 
           {activeEntry.releaseWarnings.length > 0 ? (
             <Feedback tone="info" title="Catatan Review Owner & Release Gate">
-              <ul className="list-disc pl-4 text-xs">
+              <ul className="admin-cms-warnings-list">
                 {activeEntry.releaseWarnings.map((warning) => (
                   <li key={warning}>{warning}</li>
                 ))}
@@ -122,10 +119,11 @@ export function AdminCmsEntryEditor({
             />
           ) : null}
 
-          <div className="admin-inline-actions pt-2">
+          <div className="admin-cms-editor-footer">
             <Button
               type="button"
               variant="secondary"
+              size="sm"
               loading={isSaving}
               loadingLabel="Menyimpan..."
               onClick={() => onSave('draft')}
@@ -135,12 +133,13 @@ export function AdminCmsEntryEditor({
             <Button
               type="button"
               variant="primary"
+              size="sm"
               loading={isSaving}
               loadingLabel="Mempublikasikan..."
               onClick={() => onSave('published')}
             >
               <ShieldAlert size={16} aria-hidden="true" />
-              {ADMIN_CATALOG_COPY.CMS.PUBLISH}
+              <span>{ADMIN_CATALOG_COPY.CMS.PUBLISH}</span>
             </Button>
           </div>
         </div>

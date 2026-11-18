@@ -1,6 +1,7 @@
 'use client';
 
 import type { FormEvent } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { FormField } from '@/components/ui/form-field';
@@ -130,10 +131,11 @@ export function AdminFaqEditorDialog({
           </FormField>
         </div>
 
-        <div className="admin-inline-actions">
+        <div className="admin-faq-dialog-footer">
           <Button
             type="button"
             variant="secondary"
+            size="sm"
             onClick={() => onOpenChange(false)}
           >
             Batal
@@ -141,6 +143,7 @@ export function AdminFaqEditorDialog({
           <Button
             type="submit"
             variant="primary"
+            size="sm"
             loading={isSaving}
             loadingLabel="Menyimpan..."
           >

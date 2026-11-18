@@ -1,18 +1,17 @@
-import { Archive, CheckCircle2, Edit3, HelpCircle } from 'lucide-react';
+import { Archive, CheckCircle2, Pencil } from 'lucide-react';
 
-import { Badge } from '@/components/ui/badge';
+import { StatusIndicator } from '@/components/common/status/status-indicator';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import type { AdminFaqItem, AdminPublishingStatus } from '@/types/admin-cms';
 import { cn } from '@/utils';
 
-const STATUS_BADGE_MAP: Record<
+const STATUS_MAP: Record<
   AdminPublishingStatus,
   { label: string; tone: 'neutral' | 'success' | 'accent' }
 > = {
-  draft: { label: 'Draf', tone: 'neutral' },
+  draft: { label: 'Draf', tone: 'accent' },
   published: { label: 'Terpublikasi', tone: 'success' },
-  archived: { label: 'Diarsipkan', tone: 'accent' },
+  archived: { label: 'Diarsipkan', tone: 'neutral' },
 };
 
 interface AdminFaqCardProps {
@@ -30,43 +29,40 @@ export function AdminFaqCard({
   onArchive,
   className,
 }: AdminFaqCardProps) {
-  const badge = STATUS_BADGE_MAP[item.status];
+  const statusInfo = STATUS_MAP[item.status];
 
   return (
-    <Card tone="surface" className={cn('admin-entity-card', className)}>
-      <div className="admin-card-head">
-        <div className="admin-inline-actions">
-          <Badge tone="neutral">{item.category}</Badge>
-          <Badge tone={badge.tone}>{badge.label}</Badge>
-          <Badge tone="neutral">Urutan {item.sortOrder}</Badge>
+    <li className={cn('admin-faq-row', className)}>
+      <div className="admin-faq-main">
+        <div className="admin-faq-meta">
+          <span className="admin-faq-category">{item.category}</span>
+          <StatusIndicator tone={statusInfo.tone} label={statusInfo.label} />
+          <span className="admin-faq-sort">Urutan #{item.sortOrder}</span>
         </div>
+
+        <h3 className="admin-faq-question admin-wrap-text">{item.question}</h3>
+        <p className="admin-faq-answer admin-wrap-text">{item.answer}</p>
       </div>
 
-      <h3 className="admin-card-title">
-        <HelpCircle size={16} aria-hidden="true" className="mr-1 inline" />
-        {item.question}
-      </h3>
-      <p className="admin-section-subtitle">{item.answer}</p>
-
-      <div className="admin-inline-actions">
+      <div className="admin-faq-actions">
         <Button
           type="button"
           variant="secondary"
           size="sm"
           onClick={() => onEdit(item)}
         >
-          <Edit3 size={14} aria-hidden="true" />
-          Ubah
+          <Pencil size={14} aria-hidden="true" />
+          <span>Ubah</span>
         </Button>
         {item.status === 'draft' ? (
           <Button
             type="button"
-            variant="primary"
+            variant="secondary"
             size="sm"
             onClick={() => onPublish(item)}
           >
             <CheckCircle2 size={14} aria-hidden="true" />
-            Publikasikan
+            <span>Publikasikan</span>
           </Button>
         ) : null}
         {item.status !== 'archived' ? (
@@ -77,10 +73,10 @@ export function AdminFaqCard({
             onClick={() => onArchive(item)}
           >
             <Archive size={14} aria-hidden="true" />
-            Arsipkan
+            <span>Arsipkan</span>
           </Button>
         ) : null}
       </div>
-    </Card>
+    </li>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
+import { StatusIndicator } from '@/components/common/status/status-indicator';
 import { Card } from '@/components/ui/card';
 import { PUBLIC_CMS_KEYS } from '@/constants/content.constant';
 import type { AdminCmsEntry } from '@/types/admin-cms';
@@ -23,13 +23,17 @@ export function AdminCmsKeyList({
 }: AdminCmsKeyListProps) {
   return (
     <Card tone="surface" className={cn('admin-cms-nav-card', className)}>
-      <h3 className="admin-card-title">Daftar Kunci Resmi (Allowlist)</h3>
+      <div className="admin-cms-nav-head">
+        <h3 className="admin-cms-nav-title">Daftar Kunci Resmi (Allowlist)</h3>
+      </div>
       <ul className="admin-cms-key-list">
         {PUBLIC_CMS_KEYS.map((key) => {
           const entry = entries.find((item) => item.key === key);
           const isActive = activeKey === key;
+          const isPublished = entry?.status === 'published';
+
           return (
-            <li key={key}>
+            <li key={key} className="admin-cms-key-item">
               <button
                 type="button"
                 className={cn(
@@ -45,11 +49,10 @@ export function AdminCmsKeyList({
                   </span>
                   <code className="admin-cms-key-code">{key}</code>
                 </span>
-                <Badge
-                  tone={entry?.status === 'published' ? 'success' : 'neutral'}
-                >
-                  {entry?.status === 'published' ? 'Terpublikasi' : 'Draf'}
-                </Badge>
+                <StatusIndicator
+                  tone={isPublished ? 'success' : 'neutral'}
+                  label={isPublished ? 'Terpublikasi' : 'Draf'}
+                />
               </button>
             </li>
           );

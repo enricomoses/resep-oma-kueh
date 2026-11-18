@@ -1,9 +1,8 @@
-import { Archive, CheckCircle2, Edit3, MessageSquareQuote } from 'lucide-react';
+import { Archive, CheckCircle2, Pencil } from 'lucide-react';
 
+import { StatusIndicator } from '@/components/common/status/status-indicator';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import '@/styles/components/testimonials.css';
 import type { AdminTestimonialItem } from '@/types/admin-cms';
 import { cn } from '@/utils';
 
@@ -30,72 +29,69 @@ export function AdminTestimonialCard({
   className,
 }: AdminTestimonialCardProps) {
   const hasConsent = Boolean(item.consentAt && item.consentReference);
+  const statusTone =
+    item.status === 'published'
+      ? 'success'
+      : item.status === 'archived'
+        ? 'neutral'
+        : 'accent';
+  const statusLabel =
+    item.status === 'published'
+      ? 'Terpublikasi'
+      : item.status === 'archived'
+        ? 'Diarsipkan'
+        : 'Draf';
 
   return (
-    <Card tone="surface" className={cn('admin-entity-card', className)}>
-      <div className="admin-card-head">
-        <div className="admin-inline-actions">
-          <Badge
-            tone={
-              item.status === 'published'
-                ? 'success'
-                : item.status === 'archived'
-                  ? 'accent'
-                  : 'neutral'
-            }
-          >
-            {item.status === 'published'
-              ? 'Terpublikasi'
-              : item.status === 'archived'
-                ? 'Diarsipkan'
-                : 'Draf'}
-          </Badge>
-          <Badge tone={hasConsent ? 'success' : 'neutral'}>
-            {hasConsent ? 'Izin Tercatat' : 'Belum Ada Izin'}
-          </Badge>
+    <li className={cn('admin-testi-row', className)}>
+      <div className="admin-testi-main">
+        <div className="admin-testi-meta">
+          <h3 className="admin-testi-author admin-wrap-text">
+            {item.displayName}
+          </h3>
+          <StatusIndicator tone={statusTone} label={statusLabel} />
+          <StatusIndicator
+            tone={hasConsent ? 'success' : 'neutral'}
+            label={hasConsent ? 'Izin Tercatat' : 'Belum Ada Izin'}
+          />
           {item.rating !== null ? (
             <Badge tone="accent">{item.rating}/5</Badge>
           ) : (
             <Badge tone="neutral">Tanpa Rating</Badge>
           )}
         </div>
+
+        <blockquote className="admin-testi-quote admin-wrap-text">
+          “{item.quote}”
+        </blockquote>
+
+        <p className="admin-testi-source admin-wrap-text">
+          Sumber: {item.sourceLabel ?? '—'}
+          {hasConsent
+            ? ` · Referensi Izin Privat (Owner): ${item.consentReference} (${toDateInputValue(item.consentAt)})`
+            : ''}
+        </p>
       </div>
 
-      <h3 className="admin-card-title">
-        <MessageSquareQuote
-          size={16}
-          aria-hidden="true"
-          className="mr-1 inline"
-        />
-        {item.displayName}
-      </h3>
-      <blockquote className="home-testimonial-quote">“{item.quote}”</blockquote>
-      <p className="admin-section-subtitle">
-        Sumber: {item.sourceLabel ?? '—'}
-        {hasConsent
-          ? ` · Referensi Izin Privat (Owner): ${item.consentReference} (${toDateInputValue(item.consentAt)})`
-          : ''}
-      </p>
-
-      <div className="admin-inline-actions">
+      <div className="admin-testi-actions">
         <Button
           type="button"
           variant="secondary"
           size="sm"
           onClick={() => onEdit(item)}
         >
-          <Edit3 size={14} aria-hidden="true" />
-          Ubah & Catat Izin
+          <Pencil size={14} aria-hidden="true" />
+          <span>Ubah &amp; Catat Izin</span>
         </Button>
         {item.status === 'draft' && hasConsent ? (
           <Button
             type="button"
-            variant="primary"
+            variant="secondary"
             size="sm"
             onClick={() => onPublish(item)}
           >
             <CheckCircle2 size={14} aria-hidden="true" />
-            Publikasikan
+            <span>Publikasikan</span>
           </Button>
         ) : null}
         {item.status !== 'archived' ? (
@@ -106,10 +102,10 @@ export function AdminTestimonialCard({
             onClick={() => onArchive(item)}
           >
             <Archive size={14} aria-hidden="true" />
-            Arsipkan
+            <span>Arsipkan</span>
           </Button>
         ) : null}
       </div>
-    </Card>
+    </li>
   );
 }

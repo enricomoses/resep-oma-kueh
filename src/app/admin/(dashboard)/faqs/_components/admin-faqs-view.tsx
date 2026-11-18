@@ -1,13 +1,16 @@
 'use client';
 
-import { CircleHelp, Plus, RefreshCw } from 'lucide-react';
+import { CircleHelp, Plus, RefreshCw, Search } from 'lucide-react';
+import { useMemo, useState } from 'react';
 
 import { AdminSectionHeader } from '@/app/admin/(dashboard)/_components/admin-section-header';
 import { ConfirmDialog } from '@/components/common/feedback/confirm-dialog';
 import { EmptyState } from '@/components/common/feedback/empty-state';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Feedback } from '@/components/ui/feedback';
 import { FormField } from '@/components/ui/form-field';
+import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { useAdminFaqsManager } from '@/hooks/use-admin-faqs-manager';
@@ -15,7 +18,7 @@ import type {
   AdminFaqListResponse,
   AdminPublishingStatus,
 } from '@/types/admin-cms';
-import '@/styles/features/admin-cms.css';
+import '@/styles/features/admin-faqs.css';
 import type { AdminSessionProfile } from '@/types/auth';
 import { cn } from '@/utils';
 
@@ -61,13 +64,25 @@ export function AdminFaqsView({
     initialData,
   });
 
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredItems = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return visibleItems;
+    return visibleItems.filter(
+      (item) =>
+        item.question.toLowerCase().includes(query) ||
+        item.answer.toLowerCase().includes(query) ||
+        item.category.toLowerCase().includes(query),
+    );
+  }, [searchQuery, visibleItems]);
+
   return (
     <section
-      className={cn('admin-module-page', className)}
+      className={cn('admin-section admin-faq-section', className)}
       aria-labelledby="admin-faqs-title"
     >
       <AdminSectionHeader
-        className="admin-module-header"
         titleId="admin-faqs-title"
         title={ADMIN_CATALOG_COPY.FAQS.TITLE}
         description={ADMIN_CATALOG_COPY.FAQS.SUBTITLE}
@@ -81,7 +96,7 @@ export function AdminFaqsView({
               loading={isFetching}
             >
               <RefreshCw size={16} aria-hidden="true" />
-              {ADMIN_CATALOG_COPY.FAQS.REFRESH}
+              <span>{ADMIN_CATALOG_COPY.FAQS.REFRESH}</span>
             </Button>
             <Button
               type="button"
@@ -90,7 +105,7 @@ export function AdminFaqsView({
               onClick={openCreate}
             >
               <Plus size={16} aria-hidden="true" />
-              {ADMIN_CATALOG_COPY.FAQS.ADD_BUTTON}
+              <span>{ADMIN_CATALOG_COPY.FAQS.ADD_BUTTON}</span>
             </Button>
           </div>
         }
@@ -100,11 +115,33 @@ export function AdminFaqsView({
         <Feedback tone="error" title={actionError} announce />
       ) : null}
 
-      <div className="admin-filter-row">
+      <Card tone="surface" className="admin-faq-toolbar">
+        <FormField id="faq-search" label="Cari FAQ">
+          {(fieldProps) => (
+            <div className="admin-faq-search-wrap">
+              <Search
+                size={15}
+                className="admin-faq-search-icon"
+                aria-hidden="true"
+              />
+              <Input
+                {...fieldProps}
+                type="search"
+                sizeVariant="compact"
+                value={searchQuery}
+                placeholder="Cari pertanyaan, jawaban, atau kategori..."
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="admin-faq-search-input"
+              />
+            </div>
+          )}
+        </FormField>
+
         <FormField id="faq-status-filter" label="Filter Status">
           {(fieldProps) => (
             <Select
               {...fieldProps}
+              sizeVariant="compact"
               value={statusFilter}
               onChange={(e) =>
                 setStatusFilter(e.target.value as 'all' | AdminPublishingStatus)
@@ -117,25 +154,28 @@ export function AdminFaqsView({
             </Select>
           )}
         </FormField>
-      </div>
+      </Card>
 
-      {visibleItems.length === 0 ? (
+      {filteredItems.length === 0 ? (
         <EmptyState
+          tone="cream"
           icon={<CircleHelp size={24} strokeWidth={1.65} aria-hidden="true" />}
           title={ADMIN_CATALOG_COPY.FAQS.EMPTY}
         />
       ) : (
-        <div className="admin-cards-grid">
-          {visibleItems.map((item) => (
-            <AdminFaqCard
-              key={item.id}
-              item={item}
-              onEdit={openEdit}
-              onPublish={(target) => void handleQuickPublish(target)}
-              onArchive={setArchiveTarget}
-            />
-          ))}
-        </div>
+        <Card tone="surface" className="admin-faq-panel">
+          <ul className="admin-faq-list">
+            {filteredItems.map((item) => (
+              <AdminFaqCard
+                key={item.id}
+                item={item}
+                onEdit={openEdit}
+                onPublish={(target) => void handleQuickPublish(target)}
+                onArchive={setArchiveTarget}
+              />
+            ))}
+          </ul>
+        </Card>
       )}
 
       <AdminFaqEditorDialog

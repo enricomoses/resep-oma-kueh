@@ -6,13 +6,14 @@ import { AdminSectionHeader } from '@/app/admin/(dashboard)/_components/admin-se
 import { WhatTheySaySection } from '@/components/common/content/what-they-say-section';
 import { ConfirmDialog } from '@/components/common/feedback/confirm-dialog';
 import { EmptyState } from '@/components/common/feedback/empty-state';
-import { Badge } from '@/components/ui/badge';
+import { StatusIndicator } from '@/components/common/status/status-indicator';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Feedback } from '@/components/ui/feedback';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { useAdminTestimonialsManager } from '@/hooks/use-admin-testimonials-manager';
 import type { AdminTestimonialListResponse } from '@/types/admin-cms';
+import '@/styles/features/admin-testimonials.css';
 import type { AdminSessionProfile } from '@/types/auth';
 import { cn } from '@/utils';
 
@@ -58,11 +59,10 @@ export function AdminTestimonialsView({
 
   return (
     <section
-      className={cn('admin-module-page', className)}
+      className={cn('admin-section admin-testi-section', className)}
       aria-labelledby="admin-testimonials-title"
     >
       <AdminSectionHeader
-        className="admin-module-header"
         titleId="admin-testimonials-title"
         title={ADMIN_CATALOG_COPY.TESTIMONIALS.TITLE}
         description={ADMIN_CATALOG_COPY.TESTIMONIALS.SUBTITLE}
@@ -76,7 +76,7 @@ export function AdminTestimonialsView({
               loading={isFetching}
             >
               <RefreshCw size={16} aria-hidden="true" />
-              {ADMIN_CATALOG_COPY.TESTIMONIALS.REFRESH}
+              <span>{ADMIN_CATALOG_COPY.TESTIMONIALS.REFRESH}</span>
             </Button>
             <Button
               type="button"
@@ -85,7 +85,7 @@ export function AdminTestimonialsView({
               onClick={openCreate}
             >
               <Plus size={16} aria-hidden="true" />
-              {ADMIN_CATALOG_COPY.TESTIMONIALS.ADD_BUTTON}
+              <span>{ADMIN_CATALOG_COPY.TESTIMONIALS.ADD_BUTTON}</span>
             </Button>
           </div>
         }
@@ -100,18 +100,19 @@ export function AdminTestimonialsView({
         <Feedback tone="error" title={actionError} announce />
       ) : null}
 
-      <Card tone="cream" className="admin-subpanel">
-        <div className="admin-card-head">
-          <h3 className="admin-card-title">
-            <ShieldCheck size={18} aria-hidden="true" className="mr-1 inline" />
-            {ADMIN_CATALOG_COPY.TESTIMONIALS.PREVIEW_HEADING}
+      <Card tone="surface" className="admin-testi-preview-card">
+        <div className="admin-testi-preview-head">
+          <h3 className="admin-testi-preview-title">
+            <ShieldCheck size={18} aria-hidden="true" />
+            <span>{ADMIN_CATALOG_COPY.TESTIMONIALS.PREVIEW_HEADING}</span>
           </h3>
-          <Badge tone={publishedConsented.length > 0 ? 'success' : 'neutral'}>
-            {publishedConsented.length} Terpublikasi & Berizin
-          </Badge>
+          <StatusIndicator
+            tone={publishedConsented.length > 0 ? 'success' : 'neutral'}
+            label={`${publishedConsented.length} Terpublikasi & Berizin`}
+          />
         </div>
         {publishedConsented.length === 0 ? (
-          <p className="admin-section-subtitle mb-3">
+          <p className="admin-testi-preview-note">
             {ADMIN_CATALOG_COPY.TESTIMONIALS.PREVIEW_PUBLIC_HIDDEN_NOTE}
           </p>
         ) : null}
@@ -132,6 +133,7 @@ export function AdminTestimonialsView({
 
       {items.length === 0 ? (
         <EmptyState
+          tone="cream"
           icon={
             <MessageSquareQuote
               size={24}
@@ -142,17 +144,19 @@ export function AdminTestimonialsView({
           title={ADMIN_CATALOG_COPY.TESTIMONIALS.EMPTY}
         />
       ) : (
-        <div className="admin-cards-grid">
-          {items.map((item) => (
-            <AdminTestimonialCard
-              key={item.id}
-              item={item}
-              onEdit={openEdit}
-              onPublish={(target) => void handlePublish(target)}
-              onArchive={setArchiveTarget}
-            />
-          ))}
-        </div>
+        <Card tone="surface" className="admin-testi-panel">
+          <ul className="admin-testi-list">
+            {items.map((item) => (
+              <AdminTestimonialCard
+                key={item.id}
+                item={item}
+                onEdit={openEdit}
+                onPublish={(target) => void handlePublish(target)}
+                onArchive={setArchiveTarget}
+              />
+            ))}
+          </ul>
+        </Card>
       )}
 
       <AdminTestimonialEditorDialog

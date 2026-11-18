@@ -47,14 +47,13 @@ export function AdminContentView({
 
   return (
     <section
-      className={cn('admin-module-page', className)}
+      className={cn('admin-section admin-cms-section', className)}
       aria-labelledby="admin-content-title"
     >
       <AdminSectionHeader
         title={ADMIN_CATALOG_COPY.CMS.TITLE}
         description={ADMIN_CATALOG_COPY.CMS.SUBTITLE}
         titleId="admin-content-title"
-        className="admin-module-header"
         actions={
           <div className="admin-inline-actions">
             <Button
@@ -65,7 +64,7 @@ export function AdminContentView({
               loading={isRefreshing}
             >
               <RefreshCw size={16} aria-hidden="true" />
-              {ADMIN_CATALOG_COPY.CMS.REFRESH}
+              <span>{ADMIN_CATALOG_COPY.CMS.REFRESH}</span>
             </Button>
           </div>
         }
