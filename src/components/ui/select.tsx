@@ -20,6 +20,7 @@ import { cn } from '@/utils';
 
 interface SelectProps extends ComponentPropsWithRef<'select'> {
   sizeVariant?: 'regular' | 'compact';
+  menuPlacement?: 'bottom' | 'top';
 }
 
 function extractTextContent(node: ReactNode): string {
@@ -71,6 +72,7 @@ function parseOptionsFromChildren(children: ReactNode): DropdownOption[] {
 export function Select({
   className,
   sizeVariant = 'regular',
+  menuPlacement = 'bottom',
   children,
   id,
   name,
@@ -165,6 +167,7 @@ export function Select({
         id={id}
         variant="field"
         sizeVariant={sizeVariant}
+        menuPlacement={menuPlacement}
         onTriggerNode={(node) => {
           triggerRef.current = node;
         }}

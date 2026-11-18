@@ -305,7 +305,7 @@
 
   .ui-control[aria-invalid='true'],
   .ui-control[data-invalid='true'] {
-    border-color: var(--danger);
+    border-color: var(--danger-bright);
   }
 
   .ui-control:disabled {
@@ -386,9 +386,10 @@
   }
 
   .ui-field-error {
-    color: var(--danger);
-    font-size: 0.875rem;
-    line-height: 1.5;
+    color: var(--danger-bright);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.45;
   }
 
   /* Feedback Banners */
@@ -493,10 +494,19 @@
   }
 
   .ui-modal-body {
+    flex: 1 1 auto;
     min-height: 0;
     padding: 1.5rem;
+    overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior: contain;
+  }
+
+  .ui-modal-footer {
+    flex-shrink: 0;
+    padding: 1rem 1.5rem 1.25rem;
+    border-top: 1px solid var(--border-sand);
+    background: var(--surface-white);
   }
 
   .ui-confirm-dialog {
@@ -687,6 +697,11 @@
     overscroll-behavior: contain;
   }
 
+  .ui-dropdown-menu--top {
+    top: auto;
+    bottom: calc(100% + 0.5rem);
+  }
+
   .ui-dropdown-option-label {
     flex: 1 1 auto;
     min-width: 0;
@@ -817,14 +832,14 @@
     }
 
     .ui-date-popover {
-      position: absolute;
+      position: fixed;
       left: 0;
       right: auto;
-      top: calc(100% + 0.5rem);
+      top: 0;
       transform: none;
       margin-inline: 0;
-      max-height: none;
-      overflow: visible;
+      max-height: calc(100dvh - 2rem);
+      overflow-y: auto;
     }
   }
 

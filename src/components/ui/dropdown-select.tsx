@@ -27,6 +27,7 @@ interface DropdownSelectProps {
   disabled?: boolean;
   variant?: 'pill' | 'field';
   sizeVariant?: 'regular' | 'compact';
+  menuPlacement?: 'bottom' | 'top';
   onTriggerNode?: (node: HTMLButtonElement | null) => void;
   'aria-label'?: string;
   'aria-labelledby'?: string;
@@ -46,6 +47,7 @@ export function DropdownSelect({
   disabled = false,
   variant = 'pill',
   sizeVariant = 'regular',
+  menuPlacement = 'bottom',
   onTriggerNode,
   'aria-label': ariaLabel,
   'aria-labelledby': ariaLabelledBy,
@@ -239,6 +241,7 @@ export function DropdownSelect({
           className={cn(
             'ui-dropdown-menu',
             isField && 'ui-dropdown-menu--field',
+            menuPlacement === 'top' && 'ui-dropdown-menu--top',
           )}
           onMouseLeave={() => setActiveIndex(-1)}
         >

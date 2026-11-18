@@ -4,8 +4,10 @@ import { Calendar, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import {
   type AriaAttributes,
   type ChangeEventHandler,
+  type CSSProperties,
   type FocusEventHandler,
   type Ref,
+  useCallback,
   useEffect,
   useId,
   useMemo,
@@ -119,6 +121,10 @@ export function DatePicker({
   const containerRef = useRef<HTMLDivElement>(null);
   const nativeInputRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
+  const [popoverStyle, setPopoverStyle] = useState<CSSProperties | undefined>(
+    undefined,
+  );
   const dialogId = useId();
 
   const resolvedValue = value !== undefined ? value : uncontrolledValue;
@@ -138,8 +144,45 @@ export function DatePicker({
     }
   }, [value, uncontrolledValue]);
 
+  const updatePopoverPosition = useCallback(() => {
+    if (typeof window === 'undefined' || window.innerWidth < 640) {
+      setPopoverStyle(undefined);
+      return;
+    }
+    const triggerEl = triggerRef.current;
+    if (!triggerEl) return;
+
+    const triggerRect = triggerEl.getBoundingClientRect();
+    const popoverRect = popoverRef.current?.getBoundingClientRect();
+    const popoverWidth = popoverRect?.width || 344;
+    const popoverHeight = popoverRect?.height || (includeTime ? 410 : 350);
+    const margin = 16;
+    const gap = 8;
+
+    const left = Math.max(
+      margin,
+      Math.min(triggerRect.left, window.innerWidth - popoverWidth - margin),
+    );
+    const fitsBelow =
+      triggerRect.bottom + gap + popoverHeight <= window.innerHeight - margin;
+    const top = fitsBelow
+      ? triggerRect.bottom + gap
+      : Math.max(margin, triggerRect.top - popoverHeight - gap);
+
+    setPopoverStyle({
+      position: 'fixed',
+      top: `${Math.round(top)}px`,
+      left: `${Math.round(left)}px`,
+      right: 'auto',
+      transform: 'none',
+      marginInline: 0,
+    });
+  }, [includeTime]);
+
   useEffect(() => {
     if (!open) return;
+
+    const rafId = window.requestAnimationFrame(updatePopoverPosition);
 
     const handlePointerDown = (event: PointerEvent) => {
       if (
@@ -157,13 +200,18 @@ export function DatePicker({
       }
     };
 
+    window.addEventListener('resize', updatePopoverPosition);
+    window.addEventListener('scroll', updatePopoverPosition, true);
     document.addEventListener('pointerdown', handlePointerDown);
     document.addEventListener('keydown', handleKeyDown);
     return () => {
+      window.cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', updatePopoverPosition);
+      window.removeEventListener('scroll', updatePopoverPosition, true);
       document.removeEventListener('pointerdown', handlePointerDown);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [open]);
+  }, [open, updatePopoverPosition]);
 
   const assignInputRef = (node: HTMLInputElement | null) => {
     nativeInputRef.current = node;
@@ -399,11 +447,13 @@ export function DatePicker({
             onClick={() => setOpen(false)}
           />
           <div
+            ref={popoverRef}
             id={dialogId}
             role="dialog"
             aria-label={
               includeTime ? 'Pemilih tanggal dan waktu' : 'Pemilih tanggal'
             }
+            style={popoverStyle}
             className="ui-date-popover"
           >
             <div className="ui-date-header">

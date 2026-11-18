@@ -16,6 +16,7 @@ export interface ModalSurfaceProps {
   title: string;
   description?: string;
   children: ReactNode;
+  footer?: ReactNode;
   initialFocusRef?: RefObject<HTMLElement | null>;
   className?: string;
   kind: 'dialog' | 'drawer';
@@ -26,6 +27,7 @@ export function ModalSurface({
   title,
   description,
   children,
+  footer,
   initialFocusRef,
   className,
   kind,
@@ -85,6 +87,7 @@ export function ModalSurface({
           </Button>
         </header>
         <div className="ui-modal-body">{children}</div>
+        {footer ? <footer className="ui-modal-footer">{footer}</footer> : null}
       </div>
     </dialog>
   );
