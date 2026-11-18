@@ -149,27 +149,17 @@ export function CheckoutView({ className }: CheckoutViewProps) {
         ) : (
           <div className="checkout-main-grid">
             <div className="checkout-primary-col">
-              {flow.clientErrorMessages.length > 0 || flow.serverError ? (
+              {flow.serverError ? (
                 <Feedback
                   tone="error"
-                  title={
-                    flow.serverError?.title ??
-                    CHECKOUT_COPY.ERROR_FORM_SUMMARY_TITLE
-                  }
+                  title={flow.serverError.title}
                   announce
                   className="mb-6"
                 >
-                  {flow.serverError ? (
-                    <p className="mt-1 text-sm">{flow.serverError.message}</p>
-                  ) : null}
-                  {flow.clientErrorMessages.length > 0 ||
-                  (flow.serverError &&
-                    flow.serverError.fieldList.length > 0) ? (
+                  <p className="mt-1 text-sm">{flow.serverError.message}</p>
+                  {flow.serverError.fieldList.length > 0 ? (
                     <ul className="mt-2 list-inside list-disc space-y-1 text-xs">
-                      {flow.clientErrorMessages.map((msg, idx) => (
-                        <li key={`client-err-${idx}`}>{msg}</li>
-                      ))}
-                      {flow.serverError?.fieldList.map((msg, idx) => (
+                      {flow.serverError.fieldList.map((msg, idx) => (
                         <li key={`server-err-${idx}`}>{msg}</li>
                       ))}
                     </ul>
@@ -222,8 +212,10 @@ export function CheckoutView({ className }: CheckoutViewProps) {
                 onSubmit={flow.onSubmitForm}
               />
 
-              {flow.reviewedQuote ? (
+              {flow.reviewedQuote && flow.isReviewModalOpen ? (
                 <CheckoutQuoteReviewCard
+                  open={flow.isReviewModalOpen}
+                  onOpenChange={flow.setIsReviewModalOpen}
                   quote={flow.reviewedQuote}
                   hasPriceChangedWarning={hasPriceChangedWarning}
                   handoffState={flow.handoffState}

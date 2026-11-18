@@ -77,6 +77,8 @@ export const CHECKOUT_COPY = {
   QUOTE_REVIEW_SUBTITLE:
     'Periksa rincian harga terbaru dari server sebelum membuka WhatsApp.',
   QUOTE_PREVIEW_MESSAGE_LABEL: 'Pratinjau Pesan WhatsApp',
+  QUOTE_WHATSAPP_HINT:
+    'Langkah terakhir: tekan tombol di bawah untuk membuka WhatsApp dan mengirim pesanan ke admin cabang.',
   HANDOFF_READY_TITLE: 'Pesan Siap Dikirim di WhatsApp',
   HANDOFF_READY_DESC:
     'Pesanan Anda belum otomatis terkirim. Silakan kirim pesan yang telah disiapkan di aplikasi WhatsApp untuk dikonfirmasi admin cabang.',
@@ -107,8 +109,9 @@ export const CHECKOUT_COPY = {
   CLOSING:
     'Mohon konfirmasi ketersediaan, ongkos kirim,\ntotal akhir, dan instruksi pembayaran. Terima kasih!',
   ERROR_FORM_SUMMARY_TITLE: 'Mohon periksa kembali isian formulir Anda',
-  ERROR_CUSTOMER_NAME_REQUIRED:
-    'Nama pemesan wajib diisi (2 hingga 80 karakter).',
+  ERROR_CUSTOMER_NAME_REQUIRED: 'Nama pemesan wajib diisi.',
+  ERROR_CUSTOMER_NAME_MIN: 'Nama pemesan minimal 2 karakter.',
+  ERROR_CUSTOMER_NAME_MAX: 'Nama pemesan maksimal 80 karakter.',
   ERROR_FULFILLMENT_METHOD_UNAVAILABLE:
     'Metode penerimaan yang dipilih tidak tersedia di cabang ini.',
   ERROR_TOO_LARGE: 'Ukuran payload melebihi batas 32 KiB.',
@@ -117,7 +120,11 @@ export const CHECKOUT_COPY = {
   ERROR_INVALID_DATE:
     'Tanggal pemesanan tidak valid untuk zona waktu Jakarta (hari ini hingga 90 hari ke depan).',
   ERROR_DELIVERY_ADDRESS_REQUIRED:
-    'Alamat pengiriman wajib diisi untuk metode delivery (minimal 5 karakter).',
+    'Alamat pengiriman wajib diisi untuk metode delivery.',
+  ERROR_DELIVERY_ADDRESS_MIN: 'Alamat pengiriman minimal 5 karakter.',
+  ERROR_DELIVERY_ADDRESS_MAX: 'Alamat pengiriman maksimal 500 karakter.',
+  ERROR_NOTE_MAX: 'Catatan pesanan maksimal 500 karakter.',
+  ERROR_TIME_WINDOW_MAX: 'Preferensi waktu maksimal 100 karakter.',
   ERROR_MANUAL_CONFIRMATION_REQUIRED:
     'Persetujuan konfirmasi manual wajib disetujui.',
   ERROR_EMPTY_ITEMS: 'Keranjang belanja tidak boleh kosong.',

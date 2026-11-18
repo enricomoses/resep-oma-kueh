@@ -10,6 +10,45 @@ import {
   plainTextLabelSchema,
 } from './catalog.schema';
 
+const customerNameSchema = z
+  .string()
+  .trim()
+  .min(1, CHECKOUT_COPY.ERROR_CUSTOMER_NAME_REQUIRED)
+  .min(
+    CHECKOUT_LIMITS.MIN_CUSTOMER_NAME_LENGTH,
+    CHECKOUT_COPY.ERROR_CUSTOMER_NAME_MIN,
+  )
+  .max(
+    CHECKOUT_LIMITS.MAX_CUSTOMER_NAME_LENGTH,
+    CHECKOUT_COPY.ERROR_CUSTOMER_NAME_MAX,
+  );
+
+function validateDeliveryAddress(
+  method: (typeof FULFILLMENT_METHODS)[number],
+  address: string | null | undefined,
+  ctx: z.RefinementCtx,
+) {
+  if (method !== 'delivery') {
+    return;
+  }
+  const cleanAddress = address?.trim() ?? '';
+  if (cleanAddress.length === 0) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['address'],
+      message: CHECKOUT_COPY.ERROR_DELIVERY_ADDRESS_REQUIRED,
+    });
+    return;
+  }
+  if (cleanAddress.length < CHECKOUT_LIMITS.MIN_ADDRESS_LENGTH) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['address'],
+      message: CHECKOUT_COPY.ERROR_DELIVERY_ADDRESS_MIN,
+    });
+  }
+}
+
 export const checkoutItemInputSchema = z
   .object({
     variantId: z.string().uuid(),
@@ -30,19 +69,25 @@ export const checkoutFulfillmentInputSchema = z
     requestedTimeWindow: z
       .string()
       .trim()
-      .max(CHECKOUT_LIMITS.MAX_TIME_WINDOW_LENGTH)
+      .max(
+        CHECKOUT_LIMITS.MAX_TIME_WINDOW_LENGTH,
+        CHECKOUT_COPY.ERROR_TIME_WINDOW_MAX,
+      )
       .nullable()
       .optional(),
     address: z
       .string()
       .trim()
-      .max(CHECKOUT_LIMITS.MAX_ADDRESS_LENGTH)
+      .max(
+        CHECKOUT_LIMITS.MAX_ADDRESS_LENGTH,
+        CHECKOUT_COPY.ERROR_DELIVERY_ADDRESS_MAX,
+      )
       .nullable()
       .optional(),
     note: z
       .string()
       .trim()
-      .max(CHECKOUT_LIMITS.MAX_NOTE_LENGTH)
+      .max(CHECKOUT_LIMITS.MAX_NOTE_LENGTH, CHECKOUT_COPY.ERROR_NOTE_MAX)
       .nullable()
       .optional(),
   })
@@ -56,16 +101,7 @@ export const checkoutFulfillmentInputSchema = z
       });
     }
 
-    if (val.method === 'delivery') {
-      const cleanAddress = val.address?.trim() ?? '';
-      if (cleanAddress.length < CHECKOUT_LIMITS.MIN_ADDRESS_LENGTH) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['address'],
-          message: CHECKOUT_COPY.ERROR_DELIVERY_ADDRESS_REQUIRED,
-        });
-      }
-    }
+    validateDeliveryAddress(val.method, val.address, ctx);
   });
 
 export const checkoutPrepareRequestSchema = z
@@ -76,17 +112,7 @@ export const checkoutPrepareRequestSchema = z
       .min(1, CHECKOUT_COPY.ERROR_EMPTY_ITEMS)
       .max(CHECKOUT_LIMITS.MAX_DISTINCT_LINES),
     fulfillment: checkoutFulfillmentInputSchema,
-    customerName: z
-      .string()
-      .trim()
-      .min(
-        CHECKOUT_LIMITS.MIN_CUSTOMER_NAME_LENGTH,
-        CHECKOUT_COPY.ERROR_CUSTOMER_NAME_REQUIRED,
-      )
-      .max(
-        CHECKOUT_LIMITS.MAX_CUSTOMER_NAME_LENGTH,
-        CHECKOUT_COPY.ERROR_CUSTOMER_NAME_REQUIRED,
-      ),
+    customerName: customerNameSchema,
     acknowledgedManualConfirmation: z.literal(
       true,
       CHECKOUT_COPY.ERROR_MANUAL_CONFIRMATION_REQUIRED,
@@ -101,17 +127,7 @@ export const checkoutPrepareRequestSchema = z
 
 export const checkoutFormSchema = z
   .object({
-    customerName: z
-      .string()
-      .trim()
-      .min(
-        CHECKOUT_LIMITS.MIN_CUSTOMER_NAME_LENGTH,
-        CHECKOUT_COPY.ERROR_CUSTOMER_NAME_REQUIRED,
-      )
-      .max(
-        CHECKOUT_LIMITS.MAX_CUSTOMER_NAME_LENGTH,
-        CHECKOUT_COPY.ERROR_CUSTOMER_NAME_REQUIRED,
-      ),
+    customerName: customerNameSchema,
     method: z.enum(FULFILLMENT_METHODS),
     requestedDate: z
       .string()
@@ -119,14 +135,24 @@ export const checkoutFormSchema = z
     requestedTimeWindow: z
       .string()
       .trim()
-      .max(CHECKOUT_LIMITS.MAX_TIME_WINDOW_LENGTH)
+      .max(
+        CHECKOUT_LIMITS.MAX_TIME_WINDOW_LENGTH,
+        CHECKOUT_COPY.ERROR_TIME_WINDOW_MAX,
+      )
       .optional(),
     address: z
       .string()
       .trim()
-      .max(CHECKOUT_LIMITS.MAX_ADDRESS_LENGTH)
+      .max(
+        CHECKOUT_LIMITS.MAX_ADDRESS_LENGTH,
+        CHECKOUT_COPY.ERROR_DELIVERY_ADDRESS_MAX,
+      )
       .optional(),
-    note: z.string().trim().max(CHECKOUT_LIMITS.MAX_NOTE_LENGTH).optional(),
+    note: z
+      .string()
+      .trim()
+      .max(CHECKOUT_LIMITS.MAX_NOTE_LENGTH, CHECKOUT_COPY.ERROR_NOTE_MAX)
+      .optional(),
     acknowledgedManualConfirmation: z
       .boolean()
       .refine(
@@ -144,16 +170,7 @@ export const checkoutFormSchema = z
       });
     }
 
-    if (val.method === 'delivery') {
-      const cleanAddress = val.address?.trim() ?? '';
-      if (cleanAddress.length < CHECKOUT_LIMITS.MIN_ADDRESS_LENGTH) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['address'],
-          message: CHECKOUT_COPY.ERROR_DELIVERY_ADDRESS_REQUIRED,
-        });
-      }
-    }
+    validateDeliveryAddress(val.method, val.address, ctx);
   });
 
 export const checkoutPrepareLineSchema = z

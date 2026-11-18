@@ -352,24 +352,65 @@ describe('Checkout Validation & Utils Unit Tests', () => {
       };
       expect(checkoutFormSchema.safeParse(validForm).success).toBe(true);
 
-      // 1-char name rejected
-      expect(
-        checkoutFormSchema.safeParse({ ...validForm, customerName: 'A' })
-          .success,
-      ).toBe(false);
+      // Empty name -> required message
+      const emptyNameResult = checkoutFormSchema.safeParse({
+        ...validForm,
+        customerName: '   ',
+      });
+      expect(emptyNameResult.success).toBe(false);
+      if (!emptyNameResult.success) {
+        expect(emptyNameResult.error.issues[0]?.message).toBe(
+          CHECKOUT_COPY.ERROR_CUSTOMER_NAME_REQUIRED,
+        );
+      }
 
-      // 81-char name rejected
-      expect(
-        checkoutFormSchema.safeParse({
-          ...validForm,
-          customerName: 'A'.repeat(81),
-        }).success,
-      ).toBe(false);
+      // 1-char name -> min length message
+      const shortNameResult = checkoutFormSchema.safeParse({
+        ...validForm,
+        customerName: 'A',
+      });
+      expect(shortNameResult.success).toBe(false);
+      if (!shortNameResult.success) {
+        expect(shortNameResult.error.issues[0]?.message).toBe(
+          CHECKOUT_COPY.ERROR_CUSTOMER_NAME_MIN,
+        );
+      }
 
-      // Missing delivery address rejected
-      expect(
-        checkoutFormSchema.safeParse({ ...validForm, address: '' }).success,
-      ).toBe(false);
+      // 81-char name -> max length message
+      const longNameResult = checkoutFormSchema.safeParse({
+        ...validForm,
+        customerName: 'A'.repeat(81),
+      });
+      expect(longNameResult.success).toBe(false);
+      if (!longNameResult.success) {
+        expect(longNameResult.error.issues[0]?.message).toBe(
+          CHECKOUT_COPY.ERROR_CUSTOMER_NAME_MAX,
+        );
+      }
+
+      // Missing delivery address -> required message
+      const emptyAddressResult = checkoutFormSchema.safeParse({
+        ...validForm,
+        address: '',
+      });
+      expect(emptyAddressResult.success).toBe(false);
+      if (!emptyAddressResult.success) {
+        expect(emptyAddressResult.error.issues[0]?.message).toBe(
+          CHECKOUT_COPY.ERROR_DELIVERY_ADDRESS_REQUIRED,
+        );
+      }
+
+      // Short delivery address -> min length message
+      const shortAddressResult = checkoutFormSchema.safeParse({
+        ...validForm,
+        address: 'Jl.',
+      });
+      expect(shortAddressResult.success).toBe(false);
+      if (!shortAddressResult.success) {
+        expect(shortAddressResult.error.issues[0]?.message).toBe(
+          CHECKOUT_COPY.ERROR_DELIVERY_ADDRESS_MIN,
+        );
+      }
 
       // Unchecked consent rejected
       expect(

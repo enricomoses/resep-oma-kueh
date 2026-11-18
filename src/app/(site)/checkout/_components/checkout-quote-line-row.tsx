@@ -14,19 +14,19 @@ export function CheckoutQuoteLineRow({
 }: CheckoutQuoteLineRowProps) {
   return (
     <div className={cn('checkout-quote-line', className)}>
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-burgundy font-serif font-bold">
+      <div className="checkout-quote-line-header">
+        <div className="checkout-quote-line-info">
+          <p className="checkout-quote-line-title">
             {line.productName} — {line.sizeLabel ?? line.variantName}
           </p>
-          <p className="text-cocoa text-xs">
+          <p className="checkout-quote-line-meta">
             {line.quantity} × {formatIdr(line.unitPriceIdr)}
             {line.unitGrossIdr > line.unitPriceIdr
               ? ` (Harga normal ${formatIdr(line.unitGrossIdr)})`
               : ''}
           </p>
         </div>
-        <p className="text-burgundy font-serif font-bold">
+        <p className="checkout-quote-line-total">
           {formatIdr(line.lineTotalIdr)}
         </p>
       </div>

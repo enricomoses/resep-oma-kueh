@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
-import { useForm, useWatch } from 'react-hook-form';
+import { type FieldErrors, useForm, useWatch } from 'react-hook-form';
 
 import { CHECKOUT_COPY, CHECKOUT_LIMITS } from '@/constants/checkout.constant';
 import { ApiClientError } from '@/lib/errors';
@@ -102,6 +102,7 @@ export function useCheckoutFlow() {
 
   const [reviewedQuote, setReviewedQuote] =
     useState<CheckoutPrepareResponse | null>(null);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [handoffState, setHandoffState] = useState<
     'idle' | 'ready' | 'popup_blocked' | 'requires_copy'
   >('idle');
@@ -165,6 +166,7 @@ export function useCheckoutFlow() {
       acceptedSignatureRef.current !== inputSignature
     ) {
       setReviewedQuote(null);
+      setIsReviewModalOpen(false);
       setHandoffState('idle');
       setCopyStatus('idle');
       acceptedSignatureRef.current = null;
@@ -206,16 +208,16 @@ export function useCheckoutFlow() {
       }
 
       const errorMessage = error.message;
-      setServerError({
-        title:
-          error.status === 409
-            ? 'Stok atau Ketersediaan Produk Berubah'
-            : error.status === 422
-              ? CHECKOUT_COPY.ERROR_FORM_SUMMARY_TITLE
+      if (error.status !== 422) {
+        setServerError({
+          title:
+            error.status === 409
+              ? 'Stok atau Ketersediaan Produk Berubah'
               : 'Gagal Memproses Checkout',
-        message: errorMessage,
-        fieldList,
-      });
+          message: errorMessage,
+          fieldList,
+        });
+      }
       notifyError(errorMessage, { toastId: 'checkout-error' });
       return;
     }
@@ -261,6 +263,7 @@ export function useCheckoutFlow() {
 
       acceptedSignatureRef.current = inputSignature;
       setReviewedQuote(response.data);
+      setIsReviewModalOpen(true);
       setHandoffState('idle');
       notifySuccess('Ringkasan pesanan siap diperiksa sebelum dikirim.', {
         toastId: 'checkout-quote-ready',
@@ -296,6 +299,10 @@ export function useCheckoutFlow() {
 
     if (!valid.success) {
       setReviewedQuote(null);
+      setIsReviewModalOpen(false);
+      notifyError(CHECKOUT_COPY.ERROR_FORM_SUMMARY_TITLE, {
+        toastId: 'checkout-validation-error',
+      });
       return;
     }
 
@@ -408,9 +415,19 @@ export function useCheckoutFlow() {
     }
   };
 
-  const clientErrorMessages = Object.values(errors)
-    .map((err) => err?.message)
-    .filter((msg): msg is string => Boolean(msg));
+  const onInvalidForm = (fieldErrors: FieldErrors<CheckoutFormValues>) => {
+    const messages = Object.values(fieldErrors)
+      .map((err) => err?.message)
+      .filter((msg): msg is string => Boolean(msg));
+    const firstMessage = messages[0];
+    const toastMessage =
+      messages.length === 1 && firstMessage
+        ? firstMessage
+        : messages.length > 1
+          ? `${CHECKOUT_COPY.ERROR_FORM_SUMMARY_TITLE} (${messages.length} isian perlu diperbaiki)`
+          : CHECKOUT_COPY.ERROR_FORM_SUMMARY_TITLE;
+    notifyError(toastMessage, { toastId: 'checkout-validation-error' });
+  };
 
   const isBusy = prepareMutation.isPending || isSubmitting;
   const isInitialLoading =
@@ -450,15 +467,16 @@ export function useCheckoutFlow() {
     maxDateIso,
     watchedValues,
     reviewedQuote,
+    isReviewModalOpen,
+    setIsReviewModalOpen,
     handoffState,
     copyStatus,
     serverError,
-    clientErrorMessages,
     isBusy,
     previewTextareaRef,
     consultationWhatsappHref,
     onSubmitForm: (event: FormEvent<HTMLFormElement>) => {
-      void handleSubmit(onPrepareQuote)(event);
+      void handleSubmit(onPrepareQuote, onInvalidForm)(event);
     },
     handleProceedToWhatsApp: () => {
       void handleProceedToWhatsApp();
