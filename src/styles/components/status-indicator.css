@@ -1,0 +1,51 @@
+/* ==========================================================================
+   Reusable Semantic Status Indicator (Dot + Label)
+   ========================================================================== */
+
+@layer components {
+  .ui-status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4375rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--text-cocoa);
+  }
+
+  .ui-status-dot {
+    width: 0.4375rem;
+    height: 0.4375rem;
+    border-radius: 9999px;
+    flex-shrink: 0;
+    background: var(--control-border);
+  }
+
+  .ui-status-indicator--success {
+    color: var(--success);
+  }
+
+  .ui-status-indicator--success .ui-status-dot {
+    background: var(--success);
+  }
+
+  .ui-status-indicator--accent {
+    color: var(--accent-terracotta);
+  }
+
+  .ui-status-indicator--accent .ui-status-dot {
+    background: var(--accent-terracotta);
+  }
+
+  .ui-status-indicator--danger {
+    color: var(--danger);
+  }
+
+  .ui-status-indicator--danger .ui-status-dot {
+    background: var(--danger);
+  }
+
+  .ui-status-indicator--neutral {
+    color: var(--text-cocoa);
+  }
+}
