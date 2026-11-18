@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
 import type { serializeCatalogQueryKey } from '@/constants/catalog.constant';
@@ -43,7 +43,6 @@ export function useMenuFilters({
   initialCatalog,
 }: UseMenuFiltersParams) {
   const pathname = usePathname();
-  const router = useRouter();
   const searchParams = useSearchParams();
   const branchState = useBranches();
 
@@ -96,7 +95,13 @@ export function useMenuFilters({
   const [prevUrlQ, setPrevUrlQ] = useState(urlQ);
   if (urlQ !== prevUrlQ) {
     setPrevUrlQ(urlQ);
-    setSearchDraft(urlQ ?? '');
+    // Sync external URL changes (e.g., history navigation) without clobbering active typing or trailing spaces.
+    if (
+      searchDraft.trim() === (prevUrlQ ?? '') &&
+      searchDraft.trim() !== (urlQ ?? '')
+    ) {
+      setSearchDraft(urlQ ?? '');
+    }
   }
 
   const [minPriceDraft, setMinPriceDraft] = useState(
@@ -141,11 +146,12 @@ export function useMenuFilters({
         next.delete(CATALOG_QUERY_PARAMS.LIMIT);
       }
       const queryString = next.toString();
-      router.replace(queryString ? `${pathname}?${queryString}` : pathname, {
-        scroll: false,
-      });
+      const nextUrl = queryString ? `${pathname}?${queryString}` : pathname;
+      if (typeof window !== 'undefined') {
+        window.history.replaceState(null, '', nextUrl);
+      }
     },
-    [pathname, router, searchParams],
+    [pathname, searchParams],
   );
 
   useEffect(() => {

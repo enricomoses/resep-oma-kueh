@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import { serializeCatalogQueryKey } from '@/constants/catalog.constant';
 import { QUERY_KEYS, STALE_TIME } from '@/constants/query-keys.constant';
@@ -44,6 +44,7 @@ export function useCatalog(
     queryFn: ({ signal }) =>
       unwrapData(catalogService.getPaginated(params, signal)),
     staleTime: params.branch ? STALE_TIME.BRANCH_OFFERS : STALE_TIME.PUBLIC,
+    placeholderData: keepPreviousData,
     initialData:
       isInitialMatch && initial?.result.status === 'success'
         ? initial.result.data

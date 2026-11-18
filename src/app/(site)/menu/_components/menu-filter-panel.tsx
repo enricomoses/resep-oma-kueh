@@ -1,5 +1,7 @@
 'use client';
 
+import { RotateCcw } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
@@ -188,27 +190,37 @@ export function MenuFilterPanel({
         </Button>
       </div>
 
-      <FormField id={`${idPrefix}-sort`} label={CATALOG_COPY.SORT_LABEL}>
-        {(props) => (
-          <Select
-            {...props}
-            value={filters.sort}
-            onChange={(event) =>
-              onSortChange(event.target.value as (typeof CATALOG_SORTS)[number])
-            }
-          >
-            {CATALOG_SORTS.map((sortKey) => (
-              <option key={sortKey} value={sortKey}>
-                {CATALOG_SORT_LABELS[sortKey]}
-              </option>
-            ))}
-          </Select>
-        )}
-      </FormField>
+      <div className="menu-sort-reset-group">
+        <FormField id={`${idPrefix}-sort`} label={CATALOG_COPY.SORT_LABEL}>
+          {(props) => (
+            <Select
+              {...props}
+              menuPlacement="top"
+              value={filters.sort}
+              onChange={(event) =>
+                onSortChange(
+                  event.target.value as (typeof CATALOG_SORTS)[number],
+                )
+              }
+            >
+              {CATALOG_SORTS.map((sortKey) => (
+                <option key={sortKey} value={sortKey}>
+                  {CATALOG_SORT_LABELS[sortKey]}
+                </option>
+              ))}
+            </Select>
+          )}
+        </FormField>
 
-      <Button variant="ghost" onClick={onResetFilters}>
-        {CATALOG_COPY.RESET_FILTERS}
-      </Button>
+        <Button
+          variant="secondary"
+          className="menu-reset-button"
+          onClick={onResetFilters}
+        >
+          <RotateCcw size={15} aria-hidden="true" />
+          {CATALOG_COPY.RESET_FILTERS}
+        </Button>
+      </div>
     </div>
   );
 }

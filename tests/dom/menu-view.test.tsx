@@ -247,6 +247,7 @@ it('displays computed branch starting price, promo badge, and branch-preserving 
 it('resets page to 1 when changing category filter and cleans up debounced search timer on unmount', () => {
   vi.useFakeTimers();
   navigation.search = 'branch=surabaya&page=2';
+  const replaceStateSpy = vi.spyOn(window.history, 'replaceState');
   vi.spyOn(branchesService, 'getAll').mockResolvedValue({
     ok: true,
     data: { items: [SURABAYA, BINTARO], resolvedBranchId: SURABAYA.id },
@@ -284,11 +285,12 @@ it('resets page to 1 when changing category filter and cleans up debounced searc
   fireEvent.click(screen.getByRole('option', { name: /Chiffon Series/i }));
 
   // Changing filter resets page=2 to page 1 (omitted from URL)
-  expect(navigation.replace).toHaveBeenCalledWith(
+  expect(replaceStateSpy).toHaveBeenCalledWith(
+    null,
+    '',
     '/menu?branch=surabaya&category=demo-chiffon-series',
-    { scroll: false },
   );
-  navigation.replace.mockClear();
+  replaceStateSpy.mockClear();
 
   // Type into search input and unmount before debounce expires -> timer cleaned up, no navigation call
   const searchInputs = screen.getAllByLabelText(CATALOG_COPY.SEARCH_LABEL);
@@ -298,7 +300,7 @@ it('resets page to 1 when changing category filter and cleans up debounced searc
   act(() => {
     vi.advanceTimersByTime(CATALOG_LIMITS.DEBOUNCE_MS + 100);
   });
-  expect(navigation.replace).not.toHaveBeenCalled();
+  expect(replaceStateSpy).not.toHaveBeenCalled();
 });
 
 it('distinguishes empty HTTP 200 catalog results from upstream error states', async () => {

@@ -85,7 +85,7 @@ export const CATALOG_COPY = {
   CLOSE_FILTERS_MOBILE: 'Terapkan & Tutup',
   RESET_FILTERS: 'Reset filter',
   SEARCH_LABEL: 'Cari menu',
-  SEARCH_PLACEHOLDER: 'Contoh: Coffee Chiffon, keju, roti…',
+  SEARCH_PLACEHOLDER: 'Contoh: Chiffon, keju, roti',
   CATEGORY_LABEL: 'Seri / Kategori',
   CATEGORY_ALL: 'Semua seri',
   TAG_LABEL: 'Diet terverifikasi',
