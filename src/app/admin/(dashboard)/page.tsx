@@ -3,7 +3,7 @@ import { connection } from 'next/server';
 import { Suspense } from 'react';
 
 import { AdminOverviewView } from './_components/admin-overview-view';
-import AdminLoading from '../loading';
+import { AdminOverviewSkeleton } from '../_components/skeletons/admin-overview-skeleton';
 import { AUTH_COPY } from '@/constants/auth.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { getAdminOverview } from '@/features/admin-catalog/service.server';
@@ -27,7 +27,7 @@ async function AdminDashboardContent() {
 
 export default function AdminDashboardPage() {
   return (
-    <Suspense fallback={<AdminLoading />}>
+    <Suspense fallback={<AdminOverviewSkeleton />}>
       <AdminDashboardContent />
     </Suspense>
   );
