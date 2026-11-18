@@ -5,7 +5,6 @@ import { Plus, RefreshCw } from 'lucide-react';
 import { AdminSectionHeader } from '@/app/admin/(dashboard)/_components/admin-section-header';
 import { ConfirmDialog } from '@/components/common/feedback/confirm-dialog';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { Feedback } from '@/components/ui/feedback';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { useAdminClassesManager } from '@/hooks/use-admin-classes-manager';
@@ -44,72 +43,59 @@ export function AdminClassesView({
   });
 
   return (
-    <div className={cn('admin-page-stack', className)}>
-      <Card tone="surface" className="admin-section-card">
-        <AdminSectionHeader
-          eyebrow="ROK Baking Class · R21"
-          headingAs="h1"
-          title={ADMIN_CATALOG_COPY.CLASSES.TITLE}
-          descriptionClassName="admin-section-desc"
-          description={
-            mgr.isOwner
-              ? ADMIN_CATALOG_COPY.CLASSES.SUBTITLE_OWNER
-              : ADMIN_CATALOG_COPY.CLASSES.SUBTITLE_STAFF
-          }
-          actions={
-            <div className="admin-inline-actions">
+    <section className={cn('admin-section admin-classes-section', className)}>
+      <AdminSectionHeader
+        title={ADMIN_CATALOG_COPY.CLASSES.TITLE}
+        description={
+          mgr.isOwner
+            ? ADMIN_CATALOG_COPY.CLASSES.SUBTITLE_OWNER
+            : ADMIN_CATALOG_COPY.CLASSES.SUBTITLE_STAFF
+        }
+        actions={
+          <div className="admin-inline-actions">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={mgr.handleRefreshAll}
+              disabled={mgr.isFetchingAny}
+            >
+              <RefreshCw size={16} aria-hidden="true" />
+              <span>{ADMIN_CATALOG_COPY.CLASSES.REFRESH}</span>
+            </Button>
+            {mgr.isOwner ? (
               <Button
                 type="button"
                 variant="secondary"
                 size="sm"
-                onClick={mgr.handleRefreshAll}
-                disabled={mgr.isFetchingAny}
-              >
-                <RefreshCw size={16} aria-hidden="true" />
-                {ADMIN_CATALOG_COPY.CLASSES.REFRESH}
-              </Button>
-              {mgr.isOwner ? (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  onClick={mgr.openNewProgramForm}
-                >
-                  <Plus size={16} aria-hidden="true" />
-                  {ADMIN_CATALOG_COPY.CLASSES.ADD_PROGRAM}
-                </Button>
-              ) : null}
-              <Button
-                type="button"
-                variant="primary"
-                size="sm"
-                onClick={mgr.openNewSessionForm}
-                disabled={mgr.selectableProgramsForSessions.length === 0}
+                onClick={mgr.openNewProgramForm}
               >
                 <Plus size={16} aria-hidden="true" />
-                {ADMIN_CATALOG_COPY.CLASSES.ADD_SESSION}
+                <span>{ADMIN_CATALOG_COPY.CLASSES.ADD_PROGRAM}</span>
               </Button>
-            </div>
-          }
-        />
+            ) : null}
+            <Button
+              type="button"
+              variant="primary"
+              size="sm"
+              onClick={mgr.openNewSessionForm}
+              disabled={mgr.selectableProgramsForSessions.length === 0}
+            >
+              <Plus size={16} aria-hidden="true" />
+              <span>{ADMIN_CATALOG_COPY.CLASSES.ADD_SESSION}</span>
+            </Button>
+          </div>
+        }
+      />
 
+      {!mgr.isOwner ? (
         <div className="admin-classes-notices">
           <Feedback
             tone="info"
-            title={ADMIN_CATALOG_COPY.CLASSES.PHOTO_CONSENT_RELEASE_GATE}
+            title={ADMIN_CATALOG_COPY.CLASSES.STAFF_PRICE_LOCK_NOTE}
           />
-          <Feedback
-            tone="info"
-            title={ADMIN_CATALOG_COPY.CLASSES.CAPACITY_MANUAL_NOTE}
-          />
-          {!mgr.isOwner ? (
-            <Feedback
-              tone="info"
-              title={ADMIN_CATALOG_COPY.CLASSES.STAFF_PRICE_LOCK_NOTE}
-            />
-          ) : null}
         </div>
-      </Card>
+      ) : null}
 
       <AdminClassProgramsSection
         isOwner={mgr.isOwner}
@@ -183,6 +169,6 @@ export function AdminClassesView({
         actionsClassName="admin-inline-actions"
         onConfirm={mgr.handleConfirmDialogAction}
       />
-    </div>
+    </section>
   );
 }

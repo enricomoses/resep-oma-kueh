@@ -31,7 +31,7 @@ interface AdminClassProgramsSectionProps {
 }
 
 /**
- * Renders the admin baking class programs section with editor drawer and program cards.
+ * Renders the admin baking class programs section with editor panel and program directory.
  */
 export function AdminClassProgramsSection({
   isOwner,
@@ -52,11 +52,12 @@ export function AdminClassProgramsSection({
   onSubmitProgram,
 }: AdminClassProgramsSectionProps) {
   return (
-    <Card tone="surface" className="admin-section-card">
+    <Card tone="surface" className="admin-classes-panel">
       <AdminSectionHeader
+        headingAs="h2"
         title="Program Kelas Baking"
-        titleClassName="admin-panel-title"
-        descriptionClassName="admin-panel-desc"
+        titleClassName="admin-classes-panel-title"
+        descriptionClassName="admin-classes-panel-desc"
         description={
           isOwner
             ? 'Publikasi program memerlukan deskripsi lengkap, review Owner selesai, dan foto cover berstatus disetujui.'
@@ -71,14 +72,18 @@ export function AdminClassProgramsSection({
               onClick={onNewProgram}
             >
               <Plus size={16} aria-hidden="true" />
-              {ADMIN_CATALOG_COPY.CLASSES.ADD_PROGRAM}
+              <span>{ADMIN_CATALOG_COPY.CLASSES.ADD_PROGRAM}</span>
             </Button>
           ) : null
         }
       />
 
-      {isOwner && isEditorOpen ? (
+      {isOwner ? (
         <AdminClassProgramForm
+          open={isEditorOpen}
+          onOpenChange={(open) => {
+            if (!open) onCloseEditor();
+          }}
           form={programForm}
           setForm={setProgramForm}
           slugTouched={slugTouched}
@@ -88,7 +93,6 @@ export function AdminClassProgramsSection({
           isUploading={isUploading}
           onUploadCover={onUploadCover}
           onSubmit={onSubmitProgram}
-          onClose={onCloseEditor}
         />
       ) : null}
 
@@ -103,7 +107,7 @@ export function AdminClassProgramsSection({
           title={ADMIN_CATALOG_COPY.CLASSES.EMPTY_PROGRAMS}
         />
       ) : (
-        <div className="admin-classes-list">
+        <ul className="admin-classes-list">
           {programs.map((program) => (
             <AdminClassProgramCard
               key={program.id}
@@ -113,7 +117,7 @@ export function AdminClassProgramsSection({
               onArchive={onArchiveProgram}
             />
           ))}
-        </div>
+        </ul>
       )}
     </Card>
   );

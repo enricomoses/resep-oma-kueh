@@ -1,8 +1,8 @@
 'use client';
 
-import { Ban, Edit3 } from 'lucide-react';
+import { Ban, Pencil } from 'lucide-react';
 
-import { Badge } from '@/components/ui/badge';
+import { StatusIndicator } from '@/components/common/status/status-indicator';
 import { Button } from '@/components/ui/button';
 import type {
   AdminClassSessionItem,
@@ -39,42 +39,49 @@ export function AdminClassSessionCard({
   className,
 }: AdminClassSessionCardProps) {
   return (
-    <div className={cn('admin-classes-row-card', className)}>
+    <li className={cn('admin-classes-row', className)}>
       <div className="admin-classes-row-main">
-        <div className="admin-classes-row-badges">
-          <Badge tone={SESSION_STATUS_TONE[session.status]}>
-            {session.status}
-          </Badge>
-          <Badge tone={session.isRegistrationOpen ? 'success' : 'neutral'}>
-            {session.isRegistrationOpen
-              ? 'Pendaftaran Dibuka'
-              : 'Pendaftaran Ditutup'}
-          </Badge>
-          <Badge tone={session.branchIsActive ? 'neutral' : 'danger'}>
+        <div className="admin-classes-row-head">
+          <h3 className="admin-classes-row-title">{session.programTitle}</h3>
+          <span className="admin-classes-branch-chip">
             {session.branchName}
-          </Badge>
+            {!session.branchIsActive ? ' (Nonaktif)' : ''}
+          </span>
+          <StatusIndicator
+            tone={SESSION_STATUS_TONE[session.status]}
+            label={session.status}
+          />
+          <StatusIndicator
+            tone={session.isRegistrationOpen ? 'success' : 'neutral'}
+            label={
+              session.isRegistrationOpen
+                ? 'Pendaftaran Dibuka'
+                : 'Pendaftaran Ditutup'
+            }
+          />
         </div>
-        <h3 className="admin-row-title">{session.programTitle}</h3>
-        <p className="admin-row-meta">
+
+        <p className="admin-classes-row-meta">
           {formatJakartaDateTimeDisplay(session.startsAt)} —{' '}
           {formatJakartaDateTimeDisplay(session.endsAt)}
           {session.registrationDeadlineAt
             ? ` · Batas daftar: ${formatJakartaDateTimeDisplay(session.registrationDeadlineAt)}`
             : ''}
         </p>
-        <p className="admin-row-subcopy">
-          Tarif efektif: {formatIdr(session.effectivePriceIdr)}
+
+        <p className="admin-classes-row-meta">
+          Tarif efektif: <strong>{formatIdr(session.effectivePriceIdr)}</strong>
           {session.priceOverrideIdr !== null
             ? ` (override cabang; dasar ${formatIdr(session.programBasePriceIdr)})`
             : ' (mengikuti harga dasar)'}{' '}
-          · Kapasitas: {session.capacity} ·{' '}
+          · Kapasitas: <strong>{session.capacity}</strong> ·{' '}
           {session.seatsLeft === null
             ? 'Sisa kuota belum dirinci (estimasi manual)'
             : `${session.seatsLeft} kursi tersisa`}
         </p>
       </div>
 
-      <div className="admin-inline-actions">
+      <div className="admin-classes-row-actions">
         <Button
           type="button"
           variant="secondary"
@@ -82,8 +89,8 @@ export function AdminClassSessionCard({
           onClick={() => onEdit(session)}
           disabled={isBusy}
         >
-          <Edit3 size={15} aria-hidden="true" />
-          Edit
+          <Pencil size={14} aria-hidden="true" />
+          <span>Edit</span>
         </Button>
         {session.status === 'scheduled' ? (
           <Button
@@ -93,22 +100,22 @@ export function AdminClassSessionCard({
             onClick={() => onMarkFull(session)}
             disabled={isBusy}
           >
-            Tandai Penuh
+            <span>Tandai Penuh</span>
           </Button>
         ) : null}
         {session.status !== 'cancelled' && session.status !== 'completed' ? (
           <Button
             type="button"
-            variant="secondary"
+            variant="ghost"
             size="sm"
             onClick={() => onCancel(session)}
             disabled={isBusy}
           >
-            <Ban size={15} aria-hidden="true" />
-            Batalkan Sesi
+            <Ban size={14} aria-hidden="true" />
+            <span>Batalkan Sesi</span>
           </Button>
         ) : null}
       </div>
-    </div>
+    </li>
   );
 }

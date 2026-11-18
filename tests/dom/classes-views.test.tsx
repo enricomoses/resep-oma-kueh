@@ -452,9 +452,6 @@ describe('F21 DOM AdminClassesView owner vs branch_admin behavior', () => {
     );
 
     expect(
-      screen.getByText(ADMIN_CATALOG_COPY.CLASSES.PHOTO_CONSENT_RELEASE_GATE),
-    ).toBeInTheDocument();
-    expect(
       screen.getAllByRole('button', {
         name: ADMIN_CATALOG_COPY.CLASSES.ADD_PROGRAM,
       }).length,

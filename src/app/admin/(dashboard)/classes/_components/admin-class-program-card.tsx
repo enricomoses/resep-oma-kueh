@@ -1,8 +1,8 @@
 'use client';
 
-import { Edit3, GraduationCap, Trash2 } from 'lucide-react';
+import { Archive, GraduationCap, Pencil } from 'lucide-react';
 
-import { Badge } from '@/components/ui/badge';
+import { StatusIndicator } from '@/components/common/status/status-indicator';
 import { Button } from '@/components/ui/button';
 import type {
   AdminClassProgramItem,
@@ -36,61 +36,73 @@ export function AdminClassProgramCard({
   className,
 }: AdminClassProgramCardProps) {
   return (
-    <div className={cn('admin-classes-row-card', className)}>
+    <li className={cn('admin-classes-row', className)}>
       <div className="admin-classes-row-main">
-        <div className="admin-classes-row-badges">
-          <Badge tone={PROGRAM_STATUS_TONE[program.status]}>
-            {program.status}
-          </Badge>
-          <Badge tone={program.needsOwnerReview ? 'accent' : 'success'}>
-            {program.needsOwnerReview
-              ? 'Menunggu Review Owner'
-              : 'Sudah Direview'}
-          </Badge>
-          <Badge tone={program.coverIsApproved ? 'success' : 'neutral'}>
-            {program.coverIsApproved
-              ? 'Foto Disetujui'
-              : 'Foto Belum Disetujui'}
-          </Badge>
+        <div className="admin-classes-row-head">
+          <h3 className="admin-classes-row-title">
+            <GraduationCap size={16} aria-hidden="true" />
+            <span>{program.title}</span>
+          </h3>
+          <StatusIndicator
+            tone={PROGRAM_STATUS_TONE[program.status]}
+            label={program.status}
+          />
         </div>
-        <h3 className="admin-row-title">
-          <GraduationCap size={16} aria-hidden="true" />
-          <span>{program.title}</span>
-        </h3>
-        <p className="admin-row-meta">
+
+        <p className="admin-classes-row-meta">
           /{program.slug} · {formatIdr(program.basePriceIdr)} ·{' '}
           {formatClassAgeRange(program.ageMin, program.ageMax)}
           {program.durationMinutes ? ` · ${program.durationMinutes} menit` : ''}
         </p>
+
+        <div className="admin-classes-row-flags">
+          <StatusIndicator
+            tone={program.needsOwnerReview ? 'accent' : 'success'}
+            label={
+              program.needsOwnerReview
+                ? 'Menunggu Review Owner'
+                : 'Sudah Direview'
+            }
+          />
+          <StatusIndicator
+            tone={program.coverIsApproved ? 'success' : 'neutral'}
+            label={
+              program.coverIsApproved
+                ? 'Foto Disetujui'
+                : 'Foto Belum Disetujui'
+            }
+          />
+        </div>
+
         {program.shortDescription ? (
           <p className="admin-row-subcopy">{program.shortDescription}</p>
         ) : null}
       </div>
 
       {isOwner ? (
-        <div className="admin-inline-actions">
+        <div className="admin-classes-row-actions">
           <Button
             type="button"
             variant="secondary"
             size="sm"
             onClick={() => onEdit(program)}
           >
-            <Edit3 size={15} aria-hidden="true" />
-            Edit
+            <Pencil size={14} aria-hidden="true" />
+            <span>Edit</span>
           </Button>
           {program.status !== 'archived' ? (
             <Button
               type="button"
-              variant="secondary"
+              variant="ghost"
               size="sm"
               onClick={() => onArchive(program)}
             >
-              <Trash2 size={15} aria-hidden="true" />
-              Arsipkan
+              <Archive size={14} aria-hidden="true" />
+              <span>Arsipkan</span>
             </Button>
           ) : null}
         </div>
       ) : null}
-    </div>
+    </li>
   );
 }

@@ -43,7 +43,7 @@ interface AdminClassSessionsSectionProps {
 }
 
 /**
- * Renders the branch class schedule filters, session editor form, and session list cards.
+ * Renders the branch class schedule filters, session editor form, and session directory.
  */
 export function AdminClassSessionsSection({
   isOwner,
@@ -69,11 +69,12 @@ export function AdminClassSessionsSection({
   onSubmitSession,
 }: AdminClassSessionsSectionProps) {
   return (
-    <Card tone="surface" className="admin-section-card">
+    <Card tone="surface" className="admin-classes-panel">
       <AdminSectionHeader
+        headingAs="h2"
         title="Jadwal & Kapasitas Sesi Cabang"
-        titleClassName="admin-panel-title"
-        descriptionClassName="admin-panel-desc"
+        titleClassName="admin-classes-panel-title"
+        descriptionClassName="admin-classes-panel-desc"
         description="Semua waktu diinput dalam zona WIB (Asia/Jakarta) dan disimpan sebagai UTC di database."
         actions={
           <Button
@@ -84,7 +85,7 @@ export function AdminClassSessionsSection({
             disabled={selectablePrograms.length === 0}
           >
             <Plus size={16} aria-hidden="true" />
-            {ADMIN_CATALOG_COPY.CLASSES.ADD_SESSION}
+            <span>{ADMIN_CATALOG_COPY.CLASSES.ADD_SESSION}</span>
           </Button>
         }
       />
@@ -94,6 +95,7 @@ export function AdminClassSessionsSection({
           {(fieldProps) => (
             <Select
               {...fieldProps}
+              sizeVariant="compact"
               value={filterBranchId}
               disabled={isBranchLocked}
               onChange={(event) => onChangeFilterBranchId(event.target.value)}
@@ -113,6 +115,7 @@ export function AdminClassSessionsSection({
           {(fieldProps) => (
             <Select
               {...fieldProps}
+              sizeVariant="compact"
               value={filterProgramId}
               onChange={(event) => onChangeFilterProgramId(event.target.value)}
             >
@@ -127,20 +130,21 @@ export function AdminClassSessionsSection({
         </FormField>
       </div>
 
-      {isEditorOpen ? (
-        <AdminClassSessionForm
-          form={sessionForm}
-          setForm={setSessionForm}
-          isOwner={isOwner}
-          isBranchLocked={isBranchLocked}
-          selectablePrograms={selectablePrograms}
-          branches={branches}
-          fieldErrors={fieldErrors}
-          isBusy={isBusy}
-          onSubmit={onSubmitSession}
-          onClose={onCloseEditor}
-        />
-      ) : null}
+      <AdminClassSessionForm
+        open={isEditorOpen}
+        onOpenChange={(open) => {
+          if (!open) onCloseEditor();
+        }}
+        form={sessionForm}
+        setForm={setSessionForm}
+        isOwner={isOwner}
+        isBranchLocked={isBranchLocked}
+        selectablePrograms={selectablePrograms}
+        branches={branches}
+        fieldErrors={fieldErrors}
+        isBusy={isBusy}
+        onSubmit={onSubmitSession}
+      />
 
       {sessions.length === 0 ? (
         <EmptyState
@@ -153,7 +157,7 @@ export function AdminClassSessionsSection({
           title={ADMIN_CATALOG_COPY.CLASSES.EMPTY_SESSIONS}
         />
       ) : (
-        <div className="admin-classes-list">
+        <ul className="admin-classes-list">
           {sessions.map((session) => (
             <AdminClassSessionCard
               key={session.id}
@@ -164,7 +168,7 @@ export function AdminClassSessionsSection({
               onCancel={onCancelSession}
             />
           ))}
-        </div>
+        </ul>
       )}
     </Card>
   );
