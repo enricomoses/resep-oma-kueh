@@ -3,7 +3,7 @@ import { connection } from 'next/server';
 import { Suspense } from 'react';
 
 import { AdminClassesView } from './_components/admin-classes-view';
-import AdminLoading from '../../loading';
+import { AdminClassesSkeleton } from '../../_components/skeletons/admin-classes-skeleton';
 import type { AdminClassBranchOption } from '@/types/classes';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { ROUTES } from '@/constants/routes.constant';
@@ -67,7 +67,7 @@ async function AdminClassesContent() {
 
 export default function AdminClassesPage() {
   return (
-    <Suspense fallback={<AdminLoading />}>
+    <Suspense fallback={<AdminClassesSkeleton />}>
       <AdminClassesContent />
     </Suspense>
   );

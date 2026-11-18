@@ -3,7 +3,7 @@ import { connection } from 'next/server';
 import { Suspense } from 'react';
 
 import { AdminForbiddenPanel } from '../_components/admin-forbidden-panel';
-import AdminLoading from '../../loading';
+import { AdminTestimonialsSkeleton } from '../../_components/skeletons/admin-testimonials-skeleton';
 import { AdminTestimonialsView } from './_components/admin-testimonials-view';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { ROUTES } from '@/constants/routes.constant';
@@ -30,7 +30,7 @@ async function AdminTestimonialsContent() {
 
 export default function AdminTestimonialsPage() {
   return (
-    <Suspense fallback={<AdminLoading />}>
+    <Suspense fallback={<AdminTestimonialsSkeleton />}>
       <AdminTestimonialsContent />
     </Suspense>
   );

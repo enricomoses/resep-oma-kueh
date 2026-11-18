@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 
 import { AdminFaqsView } from './_components/admin-faqs-view';
 import { AdminForbiddenPanel } from '../_components/admin-forbidden-panel';
-import AdminLoading from '../../loading';
+import { AdminFaqsSkeleton } from '../../_components/skeletons/admin-faqs-skeleton';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { listAdminFaqs } from '@/features/admin-catalog/cms-faqs-testimonials.server';
@@ -30,7 +30,7 @@ async function AdminFaqsContent() {
 
 export default function AdminFaqsPage() {
   return (
-    <Suspense fallback={<AdminLoading />}>
+    <Suspense fallback={<AdminFaqsSkeleton />}>
       <AdminFaqsContent />
     </Suspense>
   );

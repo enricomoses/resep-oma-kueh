@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 
 import { AdminContentView } from './_components/admin-content-view';
 import { AdminForbiddenPanel } from '../_components/admin-forbidden-panel';
-import AdminLoading from '../../loading';
+import { AdminContentSkeleton } from '../../_components/skeletons/admin-content-skeleton';
 import { ADMIN_CATALOG_COPY } from '@/constants/admin-catalog.constant';
 import { ROUTES } from '@/constants/routes.constant';
 import { listAdminCmsEntries } from '@/features/admin-catalog/cms-content.server';
@@ -30,7 +30,7 @@ async function AdminContentBody() {
 
 export default function AdminContentPage() {
   return (
-    <Suspense fallback={<AdminLoading />}>
+    <Suspense fallback={<AdminContentSkeleton />}>
       <AdminContentBody />
     </Suspense>
   );
