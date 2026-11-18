@@ -1,0 +1,201 @@
+/* ==========================================================================
+   Admin Overview Dashboard (/admin) — Bento Metrics & Module Directory
+   ========================================================================== */
+
+@layer components {
+  .admin-overview-section {
+    gap: 1.5rem;
+  }
+
+  /* Responsive Bento Grid:
+     - Mobile (< 36rem): 1 column
+     - Tablet (36rem - 63.99rem): 2 columns
+     - Desktop (>= 64rem): 6-column bento (top 2 cards span 3, bottom 3 span 2)
+       or 3-column grid for staff */
+  .admin-overview-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    min-width: 0;
+  }
+
+  @media (min-width: 36rem) {
+    .admin-overview-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .admin-overview-grid--owner > :last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .admin-overview-grid--owner {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 1.125rem;
+    }
+
+    .admin-overview-grid--owner > :nth-child(1),
+    .admin-overview-grid--owner > :nth-child(2) {
+      grid-column: span 3;
+    }
+
+    .admin-overview-grid--owner > :nth-child(3),
+    .admin-overview-grid--owner > :nth-child(4),
+    .admin-overview-grid--owner > :nth-child(5) {
+      grid-column: span 2;
+    }
+
+    .admin-overview-grid--staff {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.125rem;
+    }
+  }
+
+  /* Module Directory Card (replaces pill-soup quick actions) */
+  .admin-directory-card {
+    display: grid;
+    gap: 1.25rem;
+    padding: 1.375rem;
+    box-shadow: 0 1px 2px var(--shadow-warm);
+  }
+
+  .admin-directory-head {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  .admin-directory-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--brand-deep);
+  }
+
+  .admin-directory-subtitle {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--text-cocoa);
+    max-width: 68ch;
+  }
+
+  .admin-directory-groups {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    min-width: 0;
+  }
+
+  @media (min-width: 56rem) {
+    .admin-directory-groups--two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.75rem;
+    }
+  }
+
+  .admin-directory-group {
+    display: grid;
+    align-content: start;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .admin-directory-group-label {
+    margin: 0;
+    padding-bottom: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-cocoa);
+    border-bottom: 1px solid var(--border-sand);
+  }
+
+  .admin-directory-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+  }
+
+  .admin-directory-item + .admin-directory-item {
+    border-top: 1px solid var(--sand-divider-subtle);
+  }
+
+  .admin-directory-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    min-height: 2.875rem;
+    padding: 0.625rem 0.75rem;
+    margin: 0 -0.375rem;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    color: var(--brand-deep);
+    transition:
+      background-color var(--transition-fast),
+      color var(--transition-fast);
+  }
+
+  .admin-directory-link:hover {
+    background: var(--surface-cream);
+  }
+
+  .admin-directory-link:focus-visible {
+    outline: 2px solid var(--brand-deep);
+    outline-offset: 1px;
+    background: var(--surface-cream);
+  }
+
+  .admin-directory-link-main {
+    display: flex;
+    align-items: center;
+    gap: 0.6875rem;
+    min-width: 0;
+  }
+
+  .admin-directory-link-icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--brand-burgundy);
+  }
+
+  .admin-directory-link-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--brand-deep);
+    overflow-wrap: anywhere;
+  }
+
+  .admin-directory-link--primary .admin-directory-link-label {
+    color: var(--brand-burgundy);
+    font-weight: 700;
+  }
+
+  .admin-directory-link-chevron {
+    flex-shrink: 0;
+    color: var(--text-cocoa);
+    transition: transform var(--transition-fast);
+  }
+
+  .admin-directory-link:hover .admin-directory-link-chevron {
+    transform: translateX(2px);
+    color: var(--brand-deep);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .admin-directory-link,
+    .admin-directory-link-chevron {
+      transition: none;
+    }
+
+    .admin-directory-link:hover .admin-directory-link-chevron {
+      transform: none;
+    }
+  }
+}
